@@ -1,6 +1,8 @@
 import Game from './Game.js';
+import { MusicManager } from './Music.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const musicManager = new MusicManager();
     const canvas = document.getElementById('gameCanvas');
     canvas.width = 1000;
     canvas.height = 600;

@@ -61,7 +61,6 @@ export default class Game {
     this.createTowerShop();
     this.setLevel(this.currentLevelIndex);
     this.updateUI();
-    this.logEvent("Game loaded.");
 }
 
   loadMap(layout) {
@@ -181,7 +180,7 @@ export default class Game {
         if (this.playerLives <= 0) {
           this.gameStarted = false;
           this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves.`);
-          this.overlayContent.innerHTML += `<br><button id="restartButton" class="big">Play Again</button>`;
+          this.overlayContent.innerHTML += `<br><button id="restartButton" class="btn big">Play Again</button>`;
           document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
         }
         return false;

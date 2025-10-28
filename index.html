@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>The CZSrna's Tower Defence – Alpha 0.0.4</title>
+  <title>The CZSrna's Tower Defence – Alpha 0.0.6</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/versions.css" />
+  <link rel="stylesheet" href="css/music.css" />
 </head>
 <body>
   <h1 class="title">The CZSrna's Tower Defence</h1>
-  <h3 class="subtitle">Alpha 0.0.5</h3>
+  <h3 class="subtitle">Alpha 0.0.6</h3>
 
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
@@ -39,11 +40,36 @@
         </div>
                 <!-- NEW: Version button -->
         <button id="versionButton" class="btn">Version History</button>
+        <!-- Music Player -->
+        <div id="musicBox">
+          <h3>Music Player</h3>
+                
+          <!-- Track controls -->
+          <div class="music-controls">
+            <button id="musicPrev" class="btn-music">&lt;&lt;</button>
+            <span id="musicTitle" class="music-title">No track loaded</span>
+            <button id="musicNext" class="btn-music">&gt;&gt;</button>
+          </div>
+        
+          <!-- Progress bar -->
+          <div class="music-progress">
+            <div id="musicProgressBarContainer" class="progress-container">
+              <div id="musicProgressBar" class="progress-bar"></div>
+            </div>
+            <div id="musicTime">00:00 / 00:00</div>
+          </div>
+        
+          <!-- Volume & toggle -->
+          <div class="music-volume">
+            <button id="musicToggle" class="btn-music">Music: OFF</button>
+            <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5">
+          </div>
+        </div>
+        
+        <!-- Game Log -->
         <h3>Game Log</h3>
         <div id="eventsList"></div>
-
     </div>
-    
     
     <!-- Right: Game area -->
     <div id="gameArea" style="display:flex; flex-direction:column; gap:8px;">

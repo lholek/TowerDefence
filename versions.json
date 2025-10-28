@@ -1,9 +1,19 @@
 {
   "versions": [
      {
+      "version": "Alpha 0.0.6",
+      "changes": [
+        "Added music",
+        "TODO: Map descriptions",
+        "TODO: Update texts",
+        "TODO: Update Graphics etc."
+      ]
+      },
+     {
       "version": "Alpha 0.0.5",
       "changes": [
         "Changed basic behaviour of the game - now game works trough drag/drop to so you can move around map",
+        "Added 3rd map",
         "Prepared for bigger maps",
         "New longMapGame for tests",
         "Improved UI"
