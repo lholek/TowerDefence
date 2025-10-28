@@ -1,0 +1,237 @@
+/* body */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #eee;
+}
+
+/* title */
+.title {
+    text-align: center;
+    color: #f0c674;
+    margin-top: 20px;
+}
+.subtitle {
+    text-align: center;
+    color: #ccc;
+    margin-top: -10px;
+}
+
+/* main container flex */
+#mainContainer {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+/* events log left column */
+#eventsBox {
+    width: 250px;
+    max-height: 700px;
+    background: #1b1b1b;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* info box */
+/* info box (stack items vertically) */
+#infoBox {
+  background: #222;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  display: flex;            /* stack children vertically */
+  flex-direction: column;
+  gap: 8px;                 /* space between lines */
+  align-items: stretch;     /* children fill width by default */
+}
+
+/* header styling inside info */
+#infoBox h3 {
+  margin: 0;
+  color: #f0c674;
+  font-size: 16px;
+}
+
+/* small info lines */
+#infoBox > div {
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+/* Version button: make it a full-width block under the info */
+.btn {
+  background: gold;
+  color: #111;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.08s ease;
+  display: block;           /* take full available width (stacked) */
+  width: 100%;              /* ensure stays under content */
+  text-align: center;
+}
+
+/* hover + active */
+.btn:hover { background: #ffde59; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+/* scroll only inside event list */
+#eventsList {
+    flex: 1; /* fills remaining height */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 600px;
+}
+
+/* game area */
+#gameArea {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* top UI */
+.top-ui {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+#topUi > div,
+#topUi > button {
+    background: #1f1f1f;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* progress bar container */
+#progressContainer {
+    width: 100%;
+    background-color: #555;
+    height: 25px;
+    border-radius: 6px;
+    position: relative;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* progress bar itself */
+#progressBar {
+    width: 0%; /* dynamic */
+    height: 100%;
+    background-color: gold;
+    border-radius: 6px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+/* level text centered inside progress bar */
+#levelText {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-shadow: 0 0 3px #fff;
+}
+
+/* canvas */
+canvas {
+    background: #222;
+    border: 1px solid #111;
+    display: block;
+}
+
+/* tower shop */
+.shop {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+.shop .shop-item {
+    background: #1b1b1b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    width: 160px;
+    color: #fff;
+    cursor: pointer;
+    transition: border 0.2s ease, transform 0.1s ease;
+    border: 2px solid transparent;
+}
+.shop .shop-item:hover {
+    transform: scale(1.03);
+}
+.shop .shop-item.active {
+    border-color: var(--tower-color, #fff);
+}
+
+/* remove default buttons inside shop (we now use whole card clickable) */
+.shop .shop-item button {
+    display: none;
+}
+
+/* overlays */
+.overlay-center,
+.overlay-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.overlay-center {
+    background: rgba(0, 0, 0, 0.5);
+}
+.overlay-full {
+    background: rgba(0, 0, 0, 0.6);
+}
+#overlayContent {
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+.big {
+    font-size: 20px;
+    padding: 14px 24px;
+    cursor: pointer;
+}
+
+/* Styled dropdown for start overlay */
+.styled-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #1b1b1b;
+  color: #fff;
+  border: 2px solid #444;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 180px;
+  transition: 0.2s;
+}
+.styled-select:hover {
+  border-color: gold;
+}
+.styled-select:focus {
+  outline: none;
+  border-color: #ffde59;
+}

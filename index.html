@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The CZSrna's Tower Defence – Alpha 0.0.4</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/versions.css" />
+</head>
+<body>
+  <h1 class="title">The CZSrna's Tower Defence</h1>
+  <h3 class="subtitle">Alpha 0.0.5</h3>
+
+  <!-- Start overlay -->
+  <div id="startOverlay" class="overlay-center">
+    <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+      <button id="startButton" class="btn big">Start Game</button>
+      
+      <!-- Styled select on its own row -->
+      <select id="mapSelect" class="styled-select">
+        <option value="./games/001_basicGame.json">Basic Game</option>
+        <option value="./games/002_zigZagGame.json">Zig-Zag Game</option>
+        <option value="./games/003_longMapGame.json">Long Map Game</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main container -->
+  <div id="mainContainer" style="display:flex; gap:12px; margin-top:12px; justify-content:center; align-items:flex-start;">
+    
+    <!-- Left: Game Log -->
+         <!-- Info section -->
+    <div id="eventsBox">
+        <div id="infoBox">
+          <h3>Info</h3>
+          <div>P - Pause game</div>
+          <div>Slect the tower from cards</div>
+          <div>Left click - Build Tower</div>
+          <div>Right click - Sell Tower</div>
+        </div>
+                <!-- NEW: Version button -->
+        <button id="versionButton" class="btn">Version History</button>
+        <h3>Game Log</h3>
+        <div id="eventsList"></div>
+
+    </div>
+    
+    
+    <!-- Right: Game area -->
+    <div id="gameArea" style="display:flex; flex-direction:column; gap:8px;">
+      <!-- Top UI -->
+      <div id="topUi" class="top-ui">
+        <div id="levelText">Level 1</div>
+        <div id="livesText">Lives: 10</div>
+        <button id="pauseButton" style="display: none;">Pause (P)</button>
+        <div id="coinsText">Coins: 10</div>
+      </div>
+
+      <!-- Progress bar -->
+      <div id="progressContainer">
+        <div id="progressBar"></div>
+      </div>
+
+      <!-- Canvas -->
+      <canvas id="gameCanvas" width="1000" height="600"></canvas>
+
+      <!-- Tower shop -->
+      <div id="towerShop" class="shop"></div>
+    </div>
+  </div>
+
+  <!-- Game overlay -->
+  <div id="gameOverlay" class="overlay-full" style="display:none;">
+    <div id="overlayContent">
+      <p id="overlayMessage">PAUSED</p>
+      <div id="overlayClose">(P)</div>
+    </div>
+  </div>
+
+    <!-- Version History Popup -->
+    <div id="versionPopup" class="overlay-full" style="display:none;">
+      <div id="versionPopupContent">
+        <h2>Version History</h2>
+        <div id="versionList"></div>
+        <button id="closeVersionPopup" class="btn">Close</button>
+      </div>
+    </div>
+
+  <script type="module" src="js/game/main.js"></script>
+  <script type="module" src="js/versions.js"></script>
+</body>
+</html>

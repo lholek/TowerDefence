@@ -1,0 +1,21 @@
+/* Version popup styling */
+#versionPopupContent {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  max-width: 500px;
+  color: #fff;
+}
+#versionList {
+  margin-top: 10px;
+}
+#versionList h3 {
+  color: gold;
+  margin-bottom: 4px;
+}
+#versionList ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 12px;
+}

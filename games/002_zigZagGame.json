@@ -1,0 +1,70 @@
+{
+  "maps": [
+    {
+      "name": "Zig-Zag map",
+      "description": "Second map of this game",
+      "tileSize": 60,
+      "layout": [
+        "XXXXXXXXXXX",
+        "XOOOXOOOXOO",
+        "XOXOXOXOXOX",
+        "XOXOXOXOXOX",
+        "XOXOXOXOXOX",
+        "OOXOOOXOOOX",
+        "XXXXXXXXXXX"
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 2,
+          "damage": 4,
+          "fireRate": 1000,
+          "range": 150,
+          "color": "#2fa80d",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "002": {
+          "name": "Super Fast Tower",
+          "price": 8,
+          "damage": 1,
+          "fireRate": 100,
+          "range": 200,
+          "color": "#a80d44",
+          "sellPrice": 6,
+          "speed": 4
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {"type": "basic", "count": 5, "health": 20, "speed": 1, "coinReward": 1},
+            {"type": "basic", "count": 3, "health": 4, "speed": 1.2, "coinReward": 2}
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {"type": "basic", "count": 10, "health": 28, "speed": 1.2, "coinReward": 1},
+            {"type": "fast", "count": 5, "health": 5, "speed": 2, "coinReward": 2}
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {"type": "basic", "count": 10, "health": 28, "speed": 1.2, "coinReward": 1},
+            {"type": "fast", "count": 5, "health": 5, "speed": 2, "coinReward": 2}
+          ]
+        },
+        {
+          "level": 4,
+          "enemies": [
+            {"type": "basic", "count": 10, "health": 28, "speed": 1.2, "coinReward": 1},
+            {"type": "fast", "count": 5, "health": 5, "speed": 2, "coinReward": 2}
+          ]
+        }
+      ]
+    }
+  ]
+}

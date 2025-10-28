@@ -1,0 +1,29 @@
+{
+  "versions": [
+     {
+      "version": "Alpha 0.0.5",
+      "changes": [
+        "TODO: Improve UI",
+        "TODO: More maps",
+        "TODO: Heroes like map selector",
+        "TODO: More..",
+        "TODO: More..",
+        "TODO: More.."
+      ]
+    },
+    {
+      "version": "Alpha 0.0.4",
+      "changes": [
+        "Full clickable towers and extra life cards",
+        "Removed resume button; replaced with (P) indicator",
+        "Added restart button on game over",
+        "Added Info section under Game Log",
+        "Improved overlay messages for win/loss",
+        "Improved UI",
+        "Added version history",
+        "Added info",
+        "Added second map"
+      ]
+    }
+  ]
+}
