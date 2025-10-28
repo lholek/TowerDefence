@@ -1,8 +1,15 @@
 {
   "maps": [
     {
-      "name": "Zig-Zag map",
-      "description": "Second map of this game",
+      "name": "Zig-Zag",
+      "description": [
+        {
+          "descriptionText": "Middle map, medium difficulty, less towers",
+          "level count": 4,
+          "difficulty": "**",
+          "tower types": 2
+        }
+      ],
       "tileSize": 60,
       "layout": [
         "XXXXXXXXXXX",

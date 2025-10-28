@@ -1,8 +1,15 @@
 {
   "maps": [
     {
-      "name": "Long map",
-      "description": "Third map of this game",
+      "name": "Long Map",
+      "description": [
+        {
+          "descriptionText": "Bigger map, more difficult, more towers",
+          "level count": 10,
+          "difficulty": "***",
+          "tower types": 4
+        }
+      ],
       "tileSize": 60,
       "layout": [
         "XXXXXXXXXXXXXX",
@@ -119,10 +126,19 @@
         {
           "level": 9,
           "enemies": [
-            {"type": "basic", "count": 25, "health": 450, "speed": 1.5, "coinReward": 5},
-            {"type": "speeder", "count": 8, "health": 475, "speed": 1.8, "coinReward": 6},
-            {"type": "tank", "count": 2, "health": 2500, "speed": 1, "coinReward": 8},
-            {"type": "boss", "count": 1, "health": 12000, "speed": 1, "coinReward": 250}
+            {"type": "basic", "count": 25, "health": 2500, "speed": 1.5, "coinReward": 5},
+            {"type": "speeder", "count": 8, "health": 1200, "speed": 1.8, "coinReward": 6},
+            {"type": "tank", "count": 2, "health": 3000, "speed": 1, "coinReward": 8},
+            {"type": "boss", "count": 1, "health": 15000, "speed": 1, "coinReward": 250}
+          ]
+        },
+        {
+          "level": 10,
+          "enemies": [
+            {"type": "basic", "count": 25, "health": 3000, "speed": 1.5, "coinReward": 5},
+            {"type": "speeder", "count": 8, "health": 1500, "speed": 1.8, "coinReward": 6},
+            {"type": "tank", "count": 2, "health": 3000, "speed": 1, "coinReward": 8},
+            {"type": "boss", "count": 1, "health": 25000, "speed": 1, "coinReward": 250}
           ]
         }
       ]

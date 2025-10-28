@@ -1,8 +1,15 @@
 {
   "maps": [
     {
-      "name": "Deault game",
-      "description": "First map of this game",
+      "name": "Basicame",
+      "description": [
+        {
+          "descriptionText": "Very basic map to lern game mechanics",
+          "level count": 8,
+          "difficulty": "*",
+          "tower types": 4
+        }
+      ],
       "tileSize": 60,
       "layout": [
         "XXXXXXXXXX",

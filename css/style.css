@@ -235,3 +235,27 @@ canvas {
   outline: none;
   border-color: #ffde59;
 }
+
+/* Description */
+.mapInfo {
+    min-width: 400px;
+    max-width: 400px;
+    background: #222;
+    padding: 15px;
+    margin: 0px;
+    margin-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: stretch;
+}
+
+.mapInfo p {
+    margin: 0 !important;
+    margin-top: 5px !important;
+}
+
+.mapInfo b {
+    color: #ffde59;
+}
+/* Description */

@@ -59,4 +59,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('gameOverlay').style.display = 'none';
         game?.togglePause();
     });
+
+    //Map info
+    mapSelect.addEventListener('change', async () => {
+        const selectedMapFile = mapSelect.value;
+        const infoDiv = document.getElementById('mapInfo');
+        infoDiv.innerHTML = 'Loading map info...';
+        
+        try {
+          const res = await fetch(selectedMapFile);
+          if (!res.ok) throw new Error(`Failed to load: ${res.status}`);
+          const data = await res.json();
+          const map = data.maps[0];
+        
+          if (map && map.description && map.description.length > 0) {
+            const desc = map.description[0]; // use first description object
+            infoDiv.innerHTML = `
+              <h3>${map.name}</h3>
+              <p><b>Description:</b> ${desc.descriptionText}</p>
+              <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
+              <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
+              <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
+            `;
+          } else {
+            infoDiv.textContent = "No description available.";
+          }
+        } catch (err) {
+          console.error("Error loading map description:", err);
+          infoDiv.textContent = "Failed to load map info.";
+        }
+    });
 });
