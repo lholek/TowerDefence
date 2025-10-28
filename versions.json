@@ -3,12 +3,10 @@
      {
       "version": "Alpha 0.0.5",
       "changes": [
-        "TODO: Improve UI",
-        "TODO: More maps",
-        "TODO: Heroes like map selector",
-        "TODO: More..",
-        "TODO: More..",
-        "TODO: More.."
+        "Changed basic behaviour of the game - now game works trough drag/drop to so you can move around map",
+        "Prepared for bigger maps",
+        "New longMapGame for tests",
+        "Improved UI"
       ]
     },
     {
