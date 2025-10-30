@@ -2,7 +2,7 @@ export default class Map {
     constructor(canvas, layout, tileSize = 80) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.layout = layout.map(row => row.split('')); // rozdělit řetězce z JSON
+        this.layout = layout.map(row => row.split(''));
         this.rows = this.layout.length;
         this.cols = this.layout[0].length;
         this.tileSize = tileSize;
@@ -14,19 +14,24 @@ export default class Map {
             zoom: 1,
             dragging: false,
             lastX: 0,
-            lastY: 0
+            lastY: 0,
+            minZoom: 0.5,
+            maxZoom: 1
         };
 
-        // Vygenerovat path
+        // Path
         this.path = this.generatePath();
 
-        // Eventy pro drag & zoom
+        // Eventy
         this.canvas.addEventListener('mousedown', e => this.startDrag(e));
         this.canvas.addEventListener('mousemove', e => this.drag(e));
         this.canvas.addEventListener('mouseup', e => this.stopDrag());
         this.canvas.addEventListener('mouseleave', e => this.stopDrag());
         this.canvas.addEventListener('wheel', e => this.handleZoom(e));
         this.canvas.style.cursor = 'grab';
+
+        // Clamp initial camera
+        this.clampCamera();
     }
 
     // --- PATH GENERATION ---
@@ -54,7 +59,7 @@ export default class Map {
         while (true) {
             const nextTiles = neighbors(current);
             if (nextTiles.length === 0) break;
-            const next = nextTiles[0]; // později lze vylepšit BFS/DFS
+            const next = nextTiles[0];
             path.push(next);
             visited.add(`${next.x},${next.y}`);
             current = next;
@@ -86,17 +91,11 @@ export default class Map {
 
     // --- TILE CONVERSIONS ---
     tileToWorld(col, row) {
-        return {
-            x: col * this.tileSize + this.tileSize / 2,
-            y: row * this.tileSize + this.tileSize / 2
-        };
+        return { x: col * this.tileSize + this.tileSize / 2, y: row * this.tileSize + this.tileSize / 2 };
     }
 
     worldToTile(x, y) {
-        return {
-            col: Math.floor(x / this.tileSize),
-            row: Math.floor(y / this.tileSize)
-        };
+        return { col: Math.floor(x / this.tileSize), row: Math.floor(y / this.tileSize) };
     }
 
     screenToWorld(screenX, screenY) {
@@ -124,13 +123,14 @@ export default class Map {
 
     // --- DRAG & ZOOM ---
     startDrag(e) {
-        if (e.button !== 1 && e.button !== 0) return; // levé nebo střední tlačítko
+        // Only allow middle mouse button (wheel) for dragging
+        if (e.button !== 1) return; // 1 = middle button
         this.camera.dragging = true;
         this.camera.lastX = e.clientX;
         this.camera.lastY = e.clientY;
         this.canvas.style.cursor = 'grabbing';
     }
-
+    
     drag(e) {
         if (!this.camera.dragging) return;
         const dx = e.clientX - this.camera.lastX;
@@ -139,12 +139,14 @@ export default class Map {
         this.camera.y += dy;
         this.camera.lastX = e.clientX;
         this.camera.lastY = e.clientY;
+        this.clampCamera(); // keep camera inside map
     }
-
+    
     stopDrag() {
         if (this.camera.dragging) {
             this.camera.dragging = false;
             this.canvas.style.cursor = 'grab';
+            this.clampCamera(); // clamp camera when drag ends
         }
     }
 
@@ -152,16 +154,19 @@ export default class Map {
         e.preventDefault();
         const zoomFactor = 1.05;
         const mouse = this.screenToWorld(e.clientX, e.clientY);
+
         if (e.deltaY < 0) this.camera.zoom *= zoomFactor;
         else this.camera.zoom /= zoomFactor;
 
-        // omezit zoom
-        this.camera.zoom = Math.max(0.4, Math.min(this.camera.zoom, 3));
+        // Clamp zoom
+        this.camera.zoom = Math.max(this.camera.minZoom, Math.min(this.camera.zoom, this.camera.maxZoom));
 
-        // zoom kolem myši
+        // Zoom around mouse
         const world = this.screenToWorld(e.clientX, e.clientY);
         this.camera.x += (mouse.x - world.x) * this.camera.zoom;
         this.camera.y += (mouse.y - world.y) * this.camera.zoom;
+
+        this.clampCamera();
     }
 
     applyCameraTransform(ctx) {
@@ -169,7 +174,34 @@ export default class Map {
         ctx.translate(this.camera.x, this.camera.y);
         ctx.scale(this.camera.zoom, this.camera.zoom);
     }
+
     resetTransform(ctx) {
         ctx.restore();
+    }
+
+    // --- CAMERA BOUNDS ---
+    clampCamera() {
+        const mapWidth = this.cols * this.tileSize * this.camera.zoom;
+        const mapHeight = this.rows * this.tileSize * this.camera.zoom;
+        const canvasWidth = this.canvas.width;
+        const canvasHeight = this.canvas.height;
+
+        // X-axis
+        if (mapWidth <= canvasWidth) {
+            this.camera.x = (canvasWidth - mapWidth) / 2;
+        } else {
+            const minX = canvasWidth - mapWidth;
+            const maxX = 0;
+            this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x));
+        }
+
+        // Y-axis
+        if (mapHeight <= canvasHeight) {
+            this.camera.y = (canvasHeight - mapHeight) / 2;
+        } else {
+            const minY = canvasHeight - mapHeight;
+            const maxY = 0;
+            this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y));
+        }
     }
 }

@@ -3,12 +3,13 @@
     {
       "version": "Alpha 0.0.7",
       "changes": [
-        "TODO: Fix bug - Move map only when pressing wheel not right/left click",
+        "Fixed bug - Move map only when pressing wheel not right/left click",
+        "Fixed bug - Player can not leave map to far whit camera",
+        "Fixed bug - set max/min zoom",
         "TODO: Fix bug - When not clicking (clicking outside of the map) on tile dont built tower",
-        "TODO: Fix bug - Player can not leave map to far",
-        "TODO: Fix bug - set max/min zoom",
         "TODO: Fix bug - Under Pause - replace text (P) whit 'Press (P) to continue'",
         "TODO: Fix bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
+        "TODO: Fix bug - Make version div scrollable",
         "TODO: Improvment - Set - starting Lives different for each game",
         "TODO: Improvment - Add abilites under towerTypes in json - for now 1 ability Swamp (Reduces enemy speed by json settings, remains for time set in json)",
         "TODO: Improvment - Make the Tower/Abiliy row scrollable so player can choose from more tower, abilites",
