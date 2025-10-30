@@ -5,18 +5,18 @@
       "changes": [
         "Added music",
         "Added information about maps",
-        "TODO: After win/loss add option to return to Main menu",
+        "After win/loss add option to return to Main menu",
+        "Added test Map",
         "TODO: Added More maps (At least 4th map)",
         "TODO: Added More music (At least 10 music)",
         "TODO: Added Enemy health bars",
-        "TODO: Added back to Main Menu button in the end of game",
         "TODO: Improved UI - Round corners for all divs"
         ]
       },
      {
       "version": "Alpha 0.0.5",
       "changes": [
-        "Changed basic behaviour of the game - now game works trough drag/drop to so you can move around map",
+        "Changed basic behaviour of the game - now game works trough drag/drop and wheel to so you can move around map",
         "Added 3rd map",
         "Prepared for bigger maps",
         "New longMapGame for tests",

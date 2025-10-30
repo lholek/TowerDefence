@@ -5,6 +5,10 @@
   margin-bottom: 10px;
 }
 
+#musicBox h3 {
+  padding-bottom: 1rem;
+}
+  
 .music-controls {
   display: flex;
   align-items: center;

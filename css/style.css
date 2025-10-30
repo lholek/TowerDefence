@@ -7,6 +7,13 @@ body {
     color: #eee;
 }
 
+/* h */ 
+h3 {
+  margin: 0;
+  color: #f0c674;
+  font-size: 16px;
+}
+
 /* title */
 .title {
     text-align: center;
@@ -50,13 +57,6 @@ body {
   flex-direction: column;
   gap: 8px;                 /* space between lines */
   align-items: stretch;     /* children fill width by default */
-}
-
-/* header styling inside info */
-#infoBox h3 {
-  margin: 0;
-  color: #f0c674;
-  font-size: 16px;
 }
 
 /* small info lines */

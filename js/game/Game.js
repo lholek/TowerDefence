@@ -193,6 +193,8 @@ export default class Game {
       this.currentLevelIndex++;
       if (this.currentLevelIndex >= this.levelData.levels.length) {
         this.showOverlayMessage(`You won. You survived for ${this.currentLevelIndex} waves.`);
+        this.overlayContent.innerHTML += `<br><button id="restartButton" class="btn big">Play Again</button>`;
+        document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
         this.gameStarted = false;
       } else {
         this.setLevel(this.currentLevelIndex);

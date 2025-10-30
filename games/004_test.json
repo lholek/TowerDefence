@@ -1,0 +1,42 @@
+{
+  "maps": [
+    {
+      "name": "Test Map",
+      "description": [
+        {
+          "descriptionText": "Only for test",
+          "level count": 1,
+          "difficulty": "*",
+          "tower types": 1
+        }
+      ],
+      "tileSize": 60,
+      "layout": [
+        "XXXXXXXX",
+        "OOOOOOOO",
+        "XXXXXXXX"
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 500,
+          "fireRate": 100,
+          "range": 200,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {"type": "basic", "count": 6, "health": 20, "speed": 1, "coinReward": 2},
+            {"type": "basic", "count": 8, "health": 20, "speed": 1.2, "coinReward": 3}
+          ]
+        }
+      ]
+    }
+  ]
+}
