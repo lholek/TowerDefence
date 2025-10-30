@@ -3,14 +3,14 @@
      {
       "version": "Alpha 0.0.6",
       "changes": [
+        "Added Enemy health bars",
         "Added music",
         "Added information about maps",
-        "After win/loss add option to return to Main menu",
+        "After win/loss added option to refresh page",
         "Added test Map",
-        "Added Enemy health bars",
+        "Improved UI - Round corners for all divs",
         "TODO: Added More maps (At least 4th map)",
-        "TODO: Added More music (At least 10 music)",
-        "TODO: Improved UI - Round corners for all divs"
+        "TODO: Added More music (At least 10 music)"
         ]
       },
      {

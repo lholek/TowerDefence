@@ -12,8 +12,13 @@ h3 {
   margin: 0;
   color: #f0c674;
   font-size: 16px;
+  text-align: center;
 }
 
+.box {
+    padding: 8px;
+    padding-top: 30px;
+}
 /* title */
 .title {
     text-align: center;
@@ -49,7 +54,6 @@ h3 {
 /* info box */
 /* info box (stack items vertically) */
 #infoBox {
-  background: #222;
   padding: 8px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -248,6 +252,7 @@ canvas {
     flex-direction: column;
     gap: 2px;
     align-items: stretch;
+    border-radius: 8px;
 }
 
 .mapInfo p {
