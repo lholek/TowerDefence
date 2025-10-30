@@ -6,6 +6,7 @@
         {
           "descriptionText": "Very basic map to learn game mechanics",
           "level count": 8,
+          "map_size": "10x7",
           "difficulty": "*",
           "tower types": 4
         }
