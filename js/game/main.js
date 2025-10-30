@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Pause handling
     const pauseBtn = document.getElementById('pauseButton');
-    const overlayClose = document.getElementById('overlayClose');
+    //const overlayClose = document.getElementById('overlayClose');
 
     pauseBtn.addEventListener('click', () => game?.togglePause());
     document.addEventListener('keydown', (e) => {
@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    overlayClose.addEventListener('click', () => {
+    /*overlayClose.addEventListener('click', () => {
         document.getElementById('gameOverlay').style.display = 'none';
         game?.togglePause();
-    });
+    });*/
 
     //Map info
     mapSelect.addEventListener('change', async () => {

@@ -42,7 +42,7 @@ export default class Game {
     this.canvas.addEventListener('click', e => this.handleBuild(e));
     this.canvas.addEventListener('contextmenu', e => this.handleSell(e));
 
-    document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
+    //document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
     document.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'p') this.togglePause();
     });
@@ -79,7 +79,7 @@ export default class Game {
       if (!this.gameStarted) return; // only if game started
       this.paused = !this.paused;
       if (this.paused) {
-          this.showOverlayMessage('PAUSED');
+          this.showOverlayMessage('PAUSED - Press "P" to continue');
       } else {
           this.gameOverlay.style.display = 'none';
       }
