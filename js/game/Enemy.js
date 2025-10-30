@@ -5,6 +5,7 @@ export default class Enemy {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.speed = speed;
+        this.maxHealth = health;    // store max health for health bar
         this.health = health;
         this.coinReward = coinReward;
         this.currentIndex = 0;
@@ -42,12 +43,27 @@ export default class Enemy {
     }
 
     render(ctx) {
-        // aplikujeme kameru
+        // apply camera
         this.map.applyCameraTransform(ctx);
 
-        // vykreslení enemy
+        // draw enemy body
         ctx.fillStyle = 'red';
         ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+
+        // --- HEALTH BAR ---
+        const barWidth = this.size + 5;
+        const barHeight = 6;
+        const healthRatio = Math.max(0, this.health / this.maxHealth);
+        const barX = this.x - barWidth / 2;
+        const barY = this.y - this.size / 2 - barHeight - 4; // above the enemy
+
+        // draw background
+        ctx.fillStyle = 'black';
+        ctx.fillRect(barX - 1, barY - 1, barWidth + 2, barHeight + 2);
+
+        // draw health fill
+        ctx.fillStyle = healthRatio > 0.5 ? '#0f0' : healthRatio > 0.25 ? 'orange' : 'red';
+        ctx.fillRect(barX, barY, barWidth * healthRatio, barHeight);
 
         // reset transform
         this.map.resetTransform(ctx);
