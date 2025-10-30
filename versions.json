@@ -6,7 +6,7 @@
         "Fixed bug - Move map only when pressing wheel not right/left click",
         "Fixed bug - Player can not leave map to far whit camera",
         "Fixed bug - set max/min zoom",
-        "TODO: Fix bug - When not clicking (clicking outside of the map) on tile dont built tower",
+        "Fixed bug - When not clicking (clicking outside of the map) on tile dont built tower",
         "TODO: Fix bug - Under Pause - replace text (P) whit 'Press (P) to continue'",
         "TODO: Fix bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
         "TODO: Fix bug - Make version div scrollable",

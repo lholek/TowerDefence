@@ -93,10 +93,16 @@ export default class Game {
   handleBuild(e) {
     if (!this.map || !this.gameStarted || this.paused) return;
 
-    const rect = this.canvas.getBoundingClientRect();
+    // převést kliknutí na world souřadnice
     const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
+
+    // pokud kliknutí mimo mapu -> nic nedělat
+    if (!this.map.isInsideMap(worldPos.x, worldPos.y)) return;
+
+    // získat cílový tile (getTileFromCoords očekává world coords)
     const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
 
+    // zkontrolovat, jestli se dá stavět
     if (!this.map.isBuildableTile(tile.col, tile.row)) return;
     if (this.towers.some(t => t.col === tile.col && t.row === tile.row)) return;
     if (!this.selectedTowerType) return;
@@ -105,38 +111,43 @@ export default class Game {
     if (!type) return;
 
     if (this.playerCoins >= type.price) {
-        const tower = new Tower(this.map, tile.col, tile.row);
-        tower.range = type.range;
-        tower.fireRate = type.fireRate;
-        tower.damage = type.damage;
-        tower.color = type.color;
-        tower.bulletSpeed = type.speed || 3;
-        tower.sellPrice = type.sellPrice || 1;
-        tower.typeKey = this.selectedTowerType;
-        this.towers.push(tower);
-        this.playerCoins -= type.price;
-        this.updateUI();
-        this.logEvent(`Player built "${type.name}"`);
+      // Tower konstruktor používá (map, col, row) ve tvém současném kódu
+      const tower = new Tower(this.map, tile.col, tile.row);
+      tower.range = type.range;
+      tower.fireRate = type.fireRate;
+      tower.damage = type.damage;
+      tower.color = type.color;
+      tower.bulletSpeed = type.speed || 3;
+      tower.sellPrice = type.sellPrice || 1;
+      tower.typeKey = this.selectedTowerType;
+      this.towers.push(tower);
+      this.playerCoins -= type.price;
+      this.updateUI();
+      this.logEvent(`Player built "${type.name}"`);
     } else {
-        this.logEvent("Not enough coins!");
+      this.logEvent("Not enough coins!");
     }
   }
 
 
   handleSell(e) {
     e.preventDefault();
-    const rect = this.canvas.getBoundingClientRect();
-    const worldPos = this.map.screenToWorld(e.clientX, e.clientY, rect);
 
+    // získat world souřadnice kliknutí (nepoužívat rect zde)
+    const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
+
+    // najít tower blízko kliknutého místa (world coords)
     const tower = this.towers.find(t => Math.hypot(t.x - worldPos.x, t.y - worldPos.y) < 20);
+
     if (tower) {
-        const type = this.towerTypes[tower.typeKey];
-        if (type) this.playerCoins += tower.sellPrice || Math.floor(type.price / 2);
-        this.towers = this.towers.filter(t => t !== tower);
-        this.updateUI();
-        this.logEvent(`Sold tower "${type.name}"`);
+      const type = this.towerTypes[tower.typeKey];
+      if (type) this.playerCoins += tower.sellPrice || Math.floor(type.price / 2);
+      this.towers = this.towers.filter(t => t !== tower);
+      this.updateUI();
+      this.logEvent(`Sold tower "${type ? type.name : tower.typeKey}"`);
     }
   }
+
 
   loop(now) {
     const deltaTime = now - (this.lastTime || now);

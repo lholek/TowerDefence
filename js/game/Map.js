@@ -204,4 +204,11 @@ export default class Map {
             this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y));
         }
     }
+
+    // --- CHECK IF COORDINATES ARE INSIDE MAP ---
+    isInsideMap(x, y) {
+        const mapWidth = this.cols * this.tileSize;
+        const mapHeight = this.rows * this.tileSize;
+        return x >= 0 && x < mapWidth && y >= 0 && y < mapHeight;
+    }
 }
