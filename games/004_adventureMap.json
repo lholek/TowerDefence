@@ -1,0 +1,65 @@
+{
+"maps": [
+    {
+        "name": "Adventure Map",
+        "startingCoins": 25,
+        "startingLives": 5,
+        "description": [
+          {
+            "descriptionText": "First proper Adventure for this game, multiple enemy types, massive map, multiple tower types",
+            "level count": 50,
+            "map_size": "20x10",
+            "difficulty": "***",
+            "tower types": 8
+          }
+        ],
+        "tileSize": 60,
+        "layout": [
+          "XXXXXXXXXXXXXXXXXXXXXXXX",
+          "XXXXXXXXXXXXOOOOXXOOOOXX",
+          "XXXOOOOOOOOOOXXOOOOXXOXX",
+          "XXXOXXXXXXXXXXXXXXXXXOXX",
+          "XXXOXXXXXXXXXXOOOOOOOOXX",
+          "XXXOXXXXXXXXXXOXXXXXXXXX",
+          "XXXOOOOOOOOXXXOXXXXXXXXX",
+          "XXXXXXXXXXOXXXOOOOOOOOXX",
+          "XXXXXXXXXXOXXXXXXXXXXOXX",
+          "XXXXXXXXXXOXXXXXXXXXXOXX",
+          "XXOOOOOXXXOXXXOOOOOOOOXX",
+          "XXOXXXOXXXOXXXOXXXXXXXXX",
+          "XXOXXXOXXXOXXXOXXXXOOOOO",
+          "OOOXXXOOOOOXXXOXXXXOXXXX",
+          "XXXXXXXXXXXXXXOOOOOOXXXX",
+          "XXXXXXXXXXXXXXXXXXXXXXXX"
+        ],
+        "towerTypes": {
+            "001": {
+              "name": "Basic Tower",
+              "price": 1,
+              "damage": 5,
+              "fireRate": 1000,
+              "range": 200,
+              "color": "#468bb0",
+              "sellPrice": 1,
+              "speed": 2
+            }
+        },
+        "levels": [
+          {
+            "level": 1,
+            "enemies": [
+              {"type": "basic", "count": 6, "health": 20, "speed": 1, "coinReward": 2},
+              {"type": "basic", "count": 8, "health": 20, "speed": 1.2, "coinReward": 3}
+            ]
+          },
+          {
+            "level": 2,
+            "enemies": [
+              {"type": "basic", "count": 10, "health": 28, "speed": 1.2, "coinReward": 1},
+              {"type": "fast", "count": 15, "health": 35, "speed": 2, "coinReward": 2}
+            ]
+          }
+        ]
+    }
+  ]
+}
