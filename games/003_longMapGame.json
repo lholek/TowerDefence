@@ -3,7 +3,7 @@
     {
       "name": "Long Map",
       "startingCoins": 10,
-      "startingLives": 10,
+      "startingLives": 6,
       "description": [
         {
           "descriptionText": "Bigger map, more difficult, more towers",
