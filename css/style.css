@@ -160,34 +160,81 @@ canvas {
     display: block;
 }
 
-/* tower shop */
+/* tower shop wrapper */
+.shop-wrapper {
+    width: calc(4 * 250px + 3 * 12px); /* 4 items visible */
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 auto;
+    padding: 0; /* no extra padding */
+}
+
+/* flex row of shop items */
 .shop {
     display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-.shop .shop-item {
+    flex-wrap: nowrap;       /* all items in one row */
+    gap: 12px;               /* space between items */
+    justify-content: flex-start; /* align first item to left */
+    margin: 0;
+    padding: 0;
     background: #1b1b1b;
-    padding: 8px 12px;
     border-radius: 8px;
     text-align: center;
-    width: 160px;
     color: #fff;
+}
+
+/* individual shop cards */
+.shop-item {
+    min-width: 250px;        /* width of each item */
+    flex: 0 0 auto;
+    border: 1px solid #888;
+    padding: 6px;
+    box-sizing: border-box;
+    background-color: #222;
+    color: #fff;
+    border-radius: 6px;
     cursor: pointer;
     transition: border 0.2s ease, transform 0.1s ease;
-    border: 2px solid transparent;
 }
+
+/* hover & active states */
 .shop .shop-item:hover {
     transform: scale(1.03);
 }
+
 .shop .shop-item.active {
     border-color: var(--tower-color, #fff);
 }
 
-/* remove default buttons inside shop (we now use whole card clickable) */
+/* hide any buttons inside shop-item */
 .shop .shop-item button {
     display: none;
 }
+
+.shop-wrapper::-webkit-scrollbar {
+    height: 8px; /* horizontal scrollbar height */
+}
+
+.shop-wrapper::-webkit-scrollbar-track {
+    background: #1b1b1b;
+    border-radius: 4px;
+}
+
+.shop-wrapper::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.shop-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Firefox */
+.shop-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1b1b1b;
+}
+/* tower shop */
 
 /* overlays */
 .overlay-center,
