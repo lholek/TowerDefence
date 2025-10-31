@@ -2,6 +2,8 @@
   "maps": [
     {
       "name": "Basic Game",
+      "startingCoins": 10,
+      "startingLives": 10,
       "description": [
         {
           "descriptionText": "Very basic map to learn game mechanics",

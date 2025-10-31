@@ -8,12 +8,12 @@
         "Fixed bug - set max/min zoom",
         "Fixed bug - When clicking (clicking outside of the map) NOT on tile dont built tower",
         "Fixed bug - Under Pause - replace text (P) whit 'Press (P) to continue'",
-        "TODO: Fix bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
+        "Fix bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
         "TODO: Fix bug - Make version div scrollable",
-        "TODO: Improvment - Set - starting Lives different for each game",
+        "TODO: Improvment - Set - dynamic starting Lives and Coins different for each game",
         "TODO: Improvment - Add abilites under towerTypes in json - for now 1 ability Swamp (Reduces enemy speed by json settings, remains for time set in json)",
         "TODO: Improvment - Make the Tower/Abiliy row scrollable so player can choose from more tower, abilites",
-        "TODO: Add 4th Map 'The Main Game'(25 levels, 5 tower types, 1 ability, different lives)"
+        "TODO: Add 4th Map 'The Main Game'(25 levels, 10 lives, 25 coins, 5 tower types, 1 ability, different lives)"
         ]
     }, 
     {

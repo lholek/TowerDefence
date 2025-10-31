@@ -54,6 +54,8 @@ export default class Game {
     const data = await res.json();
 
     this.levelData = data.maps[0];
+    this.playerCoins = this.levelData.startingCoins ?? 10;
+    this.playerLives = this.levelData.startingLives ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
     this.loadMap(this.levelData.layout);
     console.log(this.map.path)
@@ -190,9 +192,9 @@ export default class Game {
         this.updateUI();
         if (this.playerLives <= 0) {
           this.gameStarted = false;
-          this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves.`);
-          this.overlayContent.innerHTML += `<br><button id="restartButton" class="btn big">Play Again</button>`;
-          document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
+          this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves.  Returning to Main menu...`);
+          // return to the main start overlay (no reload)
+          setTimeout(() => this.resetGameToMenu(), 5000); // slight delay so player sees the message
         }
         return false;
       }
@@ -203,9 +205,8 @@ export default class Game {
     if (remaining === 0 && this.enemies.length === 0) {
       this.currentLevelIndex++;
       if (this.currentLevelIndex >= this.levelData.levels.length) {
-        this.showOverlayMessage(`You won. You survived for ${this.currentLevelIndex} waves.`);
-        this.overlayContent.innerHTML += `<br><button id="restartButton" class="btn big">Play Again</button>`;
-        document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
+        this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
+        setTimeout(() => this.resetGameToMenu(), 5000);
         this.gameStarted = false;
       } else {
         this.setLevel(this.currentLevelIndex);
@@ -298,5 +299,71 @@ export default class Game {
     this.eventsList.appendChild(div);
     if (this.eventsList.children.length > 30) this.eventsList.removeChild(this.eventsList.children[0]);
     this.eventsList.scrollTop = this.eventsList.scrollHeight;
+  }
+
+  resetGame() {
+    this.gameStarted = false;
+    this.paused = false;
+
+    this.enemies = [];
+    this.towers = [];
+
+    // Use dynamic defaults from current map if defined
+    this.playerCoins = this.levelData?.startingCoins ?? 10;
+    this.playerLives = this.levelData?.startingLives ?? 10;
+
+    this.currentLevelIndex = 0;
+    this.enemiesKilled = 0;
+    this.spawnTimer = 0;
+
+    this.gameOverlay.style.display = 'none';
+    this.updateUI();
+
+    // Show main menu overlay
+    this.showOverlayMessage("Main Menu");
+    this.overlayContent.innerHTML = `<br><button id="startButton" class="btn big">Start Game</button>`;
+
+    document.getElementById('startButton').addEventListener('click', () => {
+      this.overlayContent.innerHTML = '';
+      this.gameOverlay.style.display = 'none';
+      this.setLevel(0);
+      this.start();
+    });
+  }
+
+  resetGameToMenu() {
+    // stop game loop and clear runtime objects
+    this.gameStarted = false;
+    this.paused = false;
+
+    this.enemies = [];
+    this.towers = [];
+    this.selectedTowerType = null;
+
+    this.currentLevelIndex = 0;
+    this.enemiesKilled = 0;
+    this.spawnTimer = 0;
+
+    // hide in-game overlay if visible
+    if (this.gameOverlay) this.gameOverlay.style.display = 'none';
+
+    // show the existing start overlay (main menu)
+    const startOverlay = document.getElementById('startOverlay');
+    if (startOverlay) {
+      startOverlay.style.display = 'flex';
+    }
+
+    // restore dynamic defaults (if JSON provided)
+    this.playerCoins = this.levelData?.startingCoins ?? 10;
+    this.playerLives = this.levelData?.startingLives ?? 10;
+
+    // reset UI
+    this.updateUI();
+
+    // reload map to reset positions (keeps same map loaded so dropdown still reflects choice)
+    if (this.levelData) {
+      this.loadMap(this.levelData.layout);
+    }
+
   }
 }
