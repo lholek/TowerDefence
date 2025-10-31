@@ -42,6 +42,11 @@ export default class Game {
     this.canvas.addEventListener('click', e => this.handleBuild(e));
     this.canvas.addEventListener('contextmenu', e => this.handleSell(e));
 
+    // Hover on tiles
+    this.hoveredTile = null;
+    this.canvas.addEventListener('mousemove', e => this.handleHover(e));
+    this.canvas.addEventListener('mouseleave', () => this.hoveredTile = null);
+
     //document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
     document.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'p') this.togglePause();
@@ -286,11 +291,45 @@ export default class Game {
   }
 
   render() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (!this.map) return;
-    this.map.render(this.ctx);
-    this.enemies.forEach(e => e.render(this.ctx));
-    this.towers.forEach(t => t.render(this.ctx));
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      if (!this.map) return;
+
+      // Draw the map
+      this.map.render(this.ctx);
+
+      // --- Draw hovered tile (inside camera transform so it matches map) ---
+      if (this.hoveredTile) {
+          this.map.applyCameraTransform(this.ctx);
+      
+          const col = this.hoveredTile.col;
+          const row = this.hoveredTile.row;
+          const pos = this.map.tileToWorld(col, row);
+          const x = pos.x;
+          const y = pos.y;
+      
+          // --- Determine hover color ---
+          let color = 'rgba(255,0,0,0.25)'; // default red (blocked)
+      
+          const buildable = this.map.isBuildableTile(col, row);
+          const hasTower = this.towers.some(t => t.col === col && t.row === row);
+      
+          if (buildable && !hasTower) {
+              color = 'rgba(0,255,0,0.25)'; // green only if buildable AND no tower
+          }
+        
+          this.ctx.fillStyle = color;
+          const center = this.map.tileToWorld(col, row);
+          const calculatedX = center.x - this.map.tileSize / 2;
+          const calculatedY = center.y - this.map.tileSize / 2;
+          this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
+        
+          this.map.resetTransform(this.ctx);
+      }
+
+      // Draw towers and enemies
+      this.towers.forEach(t => t.render(this.ctx));
+      this.enemies.forEach(e => e.render(this.ctx));
   }
 
   logEvent(text) {
@@ -364,6 +403,24 @@ export default class Game {
     if (this.levelData) {
       this.loadMap(this.levelData.layout);
     }
+  }
 
+  handleHover(e) {
+      if (!this.map) return;
+
+      // Pass raw client coordinates to screenToWorld (map knows canvas rect)
+      const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
+
+      // If click is outside the map area, clear hover
+      if (!this.map.isInsideMap(worldPos.x, worldPos.y)) {
+          this.hoveredTile = null;
+          return;
+      }
+
+      // Get tile under mouse (world coords expected)
+      const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
+
+      // getTileFromCoords clamps to valid range, but we keep hoveredTile for rendering
+      this.hoveredTile = tile;
   }
 }

@@ -4,6 +4,7 @@
       "version": "Alpha 0.0.7",
       "changes": [
         "Improvment - Set - dynamic starting Lives and Coins different for each game",
+        "Improvment - Tiles are now showing color where you can built or not",
         "Fixed bug - Move map only when pressing wheel not right/left click",
         "Fixed bug - Player can not leave map to far whit camera",
         "Fixed bug - set max/min zoom",

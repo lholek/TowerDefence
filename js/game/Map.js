@@ -2,12 +2,14 @@ export default class Map {
     constructor(canvas, layout, tileSize = 80) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+
+        // layout: array of strings -> convert to 2D array of chars
         this.layout = layout.map(row => row.split(''));
         this.rows = this.layout.length;
         this.cols = this.layout[0].length;
         this.tileSize = tileSize;
 
-        // Kamera
+        // Camera state
         this.camera = {
             x: 0,
             y: 0,
@@ -19,10 +21,10 @@ export default class Map {
             maxZoom: 1
         };
 
-        // Path
+        // Precompute path
         this.path = this.generatePath();
 
-        // Eventy
+        // Mouse events for drag/zoom
         this.canvas.addEventListener('mousedown', e => this.startDrag(e));
         this.canvas.addEventListener('mousemove', e => this.drag(e));
         this.canvas.addEventListener('mouseup', e => this.stopDrag());
@@ -30,7 +32,7 @@ export default class Map {
         this.canvas.addEventListener('wheel', e => this.handleZoom(e));
         this.canvas.style.cursor = 'grab';
 
-        // Clamp initial camera
+        // Ensure camera is clamped initially
         this.clampCamera();
     }
 
@@ -42,6 +44,8 @@ export default class Map {
                 if (this.layout[r][c] === 'O') openTiles.push({ x: c, y: r });
             }
         }
+
+        if (!openTiles.length) return [];
 
         let start = openTiles.find(t => t.x === 0) || openTiles[0];
         const path = [start];
@@ -76,9 +80,9 @@ export default class Map {
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
-                const pos = this.tileToWorld(c, r);
-                const x = pos.x - this.tileSize / 2;
-                const y = pos.y - this.tileSize / 2;
+                const center = this.tileToWorld(c, r);
+                const x = center.x - this.tileSize / 2;
+                const y = center.y - this.tileSize / 2;
                 ctx.fillStyle = this.layout[r][c] === 'O' ? '#888' : '#444';
                 ctx.fillRect(x, y, this.tileSize, this.tileSize);
                 ctx.strokeStyle = '#222';
@@ -89,30 +93,43 @@ export default class Map {
         ctx.restore();
     }
 
-    // --- TILE CONVERSIONS ---
+    // --- TILE / COORD conversions ---
+    // returns center of tile in world coords
     tileToWorld(col, row) {
-        return { x: col * this.tileSize + this.tileSize / 2, y: row * this.tileSize + this.tileSize / 2 };
-    }
-
-    worldToTile(x, y) {
-        return { col: Math.floor(x / this.tileSize), row: Math.floor(y / this.tileSize) };
-    }
-
-    screenToWorld(screenX, screenY) {
-        const rect = this.canvas.getBoundingClientRect();
         return {
-            x: (screenX - rect.left - this.camera.x) / this.camera.zoom,
-            y: (screenY - rect.top - this.camera.y) / this.camera.zoom
+            x: col * this.tileSize + this.tileSize / 2,
+            y: row * this.tileSize + this.tileSize / 2
         };
     }
 
-    getTileFromCoords(x, y) {
-        const tile = this.worldToTile(x, y);
-        tile.col = Math.max(0, Math.min(this.cols - 1, tile.col));
-        tile.row = Math.max(0, Math.min(this.rows - 1, tile.row));
-        return tile;
+    // convert world coords -> tile indices
+    worldToTile(x, y) {
+        return {
+            col: Math.floor(x / this.tileSize),
+            row: Math.floor(y / this.tileSize)
+        };
     }
 
+    // convert raw client/screen coordinates (e.clientX/clientY) -> world coords
+    screenToWorld(screenX, screenY) {
+        const rect = this.canvas.getBoundingClientRect();
+        // account for canvas position and camera transform
+        const worldX = (screenX - rect.left - this.camera.x) / this.camera.zoom;
+        const worldY = (screenY - rect.top - this.camera.y) / this.camera.zoom;
+        return { x: worldX, y: worldY };
+    }
+
+    // Accepts world coordinates (NOT screen coordinates)
+    // Returns clamped {col,row}
+    getTileFromCoords(worldX, worldY) {
+        const t = this.worldToTile(worldX, worldY);
+        return {
+            col: Math.max(0, Math.min(this.cols - 1, t.col)),
+            row: Math.max(0, Math.min(this.rows - 1, t.row))
+        };
+    }
+
+    // get center position (keeps compatibility with older code)
     getTileCenter(col, row) {
         return this.tileToWorld(col, row);
     }
@@ -123,14 +140,14 @@ export default class Map {
 
     // --- DRAG & ZOOM ---
     startDrag(e) {
-        // Only allow middle mouse button (wheel) for dragging
-        if (e.button !== 1) return; // 1 = middle button
+        // Only allow middle mouse for dragging (wheel)
+        if (e.button !== 1) return;
         this.camera.dragging = true;
         this.camera.lastX = e.clientX;
         this.camera.lastY = e.clientY;
         this.canvas.style.cursor = 'grabbing';
     }
-    
+
     drag(e) {
         if (!this.camera.dragging) return;
         const dx = e.clientX - this.camera.lastX;
@@ -139,32 +156,36 @@ export default class Map {
         this.camera.y += dy;
         this.camera.lastX = e.clientX;
         this.camera.lastY = e.clientY;
-        this.clampCamera(); // keep camera inside map
+        this.clampCamera();
     }
-    
+
     stopDrag() {
         if (this.camera.dragging) {
             this.camera.dragging = false;
             this.canvas.style.cursor = 'grab';
-            this.clampCamera(); // clamp camera when drag ends
+            this.clampCamera();
         }
     }
 
     handleZoom(e) {
         e.preventDefault();
         const zoomFactor = 1.05;
-        const mouse = this.screenToWorld(e.clientX, e.clientY);
+
+        // get world coordinates under mouse before zoom
+        const before = this.screenToWorld(e.clientX, e.clientY);
 
         if (e.deltaY < 0) this.camera.zoom *= zoomFactor;
         else this.camera.zoom /= zoomFactor;
 
-        // Clamp zoom
+        // clamp zoom
         this.camera.zoom = Math.max(this.camera.minZoom, Math.min(this.camera.zoom, this.camera.maxZoom));
 
-        // Zoom around mouse
-        const world = this.screenToWorld(e.clientX, e.clientY);
-        this.camera.x += (mouse.x - world.x) * this.camera.zoom;
-        this.camera.y += (mouse.y - world.y) * this.camera.zoom;
+        // after zoom, compute new world coords under mouse and adjust camera so the same world point stays under cursor
+        const after = this.screenToWorld(e.clientX, e.clientY);
+
+        // camera.x/y are in screen-space translation, so compensate
+        this.camera.x += (after.x - before.x) * this.camera.zoom;
+        this.camera.y += (after.y - before.y) * this.camera.zoom;
 
         this.clampCamera();
     }
@@ -186,7 +207,7 @@ export default class Map {
         const canvasWidth = this.canvas.width;
         const canvasHeight = this.canvas.height;
 
-        // X-axis
+        // center small maps
         if (mapWidth <= canvasWidth) {
             this.camera.x = (canvasWidth - mapWidth) / 2;
         } else {
@@ -195,7 +216,6 @@ export default class Map {
             this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x));
         }
 
-        // Y-axis
         if (mapHeight <= canvasHeight) {
             this.camera.y = (canvasHeight - mapHeight) / 2;
         } else {
@@ -205,10 +225,18 @@ export default class Map {
         }
     }
 
-    // --- CHECK IF COORDINATES ARE INSIDE MAP ---
-    isInsideMap(x, y) {
+    // world coords (not screen)
+    isInsideMap(worldX, worldY) {
         const mapWidth = this.cols * this.tileSize;
         const mapHeight = this.rows * this.tileSize;
-        return x >= 0 && x < mapWidth && y >= 0 && y < mapHeight;
+        return worldX >= 0 && worldX < mapWidth && worldY >= 0 && worldY < mapHeight;
+    }
+
+    // Returns tile bounds in world coordinates (top-left + size)
+    getTileBounds(col, row) {
+        const center = this.tileToWorld(col, row);
+        const x = center.x - this.tileSize / 2;
+        const y = center.y - this.tileSize / 2;
+        return { x, y, width: this.tileSize, height: this.tileSize };
     }
 }

@@ -8,55 +8,119 @@
           {
             "descriptionText": "First proper Adventure for this game, multiple enemy types, massive map, multiple tower types",
             "level count": 50,
-            "map_size": "20x10",
+            "map_size": "15x18",
             "difficulty": "***",
-            "tower types": 8
+            "tower types": 6
           }
         ],
         "tileSize": 60,
         "layout": [
-          "XXXXXXXXXXXXXXXXXXXXXXXX",
-          "XXXXXXXXXXXXOOOOXXOOOOXX",
-          "XXXOOOOOOOOOOXXOOOOXXOXX",
-          "XXXOXXXXXXXXXXXXXXXXXOXX",
-          "XXXOXXXXXXXXXXOOOOOOOOXX",
-          "XXXOXXXXXXXXXXOXXXXXXXXX",
-          "XXXOOOOOOOOXXXOXXXXXXXXX",
-          "XXXXXXXXXXOXXXOOOOOOOOXX",
-          "XXXXXXXXXXOXXXXXXXXXXOXX",
-          "XXXXXXXXXXOXXXXXXXXXXOXX",
-          "XXOOOOOXXXOXXXOOOOOOOOXX",
-          "XXOXXXOXXXOXXXOXXXXXXXXX",
-          "XXOXXXOXXXOXXXOXXXXOOOOO",
-          "OOOXXXOOOOOXXXOXXXXOXXXX",
-          "XXXXXXXXXXXXXXOOOOOOXXXX",
-          "XXXXXXXXXXXXXXXXXXXXXXXX"
+          "XXXXXXXXXXXXXXXXXX",
+          "XXOOOOOOOOOOOOOOXX",
+          "XXOXXXXXXXXXXXXOXX",
+          "XXOXXXXXXXXXXXXOXX",
+          "XXOOOOOXXXXOOOOOXX",
+          "XXXXXXOXXXXOXXXXXX",
+          "XXOOOOOXXXXOOOOOXX",
+          "XXOXXXXXXXXXXXXOXX",
+          "XXOOXXXXXXXXXXOOXX",
+          "XXXOOXXXXXXXXOOXXX",
+          "XXXXOOOXXXXOOOXXXX",
+          "XXXXXXOXXXXOXXXXXX",
+          "OOOXXXOXXXXOXXXOOO",
+          "XXOOOOOXXXXOOOOOXX",
+          "XXXXXXXXXXXXXXXXXX"
         ],
         "towerTypes": {
             "001": {
-              "name": "Basic Tower",
-              "price": 1,
-              "damage": 5,
-              "fireRate": 1000,
+              "name": "Kobold Tower",
+              "price": 5,
+              "damage": 10,
+              "fireRate": 1200,
               "range": 200,
-              "color": "#468bb0",
-              "sellPrice": 1,
+              "color": "#7CFC00",
+              "sellPrice": 3,
               "speed": 2
+            },
+            "002": {
+              "name": "Ogre Tower",
+              "price": 20,
+              "damage": 40,
+              "fireRate": 900,
+              "range": 250,
+              "color": "#556B2F",
+              "sellPrice": 15,
+              "speed": 2.25
+            },
+            "003": {
+              "name": "Dragon Tower",
+              "price": 50,
+              "damage": 70,
+              "fireRate": 750,
+              "range": 300,
+              "color": "#468bb0",
+              "sellPrice": 25,
+              "speed": 3
+            },
+            "004": {
+              "name": "Mage Tower",
+              "price": 75,
+              "damage": 100,
+              "fireRate": 600,
+              "range": 350,
+              "color": "#468bb0",
+              "sellPrice": 50,
+              "speed": 3.25
+            },
+            "005": {
+              "name": "Antient Tower",
+              "price": 100,
+              "damage": 175,
+              "fireRate": 550,
+              "range": 400,
+              "color": "#468bb0",
+              "sellPrice": 40,
+              "speed": 3.75
+            },
+            "006": {
+              "name": "God Tower",
+              "price": 200,
+              "damage": 200,
+              "fireRate": 250,
+              "range": 500,
+              "color": "#468bb0",
+              "sellPrice": 0,
+              "speed": 5
             }
         },
         "levels": [
           {
             "level": 1,
             "enemies": [
-              {"type": "basic", "count": 6, "health": 20, "speed": 1, "coinReward": 2},
-              {"type": "basic", "count": 8, "health": 20, "speed": 1.2, "coinReward": 3}
+              {"type": "basic", "count": 10, "health": 30, "speed": 0.95, "coinReward": 2},
+              {"type": "better", "count": 5, "health": 40, "speed": 1.1, "coinReward": 2}
             ]
           },
           {
             "level": 2,
             "enemies": [
-              {"type": "basic", "count": 10, "health": 28, "speed": 1.2, "coinReward": 1},
-              {"type": "fast", "count": 15, "health": 35, "speed": 2, "coinReward": 2}
+              {"type": "basic", "count": 5, "health": 35, "speed": 1.2, "coinReward": 2},
+              {"type": "fast", "count": 10, "health": 35, "speed": 1.3, "coinReward": 2}
+            ]
+          },
+          {
+            "level": 3,
+            "enemies": [
+              {"type": "basic", "count": 10, "health": 50, "speed": 1.2, "coinReward": 3},
+              {"type": "tank", "count": 4, "health": 100, "speed": 0.95, "coinReward": 3}
+            ]
+          },
+          {
+            "level": 4,
+            "enemies": [
+              {"type": "basic", "count": 15, "health": 150, "speed": 1.2, "coinReward": 3},
+              {"type": "tank", "count": 10, "health": 75, "speed": 1.05, "coinReward": 3},
+              {"type": "speed", "count": 5, "health": 20, "speed": 2.25, "coinReward": 3}
             ]
           }
         ]
