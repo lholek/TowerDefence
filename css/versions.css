@@ -6,6 +6,8 @@
   text-align: left;
   max-width: 500px;
   color: #fff;
+  max-height: 500px;
+  overflow-y: scroll;
 }
 #versionList {
   margin-top: 10px;

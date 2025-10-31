@@ -202,7 +202,7 @@ export default class Game {
     });
 
     const remaining = level.enemies.reduce((s, it) => s + (it._remaining || 0), 0);
-    if (remaining === 0 && this.enemies.length === 0) {
+    if (this.playerLives > 0 && remaining === 0 && this.enemies.length === 0) {
       this.currentLevelIndex++;
       if (this.currentLevelIndex >= this.levelData.levels.length) {
         this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
