@@ -10,3 +10,5 @@ TODOS:
 + Update Graphics etc.
 + Explosive enemies
 + Ability enemies (5s imunity - no demage, Explosive enemies)
+
+"TODO: Improvment - Add abilites under towerTypes in json - for now 1 ability Swamp (Reduces enemy speed by json settings, remains for time set in json, can be placed only on path)",

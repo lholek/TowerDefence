@@ -138,23 +138,24 @@ export default class Game {
 
 
   handleSell(e) {
-    e.preventDefault();
+      e.preventDefault();
 
-    // získat world souřadnice kliknutí (nepoužívat rect zde)
-    const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
+      const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
 
-    // najít tower blízko kliknutého místa (world coords)
-    const tower = this.towers.find(t => Math.hypot(t.x - worldPos.x, t.y - worldPos.y) < 20);
+      // Get the tile under the click
+      const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
 
-    if (tower) {
-      const type = this.towerTypes[tower.typeKey];
-      if (type) this.playerCoins += tower.sellPrice || Math.floor(type.price / 2);
-      this.towers = this.towers.filter(t => t !== tower);
-      this.updateUI();
-      this.logEvent(`Sold tower "${type ? type.name : tower.typeKey}"`);
-    }
+      // Find tower on that tile
+      const tower = this.towers.find(t => t.col === tile.col && t.row === tile.row);
+
+      if (tower) {
+          const type = this.towerTypes[tower.typeKey];
+          this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
+          this.towers = this.towers.filter(t => t !== tower);
+          this.updateUI();
+          this.logEvent(`Sold tower "${type ? type.name : tower.typeKey}"`);
+      }
   }
-
 
   loop(now) {
     const deltaTime = now - (this.lastTime || now);
