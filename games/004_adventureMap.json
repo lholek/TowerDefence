@@ -1,13 +1,13 @@
 {
   "maps": [
       {
-          "name": "Adventure Map (Testing) [10 level finished properly]",
+          "name": "Adventure Map (Testing) [20 level finished properly]",
           "startingCoins": 25,
           "startingLives": 5,
           "description": [
             {
               "descriptionText": "First proper Adventure for this game, multiple enemy types, massive map, multiple tower types",
-              "level count": 50,
+              "level count": 20,
               "map_size": "15x18",
               "difficulty": "***",
               "tower types": 6
@@ -104,47 +104,16 @@
             {"level":8,"enemies":[{"type":"super-tank","count":1,"health":1200,"speed":0.95,"coinReward":30},{"type":"fast","count":12,"health":500,"speed":1.55,"coinReward":4}]},
             {"level":9,"enemies":[{"type":"basic","count":12,"health":600,"speed":1.5,"coinReward":6},{"type":"tank","count":6,"health":1100,"speed":0.85,"coinReward":6}]},
             {"level":10,"enemies":[{"type":"basic","count":12,"health":650,"speed":1.5,"coinReward":6},{"type":"tank","count":8,"health":1300,"speed":0.9,"coinReward":7},{"type":"boss","count":1,"health":5000,"speed":1.00,"coinReward":100}]},
-
-            {"level":11,"enemies":[{"type":"basic","count":15,"health":650,"speed":1.35,"coinReward":5},{"type":"fast","count":8,"health":200,"speed":1.45,"coinReward":5}]},
-            {"level":12,"enemies":[{"type":"basic","count":16,"health":800,"speed":1.35,"coinReward":5},{"type":"tank","count":8,"health":900,"speed":1.1,"coinReward":5}]},
-            {"level":13,"enemies":[{"type":"basic","count":16,"health":1000,"speed":1.4,"coinReward":6},{"type":"fast","count":8,"health":250,"speed":1.5,"coinReward":6}]},
-            {"level":14,"enemies":[{"type":"basic","count":18,"health":1200,"speed":1.4,"coinReward":6},{"type":"tank","count":8,"health":1400,"speed":1.15,"coinReward":6}]},
-            {"level":15,"enemies":[{"type":"basic","count":18,"health":1500,"speed":1.45,"coinReward":6},{"type":"fast","count":10,"health":400,"speed":1.55,"coinReward":6}]},
-            {"level":16,"enemies":[{"type":"basic","count":20,"health":2000,"speed":1.45,"coinReward":7},{"type":"tank","count":10,"health":2500,"speed":1.2,"coinReward":7}]},
-            {"level":17,"enemies":[{"type":"basic","count":20,"health":2500,"speed":1.5,"coinReward":7},{"type":"fast","count":10,"health":500,"speed":1.6,"coinReward":7}]},
-            {"level":18,"enemies":[{"type":"basic","count":22,"health":3000,"speed":1.5,"coinReward":7},{"type":"tank","count":10,"health":3500,"speed":1.25,"coinReward":7}]},
-            {"level":19,"enemies":[{"type":"basic","count":22,"health":4000,"speed":1.55,"coinReward":8},{"type":"fast","count":12,"health":600,"speed":1.65,"coinReward":8}]},
-            {"level":20,"enemies":[{"type":"basic","count":24,"health":5000,"speed":1.55,"coinReward":8},{"type":"tank","count":12,"health":6000,"speed":1.3,"coinReward":8}]},
-            {"level":21,"enemies":[{"type":"basic","count":24,"health":6000,"speed":1.6,"coinReward":8},{"type":"fast","count":12,"health":800,"speed":1.7,"coinReward":8}]},
-            {"level":22,"enemies":[{"type":"basic","count":25,"health":7500,"speed":1.6,"coinReward":9},{"type":"tank","count":12,"health":9000,"speed":1.35,"coinReward":9}]},
-            {"level":23,"enemies":[{"type":"basic","count":25,"health":9000,"speed":1.65,"coinReward":9},{"type":"fast","count":14,"health":1000,"speed":1.75,"coinReward":9}]},
-            {"level":24,"enemies":[{"type":"basic","count":26,"health":11000,"speed":1.65,"coinReward":9},{"type":"tank","count":14,"health":13000,"speed":1.4,"coinReward":9}]},
-            {"level":25,"enemies":[{"type":"basic","count":26,"health":13000,"speed":1.7,"coinReward":10},{"type":"fast","count":14,"health":1500,"speed":1.8,"coinReward":10}]},
-            {"level":26,"enemies":[{"type":"basic","count":28,"health":15000,"speed":1.7,"coinReward":10},{"type":"tank","count":14,"health":18000,"speed":1.45,"coinReward":10}]},
-            {"level":27,"enemies":[{"type":"basic","count":28,"health":18000,"speed":1.75,"coinReward":10},{"type":"fast","count":15,"health":2000,"speed":1.85,"coinReward":10}]},
-            {"level":28,"enemies":[{"type":"basic","count":28,"health":21000,"speed":1.75,"coinReward":11},{"type":"tank","count":16,"health":25000,"speed":1.5,"coinReward":11}]},
-            {"level":29,"enemies":[{"type":"basic","count":30,"health":25000,"speed":1.8,"coinReward":11},{"type":"fast","count":16,"health":2500,"speed":1.9,"coinReward":11}]},
-            {"level":30,"enemies":[{"type":"basic","count":30,"health":30000,"speed":1.8,"coinReward":11},{"type":"tank","count":16,"health":35000,"speed":1.55,"coinReward":11}]},
-            {"level":31,"enemies":[{"type":"basic","count":30,"health":36000,"speed":1.85,"coinReward":12},{"type":"fast","count":18,"health":3000,"speed":2.0,"coinReward":12}]},
-            {"level":32,"enemies":[{"type":"basic","count":30,"health":43000,"speed":1.85,"coinReward":12},{"type":"tank","count":18,"health":50000,"speed":1.6,"coinReward":12}]},
-            {"level":33,"enemies":[{"type":"basic","count":30,"health":50000,"speed":1.9,"coinReward":13},{"type":"fast","count":18,"health":3500,"speed":2.05,"coinReward":13}]},
-            {"level":34,"enemies":[{"type":"basic","count":30,"health":60000,"speed":1.9,"coinReward":13},{"type":"tank","count":20,"health":65000,"speed":1.65,"coinReward":13}]},
-            {"level":35,"enemies":[{"type":"basic","count":30,"health":70000,"speed":1.95,"coinReward":13},{"type":"fast","count":20,"health":4000,"speed":2.1,"coinReward":13}]},
-            {"level":36,"enemies":[{"type":"basic","count":30,"health":80000,"speed":1.95,"coinReward":14},{"type":"tank","count":20,"health":85000,"speed":1.7,"coinReward":14}]},
-            {"level":37,"enemies":[{"type":"basic","count":30,"health":90000,"speed":2.0,"coinReward":14},{"type":"fast","count":20,"health":4500,"speed":2.15,"coinReward":14}]},
-            {"level":38,"enemies":[{"type":"basic","count":30,"health":100000,"speed":2.0,"coinReward":15},{"type":"tank","count":20,"health":120000,"speed":1.75,"coinReward":15}]},
-            {"level":39,"enemies":[{"type":"basic","count":30,"health":120000,"speed":2.05,"coinReward":15},{"type":"fast","count":20,"health":5000,"speed":2.2,"coinReward":15}]},
-            {"level":40,"enemies":[{"type":"basic","count":30,"health":140000,"speed":2.05,"coinReward":16},{"type":"tank","count":20,"health":150000,"speed":1.8,"coinReward":16}]},
-            {"level":41,"enemies":[{"type":"basic","count":30,"health":160000,"speed":2.1,"coinReward":16},{"type":"fast","count":20,"health":6000,"speed":2.25,"coinReward":16}]},
-            {"level":42,"enemies":[{"type":"basic","count":30,"health":180000,"speed":2.1,"coinReward":16},{"type":"tank","count":20,"health":200000,"speed":1.85,"coinReward":16}]},
-            {"level":43,"enemies":[{"type":"basic","count":30,"health":200000,"speed":2.15,"coinReward":17},{"type":"fast","count":20,"health":6500,"speed":2.3,"coinReward":17}]},
-            {"level":44,"enemies":[{"type":"basic","count":30,"health":230000,"speed":2.15,"coinReward":17},{"type":"tank","count":20,"health":250000,"speed":1.9,"coinReward":17}]},
-            {"level":45,"enemies":[{"type":"basic","count":30,"health":260000,"speed":2.2,"coinReward":18},{"type":"fast","count":20,"health":7000,"speed":2.35,"coinReward":18}]},
-            {"level":46,"enemies":[{"type":"basic","count":30,"health":300000,"speed":2.2,"coinReward":18},{"type":"tank","count":20,"health":350000,"speed":1.95,"coinReward":18}]},
-            {"level":47,"enemies":[{"type":"basic","count":30,"health":400000,"speed":2.25,"coinReward":19},{"type":"fast","count":20,"health":8000,"speed":2.4,"coinReward":19}]},
-            {"level":48,"enemies":[{"type":"basic","count":30,"health":500000,"speed":2.25,"coinReward":20},{"type":"tank","count":20,"health":600000,"speed":2.0,"coinReward":20}]},
-            {"level":49,"enemies":[{"type":"basic","count":30,"health":750000,"speed":2.3,"coinReward":25},{"type":"fast","count":20,"health":10000,"speed":2.5,"coinReward":25}]},
-            {"level":50,"enemies":[{"type":"basic","count":30,"health":1000000,"speed":2.35,"coinReward":30},{"type":"tank","count":20,"health":1200000,"speed":2.0,"coinReward":30}]}
+            {"level":11,"enemies":[{"type":"basic","count":10,"health":1000,"speed":1.35,"coinReward":7},{"type":"fast","count":10,"health":750,"speed":1.85,"coinReward":7}]},
+            {"level":12,"enemies":[{"type":"basic","count":10,"health":1250,"speed":1.4,"coinReward":8},{"type":"tank","count":5,"health":3000,"speed":0.8,"coinReward":8}]},
+            {"level":13,"enemies":[{"type":"fast","count":15,"health":1500,"speed":1.85,"coinReward":8},{"type":"tank","count":10,"health":3500,"speed":0.9,"coinReward":8}]},
+            {"level":14,"enemies":[{"type":"basic","count":15,"health":1500,"speed":1.4,"coinReward":9},{"type":"tank","count":10,"health":4000,"speed":0.95,"coinReward":9}]},
+            {"level":15,"enemies":[{"type":"basic","count":5,"health":2000,"speed":1.45,"coinReward":10},{"type":"fast","count":5,"health":1750,"speed":1.9,"coinReward":10},{"type":"tank","count":5,"health":4500,"speed":0.95,"coinReward":10},{"type":"boss","count":1,"health":10000,"speed":1.00,"coinReward":200}]},
+            {"level":16,"enemies":[{"type":"basic","count":10,"health":3500,"speed":1.45,"coinReward":10},{"type":"fast","count":10,"health":2500,"speed":2.25,"coinReward":10}]},
+            {"level":17,"enemies":[{"type":"fast","count":10,"health":3000,"speed":2.3,"coinReward":10},{"type":"tank","count":10,"health":7500,"speed":1,"coinReward":10}]},
+            {"level":18,"enemies":[{"type":"basic","count":10,"health":4500,"speed":1.5,"coinReward":11},{"type":"super-tank","count":5,"health":8000,"speed":1.25,"coinReward":11}]},
+            {"level":19,"enemies":[{"type":"basic","count":10,"health":5000,"speed":1.5,"coinReward":12},{"type":"fast","count":10,"health":3500,"speed":2.30,"coinReward":12}]},
+            {"level":20,"enemies":[{"type":"basic","count":10,"health":5000,"speed":1.5,"coinReward":13},{"type":"fast","count":2,"health":3500,"speed":2.30,"coinReward":13},{"type":"tank","count":5,"health":10000,"speed":1.00,"coinReward":13},{"type":"boss","count":1,"health":75000,"speed":1.00,"coinReward":200}]}
           ]
     }
   ]
