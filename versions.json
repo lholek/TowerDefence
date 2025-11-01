@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "Alpha 0.0.8",
+      "changes": [
+        "TODO: Improve title/subtitle (z-index, and autotyping at the start)",
+        "TODO: Improve UI",
+        "TODO: Improve CSS"
+        ]
+    }, 
+    {
       "version": "Alpha 0.0.7",
       "changes": [
         "Improvment - Set - dynamic starting Lives and Coins different for each game",
@@ -9,7 +17,7 @@
         "Improvment - Dynamic + live prices, so the game is harder",        
         "Improvment - Music Player - Added more backround music",        
         "Improvment - Music Player - Player can change time of current music",        
-        "Improvment-  Add 4th Map 'The Main Game'",
+        "Improvment -  Add 4th Map 'The Main Game'",
         "Fixed bug - Move map only when pressing wheel not right/left click",
         "Fixed bug - Player can not leave map to far whit camera",
         "Fixed bug - set max/min zoom",

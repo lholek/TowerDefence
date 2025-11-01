@@ -24,11 +24,15 @@ h3 {
     text-align: center;
     color: #f0c674;
     margin-top: 20px;
+    position: relative;
+    z-index: 101;
 }
 .subtitle {
     text-align: center;
     color: #ccc;
     margin-top: -10px;
+    position: relative;
+    z-index: 101;
 }
 
 /* main container flex */

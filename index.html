@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>The CZSrna's Tower Defence – Alpha 0.0.7</title>
+  <title>The CZSrna's Tower Defence – Alpha 0.0.8</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/versions.css" />
   <link rel="stylesheet" href="css/music.css" />
+  <link rel="stylesheet" href="css/helpers.css" />
 </head>
 <body>
   <h1 class="title">The CZSrna's Tower Defence</h1>
-  <h3 class="subtitle">Alpha 0.0.7</h3>
+  <h3 class="subtitle">Alpha 0.0.8</h3>
 
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
     <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
       <button id="startButton" class="btn big">Start Game</button>
-      
+
+      <!--  Version button -->
+      <button class="versionButton btn">Version History</button>
+
       <h2 class="title">Choose map</h2>
       <!-- Styled select on its own row -->
       <select id="mapSelect" class="styled-select">
@@ -49,8 +53,10 @@
           <div>Left click - Build Tower</div>
           <div>Right click - Sell Tower</div>
         </div>
-                <!-- NEW: Version button -->
-        <button id="versionButton" class="btn">Version History</button>
+
+        <!--  Version button -->
+        <button class="versionButton btn">Version History</button>
+
         <!-- Music Player -->
         <div id="musicBox" class="box">
           <h3>Music Player</h3>
@@ -120,7 +126,7 @@
     <!-- Version History Popup -->
     <div id="versionPopup" class="overlay-full" style="display:none;">
       <div id="versionPopupContent">
-        <h2>Version History</h2>
+        <h2 class="text-center text-center cl-primary">Version History</h2>
         <div id="versionList"></div>
         <button id="closeVersionPopup" class="btn">Close</button>
       </div>
