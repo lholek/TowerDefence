@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/versions.css" />
   <link rel="stylesheet" href="css/music.css" />
   <link rel="stylesheet" href="css/helpers.css" />
+  <link rel="stylesheet" href="css/ui.css" />
 </head>
 <body>
   <h1 class="title">The CZSrna's Tower Defence</h1>
@@ -20,7 +21,7 @@
       <!--  Version button -->
       <button class="versionButton btn">Version History</button>
 
-      <h2 class="title">Choose map</h2>
+      <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
       <select id="mapSelect" class="styled-select">
         <option value="./games/001_basicGame.json">Basic</option>
@@ -49,7 +50,8 @@
           <h3>Controls</h3>
           <div>P - Pause game</div>
           <div>Wheel (Press) - Move around the map</div>
-          <div>Slect the tower from cards</div>
+          <div>Wheel - Zoom in / Zoom out</div>
+          <div>Select the tower from cards</div>
           <div>Left click - Build Tower</div>
           <div>Right click - Sell Tower</div>
         </div>
@@ -98,6 +100,19 @@
         <div id="livesText">Lives: 10</div>
         <button id="pauseButton" style="display: none;">Pause (P)</button>
         <div id="coinsText">Coins: 10</div>
+        <button id="returnButton" class="return-btn bg-gold cl-black">Return to Main Menu</button>
+      </div>
+
+      <!-- Return popup -->
+      <div id="returnPopup" class="return-popup">
+        <div class="return-content">
+          <h3>Leave the Battle?</h3>
+          <p>Returning to the main menu will erase your current progress. Do you really want to go back?</p>
+          <div class="return-buttons">
+            <button id="confirmReturn" class="bg-gold cl-black">Yes, return</button>
+            <button id="cancelReturn">Cancel</button>
+          </div>
+        </div>
       </div>
 
       <!-- Progress bar -->
@@ -134,5 +149,6 @@
 
   <script type="module" src="js/game/main.js"></script>
   <script type="module" src="js/versions.js"></script>
+  <script type="module" src="js/game/UI.js"></script>
 </body>
 </html>

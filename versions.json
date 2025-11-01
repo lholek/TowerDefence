@@ -3,6 +3,9 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
+        "Improvment - added version history to main menu",
+        "Improvment - you can use wheel on towers",
+        "Improvment - added 'Return to Main Menu' button",
         "TODO: Improve title/subtitle (z-index, and autotyping at the start)",
         "TODO: Improve UI",
         "TODO: Improve CSS"

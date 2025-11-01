@@ -89,4 +89,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           infoDiv.textContent = "Failed to load map info.";
         }
     });
+
+    const shopWrapper = document.getElementById('shopWrapper');
+
+    shopWrapper.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        shopWrapper.scrollLeft += e.deltaY;
+      }
+    });
 });

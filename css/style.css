@@ -169,8 +169,23 @@ canvas {
     width: calc(4 * 250px + 3 * 12px); /* 4 items visible */
     overflow-x: auto;
     overflow-y: hidden;
+    scroll-behavior: smooth;
     margin: 0 auto;
     padding: 0; /* no extra padding */
+    white-space: nowrap; /* ensures items stay on one line if not using flex */
+}
+
+.shop-wrapper::-webkit-scrollbar {
+  height: 8px; /* show small horizontal scrollbar */
+}
+
+.shop-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.shop-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 /* flex row of shop items */
@@ -282,6 +297,8 @@ canvas {
   cursor: pointer;
   min-width: 180px;
   transition: 0.2s;
+  min-width: 400px;
+max-width: 400px;
 }
 .styled-select:hover {
   border-color: gold;
