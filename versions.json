@@ -5,6 +5,8 @@
       "changes": [
         "Improvment - Set - dynamic starting Lives and Coins different for each game",
         "Improvment - Tiles are now showing color where you can built or not",
+        "Improvment - Make the Tower row scrollable so player can choose from more tower",        
+        "Improvment - Dynamic +live prices, so the game is harder",        
         "Fixed bug - Move map only when pressing wheel not right/left click",
         "Fixed bug - Player can not leave map to far whit camera",
         "Fixed bug - set max/min zoom",
@@ -13,7 +15,6 @@
         "Fixed bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
         "Fixed bug - When player won, when last enemy removed his live rather then lose",
         "Fixed bug - Make version div scrollable",
-        "Improvment - Make the Tower row scrollable so player can choose from more tower",        
         "TODO: Add 4th Map 'The Main Game'(25 levels, 10 lives, 25 coins, 5 tower types, different lives)"
         ]
     }, 
