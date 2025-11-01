@@ -1,7 +1,7 @@
 {
   "maps": [
       {
-          "name": "Adventure Map (Testing) [20 level finished properly]",
+          "name": "Adventure Map",
           "startingCoins": 25,
           "startingLives": 5,
           "description": [
