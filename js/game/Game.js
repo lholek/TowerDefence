@@ -63,7 +63,6 @@ export default class Game {
     this.playerLives = this.levelData.startingLives ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
     this.loadMap(this.levelData.layout);
-    console.log(this.map.path)
     this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
     this.createTowerShop();
     this.setLevel(this.currentLevelIndex);
