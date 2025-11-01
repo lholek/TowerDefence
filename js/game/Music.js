@@ -13,9 +13,17 @@ export class MusicManager {
         this.tracks = [
             './assets/sounds/background/medival_001.mp3',
             './assets/sounds/background/medival_002.mp3',
-            './assets/sounds/background/medival_003.mp3'
+            './assets/sounds/background/medival_003.mp3',
+            './assets/sounds/background/medival_004.mp3',
+            './assets/sounds/background/medival_005.mp3',
+            './assets/sounds/background/medival_006.mp3',
+            './assets/sounds/background/medival_007.mp3',
+            './assets/sounds/background/medival_008.mp3'
         ];
-        this.trackNames = ['medival_001', 'medival_002', 'medival_003'];
+        this.trackNames = [
+            'medival_001', 'medival_002', 'medival_003', 'medival_004',
+            'medival_005', 'medival_006', 'medival_007', 'medival_008'
+        ];
 
         // Load settings
         this.currentIndex = parseInt(localStorage.getItem('musicIndex')) || 0;
@@ -24,7 +32,7 @@ export class MusicManager {
         // Audio
         this.audio = new Audio();
         this.audio.src = this.tracks[this.currentIndex];
-        this.audio.loop = true;  // loop current track
+        this.audio.loop = true; // loop current track
         this.audio.volume = this.volume;
 
         this.updateTitle();
@@ -35,9 +43,11 @@ export class MusicManager {
         this.prevBtn.addEventListener('click', () => this.prevTrack());
         this.nextBtn.addEventListener('click', () => this.nextTrack());
         this.volumeRange.addEventListener('input', () => this.changeVolume());
-
         this.audio.addEventListener('timeupdate', () => this.updateProgress());
 
+        // ✅ NEW: allow clicking the progress bar to seek
+        const progressContainer = this.progressBar.parentElement;
+        progressContainer.addEventListener('click', (e) => this.seekMusic(e));
     }
 
     playRandomTrack() {
@@ -51,11 +61,8 @@ export class MusicManager {
     }
 
     toggleMusic() {
-        if (this.audio.paused) {
-            this.audio.play();
-        } else {
-            this.audio.pause();
-        }
+        if (this.audio.paused) this.audio.play();
+        else this.audio.pause();
         this.updateToggleButton();
     }
 
@@ -103,7 +110,20 @@ export class MusicManager {
             const sec = Math.floor(s % 60).toString().padStart(2, '0');
             return `${m}:${sec}`;
         };
-
         this.timeEl.textContent = `${formatTime(this.audio.currentTime)} / ${formatTime(this.audio.duration)}`;
+    }
+
+    // ✅ NEW: Seek function
+    seekMusic(e) {
+        if (!this.audio.duration) return;
+
+        const container = e.currentTarget;
+        const rect = container.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+
+        const percent = clickX / width;
+        this.audio.currentTime = percent * this.audio.duration;
+        this.updateProgress();
     }
 }
