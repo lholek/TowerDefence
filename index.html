@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="css/helpers.css" />
   <link rel="stylesheet" href="css/ui.css" />
 </head>
-<body>
+<body id="gameContainer">
   <h1 class="title">The CZSrna's Tower Defence</h1>
-  <h3 class="subtitle">Alpha 0.0.8</h3>
+  <h3 class="subtitle-bottom-left">Alpha 0.0.8</h3>
 
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
@@ -56,10 +56,8 @@
           <div>Left click - Build Tower</div>
           <div>Right click - Sell Tower</div>
         </div>
-
         <!--  Version button -->
         <button class="versionButton btn">Version History</button>
-
         <!-- Music Player -->
         <div id="musicBox" class="box">
           <h3>Music Player</h3>
@@ -110,8 +108,8 @@
           <h3>Leave the Battle?</h3>
           <p>Returning to the main menu will erase your current progress. Do you really want to go back?</p>
           <div class="return-buttons">
-            <button id="confirmReturn" class="bg-gold cl-black">Yes, return</button>
-            <button id="cancelReturn">Cancel</button>
+            <button id="confirmReturn" class="btn bg-gold cl-black">Yes, return</button>
+            <button id="cancelReturn" class="btn">Cancel</button>
           </div>
         </div>
       </div>

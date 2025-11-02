@@ -24,8 +24,9 @@
 }
 
 .btn-music {
-  background: #444;
-  color: #fff;
+  background: gold;
+  font-weight: bold;
+  color: #111;
   border: 1px solid #222;
   padding: 4px 10px;
   border-radius: 6px;
@@ -34,7 +35,8 @@
 }
 
 .btn-music:hover {
-  background: #666;
+  background: gold;
+  color: #111;
 }
 
 .music-progress {

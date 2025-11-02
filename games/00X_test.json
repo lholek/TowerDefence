@@ -3,7 +3,7 @@
     {
       "name": "Test Map",
       "startingCoins": 10000000,
-      "startingLives": 1,
+      "startingLives": 5,
       "description": [
         {
           "descriptionText": "Only for test",
@@ -124,7 +124,7 @@
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 1, "health": 12000000, "speed": 5, "coinReward": 2}
+            {"type": "basic", "count": 10000, "health": 12000000, "speed": 5, "coinReward": 2}
           ]
         }
       ]
