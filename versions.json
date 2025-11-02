@@ -6,7 +6,8 @@
         "Improvment - added version history to main menu",
         "Improvment - you can use wheel on towers",
         "Improvment - added 'Return to Main Menu' button",
-        "TODO: Improve title/subtitle (z-index, and autotyping at the start)",
+        "Improvment - added '⭐' for rating difficulty of the map",
+        "Fixed bug - fixed texts in versions",
         "TODO: Improve UI",
         "TODO: Improve CSS"
         ]
@@ -20,7 +21,7 @@
         "Improvment - Dynamic + live prices, so the game is harder",        
         "Improvment - Music Player - Added more backround music",        
         "Improvment - Music Player - Player can change time of current music",        
-        "Improvment -  Add 4th Map 'The Main Game'",
+        "Improvment - Added 4th Map 'The Main Game'",
         "Fixed bug - Move map only when pressing wheel not right/left click",
         "Fixed bug - Player can not leave map to far whit camera",
         "Fixed bug - set max/min zoom",
