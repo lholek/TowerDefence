@@ -7,8 +7,10 @@
         "Improvment - you can use wheel on towers",
         "Improvment - added 'Return to Main Menu' button",
         "Improvment - added '⭐' for rating difficulty of the map",
+        "TODO: Improvment - added a minimap where choosing a map so player can see how the game will look",
         "Fixed bug - fixed texts in versions",
         "Fixed bug - when pause didnt tirgger sometimes",
+        "Fixed bug - Fix buidling on right tile, also it howers on bad tile",
         "UI - Improved UI",
         "UI - Improved CSS"
         ]

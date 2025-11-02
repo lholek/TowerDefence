@@ -171,22 +171,27 @@ export default class Map {
         e.preventDefault();
         const zoomFactor = 1.05;
 
-        // get world coordinates under mouse before zoom
-        const before = this.screenToWorld(e.clientX, e.clientY);
+        // Client coordinates of the mouse
+        const screenX = e.clientX;
+        const screenY = e.clientY;
 
+        // World coords under mouse *before* zoom
+        const before = this.screenToWorld(screenX, screenY);
+
+        // Update zoom
         if (e.deltaY < 0) this.camera.zoom *= zoomFactor;
         else this.camera.zoom /= zoomFactor;
 
         // clamp zoom
         this.camera.zoom = Math.max(this.camera.minZoom, Math.min(this.camera.zoom, this.camera.maxZoom));
 
-        // after zoom, compute new world coords under mouse and adjust camera so the same world point stays under cursor
-        const after = this.screenToWorld(e.clientX, e.clientY);
+        // After changing zoom, set camera.x/y so the same world point stays under the cursor
+        const rect = this.canvas.getBoundingClientRect();
+        // camera.x is a screen-space translation (in client pixels)
+        this.camera.x = screenX - rect.left - before.x * this.camera.zoom;
+        this.camera.y = screenY - rect.top - before.y * this.camera.zoom;
 
-        // camera.x/y are in screen-space translation, so compensate
-        this.camera.x += (after.x - before.x) * this.camera.zoom;
-        this.camera.y += (after.y - before.y) * this.camera.zoom;
-
+        // Enforce bounds
         this.clampCamera();
     }
 
@@ -202,12 +207,14 @@ export default class Map {
 
     // --- CAMERA BOUNDS ---
     clampCamera() {
+        const rect = this.canvas.getBoundingClientRect();
+        const canvasWidth = rect.width;
+        const canvasHeight = rect.height;
+
         const mapWidth = this.cols * this.tileSize * this.camera.zoom;
         const mapHeight = this.rows * this.tileSize * this.camera.zoom;
-        const canvasWidth = this.canvas.width;
-        const canvasHeight = this.canvas.height;
 
-        // center small maps
+        // If map narrower than canvas — center it
         if (mapWidth <= canvasWidth) {
             this.camera.x = (canvasWidth - mapWidth) / 2;
         } else {
@@ -216,6 +223,7 @@ export default class Map {
             this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x));
         }
 
+        // Y-axis
         if (mapHeight <= canvasHeight) {
             this.camera.y = (canvasHeight - mapHeight) / 2;
         } else {
@@ -239,4 +247,20 @@ export default class Map {
         const y = center.y - this.tileSize / 2;
         return { x, y, width: this.tileSize, height: this.tileSize };
     }
+
+    // Make canvas.width/height match CSS/displayed size (client pixels).
+    // Keeps drawing and client mouse coords in the same coordinate space.
+    syncSize() {
+        const rect = this.canvas.getBoundingClientRect();
+        const DPR = window.devicePixelRatio || 1;
+
+        // Set actual backing store size with DPR for sharpness
+        this.canvas.width = Math.round(rect.width * DPR);
+        this.canvas.height = Math.round(rect.height * DPR);
+
+        // Make sure the canvas style remains the same (do not overwrite CSS)
+        // Scale the context so drawing calls are in CSS pixels coordinates
+        this.ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
 }

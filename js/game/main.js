@@ -4,8 +4,8 @@ import { MusicManager } from './Music.js';
 document.addEventListener('DOMContentLoaded', async () => {
     const musicManager = new MusicManager();
     const canvas = document.getElementById('gameCanvas');
-    canvas.width = 1000;
-    canvas.height = 600;
+    canvas.style.width = '1000px';
+    canvas.style.height = '600px';
 
     // Read map selection
     const mapSelect = document.getElementById('mapSelect');
