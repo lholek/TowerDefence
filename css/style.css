@@ -45,10 +45,19 @@ h3 {
 }
 .subtitle {
     text-align: center;
-    color: #ccc;
-    margin-top: -10px;
+    margin: 3rem;
+    margin-top: -17px;
+    margin-bottom: 17px;
     position: relative;
-    z-index: 101;
+    z-index: 1;
+    background: gold;
+    border: none;
+    border-radius: 6px;
+    padding: 0.25rem;
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s
 }
 
 /* main container flex */
