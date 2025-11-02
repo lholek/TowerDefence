@@ -15,3 +15,26 @@ TODOS:
 
 0.0.8:
 + zpomalení na mapě (bažiny)
+
+Ability like:
+        "abilities": [
+          {
+            "id": "meteor_strike",
+            "name": "Meteor Strike",
+            "description": "Calls down a powerful meteor strike on selected tiles, dealing massive area damage to enemies.",
+            "type": "targeted", 
+            "selectionCount": 3, 
+            "radius": 120, 
+            "damage": 150, 
+            "cooldown": 45000, 
+            "effectDuration": 1000,
+            "color": "#FF4500",
+            "impactEffect": "explosion_large",
+            "soundEffect": "meteor_impact",
+            "ui": {
+              "icon": "🔥",
+              "hotkey": "M"
+            }
+          }
+        ],
+        

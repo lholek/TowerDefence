@@ -8,6 +8,7 @@
         "Improvment - added 'Return to Main Menu' button",
         "Improvment - added '⭐' for rating difficulty of the map",
         "Fixed bug - fixed texts in versions",
+        "Fixed bug - when pause didnt tirgger sometimes",
         "TODO: Improve UI",
         "TODO: Improve CSS"
         ]
