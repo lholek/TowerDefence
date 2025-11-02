@@ -9,7 +9,8 @@
           "descriptionText": "Only for test",
           "level count": 1,
           "difficulty": "⭐",
-          "tower types": 1
+          "tower types": 1,
+          "abilites": "-"
         }
       ],
       "tileSize": 60,

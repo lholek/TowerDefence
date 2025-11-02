@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
               <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
               <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
+              <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
             `;
             renderMinimap(map);
           } else {

@@ -10,7 +10,8 @@
           "level count": 8,
           "map_size": "10x7",
           "difficulty": "⭐",
-          "tower types": 4
+          "tower types": 4,
+          "abilites": "-"
         }
       ],
       "tileSize": 60,
