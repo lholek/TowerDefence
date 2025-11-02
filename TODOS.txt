@@ -3,7 +3,7 @@ TODOS:
 + Better UI
 + UI music
 + More paths
-
++ Editory
 + Teleports
 + Wave delay
 + Explosive enemies
@@ -11,26 +11,8 @@ TODOS:
 
 "TODO: Improvment - Add abilites under towerTypes in json - for now 1 ability Swamp (Reduces enemy speed by json settings, remains for time set in json, can be placed only on path)",
 
++ heroes like ablity 
+on the start you will choose hero whit special ablity
+
 0.0.8:
 + zpomalení na mapě (bažiny)
-
-Ability like:
-"abilities": [
-  {
-    "id": "lava_floor",
-    "name": "Lava floor",
-    "description": "Player puts.",
-    "type": "field", 
-    "selectionCount": 3, 
-    "damage": 50, 
-    "damage_every": 50, 
-    "cooldown": 30000, 
-    "effectDuration": 15000,
-    "color": "#FF4500",
-    "ui": {
-      "icon": "🔥",
-    }
-  }
-],
-🏰
-🌋 

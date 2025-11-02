@@ -34,7 +34,7 @@
             "name": "Lava Floor",
             "description": "A powerful magma from the ground to hurt your enemies",
             "type": "targeted", 
-            "selectionCount": 3, 
+            "selectionCount": 10, 
             "damage": 50, 
             "_comment": "cooldown - 45000",
             "cooldown": 0,
@@ -68,7 +68,7 @@
             }
         },
         "levels": [
-          {"level":1,"enemies":[{"type":"basic","count":70,"health":500,"speed":0.95,"coinReward":3}]},
+          {"level":1,"enemies":[{"type":"basic","count":7000,"health":500,"speed":0.95,"coinReward":3}]},
           {"level":2,"enemies":[{"type":"basic","count":7,"health":60,"speed":1.0,"coinReward":2}]},
           {"level":3,"enemies":[{"type":"basic","count":7,"health":70,"speed":1.05,"coinReward":2}]},
           {"level":4,"enemies":[{"type":"basic","count":8,"health":100,"speed":1.1,"coinReward":3}]},
