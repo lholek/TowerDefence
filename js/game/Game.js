@@ -48,9 +48,9 @@ export default class Game {
     this.canvas.addEventListener('mouseleave', () => this.hoveredTile = null);
 
     //document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
-    document.addEventListener('keydown', e => {
+    /*document.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'p') this.togglePause();
-    });
+    });*/
   }
 
   async loadGameData(file) {

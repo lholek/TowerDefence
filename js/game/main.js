@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.game = game; // expose for debug
         
             // Attach pause listener AFTER game is created
-            document.addEventListener('keydown', (e) => {
+            /*document.addEventListener('keydown', (e) => {
                 if (e.key.toLowerCase() === 'p') {
                     e.preventDefault();
                     game.togglePause();
                 }
-            });
+            });*/
         
             game.start();
         } catch (err) {
