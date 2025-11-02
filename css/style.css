@@ -364,8 +364,8 @@ max-width: 400px;
 
 /* Description */
 .mapInfo {
-    min-width: 400px;
-    max-width: 400px;
+    min-width: 500px;
+    max-width: 500px;
     background: #222;
     padding: 15px;
     margin: 0px;
@@ -376,6 +376,7 @@ max-width: 400px;
     align-items: stretch;
     border-radius: 8px;
 }
+
 
 .mapInfo p {
     margin: 0 !important;
