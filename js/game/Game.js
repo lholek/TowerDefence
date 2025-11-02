@@ -2,6 +2,9 @@ import Map from './Map.js';
 import Enemy from './Enemy.js';
 import Tower from './Tower.js';
 
+// add near other imports
+import AbilityManager from './abilities/AbilityManager.js';
+
 export default class Game {
   constructor(canvas) {
     this.canvas = canvas;
@@ -29,6 +32,9 @@ export default class Game {
 
     this.selectedTowerType = null;
     this.towerTypes = {};
+
+    // Abilities
+    this.abilityManager = new AbilityManager(this);
 
     this.levelText = document.getElementById('levelText');
     this.livesText = document.getElementById('livesText');
@@ -63,8 +69,13 @@ export default class Game {
     this.playerLives = this.levelData.startingLives ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
     this.loadMap(this.levelData.layout);
+
+    // load abilities array if present
+    this.abilityManager.loadFromConfigs(this.levelData.abilities || []);
+
     this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
     this.createTowerShop();
+    this.createAbilityBar();
     this.setLevel(this.currentLevelIndex);
     this.updateUI();
 }
@@ -107,6 +118,12 @@ export default class Game {
 
     // získat cílový tile (getTileFromCoords očekává world coords)
     const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
+
+    // do not build towers while placing an ability
+    if (this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
+      // forward click to ability manager instead of building
+      if (this.abilityManager.handleCanvasClick(e.clientX, e.clientY)) return;
+    }
 
     // zkontrolovat, jestli se dá stavět
     if (!this.map.isBuildableTile(tile.col, tile.row)) return;
@@ -184,6 +201,7 @@ export default class Game {
 
     this.enemies.forEach(e => e.update(deltaTime));
     this.towers.forEach(t => t.update(deltaTime, this.enemies));
+    this.abilityManager.update(deltaTime);
 
     this.enemies = this.enemies.filter(e => {
       if (e.health <= 0) {
@@ -309,6 +327,36 @@ export default class Game {
     });
   }
 
+  // simple ability bar creation (call after abilityManager.loadFromConfigs)
+  createAbilityBar() {
+    const container = document.getElementById('abilityBar');
+    if (!container) return;
+    container.innerHTML = '';
+    for (const a of this.abilityManager.getAvailable()) {
+      const btn = document.createElement('button');
+      btn.className = 'ability-btn';
+      btn.textContent = a.ui?.icon ? `${a.ui.icon} ${a.name}` : a.name;
+      btn.title = a.description;
+      btn.addEventListener('click', () => {
+        // toggle selection
+        if (this.abilityManager.activeAbility === a && a.isPlacing) {
+          this.abilityManager.cancelActivePlacement();
+          btn.classList.remove('placing');
+        } else {
+          if (this.abilityManager.selectAbilityById(a.id)) {
+            // visual mark
+            document.querySelectorAll('.ability-btn').forEach(b => b.classList.remove('placing'));
+            btn.classList.add('placing');
+          } else {
+            // not available
+            this.logEvent(`${a.name} not ready`);
+          }
+        }
+      });
+      container.appendChild(btn);
+    }
+  }
+
   render() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -349,6 +397,7 @@ export default class Game {
       // Draw towers and enemies
       this.towers.forEach(t => t.render(this.ctx));
       this.enemies.forEach(e => e.render(this.ctx));
+      this.abilityManager.render(this.ctx);
   }
 
   logEvent(text) {

@@ -27,3 +27,23 @@ confirmReturn.addEventListener('click', () => {
     window.game.resetGameToMenu();
   }
 });
+
+// === BUILD MODE SWITCHER ===
+const towerModeBtn = document.getElementById('towerModeBtn');
+const abilityModeBtn = document.getElementById('abilityModeBtn');
+const shopWrapper = document.getElementById('shopWrapper');
+const abilityBar = document.getElementById('abilityBar');
+
+towerModeBtn.addEventListener('click', () => {
+  towerModeBtn.classList.add('active');
+  abilityModeBtn.classList.remove('active');
+  shopWrapper.style.display = 'flex';
+  abilityBar.style.display = 'none';
+});
+
+abilityModeBtn.addEventListener('click', () => {
+  abilityModeBtn.classList.add('active');
+  towerModeBtn.classList.remove('active');
+  shopWrapper.style.display = 'none';
+  abilityBar.style.display = 'flex';
+});

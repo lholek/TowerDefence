@@ -3,7 +3,7 @@
       {
         "name": "Future Ability Map (Not playble yet whit abilites)",
         "startingCoins": 150,
-        "startingLives": 5,
+        "startingLives": 500,
         "description": [
           {
             "descriptionText": "First proper map to test Abilites",
@@ -29,21 +29,18 @@
         ],
         "abilities": [
           {
-            "id": "meteor_strike",
-            "name": "Meteor Strike",
-            "description": "Calls down a powerful meteor strike on selected tiles, dealing massive area damage to enemies.",
+            "id": "lava_floor",
+            "name": "Lava Floor",
+            "description": "A powerful magma from the ground to hurt your enemies",
             "type": "targeted", 
             "selectionCount": 3, 
-            "radius": 120, 
-            "damage": 150, 
-            "cooldown": 45000, 
-            "effectDuration": 1000,
-            "color": "#FF4500",
-            "impactEffect": "explosion_large",
-            "soundEffect": "meteor_impact",
+            "damage": 5000, 
+            "_comment": "cooldown - 45000",
+            "cooldown": 0,
+            "effectDuration": 30000,
+            "color": "#f5aa42",
             "ui": {
-              "icon": "🔥",
-              "hotkey": "M"
+              "icon": "🌋"
             }
           }
         ],
