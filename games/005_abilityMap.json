@@ -30,7 +30,7 @@
         ],
         "abilities": [
           {
-            "_comment": "cooldown - 45000",
+            "_comment": "cooldown - 30000",
             "id": "lava_floor",
             "name": "Lava Floor",
             "description": "A powerful magma from the ground to hurt your enemies",

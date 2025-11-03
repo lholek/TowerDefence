@@ -3,7 +3,14 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Improvment - Added ABILITY Lava floor",
+        "TODO: Fix that ABILITY button wont appear if they are no abilites ( can do display none )",
+        "TODO: Slighly bigger ability cards",
+        "TODO: Add times that will show how mutch time remain on ablity and what is its cooldown",
+        "TODO: Make same look for Ability row as Towers",
+        "TODO: When i chose Lava floor it should show Green on Path and red on onther fields, becouse you can only built on path",
+        "TODO: Show here Lava Floor will be placed on hover",
+        "Improvment - Added ABILITY Lava floor 🌋",
+        "Improvment - Added TOWER / ABILITY Switcher",
         "Improvment - added version history to main menu",
         "Improvment - you can use wheel on towers",
         "Improvment - added 'Return to Main Menu' button",
@@ -21,8 +28,8 @@
       "changes": [
         "Improvment - Set - dynamic starting Lives and Coins different for each game",
         "Improvment - Tiles are now showing color where you can built or not",
-        "Improvment - Make the Tower row scrollable so player can choose from more tower",        
-        "Improvment - Dynamic + live prices, so the game is harder",        
+        "Improvment - Make the Tower row scrollable so player can choose from more towers",        
+        "Improvment - Dynamic live prices, so the game is harder",        
         "Improvment - Music Player - Added more backround music",        
         "Improvment - Music Player - Player can change time of current music",        
         "Improvment - Added 4th Map 'The Main Game'",
