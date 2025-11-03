@@ -58,6 +58,17 @@ export default class Ability {
   update(deltaTime) {
     // default: tick stored active instances and remove expired
     const now = performance.now();
+
+    const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
+    if (timerEl) {
+      const timeLeft = Math.max(0, this.cooldown - (performance.now() - this.lastUsedAt));
+      if (timeLeft <= 0) {
+        timerEl.textContent = 'Ready';
+      } else {
+        timerEl.textContent = `CD: ${Math.ceil(timeLeft/1000)}s`;
+      }
+    }
+
     this.activeInstances = this.activeInstances.filter(inst => {
       if (inst.expiresAt <= now) {
         if (typeof inst.onEnd === 'function') inst.onEnd();

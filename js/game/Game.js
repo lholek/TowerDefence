@@ -327,7 +327,6 @@ export default class Game {
     });
   }
 
-  // simple ability bar creation (call after abilityManager.loadFromConfigs)
   createAbilityBar() {
     const container = document.getElementById('abilityBar');
     if (!container) return;
@@ -336,18 +335,21 @@ export default class Game {
     for (const a of this.abilityManager.getAvailable()) {
       const card = document.createElement('div');
       card.className = 'ability-card';
+      // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `
-        <div class="icon">${a.ui?.icon || '✨'}</div>
-        <div class="name">${a.name}</div>
-        <div class="desc">${a.description}</div>
-        <div class="stats">
-          <div>🕒 Duration: ${(a.effectDuration / 1000).toFixed(1)}s</div>
-          <div>⏳ Cooldown: ${(a.cooldown / 1000).toFixed(1)}s</div>
+        <div class="ability-icon">${a.ui?.icon || ''}</div>
+        <div class="ability-info">
+          <div class="ability-name">${a.name}</div>
+          <div class="ability-meta">
+            <span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>
+            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
+          </div>
+          <div class="ability-desc">${a.description || ''}</div>
+          <div class="ability-timer" data-ability="${a.id}"></div>
         </div>
-        <div class="cooldown-overlay" style="display:none"></div>
       `;
 
-      // click to select / activate
+      // click toggles placing mode
       card.addEventListener('click', () => {
         if (this.abilityManager.activeAbility === a && a.isPlacing) {
           this.abilityManager.cancelActivePlacement();
@@ -356,7 +358,6 @@ export default class Game {
           if (this.abilityManager.selectAbilityById(a.id)) {
             document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
             card.classList.add('placing');
-            this.startAbilityCooldownTimer(a, card);
           } else {
             this.logEvent(`${a.name} not ready`);
           }

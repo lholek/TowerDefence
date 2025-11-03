@@ -93,6 +93,7 @@
   justify-content: center;
   margin: 10px 0;
   gap: 8px;
+  z-index: 2;
 }
 
 .switch-btn {
@@ -180,4 +181,27 @@
   pointer-events: none;
 }
 
+.ability-card {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: #222;
+  border-radius: 6px;
+  color: #fff;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.ability-card.placing {
+  border-color: #f5aa42; /* highlight color when placing */
+}
+.ability-icon { font-size: 20px; width:32px; text-align:center; }
+.ability-info { font-size: 12px; text-align: left; }
+.ability-meta { font-size: 11px; opacity: 0.8; display:flex; gap:8px; }
+.ability-timer { font-size:11px; color:#f55; margin-top:4px; }
+.shopAndAbilitiesWrap{
+  margin-top: -33px;
+  z-index: 1;
+}
 /* Abilites */

@@ -165,12 +165,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    const showTowersBtn = document.getElementById('showTowersBtn');
+    const showAbilitiesBtn = document.getElementById('showAbilitiesBtn');
     const shopWrapper = document.getElementById('shopWrapper');
-
-    shopWrapper.addEventListener('wheel', (e) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        shopWrapper.scrollLeft += e.deltaY;
-      }
+    const abilityBar = document.getElementById('abilityBar');
+      
+    showTowersBtn.addEventListener('click', () => {
+      shopWrapper.style.display = 'flex';
+      abilityBar.style.display = 'none';
+      // IMPORTANT: do NOT cancel active ability here — keep placement state
+    });
+    
+    showAbilitiesBtn.addEventListener('click', () => {
+      shopWrapper.style.display = 'none';
+      abilityBar.style.display = 'flex';
+      // If an ability is active, keep UI indicator (we update that elsewhere)
     });
 });

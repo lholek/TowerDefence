@@ -3,7 +3,7 @@
     {
       "name": "Test Map",
       "startingCoins": 10000000,
-      "startingLives": 5,
+      "startingLives": 5000000,
       "description": [
         {
           "descriptionText": "Only for test",

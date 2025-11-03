@@ -37,7 +37,7 @@
             "type": "targeted", 
             "selectionCount": 10, 
             "damage": 50, 
-            "cooldown": 0,
+            "cooldown": 30000,
             "effectDuration": 30000,
             "color": "rgba(245, 164, 66, 0.6)",
             "ui": {

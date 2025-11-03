@@ -11,7 +11,7 @@
           "map_size": "11x7",
           "difficulty": "⭐⭐",
           "tower types": 2,
-          "abilites": "-"
+          "abilites": "Lava floor 🌋"
         }
       ],
       "tileSize": 60,
@@ -23,6 +23,23 @@
         "XOXOXOXOXOX",
         "OOXOOOXOOOX",
         "XXXXXXXXXXX"
+      ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 15000",
+          "id": "lava_floor",
+          "name": "Lava Floor",
+          "description": "A powerful magma from the ground to hurt your enemies",
+          "type": "targeted", 
+          "selectionCount": 11, 
+          "damage": 5, 
+          "cooldown": 15000,
+          "effectDuration": 10000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
       ],
       "towerTypes": {
         "001": {

@@ -52,23 +52,21 @@ export default class AbilityManager {
   // handle canvas clicks (Game should forward canvas clicks to manager when placing)
   handleCanvasClick(screenX, screenY) {
     if (!this.activeAbility || !this.activeAbility.isPlacing) return false;
-  
+
+    // convert to world coords using map helper
     const world = this.game.map.screenToWorld(screenX, screenY);
-    const tile = this.game.map.getTileFromCoords(world.x, world.y);
-  
-    // LavaFloor must be placed on path tiles only
-    if (this.activeAbility.id === 'lava_floor' && this.game.map.layout[tile.row][tile.col] !== 'O') {
-      this.game.logEvent('Ability must be placed on path');
-      return false;
-    }
-  
+
+    // allow subclass to validate placement (e.g. lava requires path). Let subclass handle tile checks.
+    // call ability's own handler (it will convert to tiles etc.)
     this.activeAbility.handleCanvasClick(world.x, world.y);
-  
+
+    // if ability finished placing, null it
     if (!this.activeAbility.isPlacing) {
       this.activeAbility = null;
     }
     return true;
   }
+
 
   update(deltaTime) {
     for (const a of this.abilities) a.update(deltaTime);

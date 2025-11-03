@@ -5,3 +5,7 @@
 .cl-primary{
  color: gold;
 }
+
+.d-none{
+    display: none;
+}
