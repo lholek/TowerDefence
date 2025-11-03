@@ -3,7 +3,6 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Fix that ABILITY button wont appear if they are no abilites ( can do display none )",
         "TODO: Slighly bigger ability cards",
         "TODO: Add times that will show how mutch time remain on ablity and what is its cooldown",
         "TODO: Make same look for Ability row as Towers",

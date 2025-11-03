@@ -73,6 +73,13 @@ export default class Game {
     // load abilities array if present
     this.abilityManager.loadFromConfigs(this.levelData.abilities || []);
 
+    // Hide or show Abilities button depending on ability presence
+    const abilityModeBtn = document.getElementById('abilityModeBtn');
+    if (abilityModeBtn) {
+      const hasAbilities = (this.levelData.abilities && this.levelData.abilities.length > 0);
+      abilityModeBtn.style.display = hasAbilities ? 'block' : 'none';
+    }
+
     this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
     this.createTowerShop();
     this.createAbilityBar();

@@ -204,4 +204,8 @@
   margin-top: -33px;
   z-index: 1;
 }
+
+#abilityModeBtn {
+  display: none; /* hidden by default */
+}
 /* Abilites */
