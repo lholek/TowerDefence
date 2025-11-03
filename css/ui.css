@@ -127,7 +127,10 @@
 .ability-card {
   position: relative;
   background: #2e2e2e;
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  border-radius: 6px;
   padding: 10px;
   width: 160px;
   color: white;
@@ -135,6 +138,7 @@
   border: 2px solid transparent;
   transition: all 0.2s;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .ability-card:hover {
@@ -181,18 +185,6 @@
   pointer-events: none;
 }
 
-.ability-card {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px;
-  background: #222;
-  border-radius: 6px;
-  color: #fff;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
 .ability-card.placing {
   border-color: #f5aa42; /* highlight color when placing */
 }
