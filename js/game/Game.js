@@ -332,30 +332,65 @@ export default class Game {
     const container = document.getElementById('abilityBar');
     if (!container) return;
     container.innerHTML = '';
+
     for (const a of this.abilityManager.getAvailable()) {
-      const btn = document.createElement('button');
-      btn.className = 'ability-btn';
-      btn.textContent = a.ui?.icon ? `${a.ui.icon} ${a.name}` : a.name;
-      btn.title = a.description;
-      btn.addEventListener('click', () => {
-        // toggle selection
+      const card = document.createElement('div');
+      card.className = 'ability-card';
+      card.innerHTML = `
+        <div class="icon">${a.ui?.icon || '✨'}</div>
+        <div class="name">${a.name}</div>
+        <div class="desc">${a.description}</div>
+        <div class="stats">
+          <div>🕒 Duration: ${(a.effectDuration / 1000).toFixed(1)}s</div>
+          <div>⏳ Cooldown: ${(a.cooldown / 1000).toFixed(1)}s</div>
+        </div>
+        <div class="cooldown-overlay" style="display:none"></div>
+      `;
+
+      // click to select / activate
+      card.addEventListener('click', () => {
         if (this.abilityManager.activeAbility === a && a.isPlacing) {
           this.abilityManager.cancelActivePlacement();
-          btn.classList.remove('placing');
+          card.classList.remove('placing');
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
-            // visual mark
-            document.querySelectorAll('.ability-btn').forEach(b => b.classList.remove('placing'));
-            btn.classList.add('placing');
+            document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
+            card.classList.add('placing');
+            this.startAbilityCooldownTimer(a, card);
           } else {
-            // not available
             this.logEvent(`${a.name} not ready`);
           }
         }
       });
-      container.appendChild(btn);
+
+      container.appendChild(card);
     }
   }
+
+  startAbilityCooldownTimer(ability, card) {
+    const overlay = card.querySelector('.cooldown-overlay');
+    if (!overlay) return;
+
+    const cd = ability.cooldown;
+    overlay.style.display = 'block';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.5)';
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.transition = `height ${cd}ms linear`;
+
+    // Start shrinking overlay
+    requestAnimationFrame(() => {
+      overlay.style.height = '0%';
+    });
+
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.style.height = '100%';
+    }, cd);
+  } 
 
   render() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

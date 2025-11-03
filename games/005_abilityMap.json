@@ -38,7 +38,7 @@
             "selectionCount": 10, 
             "damage": 50, 
             "cooldown": 0,
-            "effectDuration": 50000,
+            "effectDuration": 30000,
             "color": "rgba(245, 164, 66, 0.6)",
             "ui": {
               "icon": "🌋"
