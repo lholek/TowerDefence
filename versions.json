@@ -4,11 +4,12 @@
       "version": "Alpha 0.0.8",
       "changes": [
         "TODO: Slighly bigger ability cards",
+        "TODO: Fix that ability runs out during pause",
+        "TODO: Fix that after the new game towers will be selected as default",
         "TODO: Add times that will show how mutch time remain on ablity and what is its cooldown",
         "TODO: Make same look for Ability row as Towers",
         "TODO: When i chose Lava floor it should show Green on Path and red on onther fields, becouse you can only built on path",
         "TODO: Show here Lava Floor will be placed on hover",
-        "TODO: Fix that after the new game towers will be selected as default",
         "Improvment - Added ABILITY Lava floor 🌋",
         "Improvment - Added TOWER / ABILITY Switcher",
         "Improvment - added version history to main menu",
