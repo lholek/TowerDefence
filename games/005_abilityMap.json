@@ -39,6 +39,7 @@
             "__comment": "75dmg / 0.25s ",
             "damage": 75, 
             "damage_every": 250, 
+            "___comment": "cooldown - includes effectDuration !!!",
             "cooldown": 10000,
             "effectDuration": 5000,
             "color": "rgba(245, 164, 66, 0.6)",
