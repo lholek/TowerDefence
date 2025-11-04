@@ -3,7 +3,6 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Fix that ability runs out during pause",
         "TODO: Fix that after the new game towers will be selected as default",
         "TODO: When i chose Lava floor it should show Green on Path and red on onther fields, becouse you can only built on path",
         "TODO: Show here Lava Floor will be placed on hover (you will see all other tiles where it will be placed)",

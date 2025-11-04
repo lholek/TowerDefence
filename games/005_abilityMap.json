@@ -39,8 +39,8 @@
             "__comment": "75dmg / 0.25s ",
             "damage": 75, 
             "damage_every": 250, 
-            "cooldown": 30000,
-            "effectDuration": 30000,
+            "cooldown": 10000,
+            "effectDuration": 5000,
             "color": "rgba(245, 164, 66, 0.6)",
             "ui": {
               "icon": "🌋"

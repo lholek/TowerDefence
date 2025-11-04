@@ -15,13 +15,14 @@ export default class Ability {
 
     // runtime
     this.lastUsedAt = -Infinity;
+    this.remainingCooldown = 0;
     this.activeInstances = []; // store active placed effects for this ability
     this.isPlacing = false;    // true while player selects tiles
     this.pendingSelections = []; // store selected tiles while in placing mode
   }
 
   available() {
-    return (performance.now() - this.lastUsedAt) >= this.cooldown;
+    return this.remainingCooldown <= 0;
   }
 
   startPlacing() {
@@ -61,7 +62,8 @@ export default class Ability {
 
     const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
     if (timerEl) {
-      const timeLeft = Math.max(0, this.cooldown - (performance.now() - this.lastUsedAt));
+      const timeLeft = this.remainingCooldown;
+      console.log(timeLeft);
       if (timeLeft <= 0) {
         timerEl.textContent = 'Ready';
       } else {

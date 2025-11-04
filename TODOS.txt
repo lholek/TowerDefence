@@ -16,6 +16,6 @@ TODOS:
 + Ability enemies (5s imunity - no demage, Explosive enemies)
 + heroes like ablity - on the start you will choose hero whit special ablity
 + map builder 
++ all Abilities have duration - PROBLEM 
 
 0.0.8:
-+ zpomalení na mapě (bažiny)

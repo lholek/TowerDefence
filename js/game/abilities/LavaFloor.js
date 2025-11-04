@@ -56,11 +56,11 @@ export default class LavaFloor extends Ability {
     this.lastUsedAt = performance.now();
     const now = performance.now();
 
+    this.remainingCooldown = this.cooldown;
     for (const t of tileList) {
       const inst = {
         tile: t,
-        startAt: now,
-        expiresAt: now + this.effectDuration,
+        remainingTime: this.effectDuration,
         lastTick: now,
         onTick: (time) => {
           for (const enemy of this.game.enemies) {
@@ -87,13 +87,15 @@ export default class LavaFloor extends Ability {
   }
 
   update(deltaTime) {
+    this.remainingCooldown -= deltaTime;
     const now = performance.now();
     for (const inst of this.activeInstances) {
+      inst.remainingTime -= deltaTime;
       if ((now - inst.lastTick) >= this.damageEvery) {
         if (typeof inst.onTick === 'function') inst.onTick(now);
       }
     }
-    this.activeInstances = this.activeInstances.filter(i => i.expiresAt > now);
+    this.activeInstances = this.activeInstances.filter(i => i.remainingTime > 0);
   }
 
   render(ctx) {
