@@ -8,7 +8,6 @@
         "TODO: Show here Lava Floor will be placed on hover (you will see all other tiles where it will be placed)",
         "TODO: Add some overlay timer when ability is acitve use div that will be full wide over the card and the slowly goes back as the time is running out, something like reverse progress bar but it should be overlay over full card",
         "TODO: Same thing but reverse as the ability reloads", 
-        "TODO: Slighly bigger ability cards",
         "TODO: Add times that will show how mutch time remain on ablity and what is its cooldown",
         "TODO: Fix that i will unselect the abilty after user use it",
         "TODO: When i switch between Abilities and tower it should unselect all current Abilites or Towers",
