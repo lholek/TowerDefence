@@ -208,7 +208,7 @@ canvas {
 
 /* tower shop wrapper */
 .shop-wrapper {
-    width: calc(4 * 250px + 3 * 12px); /* 4 items visible */
+    width: calc(4 * 237px + 3 * 12px); /* 4 items visible */
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
