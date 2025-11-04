@@ -23,109 +23,19 @@
         "001": {
           "name": "Basic Tower",
           "price": 1,
-          "damage": 250,
-          "fireRate": 8,
-          "range": 1000,
+          "damage": 400,
+          "fireRate": 10,
+          "range": 2500,
           "color": "#468bb0",
           "sellPrice": 1,
-          "speed": 8
-        },
-        "002": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 4,
-          "fireRate": 1200,
-          "range": 150,
-          "color": "#20a124",
-          "sellPrice": 1,
           "speed": 2
-        },
-        "003": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "004": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 4,
-          "fireRate": 1200,
-          "range": 150,
-          "color": "#20a124",
-          "sellPrice": 1,
-          "speed": 2
-        },
-        "005": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "006": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "007": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "008": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "009": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
-        },
-        "010": {
-          "name": "Speed Tower",
-          "price": 4,
-          "damage": 6,
-          "fireRate": 800,
-          "range": 250,
-          "color": "#a4f018",
-          "sellPrice": 3,
-          "speed": 4
         }
       },
       "levels": [
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 10000, "health": 12000000, "speed": 5, "coinReward": 2}
+            {"type": "basic", "count": 10000, "health": 12000, "speed": 0.25, "coinReward": 2}
           ]
         }
       ]
