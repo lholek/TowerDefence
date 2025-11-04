@@ -349,7 +349,7 @@ export default class Game {
           <div class="ability-name">${a.name}</div>
           <div class="ability-meta">
             <span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>
-            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
+            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown - a.effectDuration} ms</span>
             <div class="ability-desc">⚔️${a.description || ''}</div>
             <div class="ability-timer" data-ability="${a.id}"></div>
           </div>
