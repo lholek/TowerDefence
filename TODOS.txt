@@ -1,3 +1,9 @@
+Ok, abilities have some good start, but i need to fix multiple bugs and do muliple improvemnts :
+bugs:
+- Fix that ability runs out during pause (ability timer doesnt stop during pause)
+- Fix that after the new game towers will be selected as default
+improvemnts:
+
 TODOS:
 + price to unlock towers
 + Better UI
