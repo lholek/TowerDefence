@@ -257,8 +257,8 @@ export default class Game {
 
   updateUI() {
     this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
-    this.livesText.textContent = `Lives: ${this.playerLives}`;
-    this.coinsText.textContent = `Coins: ${this.playerCoins}`;
+    this.livesText.textContent = `❤️ Lives: ${this.playerLives}`;
+    this.coinsText.textContent = `🪙 Coins: ${this.playerCoins}`;
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
   }
@@ -272,12 +272,12 @@ export default class Game {
       div.className = 'shop-item';
       div.innerHTML = `
         <div class="name">${tower.name}</div>
-        <div>Price: ${tower.price}</div>
-        <div>Damage: ${tower.damage}</div>
-        <div>Fire Rate: ${tower.fireRate} ms</div>
-        <div>Range: ${tower.range}</div>
-        <div>Speed: ${tower.speed}</div>
-        <div>Sell Price: ${tower.sellPrice}</div>
+        <div>🪙 Price: ${tower.price}</div>
+        <div>⚔️ Damage: ${tower.damage}</div>
+        <div>🕐 Fire Rate: ${tower.fireRate} ms</div>
+        <div>🎯 Range: ${tower.range}</div>
+        <div>🗲 Speed: ${tower.speed}</div>
+        <div>💰 Sell Price: ${tower.sellPrice}</div>
       `;
       shopDiv.appendChild(div);
 
