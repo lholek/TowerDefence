@@ -17,6 +17,7 @@ TODOS:
 + heroes like ablity - on the start you will choose hero whit special ablity
 + map builder 
 + all Abilities have duration - PROBLEM 
++ ability levling
 
 0.0.9 ideas:
 - more abilites
