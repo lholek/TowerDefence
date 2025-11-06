@@ -3,15 +3,10 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Fix that after the new game towers will be selected as default",
-        "TODO: When i chose Lava floor it should show Green on Path and red on onther fields, becouse you can only built on path",
         "TODO: Show here Lava Floor will be placed on hover (you will see all other tiles where it will be placed)",
-        "TODO: Add some overlay timer when ability is acitve use div that will be full wide over the card and the slowly goes back as the time is running out, something like reverse progress bar but it should be overlay over full card or some kind of progerss bar",
-        "TODO: Same thing but reverse as the ability reloads", 
-        "TODO: Add times that will show how mutch time remain on ablity and what is its cooldown",
-        "TODO: Fix that i will unselect the abilty after user use it",
-        "TODO: When i switch between Abilities and tower it should unselect all current Abilites or Towers",
-        "TODO: Give ChatGpt TO create a 5th map whit abilities to be balanced give it already balanced 4th map",
+        "TODO: Timers - Add some overlay timer when ability is acitve use div that will be full wide over the card and the slowly goes back as the time is running out, something like reverse progress bar but it should be overlay over full card or some kind of progerss bar",
+        "TODO: Timers - Same thing but reverse as the ability reloads", 
+        "TODO: Timers -  Add times that will show how mutch time remain on ablity and what is its cooldown",
         "Improvment - Added ABILITY Lava floor 🌋",
         "Improvment - Added TOWER / ABILITY Switcher",
         "Improvment - added version history to main menu",

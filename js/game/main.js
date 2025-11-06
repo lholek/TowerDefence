@@ -27,15 +27,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Load selected map
             await game.loadGameData(selectedMapFile);
             window.game = game; // expose for debug
-        
-            // Attach pause listener AFTER game is created
-            /*document.addEventListener('keydown', (e) => {
-                if (e.key.toLowerCase() === 'p') {
-                    e.preventDefault();
-                    game.togglePause();
-                }
-            });*/
-        
+            
+            // Switch back to towers
+            const towerModeBtn = document.getElementById('towerModeBtn');
+            towerModeBtn.click();            
             game.start();
         } catch (err) {
             console.error("Failed to load game data:", err);
