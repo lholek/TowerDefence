@@ -5,6 +5,7 @@ export default class Ability {
     this.id = config.id || 'ability';
     this.name = config.name || 'Ability';
     this.description = config.description || '';
+    this.description_text = config.description_text || '';
     this.type = config.type || 'targeted'; // 'field', 'targeted', 'global' etc.
     this.selectionCount = config.selectionCount || 1;
     this.cooldown = config.cooldown || 30000;
