@@ -342,6 +342,7 @@ export default class Game {
     for (const a of this.abilityManager.getAvailable()) {
       const card = document.createElement('div');
       card.className = 'ability-card';
+      card.id = a.id;
       // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `
         <div class="ability-icon">${a.ui?.icon || ''}</div>
@@ -421,11 +422,17 @@ export default class Game {
           // --- Determine hover color ---
           let color = 'rgba(255,0,0,0.25)'; // default red (blocked)
       
-          const buildable = this.map.isBuildableTile(col, row);
+          // --- TOWER --- //
+          const status = this.map.getTileStatus(col, row);
           const hasTower = this.towers.some(t => t.col === col && t.row === row);
-      
-          if (buildable && !hasTower) {
-              color = 'rgba(0,255,0,0.25)'; // green only if buildable AND no tower
+          let buildingTower = (this.abilityManager.activeAbility == null);
+          if (buildingTower && status == 'X' && !hasTower) {
+            color = 'rgba(0,255,0,0.25)'; // green only if status AND no tower
+          }
+
+          // --- LAVA FLOOR --- //
+          if (!buildingTower && status == 'O') {
+            color = 'rgba(0,255,0,0.25)'; // green if active ablity
           }
         
           this.ctx.fillStyle = color;

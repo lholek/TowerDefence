@@ -62,11 +62,17 @@ export default class AbilityManager {
 
     // if ability finished placing, null it
     if (!this.activeAbility.isPlacing) {
+      // remove placing from card
+      console.log(this.activeAbility.id);
+      let abilityCard = document.getElementById(this.activeAbility.id);
+      abilityCard.classList.remove("placing");
+      // Switch back to towers
+      const towerModeBtn = document.getElementById('towerModeBtn');
+      towerModeBtn.click();
       this.activeAbility = null;
     }
     return true;
   }
-
 
   update(deltaTime) {
     for (const a of this.abilities) a.update(deltaTime);

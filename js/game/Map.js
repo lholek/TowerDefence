@@ -138,6 +138,16 @@ export default class Map {
         return col >= 0 && col < this.cols && row >= 0 && row < this.rows && this.layout[row][col] !== 'O';
     }
 
+    getTileStatus(col, row) {
+        if(col < 0 || col > this.cols){
+            return "!";
+        }
+        if(row < 0 || row > this.rows){
+            return "!";
+        }
+        return this.layout[row][col];
+    }
+
     // --- DRAG & ZOOM ---
     startDrag(e) {
         // Only allow middle mouse for dragging (wheel)
