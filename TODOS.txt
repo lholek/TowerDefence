@@ -18,11 +18,5 @@ TODOS:
 + map builder 
 + all Abilities have duration - PROBLEM 
 
-0.0.8:
-live - ❤️
-demage - ⚔️
-coins - 🪙
-speed - 🗲
-sell price - 💰
-range - 🎯
-fireraet - 🕐
+0.0.9 ideas:
+- more abilites
