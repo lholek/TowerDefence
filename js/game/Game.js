@@ -275,6 +275,7 @@ export default class Game {
         <div>🪙 Price: ${tower.price}</div>
         <div>⚔️ Damage: ${tower.damage}</div>
         <div>🕐 Fire Rate: ${tower.fireRate} ms</div>
+        <div>💥 DPS: ${(tower.damage * 1000 / tower.fireRate).toFixed(2)}</div>
         <div>🎯 Range: ${tower.range}</div>
         <div>🗲 Speed: ${tower.speed}</div>
         <div>💰 Sell Price: ${tower.sellPrice}</div>

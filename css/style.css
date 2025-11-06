@@ -257,6 +257,7 @@ canvas {
     border-radius: 8px;
     transition: transform 0.2s, background 0.2s;
     color: #fff;
+    line-height: 18px;
     cursor: pointer;
 }
 
