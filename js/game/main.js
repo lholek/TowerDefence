@@ -50,11 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    /*overlayClose.addEventListener('click', () => {
-        document.getElementById('gameOverlay').style.display = 'none';
-        game?.togglePause();
-    });*/
-
     //Render Minimap
     function renderMinimap(mapData) {
       // find or create container elements safely
@@ -71,14 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         nameEl.id = 'mapName';
         mapInfo.prepend(nameEl); // add at top
       }
-    
-      // create/description element if missing
-      /*let descEl = document.getElementById('mapDescription');
-      if (!descEl) {
-        descEl = document.createElement('p');
-        descEl.id = 'mapDescription';
-        nameEl.insertAdjacentElement('afterend', descEl);
-      }*/
     
       // minimap container
       let minimap = document.getElementById('minimap');
@@ -99,7 +86,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const mapName = mapData.name || 'Unnamed Map';
       const desc = (mapData.description && mapData.description[0] && mapData.description[0].descriptionText) || '';
       nameEl.textContent = mapName;
-      //descEl.textContent = desc;
     
       // layout must be an array of strings
       if (!mapData.layout || !Array.isArray(mapData.layout) || mapData.layout.length === 0) {
