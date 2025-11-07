@@ -51,8 +51,11 @@ export default class Game {
     // Hover on tiles
     this.hoveredTile = null;
     this.canvas.addEventListener('mousemove', e => this.handleHover(e));
-    this.canvas.addEventListener('mouseleave', () => this.hoveredTile = null);
-
+    this.canvas.addEventListener('mouseleave', () => {
+      // clear ability preview on leaving canvas
+      if (this.abilityManager) this.abilityManager.updatePreview(-9999, -9999);
+      this.hoveredTile = null;
+    });
     //document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
     /*document.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'p') this.togglePause();
@@ -511,6 +514,11 @@ export default class Game {
           this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
         
           this.map.resetTransform(this.ctx);
+
+          // render ability preview overlay (after map and before UI)
+          if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
+            this.abilityManager.renderPreview(this.ctx);
+          }          
       }
 
       // Draw towers and enemies
@@ -594,6 +602,12 @@ export default class Game {
 
   handleHover(e) {
       if (!this.map) return;
+
+      // also forward to ability manager to update preview if placing
+      if (this.abilityManager && this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
+        this.abilityManager.updatePreview(e.clientX, e.clientY);
+      }
+      // existing hover tile computation...
 
       // Pass raw client coordinates to screenToWorld (map knows canvas rect)
       const worldPos = this.map.screenToWorld(e.clientX, e.clientY);

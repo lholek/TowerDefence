@@ -3,7 +3,6 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Show here Lava Floor will be placed on hover (you will see all other tiles where it will be placed)",
         "TODO: Make correct FPS  by settings",
         "Improvment - Set basic settings where player can set FPS",
         "Improvment - Added ABILITY Lava floor 🌋",

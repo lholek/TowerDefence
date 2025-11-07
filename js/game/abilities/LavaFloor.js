@@ -5,6 +5,7 @@ export default class LavaFloor extends Ability {
   constructor(game, config = {}) {
     super(game, config);
     this.damageEvery = config.damage_every || 500;
+    this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
   }
 
   // compute centered tile list along map.path
@@ -117,5 +118,17 @@ export default class LavaFloor extends Ability {
     }
 
     this.game.map.resetTransform(ctx);
+  }
+
+  // Preview: square area around target tile. radius can be set in config.radius (default 1 -> 3x3)
+  getPreviewTiles(worldX, worldY, map) {
+    if (!map) return [];
+    const tile = map.getTileFromCoords(worldX, worldY);
+    if (!tile) return [];
+    // use same selection count as placement
+    const count = this.selectionCount || 3;
+    const tiles = this._getCenteredPathTiles(tile, count);
+    // _getCenteredPathTiles returns null if tile is not on path -> return empty array
+    return tiles || [];
   }
 }

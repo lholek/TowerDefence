@@ -12,6 +12,7 @@ export default class AbilityManager {
     };
     this.abilities = []; // instantiated ability objects (one per config)
     this.activeAbility = null; // currently selected ability instance for placing
+    this.previewTiles = [];
   }
 
   loadFromConfigs(configArray = []) {
@@ -70,6 +71,9 @@ export default class AbilityManager {
       if (abilityCard) abilityCard.classList.remove("placing");
       this.notifyAbilityUsed(used);
 
+      // clear preview after placemnet
+      this.previewTiles = [];
+
       // Switch back to towers
       const towerModeBtn = document.getElementById('towerModeBtn');
       towerModeBtn.click();
@@ -96,5 +100,50 @@ export default class AbilityManager {
 
   render(ctx) {
     for (const a of this.abilities) a.render(ctx);
+  }
+
+  // Update preview tiles based on current mouse position (screen coords).
+  // Game should call this from its mousemove handler while the ability is being placed.
+  updatePreview(screenX, screenY) {
+    if (!this.activeAbility || !this.activeAbility.isPlacing) {
+      this.previewTiles = [];
+      return;
+    }
+    const map = this.game.map;
+    if (!map) return;
+    const world = map.screenToWorld(screenX, screenY);
+    const tiles = typeof this.activeAbility.getPreviewTiles === 'function'
+      ? this.activeAbility.getPreviewTiles(world.x, world.y, map)
+      : [];
+    this.previewTiles = tiles || [];
+  }
+
+  // Draw preview overlay for tiles (called from Game.render)
+  renderPreview(ctx) {
+
+    if (!this.previewTiles || this.previewTiles.length === 0) return;
+    const map = this.game.map;
+    if (!map) return;
+
+     // use map's camera transform so preview aligns exactly with map/tile rendering
+     if (typeof map.applyCameraTransform === 'function') map.applyCameraTransform(ctx);
+     ctx.save();
+     ctx.globalAlpha = 0.35;
+     ctx.fillStyle = 'orange';
+     ctx.strokeStyle = 'rgba(255,100,0,0.9)';
+     ctx.lineWidth = 2;
+     const tileSize = map.tileSize || map.tileWidth || 32;
+     
+     for (const t of this.previewTiles) {
+       // get world center for tile (tileToWorld returns center in your LavaFloor.render)
+       const center = (typeof map.tileToWorld === 'function')
+         ? map.tileToWorld(t.col, t.row)
+         : { x: t.col * tileSize + tileSize / 2, y: t.row * tileSize + tileSize / 2 };
+       ctx.fillRect(center.x - tileSize / 2, center.y - tileSize / 2, tileSize, tileSize);
+       ctx.strokeRect(center.x - tileSize / 2 + 0.5, center.y - tileSize / 2 + 0.5, tileSize - 1, tileSize - 1);
+     }
+
+     ctx.restore();
+     if (typeof map.resetTransform === 'function') map.resetTransform(ctx);
   }
 }

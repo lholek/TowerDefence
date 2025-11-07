@@ -95,4 +95,12 @@ export default class Ability {
       this.game.map.resetTransform(ctx);
     }
   }
+
+  // Return array of preview tiles for placement preview.
+  // Each item: { col, row }.
+  // Subclasses (e.g. LavaFloor) should override to return affected tiles
+  // when placing at world coordinates (worldX, worldY) using the map.
+  getPreviewTiles(worldX, worldY, map) {
+    return [];
+  }
 }
