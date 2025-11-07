@@ -40,15 +40,6 @@ export default class AbilityManager {
     inst.startPlacing();
     this.activeAbility = inst;
 
-    // If ability executed immediately (not a placing-type), start cooldown visuals now
-    if (!inst.isPlacing) {
-      inst._lastUsed = performance.now();
-      const card = document.getElementById(inst.id);
-      if (this.game && typeof this.game.startAbilityCooldownTimer === 'function') {
-        this.game.startAbilityCooldownTimer(inst, card);
-      }
-    }
-
     return true;
   }
 
@@ -73,14 +64,11 @@ export default class AbilityManager {
     // if ability finished placing, null it
     if (!this.activeAbility.isPlacing) {
 
-      // mark used time and start cooldown visuals
+      // notify manager that ability was used -> starts cooldown visuals
       const used = this.activeAbility;
-      used._lastUsed = performance.now();
       let abilityCard = document.getElementById(used.id);
       if (abilityCard) abilityCard.classList.remove("placing");
-      if (this.game && typeof this.game.startAbilityCooldownTimer === 'function') {
-        this.game.startAbilityCooldownTimer(used, abilityCard);
-      }
+      this.notifyAbilityUsed(used);
 
       // Switch back to towers
       const towerModeBtn = document.getElementById('towerModeBtn');
@@ -89,6 +77,17 @@ export default class AbilityManager {
       this.activeAbility = null;
     }
     return true;
+  }
+
+  // Call this when an ability actually activates (placement finished or instant ability effect runs).
+  // This ensures cooldown visuals only start when the player used the ability.
+  notifyAbilityUsed(ability) {
+    if (!ability) return;
+    ability._lastUsed = performance.now();
+    const card = document.getElementById(ability.id);
+    if (this.game && typeof this.game.startAbilityCooldownTimer === 'function') {
+      this.game.startAbilityCooldownTimer(ability, card);
+    }
   }
 
   update(deltaTime) {
