@@ -340,24 +340,37 @@ export default class Game {
     if (!container) return;
     container.innerHTML = '';
 
+    // clear any previous update interval
+    if (this.abilityTimerInterval) {
+      clearInterval(this.abilityTimerInterval);
+      this.abilityTimerInterval = null;
+    }
+    this.abilityCards = {};
+
     for (const a of this.abilityManager.getAvailable()) {
       const card = document.createElement('div');
       card.className = 'ability-card';
       card.id = a.id;
+      card.style.position = 'relative'; // ensure overlays position correctly
       // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `
+       <div class="cooldown-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); pointer-events:none;"></div>
+       <div class="cooldown-timer" style="position:absolute; right:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none;"></div>
         <div class="ability-icon">${a.ui?.icon || ''}</div>
         <div class="ability-info">
           <div class="ability-name">${a.name}</div>
           <div class="ability-meta">
             <span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>
-            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown - a.effectDuration} ms</span>
+            <span class="ability-cooldown">⏳ Cooldown: ${Math.max(0, (a.cooldown - (a.effectDuration||0)))} ms</span>
             <div class="ability-dmg">⚔️${a.description || ''}</div>
             <div class="ability-desc">${a.description_text || ''}</div>
             <div class="ability-timer" data-ability="${a.id}"></div>
           </div>
         </div>
       `;
+
+      // save ref
+      this.abilityCards[a.id] = { card, ability: a };
 
       // click toggles placing mode
       card.addEventListener('click', () => {
@@ -376,32 +389,82 @@ export default class Game {
 
       container.appendChild(card);
     }
+
+    // start periodic updater to refresh timers (reads ability._lastUsed timestamps)
+    this.abilityTimerInterval = setInterval(() => {
+      const now = performance.now();
+      for (const { card, ability } of Object.values(this.abilityCards)) {
+        const overlay = card.querySelector('.cooldown-overlay');
+        const timer = card.querySelector('.cooldown-timer');
+        if (!ability.cooldown) {
+          if (overlay) overlay.style.display = 'none';
+          if (timer) timer.textContent = '';
+          continue;
+        }
+        const last = ability._lastUsed || 0;
+        const remaining = Math.max(0, last + ability.cooldown - now);
+        if (remaining > 0) {
+          // show overlay and timer
+          if (overlay) {
+            overlay.style.display = 'block';
+            // percent remaining (visual fill by height)
+            const pct = (remaining / ability.cooldown) * 100;
+            overlay.style.height = pct + '%';
+            overlay.style.transition = 'height 250ms linear';
+          }
+          if (timer) {
+            // show as mm:ss or ss
+            const sec = Math.ceil(remaining / 1000);
+            timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
+          }
+        } else {
+          if (overlay) overlay.style.display = 'none';
+          if (timer) timer.textContent = '';
+        }
+      }
+    }, 250);
   }
 
+  // Start cooldown visuals for a given ability and card.
+  // This sets ability._lastUsed so periodic updater (above) can pick it up.
   startAbilityCooldownTimer(ability, card) {
-    const overlay = card.querySelector('.cooldown-overlay');
-    if (!overlay) return;
+    if (!ability || !ability.cooldown) return;
+    ability._lastUsed = performance.now();
 
-    const cd = ability.cooldown;
-    overlay.style.display = 'block';
-    overlay.style.height = '100%';
-    overlay.style.background = 'rgba(0,0,0,0.5)';
-    overlay.style.position = 'absolute';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.transition = `height ${cd}ms linear`;
-
-    // Start shrinking overlay
-    requestAnimationFrame(() => {
-      overlay.style.height = '0%';
-    });
-
-    setTimeout(() => {
-      overlay.style.display = 'none';
+    const overlay = card?.querySelector('.cooldown-overlay');
+    const timer = card?.querySelector('.cooldown-timer');
+    if (overlay) {
+      overlay.style.display = 'block';
       overlay.style.height = '100%';
-    }, cd);
-  } 
+      overlay.style.background = 'rgba(0,0,0,0.5)';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.transition = `height ${ability.cooldown}ms linear`;
+
+      // trigger shrink animation on next frame
+      requestAnimationFrame(() => {
+        overlay.style.height = '0%';
+      });
+    }
+
+    // update immediate timer text
+    if (timer) {
+      const updateOnce = () => {
+        const now = performance.now();
+        const remaining = Math.max(0, ability._lastUsed + ability.cooldown - now);
+        const sec = Math.ceil(remaining / 1000);
+        timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
+        if (remaining <= 0) {
+          timer.textContent = '';
+        } else {
+          // schedule next quick update
+          setTimeout(updateOnce, Math.min(300, remaining));
+        }
+      };
+      updateOnce();
+    }
+  }
 
   render() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

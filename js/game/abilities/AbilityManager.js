@@ -39,6 +39,16 @@ export default class AbilityManager {
     // start placing mode
     inst.startPlacing();
     this.activeAbility = inst;
+
+    // If ability executed immediately (not a placing-type), start cooldown visuals now
+    if (!inst.isPlacing) {
+      inst._lastUsed = performance.now();
+      const card = document.getElementById(inst.id);
+      if (this.game && typeof this.game.startAbilityCooldownTimer === 'function') {
+        this.game.startAbilityCooldownTimer(inst, card);
+      }
+    }
+
     return true;
   }
 
@@ -63,9 +73,14 @@ export default class AbilityManager {
     // if ability finished placing, null it
     if (!this.activeAbility.isPlacing) {
 
-      // remove placing from card
-      let abilityCard = document.getElementById(this.activeAbility.id);
-      abilityCard.classList.remove("placing");
+      // mark used time and start cooldown visuals
+      const used = this.activeAbility;
+      used._lastUsed = performance.now();
+      let abilityCard = document.getElementById(used.id);
+      if (abilityCard) abilityCard.classList.remove("placing");
+      if (this.game && typeof this.game.startAbilityCooldownTimer === 'function') {
+        this.game.startAbilityCooldownTimer(used, abilityCard);
+      }
 
       // Switch back to towers
       const towerModeBtn = document.getElementById('towerModeBtn');
