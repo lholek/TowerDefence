@@ -21,3 +21,4 @@ TODOS:
 
 0.0.9 ideas:
 - more abilites
+- game speed 

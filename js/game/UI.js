@@ -47,3 +47,114 @@ abilityModeBtn.addEventListener('click', () => {
   shopWrapper.style.display = 'none';
   abilityBar.style.display = 'flex';
 });
+
+let lastFrameTime = performance.now();
+let frameCount = 0;
+let fps = 0;
+let fpsRunning = false;
+
+// --- Create FPS display ---
+const fpsDisplay = document.createElement("div");
+fpsDisplay.id = "fpsDisplay";
+fpsDisplay.style.position = "fixed";
+fpsDisplay.style.top = "10px";
+fpsDisplay.style.left = "10px";
+fpsDisplay.style.padding = "5px 10px";
+fpsDisplay.style.background = "rgba(0,0,0,0.5)";
+fpsDisplay.style.color = "#0f0";
+fpsDisplay.style.fontFamily = "monospace";
+fpsDisplay.style.zIndex = "9999";
+fpsDisplay.style.display = "none";
+document.body.appendChild(fpsDisplay);
+
+// --- FPS update loop ---
+function updateFPS() {
+  if (!fpsRunning) return;
+
+  const now = performance.now();
+  frameCount++;
+
+  if (now - lastFrameTime >= 1000) {
+    fps = frameCount;
+    frameCount = 0;
+    lastFrameTime = now;
+    fpsDisplay.textContent = `FPS: ${fps}`;
+  }
+
+  requestAnimationFrame(updateFPS);
+}
+
+// --- Init settings ---
+document.addEventListener("DOMContentLoaded", () => {
+  const popup = document.getElementById("settingsPopup");
+  const openBtn = document.getElementById("openSettingsBtn");
+  const closeBtn = document.getElementById("closeSettingsBtn");
+  const saveBtn = document.getElementById("saveSettingsBtn");
+  const showFpsCheckbox = document.getElementById("showFpsCheckbox");
+  const fpsRange = document.getElementById("fpsRange");
+  const fpsNumber = document.getElementById("fpsNumber");
+
+  // --- Load from localStorage or defaults ---
+  let settings = JSON.parse(localStorage.getItem("data.fps")) || {
+    showFps: false,
+    targetFps: 144
+  };
+
+  // --- Clamp FPS to 30–144 range ---
+  const clampFps = (val) => Math.min(144, Math.max(30, parseInt(val, 10) || 144));
+
+  // --- Apply settings ---
+  settings.targetFps = clampFps(settings.targetFps);
+  showFpsCheckbox.checked = settings.showFps;
+  fpsRange.min = 30;
+  fpsRange.max = 144;
+  fpsRange.value = settings.targetFps;
+  fpsNumber.min = 30;
+  fpsNumber.max = 144;
+  fpsNumber.value = settings.targetFps;
+
+  // --- Sync range <-> number ---
+  fpsRange.addEventListener("input", () => {
+    fpsNumber.value = clampFps(fpsRange.value);
+  });
+  fpsNumber.addEventListener("input", () => {
+    fpsRange.value = clampFps(fpsNumber.value);
+  });
+
+  // --- Open / Close popup ---
+  openBtn.addEventListener("click", () => popup.classList.remove("hidden"));
+  closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
+
+  // --- Save settings ---
+  saveBtn.addEventListener("click", () => {
+    const targetFps = clampFps(fpsRange.value);
+    settings = {
+      showFps: showFpsCheckbox.checked,
+      targetFps: targetFps
+    };
+
+    // save to localStorage
+    localStorage.setItem("data.fps", JSON.stringify(settings));
+
+    // apply visibility
+    if (settings.showFps) {
+      fpsDisplay.style.display = "block";
+      if (!fpsRunning) {
+        fpsRunning = true;
+        updateFPS();
+      }
+    } else {
+      fpsDisplay.style.display = "none";
+      fpsRunning = false;
+    }
+
+    popup.classList.add("hidden");
+  });
+
+  // --- Apply saved visibility immediately ---
+  if (settings.showFps) {
+    fpsDisplay.style.display = "block";
+    fpsRunning = true;
+    updateFPS();
+  }
+});

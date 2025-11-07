@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/music.css" />
   <link rel="stylesheet" href="css/helpers.css" />
   <link rel="stylesheet" href="css/ui.css" />
+  <link rel="stylesheet" href="css/settings.css" />
 </head>
 <body id="gameContainer">
   <h1 class="title">The CZSrna's Tower Defence</h1>
@@ -17,9 +18,12 @@
   <div id="startOverlay" class="overlay-center">
     <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
       <button id="startButton" class="btn big">Start Game</button>
-
+    
       <!--  Version button -->
       <button class="versionButton btn">Version History</button>
+
+      <!-- Settings Button -->
+      <button id="openSettingsBtn" class="btn">⚙️</button>
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
@@ -43,6 +47,32 @@
             <div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div></div>
           </div>
       </div>
+      <!-- ⚙️ Settings Popup -->
+<div id="settingsPopup" class="settings-popup hidden">
+  <div class="settings-content">
+    <h2 class="cl-primary">Game Settings</h2>
+
+    <label>
+      <input type="checkbox" id="showFpsCheckbox">
+      Show FPS
+    </label>
+
+    <div class="fps-setting">
+      <label for="fpsRange">Target FPS:</label>
+      <input type="range" id="fpsRange" min="30" max="144" step="1">
+      <input type="number" id="fpsNumber" min="30" max="300" step="1">
+    </div>
+
+    <div class="settings-buttons">
+      <button id="saveSettingsBtn" class="btn">Save</button>
+      <button id="closeSettingsBtn" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Button -->
+<button id="openSettingsBtn" class="settings-btn">⚙️</button>
+
     </div>
   </div>
 

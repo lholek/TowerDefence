@@ -7,6 +7,8 @@
         "TODO: Timers - Add some overlay timer when ability is acitve use div that will be full wide over the card and the slowly goes back as the time is running out, something like reverse progress bar but it should be overlay over full card or some kind of progerss bar",
         "TODO: Timers - Same thing but reverse as the ability reloads", 
         "TODO: Timers -  Add times that will show how mutch time remain on ablity and what is its cooldown",
+        "TODO: Make correct FPS  by settings",
+        "Improvment - Set basic settings where player can set FPS",
         "Improvment - Added ABILITY Lava floor 🌋",
         "Improvment - Added TOWER / ABILITY Switcher",
         "Improvment - added version history to main menu",
