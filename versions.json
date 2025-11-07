@@ -3,7 +3,6 @@
     {
       "version": "Alpha 0.0.8",
       "changes": [
-        "TODO: Make correct FPS  by settings",
         "Improvment - Set basic settings where player can set FPS",
         "Improvment - Added ABILITY Lava floor 🌋",
         "Improvment - Added TOWER / ABILITY Switcher",
