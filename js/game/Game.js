@@ -396,24 +396,28 @@ export default class Game {
       for (const { card, ability } of Object.values(this.abilityCards)) {
         const overlay = card.querySelector('.cooldown-overlay');
         const timer = card.querySelector('.cooldown-timer');
+        // no cooldown defined -> hide visuals
         if (!ability.cooldown) {
           if (overlay) overlay.style.display = 'none';
           if (timer) timer.textContent = '';
           continue;
         }
-        const last = ability._lastUsed || 0;
+        // only treat abilities with an explicit numeric _lastUsed > 0 as "used"
+        const last = ability._lastUsed;
+        if (typeof last !== 'number' || last <= 0) {
+          if (overlay) overlay.style.display = 'none';
+          if (timer) timer.textContent = '';
+          continue;
+        }
         const remaining = Math.max(0, last + ability.cooldown - now);
         if (remaining > 0) {
-          // show overlay and timer
           if (overlay) {
             overlay.style.display = 'block';
-            // percent remaining (visual fill by height)
             const pct = (remaining / ability.cooldown) * 100;
             overlay.style.height = pct + '%';
             overlay.style.transition = 'height 250ms linear';
           }
           if (timer) {
-            // show as mm:ss or ss
             const sec = Math.ceil(remaining / 1000);
             timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
           }
