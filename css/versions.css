@@ -8,7 +8,30 @@
   color: #fff;
   max-height: 500px;
   overflow-y: scroll;
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: #ffd700 #333;
 }
+
+/* Webkit scrollbar styles (Chrome, Safari, newer Edge) */
+#versionPopupContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+#versionPopupContent::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 4px;
+}
+
+#versionPopupContent::-webkit-scrollbar-thumb {
+  background: #ffd700;
+  border-radius: 4px;
+}
+
+#versionPopupContent::-webkit-scrollbar-thumb:hover {
+  background: #ffed4a;
+}
+
 #versionList {
   margin-top: 10px;
 }
@@ -20,4 +43,48 @@
   list-style-type: disc;
   padding-left: 20px;
   margin-bottom: 12px;
+}
+.version-item {
+  margin-bottom: 1rem;
+}
+
+.version-title {
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0;
+  transition: background-color 0.2s;
+}
+
+/* Special styling for first version - removed bottom border */
+.version-title.first-version {
+  cursor: default;
+  color: #ffd700; /* brighter gold for current version */
+  font-size: 1.2em;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Add top border to non-first versions */
+.version-item:not(:first-child) .version-title {
+  border-top: 1px solid #444;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.version-title:not(.first-version):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.expand-icon {
+  display: inline-block;
+  width: 1.5em;
+  user-select: none;
+  color: #888;
+}
+
+.version-content {
+  padding: 0.5rem 1rem;
+  margin-left: 1.5em;
 }
