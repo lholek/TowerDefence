@@ -10,8 +10,7 @@
           "level count": 4,
           "map_size": "11x7",
           "difficulty": "⭐⭐",
-          "tower types": 2,
-          "abilites": "Lava floor 🌋"
+          "tower types": 2
         }
       ],
       "tileSize": 60,
