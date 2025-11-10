@@ -113,7 +113,6 @@ export class MusicManager {
         this.timeEl.textContent = `${formatTime(this.audio.currentTime)} / ${formatTime(this.audio.duration)}`;
     }
 
-    // ✅ NEW: Seek function
     seekMusic(e) {
         if (!this.audio.duration) return;
 

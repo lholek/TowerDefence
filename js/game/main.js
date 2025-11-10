@@ -52,30 +52,92 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     //Render Minimap
     function renderMinimap(mapData) {
-      const minimap = document.getElementById('minimap');
-      if (!minimap) return;
+      // find or create container elements safely
+      const mapInfo = document.getElementById('mapInfo');
+      if (!mapInfo) {
+        console.warn('renderMinimap: #mapInfo not found in DOM. Aborting minimap render.');
+        return;
+      }
+    
+      // create/map name element if missing
+      let nameEl = document.getElementById('mapName');
+      if (!nameEl) {
+        nameEl = document.createElement('h3');
+        nameEl.id = 'mapName';
+        mapInfo.prepend(nameEl); // add at top
+      }
+    
+      // minimap container
+      let minimap = document.getElementById('minimap');
+      if (!minimap) {
+        const container = document.createElement('div');
+        container.id = 'minimapContainer';
+        const inner = document.createElement('div');
+        inner.id = 'minimap';
+        container.appendChild(inner);
+        mapInfo.appendChild(container);
+        minimap = inner;
+      }
+    
+      // clear previous
       minimap.innerHTML = '';
-        
+    
+      // Update name/description safely
+      const mapName = mapData.name || 'Unnamed Map';
+      const desc = (mapData.description && mapData.description[0] && mapData.description[0].descriptionText) || '';
+      nameEl.textContent = mapName;
+    
+      // layout must be an array of strings
+      if (!mapData.layout || !Array.isArray(mapData.layout) || mapData.layout.length === 0) {
+        console.warn('renderMinimap: invalid layout in mapData', mapData);
+        return;
+      }
+    
       const rows = mapData.layout.length;
       const cols = mapData.layout[0].length;
-      const tileSize = 10;
+    
+      // set grid template based on rows/cols
+      const tileSize = 10; // px - tweak if needed
       minimap.style.gridTemplateRows = `repeat(${rows}, ${tileSize}px)`;
       minimap.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
-        
+    
+      // create tiles
       for (let r = 0; r < rows; r++) {
+        const rowStr = mapData.layout[r];
         for (let c = 0; c < cols; c++) {
-          const tok = mapData.layout[r][c];
+          const ch = rowStr[c] || 'X';
           const tile = document.createElement('div');
           tile.className = 'minimap-tile';
-          if (tok === 'O') tile.classList.add('path');
-          else if (/^S/i.test(tok)) tile.classList.add('start');
-          else if (/^E/i.test(tok)) tile.classList.add('end');
-          else tile.classList.add('block');
+          switch (ch) {
+            case 'O':
+              tile.classList.add('path');
+              break;
+            case 'S1':
+              tile.classList.add('path');
+              break; 
+            case 'S2':
+              tile.classList.add('path');
+              break;  
+            case 'S3':
+              tile.classList.add('path');
+              break;  
+            case 'E1':
+              tile.classList.add('path');
+              break;   
+            case 'E2':
+              tile.classList.add('path');
+              break;
+            case 'E3':
+              tile.classList.add('path');
+              break;      
+            default:
+              tile.classList.add('block');
+              break;
+          }
           minimap.appendChild(tile);
         }
       }
     }
-
     //Map info
     mapSelect.addEventListener('change', async () => {
         const selectedMapFile = mapSelect.value;
