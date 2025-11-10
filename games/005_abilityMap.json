@@ -16,17 +16,17 @@
         ],
         "tileSize": 60,
         "layout": [
-          "XXXXXXXXXXXXXXX",
-          "XXXXXXXXXXXXXXX",
-          "OOOOXXXXXXXOOOO",
-          "XXXOXXOOOXXOXXX",
-          "XXXOXXOXOXXOXXX",
-          "XXOOXXOXOXXOOXX",
-          "XXOXXXOXOXXXOXX",
-          "XXOXXXOXOXXXOXX",
-          "XXOOXXOXOXXOOXX",
-          "XXXOOOOXOOOOXXX",
-          "XXXXXXXXXXXXXXX"
+          ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"],
+          ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"],
+          ["S1","O","O","O","X","X","X","X","X","X","X","O","O","O","E1"],
+          ["X","X","X","O","X","X","O","O","O","X","X","O","X","X","X"],
+          ["X","X","X","O","X","X","O","X","O","X","X","O","X","X","X"],
+          ["X","X","O","O","X","X","O","X","O","X","X","O","O","X","X"],
+          ["X","X","O","X","X","X","O","X","O","X","X","X","O","X","X"],
+          ["X","X","O","X","X","X","O","X","O","X","X","X","O","X","X"],
+          ["X","X","O","O","X","X","O","X","O","X","X","O","O","X","X"],
+          ["X","X","X","O","O","O","O","X","O","O","O","O","X","X","X"],
+          ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"]
         ],
         "abilities": [
           {

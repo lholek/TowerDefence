@@ -1,45 +1,44 @@
 export default class Enemy {
     constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1) {
-        this.map = map;             // reference na Mapu
-        this.path = path;           // pole tile {x,y}
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        this.speed = speed;
-        this.maxHealth = health;    // store max health for health bar
-        this.health = health;
-        this.coinReward = coinReward;
-        this.currentIndex = 0;
+      this.map = map;
+      this.path = path;
+      this.offsetX = offsetX;
+      this.offsetY = offsetY;
+      this.speed = speed;
+      this.maxHealth = health;
+      this.health = health;
+      this.coinReward = coinReward;
+      this.currentIndex = 0;
 
-        // počáteční pozice podle world souřadnic
-        const startTile = path[0];
-        const pos = this.map.tileToWorld(startTile.x, startTile.y);
-        this.x = pos.x + offsetX;
-        this.y = pos.y + offsetY;
+      // starting pos: use first path node
+      const startTile = path[0];
+      const pos = this.map.tileToWorld(startTile.col, startTile.row);
+      this.x = pos.x + offsetX;
+      this.y = pos.y + offsetY;
 
-        // velikost enemy
-        this.size = 30;
+      this.size = 30;
     }
 
     update(deltaTime) {
-        if (this.currentIndex >= this.path.length - 1) return;
+      if (this.currentIndex >= this.path.length - 1) return;
+      const next = this.path[this.currentIndex + 1];
+      const targetPos = this.map.tileToWorld(next.col, next.row);
+      const targetX = targetPos.x + this.offsetX;
+      const targetY = targetPos.y + this.offsetY;
 
-        const nextTile = this.path[this.currentIndex + 1];
-        const targetPos = this.map.tileToWorld(nextTile.x, nextTile.y);
-        const targetX = targetPos.x + this.offsetX;
-        const targetY = targetPos.y + this.offsetY;
+      const dx = targetX - this.x;
+      const dy = targetY - this.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
 
-        const dx = targetX - this.x;
-        const dy = targetY - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < this.speed) {
-            this.x = targetX;
-            this.y = targetY;
-            this.currentIndex++;
-        } else {
-            this.x += (dx / dist) * this.speed;
-            this.y += (dy / dist) * this.speed;
-        }
+      const moveAmount = this.speed * (deltaTime / (1000 / 144)); // optional scaling if using deltaTime in ms vs your design
+      if (dist < moveAmount) {
+        this.x = targetX;
+        this.y = targetY;
+        this.currentIndex++;
+      } else {
+        this.x += (dx / dist) * moveAmount;
+        this.y += (dy / dist) * moveAmount;
+      }
     }
 
     render(ctx) {

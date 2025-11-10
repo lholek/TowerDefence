@@ -10,30 +10,69 @@ export default class LavaFloor extends Ability {
 
   // compute centered tile list along map.path
   _getCenteredPathTiles(centerTile, count) {
-    // find index of centerTile in map.path (path entries are {x,y} using col=x,row=y)
-    const path = this.game.map.path;
-    const idx = path.findIndex(p => p.x === centerTile.col && p.y === centerTile.row);
-    if (idx === -1) return null; // tile is not on path
-
-    const half = Math.floor(count / 2);
-    let start = idx - half;
-    let end = start + count - 1;
-
-    // clamp
-    if (start < 0) {
-      start = 0;
-      end = Math.min(count - 1, path.length - 1);
+    const map = this.game?.map;
+    if (!map) return [];
+    
+    // Collect candidate path arrays (support legacy single path + new multiple paths)
+    let candidatePaths = [];
+    
+    if (Array.isArray(map.path)) {
+      candidatePaths.push(map.path);
     }
-    if (end > path.length - 1) {
-      end = path.length - 1;
-      start = Math.max(0, end - (count - 1));
+  
+    if (map.paths && typeof map.paths === 'object') {
+      // map.paths is an object like { S1: [{col,row}, ...], S2: [...] }
+      candidatePaths = candidatePaths.concat(Object.values(map.paths));
     }
-
-    const tiles = [];
-    for (let i = start; i <= end; i++) {
-      tiles.push({ col: path[i].x, row: path[i].y });
+  
+    // Nothing to search
+    if (candidatePaths.length === 0) return [];
+  
+    // Normalizer: turn an entry into {col,row}
+    const normalizePath = (p) => {
+      return p.map(node => {
+        if (!node) return null;
+        if (typeof node.col === 'number' && typeof node.row === 'number') return { col: node.col, row: node.row };
+        if (typeof node.x === 'number' && typeof node.y === 'number') return { col: node.x, row: node.y };
+        // fallback: try r/c or c/r
+        if (typeof node.r === 'number' && typeof node.c === 'number') return { col: node.c, row: node.r };
+        return null;
+      });
+    };
+  
+    // find the path that contains centerTile
+    for (const rawPath of candidatePaths) {
+      if (!Array.isArray(rawPath) || rawPath.length === 0) continue;
+      const path = normalizePath(rawPath);
+    
+      const idx = path.findIndex(n => n && n.col === centerTile.col && n.row === centerTile.row);
+      if (idx === -1) continue;
+    
+      // calculate centered window
+      const half = Math.floor(count / 2);
+      let start = idx - half;
+      let end = start + count - 1;
+    
+      // clamp to path bounds
+      if (start < 0) {
+        start = 0;
+        end = Math.min(count - 1, path.length - 1);
+      }
+      if (end > path.length - 1) {
+        end = path.length - 1;
+        start = Math.max(0, end - (count - 1));
+      }
+    
+      const tiles = [];
+      for (let i = start; i <= end; i++) {
+        const n = path[i];
+        if (n) tiles.push({ col: n.col, row: n.row });
+      }
+      return tiles;
     }
-    return tiles;
+  
+    // not on any path
+    return [];
   }
 
   // override to handle placement click (we expect tile coords)

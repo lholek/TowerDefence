@@ -199,14 +199,22 @@ export default class Game {
 
     this.spawnTimer += deltaTime;
     if (this.spawnTimer >= this.spawnInterval) {
-        const nextType = level.enemies.find(e => e._remaining > 0);
-        if (nextType) {
-            this.enemies.push(
-                new Enemy(this.map, this.map.path, 0, 0, nextType.speed, nextType.health, nextType.coinReward)
-            );
-            nextType._remaining--;
+      const nextType = level.enemies.find(e => e._remaining > 0);
+      if (nextType) {
+        // choose start token. If your levels define startToken, use it. Otherwise choose 'S1' by default
+        const startToken = nextType.start || 'S1';
+        const path = this.map.paths[startToken] || [];
+      
+        if (path && path.length > 0) {
+          // pass path to Enemy (constructor accepts map + path)
+          this.enemies.push(new Enemy(this.map, path, 0, 0, nextType.speed, nextType.health, nextType.coinReward));
+          nextType._remaining--;
+        } else {
+          // fallback: still spawn at first open 'O' tile if no path
+          console.warn(`No path for ${startToken}. Enemy not spawned or pick fallback.`);
         }
-        this.spawnTimer = 0;
+      }
+      this.spawnTimer = 0;
     }
 
     this.enemies.forEach(e => e.update(deltaTime));
