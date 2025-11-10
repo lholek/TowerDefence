@@ -195,10 +195,17 @@ export default class Map {
   isBuildableTile(col, row) {
     // bounds check
     if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return false;
+  
     const tok = String(this.grid[row][col] ?? '');
-    // Only 'O' is path (not buildable). Everything else (X, -, B, etc.) may be buildable
-    // If you want explicit unbuildable tokens, check them here (e.g. tok === '-')
-    return tok !== 'O';
+  
+    // Block paths and special start/end tiles
+    if (tok === 'O') return false;        // path
+    if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
+    if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
+    if (tok === '-') return false;        // blocked tiles
+  
+    // everything else (X, B, L, etc.) is buildable
+    return true;
   }
 
   getTileStatus(col, row) {

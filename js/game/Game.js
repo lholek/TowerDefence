@@ -511,10 +511,12 @@ export default class Game {
           }
 
           // --- LAVA FLOOR --- //
-          if (!buildingTower && status == 'O') {
-            color = 'rgba(0,255,0,0.25)'; // green if active ablity
+          if (!buildingTower) {
+            if (status === 'O' || /^S\d*/i.test(status) || /^E\d*/i.test(status)) {
+              color = 'rgba(0,255,0,0.25)'; // green if active ability
+            }
           }
-        
+
           this.ctx.fillStyle = color;
           const center = this.map.tileToWorld(col, row);
           const calculatedX = center.x - this.map.tileSize / 2;
