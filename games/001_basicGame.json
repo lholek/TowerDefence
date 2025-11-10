@@ -16,13 +16,13 @@
       ],
       "tileSize": 60,
       "layout": [
-        "XXXXXXXXXX",
-        "OOXXXOOOOX",
-        "XOXXXOXXOX",
-        "XOXXXOXXOX",
-        "XOXXXOXXOX",
-        "XOOOOOXXOX",
-        "XXXXXXXXOO"
+        ["X","X","X","X","X","X","X","X","X","X"],
+        ["S1","O","X","X","X","O","O","O","O","X"],
+        ["X","O","X","X","X","O","X","X","O","X"],
+        ["X","O","X","X","X","O","X","X","O","X"],
+        ["X","O","X","X","X","O","X","X","O","X"],
+        ["X","O","O","O","O","O","X","X","O","X"],
+        ["X","X","X","X","X","X","X","X","O","E1"]
       ],
       "towerTypes": {
         "001": {
