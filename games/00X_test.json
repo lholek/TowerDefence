@@ -16,9 +16,32 @@
       "tileSize": 60,
       "layout": [
         ["X","X","X","X","X","X","X","X"],
-        ["S1","O","O","O","O","O","O","E1"],
+        ["S1","O","O","O","O","O","O","E2"],
+        ["X","-","X","X","O","X","X","X"],
+        ["S2","O","O","O","O","O","O","E1"],
         ["X","X","X","X","X","X","X","X"]
       ],
+        "abilities": [
+          {
+            "_comment": "cooldown - 30000",
+            "id": "lava_floor",
+            "name": "Lava Floor",
+            "description": "Demage - 250dmg / 0.25s",
+            "description_text": "3 tile before and after selected tile",
+            "type": "targeted", 
+            "selectionCount": 7, 
+            "__comment": "250dmg / 0.25s ",
+            "damage": 250, 
+            "damage_every": 250, 
+            "___comment": "cooldown - includes effectDuration !!!",
+            "cooldown": 30000,
+            "effectDuration": 6000,
+            "color": "rgba(245, 164, 66, 0.6)",
+            "ui": {
+              "icon": "🌋"
+            }
+          }
+        ],
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
@@ -35,7 +58,7 @@
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 10000, "health": 12000, "speed": 0.25, "coinReward": 2}
+            {"type": "basic", "count": 1000, "health": 100, "speed": 0.25, "coinReward": 2}
           ]
         }
       ]

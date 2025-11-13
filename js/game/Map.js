@@ -146,7 +146,7 @@ export default class Map {
         if (tok === 'O') fill = '#888';
         else if (/^S/i.test(tok)) fill = '#888';
         else if (/^E/i.test(tok)) fill = '#888';
-        else if (tok === '-') fill = '#666';
+        else if (tok === '-') fill = 'transparent';
         else if (tok === 'X') fill = '#444444';
         else fill = '#4a4a4a';
 

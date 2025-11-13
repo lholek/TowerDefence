@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Basic Game",
-      "startingCoins": 10,
+      "startingCoins": 10000,
       "startingLives": 10,
       "description": [
         {

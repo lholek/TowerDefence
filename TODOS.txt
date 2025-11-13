@@ -20,5 +20,59 @@ TODOS:
 + ability levling
 
 0.0.9 ideas:
-- more abilites
+- Multipaht enemis like this:
+  "levels": [
+    {
+      "level": 1,
+      "enemies": [
+        {
+          "type": "basic",
+          "count": 20,
+          "health": 100,
+          "speed": 0.25,
+          "coinReward": 2,
+          "pathDistribution": { "S1": 15, "S2": 5 }
+        },
+        {
+          "type": "tank",
+          "count": 4,
+          "health": 500,
+          "speed": 0.15,
+          "coinReward": 5,
+          "pathDistribution": { "S1": 1, "S2": 3 }
+        }
+      ]
+    }
+
+{
+  "levels": [
+    {
+      "level": 1,
+      "enemies": [
+        {
+          "type": "basic",
+          "count": 10,
+          "health": 100,
+          "speed": 0.25,
+          "coinReward": 2,
+          "start": "S1",
+          "target": "E2",
+          "spawnDelay": 0,
+          "spawnInterval": 400
+        },
+        {
+          "type": "tank",
+          "count": 3,
+          "health": 400,
+          "speed": 0.15,
+          "coinReward": 4,
+          "start": "S2",
+          "target": "E1",
+          "spawnDelay": 0,
+          "spawnInterval": 1000
+        }
+      ]
+    }
+  ]
+}
 - fix fps 
