@@ -143,11 +143,11 @@ export default class Map {
 
         const tok = String(this.grid[r][c] ?? '');
         let fill = '#444';
-        if (tok === 'O') fill = '#888';
-        else if (/^S/i.test(tok)) fill = '#888';
-        else if (/^E/i.test(tok)) fill = '#888';
+        if (tok === 'O') fill = '#8b6d4f';
+        else if (/^S/i.test(tok)) fill = '#8b6d4f';
+        else if (/^E/i.test(tok)) fill = '#8b6d4f';
         else if (tok === '-') fill = 'transparent';
-        else if (tok === 'X') fill = '#444444';
+        else if (tok === 'X') fill = '#3f7d3c';
         else fill = '#4a4a4a';
 
         ctx.fillStyle = fill;

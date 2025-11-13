@@ -70,9 +70,9 @@ export default class Tower {
 
         const worldPos = gameMap.tileToWorld(this.col, this.row);
 
-        // Fixed tower size - scaled by zoom so it grows/shrinks with map view
+        // Fixed tower size - DOES NOT scale with zoom
         const tileSize = gameMap.tileSize || 32;
-        const size = Math.round(tileSize * TOWER_SIZE * gameMap.camera.zoom);
+        const size = Math.round(tileSize * TOWER_SIZE);
         const half = size / 2;
 
         ctx.save();
@@ -157,8 +157,8 @@ export default class Tower {
         ctx.stroke();
 
         // flag
-        const flagW = battW * 0.52;
-        const flagH = battH * 3.0;
+        const flagW = battW * 0.72;
+        const flagH = battH * 6.0;
         const fx = poleX + 2;
         const fy = poleTopY + 4;
         ctx.fillStyle = this.color || '#b22222';
