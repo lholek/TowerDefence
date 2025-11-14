@@ -95,7 +95,7 @@
               }
           },
           "levels": [
-            {"level":0,"enemies":[{"type":"basic","count":7000,"health":4000000,"speed":0.35,"coinReward":3}]},
+            {"level":0,"enemies":[{"type":"basic","count":7,"health":40,"speed":0.35,"coinReward":3}]},
             {"level":1,"enemies":[{"type":"basic","count":7,"health":40,"speed":0.95,"coinReward":3}]},
             {"level":2,"enemies":[{"type":"basic","count":7,"health":60,"speed":1.0,"coinReward":2}]},
             {"level":3,"enemies":[{"type":"basic","count":7,"health":70,"speed":1.05,"coinReward":2}]},
