@@ -2,7 +2,7 @@
   "maps": [
       {
           "name": "Adventure Map",
-          "startingCoins": 2500000,
+          "startingCoins": 25,
           "startingLives": 5,
           "description": [
             {
