@@ -247,6 +247,6 @@ export default class Tower {
             c.closePath();
             if (fill) c.fill();
             if (stroke) c.stroke();
-        }
+        } 
     }
 }
