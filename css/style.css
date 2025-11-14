@@ -103,21 +103,24 @@ h3 {
 
 /* Version button: make it a full-width block under the info */
 .btn {
-  background: gold;
-  color: #111;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.08s ease;
-  display: block;           /* take full available width (stacked) */
-  width: 100%;              /* ensure stays under content */
-  text-align: center;
+    background-color: #8B4513; /* wood brown */
+    color: #f3e5ab;            /* parchment-like text */
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif; /* medieval-looking font */
+    font-weight: bold;
+    border: 3px solid #5c2e0e;
+    border-radius: 5px;
+    box-shadow: inset 0 -3px 0 #5c2e0e; /* 3D wood effect */
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    text-transform: uppercase;
+    
 }
 
-/* hover + active */
-.btn:hover { background: #ffde59; transform: translateY(-1px); }
+.btn:hover {
+    background-color: #a0522d;
+    box-shadow: inset 0 -2px 0 #5c2e0e;
+}
 .btn:active { transform: translateY(0); }
 
 /* setting btn*/

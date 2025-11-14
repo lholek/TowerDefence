@@ -4,8 +4,8 @@
       "version": "Alpha 0.0.9",
       "changes": [
         "TODO: UI - make tower div scrollabe",
-        "TODO: Improvment - First multi road map, enemies come from 2 ways, can exit 2 ways",
-        "TODO: Improvment - New ABILITY 'Freeze' that frezzes all curent enemies on the map for few seconds",
+        "TODO: UI - Improved graphics",
+        "TODO: UI - Make that game will pause after leaveing the window",
         "TODO: Fix bug - When one music ends another begins",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "UI - Updated 'Version History'"
