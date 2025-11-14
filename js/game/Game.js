@@ -565,7 +565,7 @@ export default class Game {
 
     // Show main menu overlay
     this.showOverlayMessage("Main Menu");
-    this.overlayContent.innerHTML = `<br><button id="startButton" class="btn big">Start Game</button>`;
+    this.overlayContent.innerHTML = `<br><button id="startButton" class="btn">Start Game</button>`;
 
     document.getElementById('startButton').addEventListener('click', () => {
       this.overlayContent.innerHTML = '';

@@ -17,13 +17,13 @@
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
     <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
-      <button id="startButton" class="btn big">Start Game</button>
+      <button id="startButton" class="btn btn-menu">Start Game</button>
     
       <!--  Version button -->
-      <button class="versionButton btn">Version History</button>
+      <button class="versionButton btn btn-menu">Version History</button>
 
       <!-- Settings Button -->
-      <button id="openSettingsBtn" class="btn">Game settings</button>
+      <button id="openSettingsBtn" class="btn btn-menu">Game settings</button>
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
@@ -96,9 +96,9 @@
                 
           <!-- Track controls -->
           <div class="music-controls">
-            <button id="musicPrev" class="btn-music">&lt;&lt;</button>
+            <button id="musicPrev" class="btn btn-music">&lt;&lt;</button>
             <span id="musicTitle" class="music-title">No track loaded</span>
-            <button id="musicNext" class="btn-music">&gt;&gt;</button>
+            <button id="musicNext" class="btn btn-music">&gt;&gt;</button>
           </div>
         
           <!-- Progress bar -->
@@ -111,7 +111,7 @@
         
           <!-- Volume & toggle -->
           <div class="music-volume">
-            <button id="musicToggle" class="btn-music">Music: OFF</button>
+            <button id="musicToggle" class="btn">Music: OFF</button>
             <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5">
           </div>
         </div>
@@ -131,7 +131,7 @@
         <div id="livesText">Lives: 10</div>
         <button id="pauseButton" style="display: none;">Pause (P)</button>
         <div id="coinsText">Coins: 10</div>
-        <button id="returnButton" class="return-btn bg-gold cl-black">Return to Main Menu</button>
+        <button id="returnButton" class="btn">Return to Main Menu</button>
       </div>
 
       <!-- Return popup -->
@@ -140,7 +140,7 @@
           <h3>Leave the Battle?</h3>
           <p>Returning to the main menu will erase your current progress. Do you really want to go back?</p>
           <div class="return-buttons">
-            <button id="confirmReturn" class="btn bg-gold cl-black">Yes, return</button>
+            <button id="confirmReturn" class="btn">Yes, return</button>
             <button id="cancelReturn" class="btn">Cancel</button>
           </div>
         </div>

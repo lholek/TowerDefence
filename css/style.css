@@ -50,11 +50,11 @@ h3 {
     margin-bottom: 17px;
     position: relative;
     z-index: 1;
-    background: gold;
+    background: #5c2e0e;
     border: none;
     border-radius: 6px;
     padding: 0.25rem;
-    color: #111;
+    color: #f3e5ab;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s
@@ -123,6 +123,10 @@ h3 {
 }
 .btn:active { transform: translateY(0); }
 
+.btn-menu{
+  width: 250px;
+}
+
 /* setting btn*/
 .settings-buttons .btn {
 margin: 0.25rem;
@@ -160,19 +164,6 @@ margin: 0.25rem;
 }
 .top-ui div {
   margin: 0 8px;
-}
-.top-ui button {
-  background: var(--ui-accent);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: bold;
-  padding: 6px 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.top-ui button:hover {
-  background: #2e8cf5;
 }
 
 /* progress bar container */
@@ -342,11 +333,6 @@ canvas {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-}
-.big {
-    font-size: 20px;
-    padding: 14px 24px;
-    cursor: pointer;
 }
 
 /* Styled dropdown for start overlay */

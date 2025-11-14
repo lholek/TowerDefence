@@ -32,7 +32,7 @@ export class MusicManager {
         // Audio
         this.audio = new Audio();
         this.audio.src = this.tracks[this.currentIndex];
-        this.audio.loop = true; // loop current track
+        this.audio.loop = false; // loop current track
         this.audio.volume = this.volume;
 
         this.updateTitle();
@@ -45,9 +45,12 @@ export class MusicManager {
         this.volumeRange.addEventListener('input', () => this.changeVolume());
         this.audio.addEventListener('timeupdate', () => this.updateProgress());
 
-        // ✅ NEW: allow clicking the progress bar to seek
+        // allow clicking the progress bar to seek
         const progressContainer = this.progressBar.parentElement;
         progressContainer.addEventListener('click', (e) => this.seekMusic(e));
+
+        // automaticly play next song in row
+        this.audio.addEventListener('ended', () => this.nextTrack());
     }
 
     playRandomTrack() {
