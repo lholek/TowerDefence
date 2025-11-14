@@ -9,7 +9,13 @@ export default class Bullet {
     }
 
     update(deltaTime) {
-        if (!this.active || !this.target) return;
+        // quickly bail out if already inactive
+        if (!this.active) return;
+        // if target gone or dead, deactivate the bullet to avoid wasted work
+        if (!this.target || (typeof this.target.health === 'number' && this.target.health <= 0)) {
+            this.active = false;
+            return;
+        }
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;
         const dist = Math.sqrt(dx*dx + dy*dy);

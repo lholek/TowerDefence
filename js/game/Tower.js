@@ -60,7 +60,8 @@ export default class Tower {
         }
 
         this.bullets.forEach(b => b.update(deltaTime));
-        this.bullets = this.bullets.filter(b => b.active);
+        // keep only active bullets that still have a living target
+        this.bullets = this.bullets.filter(b => b.active && b.target && (typeof b.target.health !== 'number' || b.target.health > 0));
     }
 
     render(ctx, map) {
