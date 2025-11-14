@@ -25,9 +25,20 @@ export default class Tower {
         this.lastShot = 0;
         this.bullets = [];
     }
+
+    // --- NEW: clone method ---
+    clone(col, row) {
+        return new Tower(this.map, col, row, {
+            range: this.range,
+            fireRate: this.fireRate,
+            damage: this.damage,
+            color: this.color,
+            speed: this.bulletSpeed,
+            sellPrice: this.sellPrice
+        });
+    }
     
     update(deltaTime, enemies) {
-        // Always recalculate world position from tile coords
         if (this.map && typeof this.map.tileToWorld === 'function') {
           const pos = this.map.tileToWorld(this.col, this.row);
           this.x = pos.x;
@@ -60,32 +71,25 @@ export default class Tower {
         }
 
         this.bullets.forEach(b => b.update(deltaTime));
-        // keep only active bullets that still have a living target
         this.bullets = this.bullets.filter(b => b.active && b.target && (typeof b.target.health !== 'number' || b.target.health > 0));
     }
 
     render(ctx, map) {
-        // Get world position (tile center) - always fresh from tile coords
         const gameMap = map || this.map;
         if (!gameMap) return;
 
         const worldPos = gameMap.tileToWorld(this.col, this.row);
-
-        // Fixed tower size - DOES NOT scale with zoom
         const tileSize = gameMap.tileSize || 32;
         const size = Math.round(tileSize * TOWER_SIZE);
         const half = size / 2;
 
         ctx.save();
-
-        // Apply camera transform - this keeps tower stuck to tile automatically
         gameMap.applyCameraTransform(ctx);
 
-        // Draw in WORLD space (camera transform handles everything)
         const cx = worldPos.x;
-        const cy = worldPos.y + 14; // 10px lower
+        const cy = worldPos.y + 14;
 
-        // 1) shadow
+        // shadow
         ctx.fillStyle = 'rgba(0,0,0,0.18)';
         ctx.beginPath();
         ctx.ellipse(cx + 4, cy + half * 0.6, half * 0.95, half * 0.48, 0, 0, Math.PI * 2);
