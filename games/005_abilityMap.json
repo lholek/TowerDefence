@@ -233,28 +233,28 @@
     "level": 16,
     "enemies": [
       { "type": "basic", "count": 25, "health": 1200, "speed": 1.25, "coinReward": 15 },
-      { "type": "fast", "count": 5, "health": 1440, "speed": 2.4, "coinReward": 15 }
+      { "type": "fast", "count": 5, "health": 1440, "speed": 1.8, "coinReward": 15 }
     ]
   },
   {
     "level": 17,
     "enemies": [
       { "type": "basic", "count": 25, "health": 1380, "speed": 1.28, "coinReward": 18 },
-      { "type": "fast", "count": 5, "health": 1656, "speed": 2.5, "coinReward": 18 }
+      { "type": "fast", "count": 5, "health": 1656, "speed": 1.8, "coinReward": 18 }
     ]
   },
   {
     "level": 18,
     "enemies": [
       { "type": "basic", "count": 25, "health": 1590, "speed": 1.3, "coinReward": 20 },
-      { "type": "fast", "count": 5, "health": 1908, "speed": 2.6, "coinReward": 20 }
+      { "type": "fast", "count": 5, "health": 1908, "speed": 1.8, "coinReward": 20 }
     ]
   },
   {
     "level": 19,
     "enemies": [
       { "type": "basic", "count": 25, "health": 1830, "speed": 1.32, "coinReward": 23 },
-      { "type": "fast", "count": 5, "health": 2196, "speed": 2.7, "coinReward": 23 }
+      { "type": "fast", "count": 5, "health": 2196, "speed": 1.8, "coinReward": 23 }
     ]
   },
   {
