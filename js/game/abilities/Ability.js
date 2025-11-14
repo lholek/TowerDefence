@@ -1,4 +1,4 @@
-// abilities/Ability.js
+// abilities/Ability.js 
 export default class Ability {
   constructor(game, config = {}) {
     this.game = game;                 // reference to Game instance
