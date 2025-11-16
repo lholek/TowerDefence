@@ -158,3 +158,62 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFPS();
   }
 });
+
+// Titles
+// --- Title Typing Effect ---
+function typeTitle() {
+    const titleEl = document.querySelector('.title');
+    if (!titleEl) return;
+    
+    const fullText = "The CZSrna's Tower Defence";
+    // Temporarily store the full text and clear the display
+    titleEl.dataset.fullText = fullText;
+    titleEl.textContent = "";
+
+    const characters = fullText.split('');
+    let charIndex = 0;
+    const intervalTime = 50; // 50ms delay between characters
+
+    const timer = setInterval(() => {
+        if (charIndex < characters.length) {
+            titleEl.textContent += characters[charIndex];
+            charIndex++;
+        } else {
+            clearInterval(timer);
+        }
+    }, intervalTime);
+}
+document.addEventListener("DOMContentLoaded", typeTitle);
+
+//  --- Title Laod Versions --- 
+async function loadVersion() {
+    try {
+        const res = await fetch('versions.json');
+        if (!res.ok) throw new Error(`Failed to load versions.json: ${res.status}`);
+        const data = await res.json();
+        
+        const firstVersion = data.versions && data.versions[0];
+        if (firstVersion && firstVersion.version) {
+            const versionString = firstVersion.version;
+            
+            // Update title
+            document.title = `The CZSrna's Tower Defence – ${versionString}`;
+            
+            // Update subtitle-bottom-left element
+            const subtitleEl = document.querySelector('.subtitle-bottom-left');
+            if (subtitleEl) {
+                subtitleEl.textContent = versionString;
+            } else {
+                console.warn('Element with class "subtitle-bottom-left" not found.');
+            }
+        } else {
+            console.warn('versions.json structure invalid or empty.');
+        }
+    } catch (err) {
+        console.error("Error loading version data:", err);
+    }
+}
+
+// Execute the function when the DOM is loaded
+// This ensures all elements queried above (document.title, .subtitle-bottom-left) exist.
+document.addEventListener("DOMContentLoaded", loadVersion);

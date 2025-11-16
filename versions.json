@@ -4,14 +4,15 @@
       "version": "Alpha 0.0.9",
       "changes": [
         "TODO: UI - make tower div scrollabe",
-        "TODO: UI - Improved graphics",
+        "TODO: UI - Redesing of Menu",
         "TODO: UI - Make that game will pause after leaveing the window",
         "TODO: Make games harder + more maps",
-        "TODO: Make cap to 60 FPS",
-        "TODO: FIX BUG - THE GAME DOESNT CLEAR DATA ON EXIT",
+        "TODO: Fix bug - Loading versions to tile from version.json",
+        "TODO: Fix bug - Loading first item then generate map info or reload",
         "Fixed bug - When one music ends another begins",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "Improved performace",
+        "UI - Redesing of Towers, Bullets, Map",
         "UI - Updated 'Version History'",
         "UI - Improved CSS"
         ]

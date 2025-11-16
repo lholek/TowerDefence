@@ -21,9 +21,12 @@ TODOS:
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
 ++ LONG TODO: Sending ways, playing from toher side
+        
 
 
 0.0.9 ideas:
+TODO: Make cap to 60 FPS
+
 - Multipaht enemis like this:
   "levels": [
     {
