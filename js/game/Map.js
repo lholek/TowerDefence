@@ -153,7 +153,8 @@ export default class Map {
         ctx.fillStyle = fill;
         ctx.fillRect(x, y, this.tileSize, this.tileSize);
         const DPR = window.devicePixelRatio || 1;
-        ctx.strokeStyle = '#222';
+        ctx.strokeStyle = '#222'; //#222
+        if (tok === '-') ctx.strokeStyle = 'transparent';
         ctx.lineWidth = 1 * DPR; // scale border with DPR
         ctx.strokeRect(x, y, this.tileSize, this.tileSize);
       }

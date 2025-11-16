@@ -9,6 +9,9 @@
   --enemy-color: #ff4444;
   --tower-color: #00e5ff;
   --particle-color: #66ffff;
+
+  --main-bg-color: #3e3223;
+  --items-bg-color: #8B4513;
 }
 
 html{
@@ -72,14 +75,14 @@ h3 {
 #eventsBox {
     width: 250px;
     max-height: 700px;
-    background: #1b1b1b;
+    background: var(--main-bg-color);;
     padding: 10px;
     border-radius: 8px;
     font-size: 14px;
     display: flex;
     flex-direction: column;
     scrollbar-width: thin;
-    scrollbar-color: #555 #1b1b1b;
+    scrollbar-color: var(--main-bg-color) var(--items-bg-color);
 }
 
 /* info box */
@@ -154,12 +157,11 @@ margin: 0.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1b1b1b;
+  background: var(--main-bg-color);
   border-bottom: 2px solid var(--ui-accent);
   padding: 8px 16px;
   font-family: 'Orbitron', sans-serif;
   color: var(--ui-text);
-  text-shadow: 0 0 4px rgba(0,0,0,0.8);
   border-radius: 6px;
 }
 .top-ui div {
