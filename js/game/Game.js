@@ -1,6 +1,7 @@
 import Map from './Map.js';
 import Enemy from './Enemy.js';
 import Tower from './Tower.js';
+import Bullet from './Bullet.js';
 
 // add near other imports
 import AbilityManager from './abilities/AbilityManager.js';
@@ -11,6 +12,7 @@ export default class Game {
     this.ctx = canvas.getContext('2d');
 
     this.towers = [];
+    this.bulletPool = [];
     this.enemies = [];
 
     this.playerCoins = 10;
@@ -145,7 +147,7 @@ export default class Game {
 
     if (this.playerCoins >= type.price) {
       // Tower konstruktor používá (map, col, row) ve tvém současném kódu
-      const tower = new Tower(this.map, tile.col, tile.row);
+      const tower = new Tower(this, this.map, tile.col, tile.row); // Pass 'this' (the game)
       tower.range = type.range;
       tower.fireRate = type.fireRate;
       tower.damage = type.damage;
@@ -532,9 +534,31 @@ export default class Game {
       }
 
       // Draw towers and enemies
-      this.towers.forEach(t => t.render(this.ctx));
-      this.enemies.forEach(e => e.render(this.ctx));
+      // --- OPTIMIZATION: Centralize Camera Transforms ---
+
+      // 1. Apply camera transform ONCE
+      this.map.applyCameraTransform(this.ctx);
+
+      // 2. Draw all world-space items
+      // We pass 'this.map' so render methods know the tileSize, etc.
+      this.towers.forEach(t => t.render(this.ctx, this.map));
+      
+      // Also render all bullets under the same transform
+      for (const tower of this.towers) {
+          for (const bullet of tower.bullets) {
+              bullet.render(this.ctx); // Bullet.js render is already correct
+          }
+      }
+
+      this.enemies.forEach(e => e.render(this.ctx, this.map));
+      
+      // Assumes abilityManager.render also draws in world-space
       this.abilityManager.render(this.ctx);
+
+      // 3. Reset transform ONCE
+      this.map.resetTransform(this.ctx);
+
+      // --- END OPTIMIZATION ---
   }
 
   logEvent(text) {
@@ -634,4 +658,17 @@ export default class Game {
       // getTileFromCoords clamps to valid range, but we keep hoveredTile for rendering
       this.hoveredTile = tile;
   }
+
+    getBullet() {
+        if (this.bulletPool.length > 0) {
+            return this.bulletPool.pop();
+        }
+        // Create new one if pool is empty
+        return new Bullet(0, 0, null, 0); 
+    }
+
+    returnBullet(bullet) {
+        bullet.active = false;
+        this.bulletPool.push(bullet);
+    } 
 }

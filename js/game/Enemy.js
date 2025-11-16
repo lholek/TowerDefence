@@ -42,9 +42,6 @@ export default class Enemy {
     }
 
     render(ctx) {
-        // apply camera
-        this.map.applyCameraTransform(ctx);
-
         // draw enemy body
         ctx.fillStyle = 'red';
         ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
@@ -63,8 +60,5 @@ export default class Enemy {
         // draw health fill
         ctx.fillStyle = healthRatio > 0.5 ? '#0f0' : healthRatio > 0.25 ? 'orange' : 'red';
         ctx.fillRect(barX, barY, barWidth * healthRatio, barHeight);
-
-        // reset transform
-        this.map.resetTransform(ctx);
     }
 }

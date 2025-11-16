@@ -4,7 +4,8 @@ import Bullet from './Bullet.js';
 const TOWER_SIZE = 0.5;
 
 export default class Tower {
-    constructor(map, col, row, type = {}) {
+    constructor(game, map, col, row, type = {}) {
+        this.game = game; // <-- ADD THIS
         this.map = map;
         this.col = col;
         this.row = row;
@@ -24,6 +25,8 @@ export default class Tower {
 
         this.lastShot = 0;
         this.bullets = [];
+
+        this.preRenderedImage = this._preRenderTower(this.map.tileSize);
     }
 
     // --- NEW: clone method ---
@@ -38,83 +41,26 @@ export default class Tower {
         });
     }
     
-update(deltaTime, enemies) {
-
-    // --- 1) DO NOT recompute world pos every frame ---
-    // Towers are static. Compute once in constructor.
-    // (Remove your existing tileToWorld call here completely)
-
-    this.lastShot += deltaTime;
-
-    // --- 2) Only check targets when tower CAN shoot ---
-    if (this.lastShot < this.fireRate) {
-        // Still update bullets
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            const b = this.bullets[i];
-            b.update(deltaTime);
-            if (!b.active) this.bullets.splice(i, 1);
-        }
-        return;
-    }
-
-    // --- 3) SHOOTING: pick closest enemy using squared distance ---
-    let best = null;
-    let bestDistSq = this.range * this.range;
-
-    // Fast loop, NO sqrt.
-    const tx = this.x;
-    const ty = this.y;
-
-    for (const enemy of enemies) {
-        // Skip dead enemies fast
-        if (enemy.health <= 0) continue;
-
-        const dx = enemy.x - tx;
-        const dy = enemy.y - ty;
-        const d2 = dx * dx + dy * dy;
-
-        if (d2 < bestDistSq) {
-            bestDistSq = d2;
-            best = enemy;
-        }
-    }
-
-    // --- 4) Shoot ---
-    if (best) {
-        const bullet = new Bullet(tx, ty, best, this.bulletSpeed);
-        bullet.damage = this.damage;
-        this.bullets.push(bullet);
-
-        this.lastShot = 0; // reset cooldown
-    }
-
-    // --- 5) Update bullets ---
-    for (let i = this.bullets.length - 1; i >= 0; i--) {
-        const b = this.bullets[i];
-        b.update(deltaTime);
-
-        if (!b.active) {
-            this.bullets.splice(i, 1);
-        }
-    }
-}
-
-
-
-    render(ctx, map) {
-        const gameMap = map || this.map;
-        if (!gameMap) return;
-
-        const worldPos = gameMap.tileToWorld(this.col, this.row);
-        const tileSize = gameMap.tileSize || 32;
+// NEW METHOD
+    _preRenderTower(tileSize) {
         const size = Math.round(tileSize * TOWER_SIZE);
         const half = size / 2;
 
-        ctx.save();
-        gameMap.applyCameraTransform(ctx);
+        // Create an off-screen canvas
+        const offCanvas = document.createElement("canvas");
+        // Make canvas larger to avoid clipping shadows or flags
+        const canvasSize = tileSize * 2; 
+        offCanvas.width = canvasSize;
+        offCanvas.height = canvasSize;
+        const ctx = offCanvas.getContext("2d");
 
-        const cx = worldPos.x;
-        const cy = worldPos.y + 14;
+        // Center the drawing in the off-screen canvas
+        // We use the same 'cy' offset as your original render
+        const cx = canvasSize / 2;
+        const cy = canvasSize / 2 + 14; 
+
+        // --- PASTE ALL YOUR STATIC DRAWING CODE FROM render() HERE ---
+        // (Ensure 'roundRect' is now a global helper)
 
         // shadow
         ctx.fillStyle = 'rgba(0,0,0,0.18)';
@@ -203,6 +149,94 @@ update(deltaTime, enemies) {
         ctx.strokeStyle = 'rgba(0,0,0,0.3)';
         ctx.lineWidth = 1;
         ctx.stroke();
+        
+        return offCanvas;
+    }
+
+update(deltaTime, enemies) {
+
+    // --- 1) DO NOT recompute world pos every frame ---
+    // Towers are static. Compute once in constructor.
+    // (Remove your existing tileToWorld call here completely)
+
+    this.lastShot += deltaTime;
+
+    // --- 2) Only check targets when tower CAN shoot ---
+    if (this.lastShot < this.fireRate) {
+        // Still update bullets
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.update(deltaTime);
+            if (!b.active) {
+                this.game.returnBullet(b); // Return to pool
+                this.bullets.splice(i, 1);
+            }
+        }
+        return;
+    }
+
+    // --- 3) SHOOTING: pick closest enemy using squared distance ---
+    let best = null;
+    let bestDistSq = this.range * this.range;
+
+    // Fast loop, NO sqrt.
+    const tx = this.x;
+    const ty = this.y;
+
+    for (const enemy of enemies) {
+        // Skip dead enemies fast
+        if (enemy.health <= 0) continue;
+
+        const dx = enemy.x - tx;
+        const dy = enemy.y - ty;
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 < bestDistSq) {
+            bestDistSq = d2;
+            best = enemy;
+        }
+    }
+
+    // --- 4) Shoot ---
+    if (best) {
+        const bullet = this.game.getBullet(); // Get from pool
+        bullet.init(tx, ty, best, this.bulletSpeed); // Re-initialize it
+        bullet.damage = this.damage;
+        this.bullets.push(bullet);
+
+        this.lastShot = 0; // reset cooldown
+    }
+
+    // --- 5) Update bullets ---
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+        const b = this.bullets[i];
+        b.update(deltaTime);
+
+        if (!b.active) {
+            this.bullets.splice(i, 1);
+        }
+    }
+}
+
+
+
+    render(ctx, map) {
+        const gameMap = map || this.map;
+        if (!gameMap) return;
+
+        // --- 1. Draw the pre-rendered tower image ---
+        const drawSize = this.map.tileSize * 2; // Matches the off-canvas size
+        const drawX = this.x - drawSize / 2;
+        const drawY = this.y - drawSize / 2; 
+
+        ctx.drawImage(this.preRenderedImage, drawX, drawY);
+
+        // --- 2. Draw DYNAMIC parts (selection range, health) ---
+        // (We copy this from your old render method)
+        const size = Math.round(gameMap.tileSize * TOWER_SIZE);
+        const half = size / 2;
+        const cx = this.x; // Use the tower's actual world position
+        const cy = this.y + 14;
 
         // selection range
         if (this.isSelected) {
@@ -226,44 +260,15 @@ update(deltaTime, enemies) {
             const bx = cx - bw / 2;
             const by = cy + half + 6;
             ctx.fillStyle = '#222';
-            roundRect(ctx, bx, by, bw, bh, 2, true, false);
+            roundRect(ctx, bx, by, bw, bh, 2, true, false); // Uses global roundRect
             const pct = Math.max(0, Math.min(1, this.health / (this.maxHealth || 100)));
             ctx.fillStyle = `hsl(${pct * 120}, 70%, 45%)`;
-            roundRect(ctx, bx + 1, by + 1, (bw - 2) * pct, bh - 2, 2, true, false);
+            roundRect(ctx, bx + 1, by + 1, (bw - 2) * pct, bh - 2, 2, true, false); // Uses global roundRect
         }
+    }
+}
 
-        // bullets
-        if (this.bullets && this.bullets.length) {
-            for (const b of this.bullets) {
-                if (typeof b.render === 'function') {
-                    try { b.render(ctx, gameMap); } catch (e) { }
-                } else {
-                    const arrowLen = Math.max(8, size * 0.12);
-                    const arrowW = Math.max(3, size * 0.04);
-                    
-                    const vx = b.vx || (b.target ? b.target.x - b.x : 1);
-                    const vy = b.vy || (b.target ? b.target.y - b.y : 0);
-                    const vLen = Math.sqrt(vx * vx + vy * vy);
-                    const dirX = vLen > 0 ? vx / vLen : 1;
-                    const dirY = vLen > 0 ? vy / vLen : 0;
-                    
-                    ctx.fillStyle = '#ffd700';
-                    ctx.beginPath();
-                    ctx.moveTo(b.x + dirX * arrowLen, b.y + dirY * arrowLen);
-                    ctx.lineTo(b.x - dirY * arrowW * 0.5, b.y + dirX * arrowW * 0.5);
-                    ctx.lineTo(b.x + dirY * arrowW * 0.5, b.y - dirX * arrowW * 0.5);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.strokeStyle = '#cc9000';
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        ctx.restore();
-
-        function roundRect(c, x, y, w, h, r, fill, stroke) {
+function roundRect(c, x, y, w, h, r, fill, stroke) {
             if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
             c.beginPath();
             c.moveTo(x + r.tl, y);
@@ -279,5 +284,3 @@ update(deltaTime, enemies) {
             if (fill) c.fill();
             if (stroke) c.stroke();
         } 
-    }
-}

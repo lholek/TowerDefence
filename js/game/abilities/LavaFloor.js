@@ -140,7 +140,6 @@ export default class LavaFloor extends Ability {
 
   render(ctx) {
     if (this.activeInstances.length === 0 && !this.isPlacing && this.pendingSelections.length === 0) return;
-    this.game.map.applyCameraTransform(ctx);
 
     ctx.fillStyle = this.color || 'rgba(255,80,0,0.4)';
     for (const inst of this.activeInstances) {
@@ -155,8 +154,6 @@ export default class LavaFloor extends Ability {
         ctx.fillRect(center.x - this.game.map.tileSize/2, center.y - this.game.map.tileSize/2, this.game.map.tileSize, this.game.map.tileSize);
       }
     }
-
-    this.game.map.resetTransform(ctx);
   }
 
   // Preview: square area around target tile. radius can be set in config.radius (default 1 -> 3x3)
