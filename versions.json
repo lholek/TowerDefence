@@ -7,6 +7,8 @@
         "TODO: UI - Improved graphics",
         "TODO: UI - Make that game will pause after leaveing the window",
         "TODO: Make games harder + more maps",
+        "TODO: Make cap to 60 FPS",
+        "TODO: FIX BUG - THE GAME DOESNT CLEAR DATA ON EXIT",
         "Fixed bug - When one music ends another begins",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "Improved performace",

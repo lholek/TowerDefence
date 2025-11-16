@@ -38,41 +38,68 @@ export default class Tower {
         });
     }
     
-    update(deltaTime, enemies) {
-        if (this.map && typeof this.map.tileToWorld === 'function') {
-          const pos = this.map.tileToWorld(this.col, this.row);
-          this.x = pos.x;
-          this.y = pos.y;
+update(deltaTime, enemies) {
+
+    // --- 1) DO NOT recompute world pos every frame ---
+    // Towers are static. Compute once in constructor.
+    // (Remove your existing tileToWorld call here completely)
+
+    this.lastShot += deltaTime;
+
+    // --- 2) Only check targets when tower CAN shoot ---
+    if (this.lastShot < this.fireRate) {
+        // Still update bullets
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.update(deltaTime);
+            if (!b.active) this.bullets.splice(i, 1);
         }
-
-        this.lastShot += deltaTime;
-
-        if (this.lastShot >= this.fireRate) {
-            let target = null;
-            let minDist = Infinity;
-
-            for (const enemy of enemies) {
-                const dx = enemy.x - this.x;
-                const dy = enemy.y - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                if (dist <= this.range && dist < minDist) {
-                    minDist = dist;
-                    target = enemy;
-                }
-            }
-
-            if (target) {
-                const b = new Bullet(this.x, this.y, target, this.bulletSpeed);
-                b.damage = this.damage;
-                this.bullets.push(b);
-                this.lastShot = 0;
-            }
-        }
-
-        this.bullets.forEach(b => b.update(deltaTime));
-        this.bullets = this.bullets.filter(b => b.active && b.target && (typeof b.target.health !== 'number' || b.target.health > 0));
+        return;
     }
+
+    // --- 3) SHOOTING: pick closest enemy using squared distance ---
+    let best = null;
+    let bestDistSq = this.range * this.range;
+
+    // Fast loop, NO sqrt.
+    const tx = this.x;
+    const ty = this.y;
+
+    for (const enemy of enemies) {
+        // Skip dead enemies fast
+        if (enemy.health <= 0) continue;
+
+        const dx = enemy.x - tx;
+        const dy = enemy.y - ty;
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 < bestDistSq) {
+            bestDistSq = d2;
+            best = enemy;
+        }
+    }
+
+    // --- 4) Shoot ---
+    if (best) {
+        const bullet = new Bullet(tx, ty, best, this.bulletSpeed);
+        bullet.damage = this.damage;
+        this.bullets.push(bullet);
+
+        this.lastShot = 0; // reset cooldown
+    }
+
+    // --- 5) Update bullets ---
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+        const b = this.bullets[i];
+        b.update(deltaTime);
+
+        if (!b.active) {
+            this.bullets.splice(i, 1);
+        }
+    }
+}
+
+
 
     render(ctx, map) {
         const gameMap = map || this.map;
