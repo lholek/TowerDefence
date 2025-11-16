@@ -147,13 +147,7 @@ export default class Game {
 
     if (this.playerCoins >= type.price) {
       // Tower konstruktor používá (map, col, row) ve tvém současném kódu
-      const tower = new Tower(this, this.map, tile.col, tile.row); // Pass 'this' (the game)
-      tower.range = type.range;
-      tower.fireRate = type.fireRate;
-      tower.damage = type.damage;
-      tower.color = type.color;
-      tower.bulletSpeed = type.speed || 3;
-      tower.sellPrice = type.sellPrice || 1;
+      const tower = new Tower(this, this.map, tile.col, tile.row, type); // Pass 'this' (the game)
       tower.typeKey = this.selectedTowerType;
       this.towers.push(tower);
       this.playerCoins -= type.price;

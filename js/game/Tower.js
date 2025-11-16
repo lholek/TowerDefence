@@ -9,7 +9,7 @@ export default class Tower {
         this.map = map;
         this.col = col;
         this.row = row;
-        
+
         // Store tile position for reference
         const pos = this.map.tileToWorld(col, row);
         this.x = pos.x;
@@ -22,6 +22,7 @@ export default class Tower {
         this.color = type.color || 'blue';
         this.bulletSpeed = type.speed || 3;
         this.sellPrice = type.sellPrice || 1;
+        
 
         this.lastShot = 0;
         this.bullets = [];
@@ -31,7 +32,7 @@ export default class Tower {
 
     // --- NEW: clone method ---
     clone(col, row) {
-        return new Tower(this.map, col, row, {
+        return new Tower(this.game, this.map, col, row, {
             range: this.range,
             fireRate: this.fireRate,
             damage: this.damage,
@@ -40,8 +41,8 @@ export default class Tower {
             sellPrice: this.sellPrice
         });
     }
-    
-// NEW METHOD
+
+    // NEW METHOD
     _preRenderTower(tileSize) {
         const size = Math.round(tileSize * TOWER_SIZE);
         const half = size / 2;
@@ -49,7 +50,7 @@ export default class Tower {
         // Create an off-screen canvas
         const offCanvas = document.createElement("canvas");
         // Make canvas larger to avoid clipping shadows or flags
-        const canvasSize = tileSize * 2; 
+        const canvasSize = tileSize * 2;
         offCanvas.width = canvasSize;
         offCanvas.height = canvasSize;
         const ctx = offCanvas.getContext("2d");
@@ -57,7 +58,7 @@ export default class Tower {
         // Center the drawing in the off-screen canvas
         // We use the same 'cy' offset as your original render
         const cx = canvasSize / 2;
-        const cy = canvasSize / 2 + 14; 
+        const cy = canvasSize / 2 + 14;
 
         // --- PASTE ALL YOUR STATIC DRAWING CODE FROM render() HERE ---
         // (Ensure 'roundRect' is now a global helper)
@@ -149,76 +150,74 @@ export default class Tower {
         ctx.strokeStyle = 'rgba(0,0,0,0.3)';
         ctx.lineWidth = 1;
         ctx.stroke();
-        
+
         return offCanvas;
     }
 
-update(deltaTime, enemies) {
+    update(deltaTime, enemies) {
 
-    // --- 1) DO NOT recompute world pos every frame ---
-    // Towers are static. Compute once in constructor.
-    // (Remove your existing tileToWorld call here completely)
+        // --- 1) DO NOT recompute world pos every frame ---
+        // Towers are static. Compute once in constructor.
+        // (Remove your existing tileToWorld call here completely)
 
-    this.lastShot += deltaTime;
+        this.lastShot += deltaTime;
 
-    // --- 2) Only check targets when tower CAN shoot ---
-    if (this.lastShot < this.fireRate) {
-        // Still update bullets
+        // --- 2) Only check targets when tower CAN shoot ---
+        if (this.lastShot < this.fireRate) {
+            // Still update bullets
+            for (let i = this.bullets.length - 1; i >= 0; i--) {
+                const b = this.bullets[i];
+                b.update(deltaTime);
+                if (!b.active) {
+                    this.game.returnBullet(b); // Return to pool
+                    this.bullets.splice(i, 1);
+                }
+            }
+            return;
+        }
+
+        // --- 3) SHOOTING: pick closest enemy using squared distance ---
+        let best = null;
+        let bestDistSq = this.range * this.range;
+
+        // Fast loop, NO sqrt.
+        const tx = this.x;
+        const ty = this.y;
+
+        for (const enemy of enemies) {
+            // Skip dead enemies fast
+            if (enemy.health <= 0) continue;
+
+            const dx = enemy.x - tx;
+            const dy = enemy.y - ty;
+            const d2 = dx * dx + dy * dy;
+
+            if (d2 < bestDistSq) {
+                bestDistSq = d2;
+                best = enemy;
+            }
+        }
+
+        // --- 4) Shoot ---
+        if (best) {
+            const bullet = this.game.getBullet(); // Get from pool
+            bullet.init(tx, ty, best, this.bulletSpeed); // Re-initialize it
+            bullet.damage = this.damage;
+            this.bullets.push(bullet);
+
+            this.lastShot = 0; // reset cooldown
+        }
+
+        // --- 5) Update bullets ---
         for (let i = this.bullets.length - 1; i >= 0; i--) {
             const b = this.bullets[i];
             b.update(deltaTime);
+
             if (!b.active) {
-                this.game.returnBullet(b); // Return to pool
                 this.bullets.splice(i, 1);
             }
         }
-        return;
     }
-
-    // --- 3) SHOOTING: pick closest enemy using squared distance ---
-    let best = null;
-    let bestDistSq = this.range * this.range;
-
-    // Fast loop, NO sqrt.
-    const tx = this.x;
-    const ty = this.y;
-
-    for (const enemy of enemies) {
-        // Skip dead enemies fast
-        if (enemy.health <= 0) continue;
-
-        const dx = enemy.x - tx;
-        const dy = enemy.y - ty;
-        const d2 = dx * dx + dy * dy;
-
-        if (d2 < bestDistSq) {
-            bestDistSq = d2;
-            best = enemy;
-        }
-    }
-
-    // --- 4) Shoot ---
-    if (best) {
-        const bullet = this.game.getBullet(); // Get from pool
-        bullet.init(tx, ty, best, this.bulletSpeed); // Re-initialize it
-        bullet.damage = this.damage;
-        this.bullets.push(bullet);
-
-        this.lastShot = 0; // reset cooldown
-    }
-
-    // --- 5) Update bullets ---
-    for (let i = this.bullets.length - 1; i >= 0; i--) {
-        const b = this.bullets[i];
-        b.update(deltaTime);
-
-        if (!b.active) {
-            this.bullets.splice(i, 1);
-        }
-    }
-}
-
-
 
     render(ctx, map) {
         const gameMap = map || this.map;
@@ -227,7 +226,7 @@ update(deltaTime, enemies) {
         // --- 1. Draw the pre-rendered tower image ---
         const drawSize = this.map.tileSize * 2; // Matches the off-canvas size
         const drawX = this.x - drawSize / 2;
-        const drawY = this.y - drawSize / 2; 
+        const drawY = this.y - drawSize / 2;
 
         ctx.drawImage(this.preRenderedImage, drawX, drawY);
 
@@ -269,18 +268,18 @@ update(deltaTime, enemies) {
 }
 
 function roundRect(c, x, y, w, h, r, fill, stroke) {
-            if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
-            c.beginPath();
-            c.moveTo(x + r.tl, y);
-            c.lineTo(x + w - r.tr, y);
-            c.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-            c.lineTo(x + w, y + h - r.br);
-            c.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-            c.lineTo(x + r.bl, y + h);
-            c.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-            c.lineTo(x, y + r.tl);
-            c.quadraticCurveTo(x, y, x + r.tl, y);
-            c.closePath();
-            if (fill) c.fill();
-            if (stroke) c.stroke();
-        } 
+    if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+    c.beginPath();
+    c.moveTo(x + r.tl, y);
+    c.lineTo(x + w - r.tr, y);
+    c.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+    c.lineTo(x + w, y + h - r.br);
+    c.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+    c.lineTo(x + r.bl, y + h);
+    c.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+    c.lineTo(x, y + r.tl);
+    c.quadraticCurveTo(x, y, x + r.tl, y);
+    c.closePath();
+    if (fill) c.fill();
+    if (stroke) c.stroke();
+} 

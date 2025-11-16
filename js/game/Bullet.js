@@ -32,8 +32,6 @@ function createArrowImage() {
 }
 
 const ARROW_IMAGE = createArrowImage();
-// ------------------------------------------------------
-
 
 export default class Bullet {
 
