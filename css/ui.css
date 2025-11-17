@@ -75,6 +75,7 @@
 
 .minimap-tile.path { background: #8B6D4F; }
 .minimap-tile.block { background: #3F7D3C; }
+.minimap-tile.sky { background: transparent; }
 /* mini map */
 
 /* Abilites */

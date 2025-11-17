@@ -129,7 +129,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               break;
             case 'E3':
               tile.classList.add('path');
-              break;      
+              break;
+            case '-':
+              tile.classList.add('sky');
+              break;     
             default:
               tile.classList.add('block');
               break;

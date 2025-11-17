@@ -13,7 +13,7 @@ export default class Map {
     // camera state (keep your existing camera code)
     this.camera = {
       x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
-      minZoom: 0.5, maxZoom: 1
+      minZoom: 0.3, maxZoom: 1
     };
 
     // detect special tiles, starts/ends
