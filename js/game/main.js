@@ -60,12 +60,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     
       // create/map name element if missing
-      let nameEl = document.getElementById('mapName');
+      /*let nameEl = document.getElementById('mapName');
       if (!nameEl) {
         nameEl = document.createElement('h3');
         nameEl.id = 'mapName';
         mapInfo.prepend(nameEl); // add at top
-      }
+      }*/
     
       // minimap container
       let minimap = document.getElementById('minimap');
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Update name/description safely
       const mapName = mapData.name || 'Unnamed Map';
       const desc = (mapData.description && mapData.description[0] && mapData.description[0].descriptionText) || '';
-      nameEl.textContent = mapName;
+      //nameEl.textContent = mapName;
     
       // layout must be an array of strings
       if (!mapData.layout || !Array.isArray(mapData.layout) || mapData.layout.length === 0) {
@@ -156,13 +156,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (map && map.description && map.description.length > 0) {
             const desc = map.description[0]; // use first description object
             infoDiv.innerHTML = `
-              <p><b>Description:</b> ${desc.descriptionText}</p>
+            <div>
+              <p><b>Description:</b><br>${desc.descriptionText}</p>
               <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
               <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
               <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
               <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
+            </div>
             `;
             renderMinimap(map);
+
           } else {
             infoDiv.textContent = "No description available.";
           }

@@ -28,26 +28,28 @@
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
       <select id="mapSelect" class="styled-select">
-        <option value="./games/00X_test.json">Test Map</option>
         <option value="./games/001_basicGame.json">Basic</option>
         <option value="./games/004_adventureMap.json">Adventure Map</option>
         <option value="./games/005_abilityMap.json">Lava Map</option>
         <option value="./games/006_adventureMap2.json">Adventure Map II (Islands)</option>
         <option value="./games/002_zigZagGame.json">Zig-Zag</option>
         <option value="./games/003_longMapGame.json">Long Map</option>
+        <option value="./games/00X_test.json">Test Map</option>
 
       </select>
-      <div id="mapInfo" class="mapInfo">
-        <h3>Basic game</h3>
-        <p><b>Description:</b> Very basic map to learn game mechanics</p>
-        <p><b>Level count:</b> 8</p>
-        <p><b>Difficulty:</b> ⭐</p>
-        <p><b>Tower Types:</b> 4</p>
-        <p><b>Abilities:</b> -</p>
-        <div id="minimapContainer">
-          <div id="minimap" style="grid-template-rows: repeat(7, 10px); grid-template-columns: repeat(10, 10px);">
-            <div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div></div>
+        <div id="mapInfo" class="mapInfo">
+          <div>
+            <p><b>Description:</b> <br>Very basic map to learn game mechanics</p>
+            <p><b>Level count:</b> 8</p>
+            <p><b>Difficulty:</b> ⭐</p>
+            <p><b>Tower Types:</b> 4</p>
+            <p><b>Abilities:</b> -</p>
           </div>
+          <div id="minimapContainer">
+            <div id="minimap" style="grid-template-rows: repeat(7, 10px); grid-template-columns: repeat(10, 10px);">
+              <div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div></div>
+          </div>
+        </div>
       </div>
       <!-- ⚙️ Settings Popup -->
       <div id="settingsPopup" class="settings-popup hidden">
@@ -84,12 +86,14 @@
         <h3 class="subtitle">Alpha 0.0.9</h3>
         <div id="infoBox" class="box">
           <h3>Controls</h3>
-          <div>P - Pause game</div>
-          <div>Wheel (Press) - Move around the map</div>
-          <div>Wheel - Zoom in / Zoom out</div>
-          <div>Select the tower from cards</div>
-          <div>Left click - Build Tower</div>
-          <div>Right click - Sell Tower</div>
+          <div><strong>P</strong> - Pause game</div>
+          <div><strong>Wheel (Press)</strong> - Move around the map</div>
+          <div><strong>Wheel</strong> - Zoom in / Zoom out</div>
+          <div><strong>Left click</strong> - Build Tower</div>
+          <div><strong>Right click</strong> - Sell Tower</div>
+          <div>Select the towers or abilites from cards</div>
+          <div>Built them on proper blocks</div>
+          <div>Enjoy the Game!</div>
         </div>
 
         <!-- Music Player -->

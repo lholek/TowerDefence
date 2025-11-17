@@ -341,9 +341,8 @@ canvas {
 .styled-select {
   padding: 8px 12px;
   border-radius: 8px;
-  background: #1b1b1b;
+  background: var(--main-bg-color);;
   color: #fff;
-  border: 2px solid #444;
   font-weight: bold;
   cursor: pointer;
   min-width: 180px;
@@ -361,14 +360,15 @@ max-width: 400px;
 
 /* Description */
 .mapInfo {
-    min-width: 500px;
-    max-width: 500px;
-    background: #222;
+    min-width: 300px;
+    max-width: 600px;
+    background: var(--main-bg-color);
     padding: 15px;
     margin: 0px;
     margin-bottom: 2px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
+    flex-direction: row;
     gap: 2px;
     align-items: stretch;
     border-radius: 8px;

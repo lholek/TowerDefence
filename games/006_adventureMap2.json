@@ -6,8 +6,8 @@
         "startingLives": 5,
         "description": [
           {
-            "descriptionText": "3 main, island to build the towers, Lava Floor, multiple tower types",
-            "level count": 20,
+            "descriptionText": "3 main islands to build the towers, Lava Floor, multiple tower types",
+            "level count": 30,
             "map_size": "20X14",
             "difficulty": "⭐⭐⭐⭐",
             "tower types": 7,
