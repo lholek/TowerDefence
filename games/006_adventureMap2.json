@@ -220,9 +220,52 @@
             },
             {
               "level": 11,
+              "_comment": "760 coins",
               "enemies": [
-                { "type": "basic", "count": 5, "health": 200, "speed": 1, "coinReward": 8 },
-                { "type": "fast", "count": 1, "health": 400, "speed": 1.25, "coinReward": 12 }
+                { "type": "basic", "count": 10, "health": 3000, "speed": 1.05, "coinReward": 40 },
+                { "type": "tank", "count": 5, "health": 5000, "speed": 0.85, "coinReward": 45 },
+                { "type": "fast", "count": 3, "health": 2500, "speed": 1.45, "coinReward": 45 }
+              ]
+            },
+            {
+              "level": 12,
+              "_comment": "875 coins",
+              "_comment2": "Při testu mi zbylo cca 1200 coinu",
+              "enemies": [
+                { "type": "tank", "count": 4, "health": 7500, "speed": 0.85, "coinReward": 50 },
+                { "type": "basic", "count": 5, "health": 4000, "speed": 1.05, "coinReward": 45 },
+                { "type": "tank", "count": 4, "health": 7500, "speed": 0.85, "coinReward": 50 },
+                { "type": "fast", "count": 5, "health": 3000, "speed": 1.5, "coinReward": 50 }
+              ]
+            },
+            {
+              "level": 13,
+              "_comment": "840 coins",
+              "enemies": [
+                { "type": "tank", "count": 5, "health": 8000, "speed": 0.85, "coinReward": 55 },
+                { "type": "basic", "count": 6, "health": 4500, "speed": 1.10, "coinReward": 50 },
+                { "type": "super-tank", "count": 1, "health": 14000, "speed": 0.65, "coinReward": 100 },
+                { "type": "fast", "count": 3, "health": 3500, "speed": 1.5, "coinReward": 55 }
+              ]
+            },
+            {
+              "level": 14,
+              "_comment": "1000 coins",
+              "enemies": [
+                { "type": "basic", "count": 5, "health": 5000, "speed": 1.15, "coinReward": 50 },
+                { "type": "tank", "count": 5, "health": 7500, "speed": 0.85, "coinReward": 60 },
+                { "type": "basic", "count": 3, "health": 5000, "speed": 1.15, "coinReward": 50 },
+                { "type": "fast", "count": 5, "health": 4000, "speed": 1.5, "coinReward": 60 }
+              ]
+            },
+            {
+              "level": 15,
+              "_comment": "1510 coins",
+              "enemies": [
+                { "type": "basic", "count": 8, "health": 6000, "speed": 1.15, "coinReward": 50 },
+                { "type": "tank", "count": 6, "health": 8000, "speed": 0.85, "coinReward": 60 },
+                { "type": "basic", "count": 5, "health": 6000, "speed": 1.15, "coinReward": 50 },
+                { "type": "boss", "count": 1, "health": 50000, "speed": 0.65, "coinReward": 500 }
               ]
             },
             {

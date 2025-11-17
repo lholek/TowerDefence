@@ -116,7 +116,7 @@
 
 .ability-card {
   position: relative;
-  background: #2e2e2e;
+  background-color: rgb(157, 80, 41);;
   display: flex;
   flex-direction: column;
   gap: 0px;

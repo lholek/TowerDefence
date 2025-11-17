@@ -375,6 +375,7 @@ max-width: 400px;
 .mapInfo p {
     margin: 0 !important;
     margin-top: 5px !important;
+    margin-right: 20px !important;
 }
 
 .mapInfo b {
