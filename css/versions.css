@@ -1,6 +1,6 @@
 /* Version popup styling */
 #versionPopupContent {
-  background: #222;
+  background: var(--main-bg-color);
   padding: 20px;
   border-radius: 10px;
   text-align: left;
@@ -10,7 +10,7 @@
   overflow-y: scroll;
   /* Custom scrollbar styling */
   scrollbar-width: thin;
-  scrollbar-color: #ffd700 #333;
+  scrollbar-color: #ffd700 var(--main-bg-color);
 }
 
 /* Webkit scrollbar styles (Chrome, Safari, newer Edge) */
@@ -81,7 +81,7 @@
   display: inline-block;
   width: 1.5em;
   user-select: none;
-  color: #888;
+  color: gold;
 }
 
 .version-content {

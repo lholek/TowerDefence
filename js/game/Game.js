@@ -312,8 +312,8 @@ export default class Game {
     const lifeDiv = document.createElement('div');
     lifeDiv.className = 'shop-item';
     lifeDiv.innerHTML = `
-      <div class="name">Extra Life</div>
-      <div class="price">Price: ${this.lifePrice}</div>
+      <div class="name">❤️ Extra Life</div>
+      <div class="price">🪙 Price: ${this.lifePrice}</div>
     `;
     shopDiv.appendChild(lifeDiv);
 
@@ -334,7 +334,7 @@ export default class Game {
         }
       
         // Update displayed price
-        lifeDiv.querySelector('.price').textContent = `Price: ${this.lifePrice}`;
+        lifeDiv.querySelector('.price').textContent = `🪙 Price: ${this.lifePrice}`;
       } else {
         this.showOverlayMessage('Not enough coins!');
         setTimeout(() => this.gameOverlay.style.display = 'none', 900);

@@ -2,8 +2,9 @@
   "maps": [
       {
         "name": "Adventure Map II - Islands [TODO]",
-        "startingCoins": 50,
-        "startingLives": 5,
+        "_startingCoins": 50,
+        "startingCoins": 500000,
+        "startingLives": 500,
         "description": [
           {
             "descriptionText": "3 main islands to build the towers",
@@ -51,11 +52,11 @@
             "type": "targeted", 
             "selectionCount": 11, 
             "__comment": "333dmg / 0.5s ",
-            "damage": 333, 
+            "damage": 400, 
             "damage_every": 500, 
             "___comment": "cooldown - includes effectDuration !!!",
-            "cooldown": 36000,
-            "effectDuration": 6000,
+            "cooldown": 45000,
+            "effectDuration": 10000,
             "color": "rgba(245, 164, 66, 0.6)",
             "ui": {
               "icon": "🌋"
@@ -64,20 +65,84 @@
         ],
         "towerTypes": {
             "001": {
-              "name": "Sky Tower",
+              "name": "Windpost Tower",
               "price": 5,
-              "damage": 10,
-              "fireRate": 1000,
+              "damage": 5,
+              "fireRate": 1100,
+              "range": 120,
+              "color": "#5bb9c7",
+              "sellPrice": 4,
+              "speed": 1.9
+            },
+            "002": {
+              "name": "Cloud Tower",
+              "price": 25,
+              "damage": 30,
+              "fireRate": 1200,
               "range": 150,
-              "color": "#f0e113",
-              "sellPrice": 3,
-              "speed": 2
+              "color": "#5bb9c7",
+              "sellPrice": 20,
+              "speed": 2.1
+            },
+            "003": {
+              "name": "Highwind Tower",
+              "price": 75,
+              "damage": 75,
+              "fireRate": 900,
+              "range": 150,
+              "color": "#5bb9c7",
+              "sellPrice": 60,
+              "speed": 2.3
+            },
+            "004": {
+              "name": "StarNight Tower",
+              "price": 150,
+              "damage": 120,
+              "fireRate": 750,
+              "range": 220,
+              "color": "#5bb9c7",
+              "sellPrice": 100,
+              "speed": 2.5
+            },
+            "005": {
+              "name": "Thunder Tower",
+              "price": 250,
+              "damage": 200,
+              "fireRate": 750,
+              "range": 300,
+              "color": "#5bb9c7",
+              "sellPrice": 150,
+              "speed": 3.25
+            },
+            "006": {
+              "name": "Heavenforge Tower",
+              "price": 600,
+              "damage": 250,
+              "fireRate": 500,
+              "range": 500,
+              "color": "#d8f556",
+              "sellPrice": 200,
+              "speed": 4
+            },
+            "007": {
+              "name": "Sky Dominion Tower",
+              "price": 1500,
+              "damage": 600,
+              "fireRate": 200,
+              "range": 1000,
+              "color": "#d8f556",
+              "sellPrice": 0,
+              "speed": 10
             }
         },
         "levels": [
             {
               "level": 1,
-              "enemies": [{ "type": "basic", "count": 50, "health": 50, "speed": 0.8, "coinReward": 2 }]
+              "enemies": [{ "type": "basic", "count": 2, "health": 50000, "speed": 2.8, "coinReward": 2 }]
+            },
+            {
+              "level": "X",
+              "enemies": [{ "type": "basic", "count": 20000, "health": 50000, "speed": 2.8, "coinReward": 2 }]
             }
         ]
     }

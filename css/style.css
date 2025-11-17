@@ -74,7 +74,7 @@ h3 {
 /* events log left column */
 #eventsBox {
     width: 250px;
-    max-height: 700px;
+    max-height: 800px;
     background: var(--main-bg-color);;
     padding: 10px;
     border-radius: 8px;
@@ -183,7 +183,7 @@ margin: 0.25rem;
 #progressBar {
     width: 0%; /* dynamic */
     height: 100%;
-    background-color: gold;
+    background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
     border-radius: 6px;
     position: absolute;
     top: 0;
@@ -331,7 +331,7 @@ canvas {
     background: rgba(0, 0, 0, 0.6);
 }
 #overlayContent {
-    background: #222;
+    background: var(--main-bg-color);;
     padding: 20px;
     border-radius: 10px;
     text-align: center;

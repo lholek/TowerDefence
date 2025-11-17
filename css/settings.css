@@ -13,12 +13,11 @@
 }
 
 .settings-content {
-  background: #1c1c1c;
+  background: var(--main-bg-color);
   color: #fff;
   padding: 20px 30px;
   border-radius: 10px;
   min-width: 300px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
 .settings-content h2 {
