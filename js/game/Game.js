@@ -296,7 +296,7 @@ export default class Game {
         } else {
           this.selectedTowerType = key;
           shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = 'none');
-          div.style.border = `3px solid ${tower.color}`;
+          div.style.border = `5px solid ${tower.color}`;
         }
       });
     }

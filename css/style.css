@@ -260,16 +260,13 @@ canvas {
     color: #fff;
     line-height: 18px;
     cursor: pointer;
+    background: var(--main-bg-color);
 }
 
 /* hover & active states */
-.shop .shop-item:hover {
-    transform: scale(1.03);
-}
-
 .shop-item:hover {
-  transform: translateY(-3px);
-  background: rgba(60,60,80,1);
+  background-color: rgb(157, 80, 41);
+  transform: scale(1.03);
 }
 
 .shop .shop-item.active {
