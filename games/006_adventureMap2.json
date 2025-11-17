@@ -1,12 +1,12 @@
 {
   "maps": [
       {
-        "name": "Adventure Map II - Islands",
+        "name": "Adventure Map II - Islands [TODO]",
         "startingCoins": 50,
         "startingLives": 5,
         "description": [
           {
-            "descriptionText": "3 main islands to build the towers, Lava Floor, multiple tower types",
+            "descriptionText": "3 main islands to build the towers",
             "level count": 30,
             "map_size": "20X14",
             "difficulty": "⭐⭐⭐⭐",
