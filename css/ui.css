@@ -81,15 +81,28 @@
 .build-mode-switcher {
   display: flex;
   justify-content: center;
-  margin: 10px 0;
+  margin: 0px 0;
   gap: 8px;
   z-index: 2;
 }
+:root {
+  /* Default theme (Classic) */
+  --bg-color: #1e1e1e;
+  --ui-bg: rgba(0, 0, 0, 0.4);
+  --ui-text: #ffffff;
+  --accent: #00bcd4;
+  --tile-color: #333;
+  --enemy-color: #ff4444;
+  --tower-color: #00e5ff;
+  --particle-color: #66ffff;
 
+  --main-bg-color: #3e3223;
+  --items-bg-color: #8B4513;
+}
 .switch-btn {
-  background: #222;
+  background-color:  var(--items-bg-color);
   color: #ccc;
-  border: 2px solid #444;
+  border: 2px solid var(--items-bg-color);
   border-radius: 8px;
   padding: 6px 14px;
   cursor: pointer;
@@ -98,13 +111,13 @@
 }
 
 .switch-btn:hover {
-  background: #333;
+  background:  var(--items-bg-color);
 }
 
 .switch-btn.active {
-  background: #555;
+  background: var(--items-bg-color);;
   color: #fff;
-  border-color: #777;
+  border-color: gold;
 }
 
 #abilityBar {
@@ -116,7 +129,7 @@
 
 .ability-card {
   position: relative;
-  background-color: rgb(157, 80, 41);;
+  background-color: rgb(157, 80, 41);
   display: flex;
   flex-direction: column;
   gap: 0px;

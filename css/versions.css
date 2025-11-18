@@ -10,7 +10,7 @@
   overflow-y: scroll;
   /* Custom scrollbar styling */
   scrollbar-width: thin;
-  scrollbar-color: #ffd700 var(--main-bg-color);
+  scrollbar-color: rgb(240, 198, 116) transparent;
 }
 
 /* Webkit scrollbar styles (Chrome, Safari, newer Edge) */

@@ -15,14 +15,14 @@
 }
 
 html{
-  background: #111;
+  background-color: var(--bg-color);
+  background-size: cover;
 }
 /* body */
 body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: #111;
     color: #eee;
 }
 
@@ -37,6 +37,7 @@ h3 {
 .box {
     padding: 8px;
     padding-top: 30px;
+    scrollbar-color: rgb(240, 198, 116) transparent;
 }
 /* title */
 .title {
@@ -82,7 +83,7 @@ h3 {
     display: flex;
     flex-direction: column;
     scrollbar-width: thin;
-    scrollbar-color: var(--main-bg-color) var(--items-bg-color);
+    scrollbar-color: var(--main-items-color) var(--items-bg-color);
 }
 
 /* info box */
@@ -216,10 +217,9 @@ canvas {
     margin: 0 auto;
     padding: 0; /* no extra padding */
     white-space: nowrap; /* ensures items stay on one line if not using flex */
-    background: linear-gradient(90deg, #141414, #1e1e1e);
+    background: transparent;
     border-radius: 12px;
     padding: 10px;
-    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
 }
 
 .shop-wrapper::-webkit-scrollbar {
@@ -231,9 +231,6 @@ canvas {
   border-radius: 4px;
 }
 
-.shop-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
 
 /* flex row of shop items */
 .shop {
@@ -243,7 +240,6 @@ canvas {
     justify-content: flex-start; /* align first item to left */
     margin: 0;
     padding: 0;
-    background: #1b1b1b;
     border-radius: 8px;
     text-align: center;
     color: #fff;
@@ -287,24 +283,11 @@ canvas {
     height: 8px; /* horizontal scrollbar height */
 }
 
-.shop-wrapper::-webkit-scrollbar-track {
-    background: #1b1b1b;
-    border-radius: 4px;
-}
-
-.shop-wrapper::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 4px;
-}
-
-.shop-wrapper::-webkit-scrollbar-thumb:hover {
-    background: #888;
-}
 
 /* Firefox */
 .shop-wrapper {
-    scrollbar-width: thin;
-    scrollbar-color: #555 #1b1b1b;
+    scrollbar-width: 20px;
+    scrollbar-color: rgb(240, 198, 116) transparent;
 }
 /* tower shop */
 
