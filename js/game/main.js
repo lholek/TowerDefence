@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p><b>Description:</b><br>${desc.descriptionText}</p>
               <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
               <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
+              <p><b>Map size:</b> ${desc['map_size'] || '-'}</p>
               <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
               <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
             </div>

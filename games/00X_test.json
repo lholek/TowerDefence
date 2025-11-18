@@ -9,6 +9,7 @@
           "descriptionText": "Only for test",
           "level count": 1,
           "difficulty": "⭐",
+          "map_size": "custom",
           "tower types": 1,
           "abilites": "-"
         }

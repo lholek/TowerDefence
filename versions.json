@@ -11,6 +11,7 @@
         "Fixed bug - When one music ends another begins",
         "Fixed bug - Loading first item then generate map info or reload",
         "Fixed bug - Loading versions to title from version.json",
+        "UI - Addem map size to map description",
         "UI - Redesing of Towers, Bullets, Map",
         "UI - Redesing of Menu",
         "UI - Updated 'Version History'",
