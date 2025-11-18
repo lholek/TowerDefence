@@ -1,14 +1,14 @@
 {
   "maps": [
       {
-        "name": "Adventure Map II - Islands [TODO]",
+        "name": "Adventure Map II - Islands",
         "_startingCoins": 50,
         "startingCoins": 50,
         "startingLives": 10,
         "description": [
           {
             "descriptionText": "3 main islands to build the towers",
-            "level count": 30,
+            "level count": 20,
             "map_size": "20X14",
             "difficulty": "⭐⭐⭐⭐",
             "tower types": 7,
@@ -269,8 +269,57 @@
               ]
             },
             {
-              "level": "X",
-              "enemies": [{ "type": "basic", "count": 20000, "health": 5000, "speed": 2.8, "coinReward": 2 }]
+              "level": 16,
+              "_comment": "1890 coins",
+              "enemies": [
+                { "type": "basic", "count": 5, "health": 15000, "speed": 1.15, "coinReward": 75 },
+                { "type": "tank", "count": 6, "health": 40000, "speed": 0.85, "coinReward": 95 },
+                { "type": "basic", "count": 5, "health": 15000, "speed": 1.15, "coinReward": 75 },
+                { "type": "fast", "count": 6, "health": 11000, "speed": 1.5, "coinReward": 95 }
+              ]
+            },
+            {
+              "level": 17,
+              "_comment": "2160 coins",
+              "enemies": [
+                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
+                { "type": "tank", "count": 6, "health": 45000, "speed": 0.85, "coinReward": 100 },
+                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
+                { "type": "fast", "count": 6, "health": 12500, "speed": 1.5, "coinReward": 100 }
+              ]
+            },
+            {
+              "level": 18,
+              "_comment": "2270 coins",
+              "enemies": [
+                { "type": "basic", "count": 6, "health": 22000, "speed": 1.2, "coinReward": 85 },
+                { "type": "tank", "count": 6, "health": 60000, "speed": 0.9, "coinReward": 110 },
+                { "type": "fast", "count": 6, "health": 18000, "speed": 1.5, "coinReward": 110 },
+                { "type": "tank", "count": 4, "health": 60000, "speed": 0.9, "coinReward": 110 }
+
+              ]
+            },
+            {
+              "level": 19,
+              "_comment": " coins",
+              "enemies": [
+                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
+                { "type": "tank", "count": 6, "health": 45000, "speed": 0.85, "coinReward": 100 },
+                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
+                { "type": "fast", "count": 6, "health": 12500, "speed": 1.5, "coinReward": 100 }
+              ]
+            },
+            {
+              "level": 20,
+              "_comment": "2160 coins",
+              "enemies": [
+                { "type": "basic", "count": 10, "health": 20000, "speed": 1.2, "coinReward": 85 },
+                { "type": "fast", "count": 10, "health": 17500, "speed": 1.5, "coinReward": 85 },
+                { "type": "tank", "count": 10, "health": 45000, "speed": 0.85, "coinReward": 100 },
+                { "type": "fast-boss", "count": 1, "health": 35000, "speed": 1.5, "coinReward": 1000 },
+                { "type": "armor-boss", "count": 1, "health": 125000, "speed": 0.9, "coinReward": 1000 },
+                { "type": "final-boss", "count": 1, "health": 1000000, "speed": 0.5, "coinReward": 1000 }
+              ]
             }
         ]
     }

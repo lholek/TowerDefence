@@ -3,17 +3,16 @@
     {
       "version": "Alpha 0.0.9",
       "changes": [
-        "TODO: ADD SECOND ADVENTURE MAP (whit holes)",
         "TODO: UI - make tower div scrollabe",
-        "TODO: UI - Redesing of Menu",
         "TODO: UI - Make that game will pause after leaveing the window",
-        "TODO: Make games harder + more maps",
-        "TODO: Fix bug - Loading versions to tile from version.json",
-        "TODO: Fix bug - Loading first item then generate map info or reload",
-        "Fixed bug - When one music ends another begins",
+        "Improved - Added second ADVENTURE MAP (Islands)",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "Improved performace",
+        "Fixed bug - When one music ends another begins",
+        "Fixed bug - Loading first item then generate map info or reload",
+        "Fixed bug - Loading versions to title from version.json",
         "UI - Redesing of Towers, Bullets, Map",
+        "UI - Redesing of Menu",
         "UI - Updated 'Version History'",
         "UI - Improved CSS"
         ]

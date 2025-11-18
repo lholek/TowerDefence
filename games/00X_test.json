@@ -58,7 +58,7 @@
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 1000, "health": 100, "speed": 0.25, "coinReward": 2}
+            {"type": "basic", "count": 1, "health": 100, "speed": 0.25, "coinReward": 2}
           ]
         }
       ]
