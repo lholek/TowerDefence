@@ -206,4 +206,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       abilityBar.style.display = 'flex';
       // If an ability is active, keep UI indicator (we update that elsewhere)
     });
+
+    shopWrapper.addEventListener('wheel', (e) => {
+        // Check if the game is paused or any other condition you might need
+        if (game?.paused) return; 
+
+        // Prevent the default vertical scroll behavior
+        e.preventDefault(); 
+
+        // Update the horizontal scroll position (scrollLeft)
+        // The amount of scroll is determined by e.deltaY (the vertical scroll change)
+        // You might need to adjust the scroll speed multiplier (e.g., * 2 or * 0.5)
+        shopWrapper.scrollLeft += e.deltaY * 2.45;
+    }, { passive: false });
 });
