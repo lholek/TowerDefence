@@ -74,14 +74,15 @@ export default class Bullet {
 
         this.angle = Math.atan2(dy, dx);
 
-        if (dist < this.speed) {
+        let realSpeed = this.speed * (deltaTime / (1000/144))
+        if (dist < realSpeed) {
             this.target.health -= this.damage;
             this.active = false;
             return;
         }
 
-        this.x += (dx / dist) * this.speed;
-        this.y += (dy / dist) * this.speed;
+        this.x += (dx / dist) * realSpeed;
+        this.y += (dy / dist) * realSpeed;
     }
 
     render(ctx) {
