@@ -24,7 +24,7 @@ TODOS:
         
 
 
-0.0.9 ideas:
+0.0.10 ideas:
 TODO: Make cap to 60 FPS
 
 - Multipaht enemis like this:
