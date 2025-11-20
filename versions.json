@@ -1,20 +1,9 @@
 {
   "versions": [
     {
-      "version": "Alpha 0.0.10",
-      "changes": [
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update the game somehow, whit new content",
-        "TODO: Update"
-        ]
-    },
-    {
       "version": "Alpha 0.0.9",
       "changes": [
+        "Improved - adapted for any FPS monitors",
         "Improved - Added second ADVENTURE MAP (Islands)",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "Improved performace",
