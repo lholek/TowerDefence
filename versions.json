@@ -1,6 +1,16 @@
 {
   "versions": [
     {
+      "version": "Alpha 0.0.10",
+      "changes": [
+        "TODO: updates",
+        "TODO: updates",
+        "TODO: updates",
+        "TODO: updates",
+        "TODO: updates"
+        ]
+    }, 
+    {
       "version": "Alpha 0.0.9",
       "changes": [
         "Improved - adapted for any FPS monitors",
