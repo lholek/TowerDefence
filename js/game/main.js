@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Create game instance
         game = new Game(canvas);
         
+       // handle pause after leave window
+       window.addEventListener('blur', pauseOnBlur);
+
         try {
             // Load selected map
             await game.loadGameData(selectedMapFile);
@@ -50,6 +53,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Define the functions that use the global 'game' object
+    function pauseOnBlur() {
+        // Check if the global 'game' object exists, is started, and is NOT already paused
+        // Assuming 'game.paused' is a boolean property in your Game class
+        if (game?.gameStarted && !game.paused) {
+            // This will set game.paused = true
+            game.togglePause(); 
+            console.log('Game paused automatically (Window blur)');
+        }
+    }
+        
     //Render Minimap
     function renderMinimap(mapData) {
       // find or create container elements safely

@@ -4,7 +4,6 @@
       "version": "Alpha 0.0.9",
       "changes": [
         "TODO: UI - make tower div scrollabe",
-        "TODO: UI - Make that game will pause after leaveing the window",
         "Improved - Added second ADVENTURE MAP (Islands)",
         "Improved Map building pahts - prepared for more pahts on 1 map",
         "Improved performace",
@@ -15,6 +14,7 @@
         "UI - Redesing of Towers, Bullets, Map",
         "UI - Redesing of Menu",
         "UI - Updated 'Version History'",
+        "UI - The Game will pause after player leave the window, and player have to mannualy resume it",
         "UI - Improved CSS"
         ]
     }, 
