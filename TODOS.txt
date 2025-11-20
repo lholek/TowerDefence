@@ -1,31 +1,20 @@
-Ok, abilities have some good start, but i need to fix multiple bugs and do muliple improvemnts :
-bugs:
-- Fix that ability runs out during pause (ability timer doesnt stop during pause)
-- Fix that after the new game towers will be selected as default
-improvemnts:
-
 TODOS:
 + price to unlock towers
-+ Better UI
 + UI music
 + More paths
-+ Editory
++ Editory (map builder)
 + Teleports
 + Wave delay
 + Explosive enemies
 + Ability enemies (10s imunity - no demage (50% chance on spawn), Explosive enemies)
 + heroes like ablity - on the start you will choose hero whit special ablity
-+ map builder 
 + all Abilities have duration - PROBLEM 
 + ability levling
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
 ++ LONG TODO: Sending ways, playing from toher side
-        
-
 
 0.0.10 ideas:
-TODO: Make cap to 60 FPS
 
 - Multipaht enemis like this:
   "levels": [
@@ -50,36 +39,3 @@ TODO: Make cap to 60 FPS
         }
       ]
     }
-
-{
-  "levels": [
-    {
-      "level": 1,
-      "enemies": [
-        {
-          "type": "basic",
-          "count": 10,
-          "health": 100,
-          "speed": 0.25,
-          "coinReward": 2,
-          "start": "S1",
-          "target": "E2",
-          "spawnDelay": 0,
-          "spawnInterval": 400
-        },
-        {
-          "type": "tank",
-          "count": 3,
-          "health": 400,
-          "speed": 0.15,
-          "coinReward": 4,
-          "start": "S2",
-          "target": "E1",
-          "spawnDelay": 0,
-          "spawnInterval": 1000
-        }
-      ]
-    }
-  ]
-}
-- fix fps 
