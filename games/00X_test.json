@@ -57,7 +57,8 @@
           "sellPrice": 1,
           "speed": 2
         }
-      },     "levels": [
+      },     
+      "levels": [
         {
           "level": 1,
           "enemies": [

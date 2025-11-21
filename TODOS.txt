@@ -17,25 +17,47 @@ TODOS:
 0.0.10 ideas:
 
 - Multipaht enemis like this:
-  "levels": [
+{
+  "maps": [
     {
-      "level": 1,
-      "enemies": [
+      "name": "Test Map",
+      // ... (existing properties: startingCoins, description, tileSize, layout)
+      
+      "layout": [
+        // Now you can use S1, E1, S2, E2, E3, etc., freely
+        ["-","-","-","-","-","-","-","-","-","-","-"],
+        ["S1","O","O","O","O","O","O","O","O","O","E2"], 
+        // ... (middle section)
+        ["S2","O","O","O","O","O","O","O","O","O","E3"],
+        // ...
+        ["S3","O","O","O","O","O","O","O","O","O","E1"]
+      ],
+      
+      // --- NEW CONFIGURATION ---
+      "paths_config": [
+        {"id": "A", "start": "S1", "end": "E2"}, // Path A: S1 -> E2
+        {"id": "B", "start": "S2", "end": "E3"}, // Path B: S2 -> E3
+        {"id": "C", "start": "S3", "end": "E1"}  // Path C: S3 -> E1
+      ],
+      
+      // ... (abilities, towerTypes)
+      
+      "levels": [
         {
-          "type": "basic",
-          "count": 20,
-          "health": 100,
-          "speed": 0.25,
-          "coinReward": 2,
-          "pathDistribution": { "S1": 15, "S2": 5 }
-        },
-        {
-          "type": "tank",
-          "count": 4,
-          "health": 500,
-          "speed": 0.15,
-          "coinReward": 5,
-          "pathDistribution": { "S1": 1, "S2": 3 }
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              // ...
+              "pathDistribution": { 
+                "A": 15, // 15 enemies use Path A (S1->E2)
+                "B": 5   // 5 enemies use Path B (S2->E3)
+              }
+            },
+            // ...
+          ]
         }
       ]
     }
+  ]
+}
