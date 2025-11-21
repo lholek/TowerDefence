@@ -19,6 +19,9 @@
         ["X","X","X","X","X","X","X","X"],
         ["S1","O","O","O","O","O","O","E2"],
         ["X","-","X","X","O","X","X","X"],
+        ["X","-","X","X","O","X","X","X"],
+        ["X","-","X","X","O","X","X","X"],
+        ["X","-","X","X","O","X","X","X"],
         ["S2","O","O","O","O","O","O","E1"],
         ["X","X","X","X","X","X","X","X"]
       ],
@@ -47,78 +50,18 @@
         "001": {
           "name": "Basic Tower",
           "price": 1,
-          "damage": 400,
-          "fireRate": 10,
+          "damage": 50,
+          "fireRate": 400,
           "range": 2500,
           "color": "#468bb0",
           "sellPrice": 1,
           "speed": 2
-        },
-        "002": {
-          "name": "Cloud Tower",
-          "price": 25,
-          "damage": 30,
-          "fireRate": 1000,
-          "range": 200,
-          "color": "#454854",
-          "sellPrice": 20,
-          "speed": 2.1
-        },
-        "003": {
-          "name": "Highwind Tower",
-          "price": 50,
-          "damage": 60,
-          "fireRate": 850,
-          "range": 220,
-          "color": "#187d96",
-          "sellPrice": 40,
-          "speed": 2.3
-        },
-        "004": {
-          "name": "StarNight Tower",
-          "price": 100,
-          "damage": 100,
-          "fireRate": 750,
-          "range": 230,
-          "color": "#162424",
-          "sellPrice": 75,
-          "speed": 2.5
-        },
-        "005": {
-          "name": "Thunder Tower",
-          "price": 250,
-          "damage": 200,
-          "fireRate": 650,
-          "range": 300,
-          "color": "#25347d",
-          "sellPrice": 150,
-          "speed": 3.25
-        },
-        "006": {
-          "name": "Heavenforge Tower",
-          "price": 500,
-          "damage": 250,
-          "fireRate": 500,
-          "range": 500,
-          "color": "#b3ab15",
-          "sellPrice": 200,
-          "speed": 4
-        },
-        "007": {
-          "name": "Sky Dominion Tower",
-          "price": 1500,
-          "damage": 600,
-          "fireRate": 200,
-          "range": 1000,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 10
         }
       },     "levels": [
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 1000000000, "health": 100, "speed": 0.25, "coinReward": 2}
+            {"type": "basic", "count": 1000, "health": 100, "speed": 1, "coinReward": 2}
           ]
         }
       ]

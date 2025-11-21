@@ -3,12 +3,17 @@
     {
       "version": "Alpha 0.0.10",
       "changes": [
-        "TODO: updates updates updates updates updates updates updates updates ",
-        "TODO: updates updates updates updates updates updates updates updates ",
-        "TODO: updates updates updates updates updates updates updates updates ",
-        "TODO: updates updates updates updates updates updates updates updates ",
-        "TODO: updates updates updates updates updates updates updates updates ",
-        "TODO: updates updates updates updates updates updates updates updates ",
+        "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
+        "TODO: New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
+        "TODO: New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",
+        "TODO: Multipath Map - whit more starts and ends",
+        "TODO: Add mountins and Lakes to the map so player can not shoot trough ceritan objects on map",
+        "TODO: New maps",
+        "TODO: Add option where you can zoom the entire web whit +/- buttons",
+        "TODO: Slighly upate css details",
+        "TODO: More updates ?",
+        "TODO: More updates ?",
+        "TODO: More updates ?",
         "TODO: updates"
         ]
     }, 

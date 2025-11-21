@@ -11,18 +11,21 @@ export class MusicManager {
 
         // Tracks
         this.tracks = [
-            './assets/sounds/background/medival_001.mp3',
-            './assets/sounds/background/medival_002.mp3',
-            './assets/sounds/background/medival_003.mp3',
-            './assets/sounds/background/medival_004.mp3',
-            './assets/sounds/background/medival_005.mp3',
-            './assets/sounds/background/medival_006.mp3',
-            './assets/sounds/background/medival_007.mp3',
-            './assets/sounds/background/medival_008.mp3'
+            './assets/sounds/background/medieval_001.mp3',
+            './assets/sounds/background/medieval_002.mp3',
+            './assets/sounds/background/medieval_003.mp3',
+            './assets/sounds/background/medieval_004.mp3',
+            './assets/sounds/background/medieval_005.mp3',
+            './assets/sounds/background/medieval_006.mp3',
+            './assets/sounds/background/medieval_007.mp3',
+            './assets/sounds/background/medieval_008.mp3',
+            './assets/sounds/background/medieval_009_Medieval-Abbey.mp3',
+            './assets/sounds/background/medieval_010_Medieval-Background.mp3'
         ];
         this.trackNames = [
-            'medival_001', 'medival_002', 'medival_003', 'medival_004',
-            'medival_005', 'medival_006', 'medival_007', 'medival_008'
+            'medieval_001', 'medieval_002', 'medieval_003', 'medieval_004',
+            'medieval_005', 'medieval_006', 'medieval_007', 'medieval_008',
+            'Medieval Abbey (009)', 'Medieval Background (010)'
         ];
 
         // Load settings
