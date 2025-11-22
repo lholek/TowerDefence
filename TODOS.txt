@@ -21,8 +21,6 @@ TODOS:
   "maps": [
     {
       "name": "Test Map",
-      // ... (existing properties: startingCoins, description, tileSize, layout)
-      
       "layout": [
         // Now you can use S1, E1, S2, E2, E3, etc., freely
         ["-","-","-","-","-","-","-","-","-","-","-"],
@@ -32,32 +30,38 @@ TODOS:
         // ...
         ["S3","O","O","O","O","O","O","O","O","O","E1"]
       ],
-      
-      // --- NEW CONFIGURATION ---
-      "paths_config": [
-        {"id": "A", "start": "S1", "end": "E2"}, // Path A: S1 -> E2
-        {"id": "B", "start": "S2", "end": "E3"}, // Path B: S2 -> E3
-        {"id": "C", "start": "S3", "end": "E1"}  // Path C: S3 -> E1
-      ],
-      
-      // ... (abilities, towerTypes)
-      
       "levels": [
         {
           "level": 1,
-          "enemies": [
+          "waves": [
             {
-              "type": "basic",
-              // ...
-              "pathDistribution": { 
-                "A": 15, // 15 enemies use Path A (S1->E2)
-                "B": 5   // 5 enemies use Path B (S2->E3)
-              }
+              "delay": 5000, // delay of entire wave
+              "groups": [
+                {
+                  "type": "basic", 
+                  "count": 50, 
+                  "path": "S1E2", 
+                  "interval": 400 // Spawns one enemy every 400 ms
+                },
+                {
+                  "type": "tank", 
+                  "count": 10, 
+                  "path": "S2E1", 
+                  "delay": 2000, // delay of group
+                  "interval": 1500 // Spawns one tank every 1500 ms (1.5 seconds)
+                }
+              ]
             },
-            // ...
+            {
+              "delay": 2000, 
+              "groups": [
+              ]
+            }
           ]
         }
       ]
-    }
-  ]
-}
+  }
+
+0.0.11:
+        "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
+        "TODO: ? New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",

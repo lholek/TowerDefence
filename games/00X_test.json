@@ -17,12 +17,13 @@
       "tileSize": 60,
       "layout": [
         ["-","-","-","-","-","-","-","-","-","-","-"],
-        ["S1","O","O","O","O","O","O","O","O","O","E2"],
+        ["S1","O","O","O","O","O","O","O","O","O","E1"],
         ["-","-","X","X","X","O","X","X","X","-","-"],
         ["-","-","X","X","X","O","X","X","X","-","-"],
+        ["S2","O","O","O","O","O","O","O","O","O","E2"],
         ["-","-","X","X","X","O","X","X","X","-","-"],
         ["-","-","X","X","X","O","X","X","X","-","-"],
-        ["S2","O","O","O","O","O","O","O","O","O","E1"],
+        ["S3","O","O","O","O","O","O","O","O","O","E3"],
         ["-","-","-","-","-","-","-","-","-","-","-"]
       ],
         "abilities": [
@@ -38,8 +39,8 @@
             "damage": 250, 
             "damage_every": 250, 
             "___comment": "cooldown - includes effectDuration !!!",
-            "cooldown": 30000,
-            "effectDuration": 6000,
+            "cooldown": 10000,
+            "effectDuration": 5000,
             "color": "rgba(245, 164, 66, 0.6)",
             "ui": {
               "icon": "🌋"
@@ -62,7 +63,8 @@
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 1000, "health": 100, "speed": 1, "coinReward": 2}
+            {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E2", "interval": 800, "coinReward": 2},
+            {"type": "tank", "count": 5, "health": 100, "speed": 1, "path": "S2E1", "interval": 800, "coinReward": 2}
           ]
         }
       ]
