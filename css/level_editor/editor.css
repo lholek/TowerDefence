@@ -8,7 +8,7 @@
 :root {
     --main-bg-color: #3e3223; /* Dark Brown (Main UI background) */
     --items-bg-color: #8B4513; /* Wood Brown (Button/Item color) */
-    --editor-bg: #1a1a1a; /* Very Dark Grey/Black for code area */
+    --editor-bg: #965a2f; /* Very Dark Grey/Black for code area */
     --accent-gold: #f0c674; /* Title/Highlight color */
     --parchment-text: #f3e5ab; /* Button text color */
     --dark-wood-shadow: #5c2e0e; /* Shadow/Border color */
@@ -66,7 +66,7 @@
 }
 
 /* Button Styling (Copied from your base styles and integrated variables) */
-.btn {
+.btn {
     background-color: var(--items-bg-color); /* Wood brown */
     color: var(--parchment-text); 
     padding: 10px 20px;
@@ -98,11 +98,6 @@
     text-align: center;
     flex-grow: 1; 
     transition: all 0.3s;
-    /* General message style */
-    background-color: #5c2e0e; /* Darker brown panel */
-    color: var(--parchment-text);
-    border: 1px solid var(--dark-wood-shadow);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .status-success { 
