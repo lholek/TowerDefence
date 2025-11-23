@@ -1,0 +1,119 @@
+/* -------------------------------------------------------------------
+ * TD Level Editor Styles
+ * These styles override or augment base styles for the dedicated editor view.
+ * Based on provided game CSS variables and styles.
+ * ------------------------------------------------------------------- */
+
+/* Color definition derived from game CSS */
+:root {
+    --main-bg-color: #3e3223; /* Dark Brown (Main UI background) */
+    --items-bg-color: #8B4513; /* Wood Brown (Button/Item color) */
+    --editor-bg: #1a1a1a; /* Very Dark Grey/Black for code area */
+    --accent-gold: #f0c674; /* Title/Highlight color */
+    --parchment-text: #f3e5ab; /* Button text color */
+    --dark-wood-shadow: #5c2e0e; /* Shadow/Border color */
+}
+
+/* Editor Body Background: Dark brown-ish tone for the overall page */
+.editor-body { 
+    background-color: #2e261d; /* Slightly darker than main-bg */
+    color: #EEE;
+    padding: 20px;
+    font-family: 'Consolas', monospace; /* Preferred font for code editing */
+}
+
+/* Editor Container: Uses the main UI background color for the central panel */
+.editor-container {
+    background-color: var(--main-bg-color); 
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.8); /* Stronger shadow for depth */
+    padding: 25px; /* Slightly more padding */
+    /* Centering the div */
+    margin: 0 auto;
+}
+
+/* Textarea for JSON Editing: Designed for high readability */
+.json-textarea {
+    width: 100%;
+    height: 60vh; 
+    padding: 15px;
+    box-sizing: border-box;
+    /* Theme integration */
+    border: 2px solid var(--accent-gold); /* Gold border for emphasis */
+    border-radius: 5px;
+    background-color: var(--editor-bg); 
+    color: #F8F8F2; /* Light text */
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    resize: vertical;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Inner shadow for depth */
+}
+
+/* Controls Wrapper: Ensures spacing and alignment (Replaces utility classes like d-flex, justify-between) */
+.controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grouping for action buttons and status/nav */
+.button-group, .status-and-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Defines the gap previously set inline or via utility classes */
+}
+
+/* Button Styling (Copied from your base styles and integrated variables) */
+.btn {
+    background-color: var(--items-bg-color); /* Wood brown */
+    color: var(--parchment-text); 
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif; 
+    font-weight: bold;
+    border: 3px solid var(--dark-wood-shadow);
+    border-radius: 5px;
+    box-shadow: inset 0 -3px 0 var(--dark-wood-shadow); /* 3D wood effect */
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    text-transform: uppercase;
+}
+.btn:hover {
+    background-color: #a0522d; /* Slightly lighter wood on hover */
+    transform: translateY(-1px);
+    box-shadow: inset 0 -3px 0 var(--dark-wood-shadow), 0 3px 5px rgba(0,0,0,0.3);
+}
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 -1px 0 var(--dark-wood-shadow);
+}
+
+
+/* Status Messages: Themed to match the game aesthetic */
+.status-message {
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1; 
+    transition: all 0.3s;
+    /* General message style */
+    background-color: #5c2e0e; /* Darker brown panel */
+    color: var(--parchment-text);
+    border: 1px solid var(--dark-wood-shadow);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.status-success { 
+    background-color: #38761d; /* Deep Forest Green for success */
+    color: white; 
+}
+
+.status-error { 
+    background-color: #990000; /* Deep Blood Red for error */
+    color: white; 
+}
+
+/* Note: .d-none is still used to hide the status message initially, 
+   as this is a standard visibility toggle and not a complex layout utility. */

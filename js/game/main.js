@@ -219,4 +219,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // You might need to adjust the scroll speed multiplier (e.g., * 2 or * 0.5)
         shopWrapper.scrollLeft += e.deltaY * 2.45;
     }, { passive: false });
+
+    // Link to Level Editor
+    document.querySelector(".editorButton").onclick = function() {
+        window.open("/level_editor.html", "_blank");
+    };
+
 });
