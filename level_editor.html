@@ -42,29 +42,71 @@
     <script>
         // --- Default JSON Structure (Used for initial load) ---
         const defaultLevelJson = {
-            "level": 1,
-            "enemies": [
-                {
-                    "type": "basic", 
-                    "count": 50,    
-                    "path": "S1E2", 
-                    "interval": 400, 
-                    "health": 100,
-                    "speed": 1,
-                    "coinReward": 2
-                },
-                {
-                    "type": "tank",
-                    "count": 10,
-                    "path": "S2E1",
-                    "interval": 1500,
-                    "health": 500,
-                    "speed": 0.5,
-                    "coinReward": 5
-                }
-            ],
-            "abilities": []
-        };
+  "maps": [
+    {
+      "name": "EDIT TITLE",
+      "startingCoins": 100,
+      "startingLives": 100,
+      "description": [
+        {
+          "descriptionText": "Edit description",
+          "level count": 1,
+          "difficulty": "⭐",
+          "map_size": "custom",
+          "tower types": 1,
+          "abilites": "-"
+        }
+      ],
+      "tileSize": 60,
+      "layout": [
+        ["-","-","-","-","-","-","-","-","-","-","-"],
+        ["S1","O","O","O","O","O","O","O","O","O","E1"],
+        ["-","-","-","-","-","-","-","-","-","-","-"]
+      ],
+        "abilities": [
+          {
+            "_comment": "cooldown - 30000",
+            "id": "lava_floor",
+            "name": "Lava Floor",
+            "description": "Demage - 250dmg / 0.25s",
+            "description_text": "3 tile before and after selected tile",
+            "type": "targeted", 
+            "selectionCount": 7, 
+            "__comment": "250dmg / 0.25s ",
+            "damage": 250, 
+            "damage_every": 250, 
+            "___comment": "cooldown - includes effectDuration !!!",
+            "cooldown": 10000,
+            "effectDuration": 5000,
+            "color": "rgba(245, 164, 66, 0.6)",
+            "ui": {
+              "icon": "🌋"
+            }
+          }
+        ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },     
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E1", "interval": 1000, "coinReward": 1}
+          ]
+        }
+      ]
+    }
+  ]
+}
 
         const editor = document.getElementById('jsonEditor');
         const statusMessage = document.getElementById('statusMessage');
