@@ -13,9 +13,11 @@
         
         <textarea id="jsonEditor" class="json-textarea"></textarea>
 
-        <div id="mapCanvasContainer" class="map-container">
-            <div id="mapGrid" class="map-grid"></div>
-        </div>
+        <div id="mapLayoutWrapper" class="map-layout-wrapper">
+            <div id="mapCanvasContainer" class="map-container">
+                <div id="mapGrid" class="map-grid"></div>
+            </div>
+            </div>
 
         <div class="controls">
             <div class="button-group">
@@ -25,7 +27,7 @@
             </div>
             
             <div class="status-and-nav">
-                <div id="statusMessage" class="status-message d-none"></div>
+                <button onclick="checkMapValidity()" class="btn btn-validate">Check Map</button> <button onclick="toggleMapVisibility()" class="btn btn-toggle-map">Toggle Map</button> <div id="statusMessage" class="status-message d-none"></div>
                 
                 <a href="/" class="btn">← Back to Main Menu</a>
             </div>
