@@ -4,180 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The CZSrna's Tower Defence – Level Editor</title>
-    <!-- General Game/UI Styles -->
     <link rel="stylesheet" href="css/level_editor/editor.css" /> 
-
 </head>
 <body class="editor-body">
-    <!-- max-width: 900px is kept inline as a layout constraint -->
     <div class="editor-container box" style="max-width: 900px;">
         <h1 class="title cl-primary text-center">The CZSrna's Tower Defence – Level Editor</h1>
         <p class="text-center">Map editor via json format ready to copy</p>
         
-        <!-- Textarea for JSON editing -->
         <textarea id="jsonEditor" class="json-textarea"></textarea>
-        
-        <!-- Controls: All layout handling is now in css/editor.css -->
+
+        <div id="mapCanvasContainer" class="map-container">
+            <div id="mapGrid" class="map-grid"></div>
+        </div>
+
         <div class="controls">
             <div class="button-group">
-                <!-- Main Action Button -->
                 <button onclick="copyFormattedJson()" class="btn">Format & Copy JSON</button>
-                
-                <!-- New Action Buttons -->
                 <button onclick="addWave()" class="btn">+ Add Wave</button>
                 <button onclick="addAbility()" class="btn">+ Add Ability</button>
             </div>
             
             <div class="status-and-nav">
-                <!-- Status Message area -->
                 <div id="statusMessage" class="status-message d-none"></div>
                 
-                <!-- Back button -->
                 <a href="/" class="btn">← Back to Main Menu</a>
             </div>
         </div>
         
     </div>
     
-    <script>
-        // --- Default JSON Structure (Used for initial load) ---
-        const defaultLevelJson = {
-  "maps": [
-    {
-      "name": "EDIT TITLE",
-      "startingCoins": 100,
-      "startingLives": 100,
-      "description": [
-        {
-          "descriptionText": "Edit description",
-          "level count": 1,
-          "difficulty": "⭐",
-          "map_size": "custom",
-          "tower types": 1,
-          "abilites": "-"
-        }
-      ],
-      "tileSize": 60,
-      "layout": [
-        ["-","-","-","-","-","-","-","-","-","-","-"],
-        ["S1","O","O","O","O","O","O","O","O","O","E1"],
-        ["-","-","-","-","-","-","-","-","-","-","-"]
-      ],
-        "abilities": [
-          {
-            "_comment": "cooldown - 30000",
-            "id": "lava_floor",
-            "name": "Lava Floor",
-            "description": "Demage - 250dmg / 0.25s",
-            "description_text": "3 tile before and after selected tile",
-            "type": "targeted", 
-            "selectionCount": 7, 
-            "__comment": "250dmg / 0.25s ",
-            "damage": 250, 
-            "damage_every": 250, 
-            "___comment": "cooldown - includes effectDuration !!!",
-            "cooldown": 10000,
-            "effectDuration": 5000,
-            "color": "rgba(245, 164, 66, 0.6)",
-            "ui": {
-              "icon": "🌋"
-            }
-          }
-        ],
-      "towerTypes": {
-        "001": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 50,
-          "fireRate": 400,
-          "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
-          "speed": 2
-        }
-      },     
-      "levels": [
-        {
-          "level": 1,
-          "enemies": [
-            {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E1", "interval": 1000, "coinReward": 1}
-          ]
-        }
-      ]
-    }
-  ]
-}
-
-        const editor = document.getElementById('jsonEditor');
-        const statusMessage = document.getElementById('statusMessage');
-
-        // Initialize editor with neatly formatted JSON
-        editor.value = JSON.stringify(defaultLevelJson, null, 2);
-
-        /**
-         * Displays a status message (success or error).
-         * @param {string} message The message to display.
-         * @param {boolean} [isError=false] True if it's an error message.
-         */
-        function setStatus(message, isError = false) {
-            statusMessage.textContent = message;
-            // The d-none class is used only for initial hiding
-            statusMessage.classList.remove('d-none', 'status-success', 'status-error');
-            statusMessage.classList.add(isError ? 'status-error' : 'status-success');
-            
-            // Clear message after 3 seconds
-            setTimeout(() => { statusMessage.classList.add('d-none'); }, 3000);
-        }
-
-        /**
-         * Validates the JSON, formats it, updates the textarea, and copies it to the clipboard.
-         */
-        function copyFormattedJson() {
-            let jsonText = editor.value;
-            let parsedJson;
-
-            // 1. Validate and Format JSON
-            try {
-                parsedJson = JSON.parse(jsonText);
-            } catch (e) {
-                setStatus(`JSON Error: Invalid format. ${e.message}`, true);
-                return;
-            }
-
-            // Re-stringify with 2 spaces for beautiful formatting
-            const formattedJson = JSON.stringify(parsedJson, null, 2);
-            
-            // Update the textarea with the newly formatted content
-            editor.value = formattedJson;
-
-            // 2. Copy to Clipboard
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(formattedJson).then(() => {
-                    setStatus('JSON formatted and copied to clipboard successfully!');
-                }).catch(err => {
-                    // Fallback for failed clipboard copy
-                    editor.select();
-                    document.execCommand('copy');
-                    setStatus('Copy failed. JSON formatted and selected. Copy manually!', true);
-                    console.error('Could not copy text: ', err);
-                });
-            } else {
-                 // Fallback for older browsers or insecure contexts (http)
-                 editor.select();
-                 document.execCommand('copy');
-                 setStatus('JSON formatted and selected. Copy manually!', true);
-            }
-        }
-        
-        // Placeholder functions for new editor buttons
-        function addWave() {
-            setStatus("Adding Wave structure... (Future implementation will modify the JSON data in the editor)");
-        }
-        
-        function addAbility() {
-            setStatus("Adding Ability structure... (Future implementation will modify the JSON data in the editor)");
-        }
-        
-    </script>
+    <script src="js/level_editor/Editor.js"></script>
 </body>
 </html>

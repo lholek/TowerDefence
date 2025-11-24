@@ -1,55 +1,178 @@
 /* -------------------------------------------------------------------
  * TD Level Editor Styles
- * These styles override or augment base styles for the dedicated editor view.
- * Based on provided game CSS variables and styles.
  * ------------------------------------------------------------------- */
 
 /* Color definition derived from game CSS */
 :root {
     --main-bg-color: #3e3223; /* Dark Brown (Main UI background) */
     --items-bg-color: #8B4513; /* Wood Brown (Button/Item color) */
-    --editor-bg: #965a2f; /* Very Dark Grey/Black for code area */
+    --editor-bg: #221c15; /* Very Dark Grey/Black for code area */
     --accent-gold: #f0c674; /* Title/Highlight color */
     --parchment-text: #f3e5ab; /* Button text color */
     --dark-wood-shadow: #5c2e0e; /* Shadow/Border color */
+
+    /* Map Specific Colors */
+    --tile-empty: #2e261d;    /* Match body background */
+    --tile-path: #8B4513;     /* Wood Path */
+    --tile-start: #38761d;    /* Green Start */
+    --tile-end: #990000;      /* Red End */
 }
 
 /* Editor Body Background: Dark brown-ish tone for the overall page */
 .editor-body { 
-    background-color: #2e261d; /* Slightly darker than main-bg */
+    background-color: #2e261d;
     color: #EEE;
     padding: 20px;
-    font-family: 'Consolas', monospace; /* Preferred font for code editing */
+    font-family: Arial, sans-serif;
 }
 
-/* Editor Container: Uses the main UI background color for the central panel */
+.cl-primary { color: var(--accent-gold); }
+.text-center { text-align: center; }
+
+/* Editor Container: Central panel */
 .editor-container {
     background-color: var(--main-bg-color); 
     border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.8); /* Stronger shadow for depth */
-    padding: 25px; /* Slightly more padding */
-    /* Centering the div */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+    padding: 25px;
     margin: 0 auto;
 }
 
-/* Textarea for JSON Editing: Designed for high readability */
+/* Textarea for JSON Editing */
 .json-textarea {
     width: 100%;
-    height: 60vh; 
+    height: 30vh; /* Reduced height to make room for the map */
+    margin-bottom: 20px;
     padding: 15px;
     box-sizing: border-box;
-    /* Theme integration */
-    border: 2px solid var(--accent-gold); /* Gold border for emphasis */
+    border: 2px solid var(--accent-gold);
     border-radius: 5px;
     background-color: var(--editor-bg); 
-    color: #F8F8F2; /* Light text */
+    color: #F8F8F2;
     font-family: 'Consolas', monospace;
     font-size: 14px;
     resize: vertical;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Inner shadow for depth */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Controls Wrapper: Ensures spacing and alignment (Replaces utility classes like d-flex, justify-between) */
+/* -------------------------------------------------------------------
+ * Map Grid Styling
+ * ------------------------------------------------------------------- */
+
+.map-container {
+    padding: 15px;
+    background-color: #1a1510; /* Darker background for the map area */
+    border: 2px solid var(--dark-wood-shadow);
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.map-grid {
+    display: grid;
+    /* grid-template-columns is set by JavaScript based on map width */
+    grid-gap: 2px; /* Small gap between tiles */
+    width: 100%;
+    max-width: 100%;
+}
+
+.map-tile {
+    /* To maintain aspect ratio, use padding-bottom trick */
+    width: 100%;
+    padding-top: 100%; 
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    user-select: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Inner content for map tile (to center text on square) */
+.map-tile::before {
+    content: attr(data-content);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    content: attr(data-tile-type); /* Uses JS injected content */
+}
+
+.map-tile:hover {
+    filter: brightness(1.2);
+    border-color: var(--accent-gold);
+}
+
+/* Map Tile Type Colors */
+.tile-- { /* Empty tile */
+    background-color: var(--tile-empty);
+    color: rgba(255, 255, 255, 0.3); /* Subtle text */
+}
+
+.tile-o { /* Path tile (Obstacle) */
+    background-color: var(--tile-path);
+    color: var(--parchment-text);
+}
+
+.tile-s { /* Start tile (S1) */
+    background-color: var(--tile-start);
+    color: white;
+}
+
+.tile-e { /* End tile (E1) */
+    background-color: var(--tile-end);
+    color: white;
+}
+
+
+/* -------------------------------------------------------------------
+ * Tile Key and Selector Styling
+ * ------------------------------------------------------------------- */
+
+.tile-key-container {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--dark-wood-shadow);
+    color: var(--parchment-text);
+}
+
+.tile-options {
+    display: flex;
+    gap: 10px;
+}
+
+.tile-selector-btn {
+    padding: 8px 12px;
+    font-weight: bold;
+    border: 2px solid var(--dark-wood-shadow);
+    cursor: pointer;
+    transition: all 0.1s;
+}
+.tile-selector-btn:hover {
+    transform: scale(1.05);
+}
+
+.current-tile-display {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    margin-left: 5px;
+    border: 1px solid white;
+}
+
+
+/* -------------------------------------------------------------------
+ * Controls and Buttons (Existing Styles)
+ * ------------------------------------------------------------------- */
+
 .controls {
     margin-top: 20px;
     display: flex;
@@ -58,29 +181,28 @@
     align-items: center;
 }
 
-/* Grouping for action buttons and status/nav */
 .button-group, .status-and-nav {
     display: flex;
     align-items: center;
-    gap: 15px; /* Defines the gap previously set inline or via utility classes */
+    gap: 15px;
 }
 
-/* Button Styling (Copied from your base styles and integrated variables) */
 .btn {
-    background-color: var(--items-bg-color); /* Wood brown */
+    background-color: var(--items-bg-color);
     color: var(--parchment-text); 
     padding: 10px 20px;
-    font-family: 'Cinzel', serif; 
     font-weight: bold;
+    text-decoration: none;
     border: 3px solid var(--dark-wood-shadow);
     border-radius: 5px;
-    box-shadow: inset 0 -3px 0 var(--dark-wood-shadow); /* 3D wood effect */
+    box-shadow: inset 0 -3px 0 var(--dark-wood-shadow);
     cursor: pointer;
     transition: all 0.1s ease-in-out;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 .btn:hover {
-    background-color: #a0522d; /* Slightly lighter wood on hover */
+    background-color: #a0522d;
     transform: translateY(-1px);
     box-shadow: inset 0 -3px 0 var(--dark-wood-shadow), 0 3px 5px rgba(0,0,0,0.3);
 }
@@ -90,25 +212,25 @@
 }
 
 
-/* Status Messages: Themed to match the game aesthetic */
+/* Status Messages */
 .status-message {
     padding: 10px;
     border-radius: 4px;
     font-weight: bold;
     text-align: center;
-    flex-grow: 1; 
     transition: all 0.3s;
 }
 
 .status-success { 
-    background-color: #38761d; /* Deep Forest Green for success */
+    background-color: #38761d;
     color: white; 
 }
 
 .status-error { 
-    background-color: #990000; /* Deep Blood Red for error */
+    background-color: #990000;
     color: white; 
 }
 
-/* Note: .d-none is still used to hide the status message initially, 
-   as this is a standard visibility toggle and not a complex layout utility. */
+.d-none {
+    display: none;
+}
