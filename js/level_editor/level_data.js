@@ -97,7 +97,7 @@ export let currentLevelData = JSON.parse(JSON.stringify(defaultLevelJson));
 
 // Map editing state and available tiles
 export let currentTileType = 'O'; 
-export const tileTypes = ['-', 'O', 'S1', 'E1', 'S2', 'E2', 'S3', 'E3']; 
+export const tileTypes = ['-', 'O', 'X', 'S1', 'E1', 'S2', 'E2', 'S3', 'E3']; 
 
 // Setter function for the level data, used by json_functions.js
 export function setCurrentLevelData(data) {

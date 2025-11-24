@@ -10,14 +10,8 @@ const TILE_SIZE = 60; // Base size for drawing tiles (this.tileSize equivalent)
 
 // Camera State 
 const camera = {
-    x: 0, 
-    y: 0, 
-    zoom: 1.0, 
-    dragging: false, 
-    lastX: 0, 
-    lastY: 0,
-    minZoom: 0.3, 
-    maxZoom: 2.0 
+      x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
+      minZoom: 0.1, maxZoom: 1
 };
 
 // Global variable to store the position of the currently hovered tile
@@ -163,7 +157,6 @@ function handleZoom(e) {
     clampCamera(); 
 }
 
-
 // --- Interaction Handlers ---
 
 export function setupMapInteractions() {
@@ -254,8 +247,8 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     const cols = layout[0].length;
 
     // 1. Resize Canvas to fit the full map dimensions (unscaled World size)
-    canvas.width = cols * TILE_SIZE;
-    canvas.height = rows * TILE_SIZE;
+    canvas.width = 1200;
+    canvas.height = 600;
 
     // 2. Clear Canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -263,7 +256,8 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     // 3. Apply Camera Transform (translate and zoom)
     ctx.save();
     // Transform coordinates based on the canvas container viewport and zoom
-    ctx.translate(camera.x / camera.zoom, camera.y / camera.zoom);
+    ctx.translate(camera.x, camera.y);
+
     ctx.scale(camera.zoom, camera.zoom); 
     
     // 4. Draw Tiles (Drawing is done in World Space: TILE_SIZE = 60)
@@ -283,8 +277,8 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
                 case 'O': color = '#8B4513'; break; // Path (Brown)
                 case 'S': color = '#38761d'; break; // Start (Dark Green)
                 case 'E': color = '#990000'; break; // End (Dark Red)
-                case 'X': color = '#3f7d3c'; break; // Tower Site (Mid Green)
-                case '-': default: color = '#2e261d'; break; // Empty (Dark Grey/Brown)
+                case 'X': color = '#3F7D3C'; break; // Tower Site (Mid Green)
+                case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
             }
 
             ctx.fillStyle = color;
