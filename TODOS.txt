@@ -15,7 +15,7 @@ TODOS:
 ++ LONG TODO: Sending ways, playing from toher side
 
 0.0.10 ideas:
-
+- Level editor
 - Multipaht enemis like this:
 {
   "maps": [
