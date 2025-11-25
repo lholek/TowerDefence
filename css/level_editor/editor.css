@@ -66,12 +66,12 @@ body, h1, h2, p, button, input, textarea {
 .json-textarea {
     width: 100%;
     min-height: 250px;
-    background-color: #1e1e1e;
+    background-color: #967456;
     color: #f0f0f0;
     padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 14px;
-    border: 1px solid #555;
+    border: 1px solid #967456;
     border-radius: 6px;
     resize: vertical;
     margin-bottom: 20px;
@@ -141,22 +141,23 @@ body, h1, h2, p, button, input, textarea {
     background-color: #3F7D3C; 
     box-shadow: none;
     border: none;
-    color: white;
 }
 
 .btn-validate:hover {
     background-color: #60914A;
     box-shadow: none;
     border: none;
-    color: white;
 }
 
 .btn-toggle-map {
-    background-color: #555;
-    color: white;
+    background-color: #5255d9;
+    box-shadow: none;
+    border: none;
 }
 .btn-toggle-map:hover {
-    background-color: #666;
+    background-color: #626ad1;
+    box-shadow: none;
+    border: none;
 }
 
 .status-message {
