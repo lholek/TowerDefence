@@ -61,7 +61,8 @@ TODOS:
         }
       ]
   }
+- import map from json file
 
 0.0.11:
-        "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
-        "TODO: ? New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",
+  "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
+  "TODO: ? New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",
