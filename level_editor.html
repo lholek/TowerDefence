@@ -11,10 +11,47 @@
         <h1 class="title cl-primary text-center">The CZSrna's Tower Defence – Level Editor</h1>
         <p class="text-center">Map editor via json format ready to copy</p>
         
-        <!-- Textarea for JSON editing -->
+        <div class="editor-tabs">
+            <button class="btn active-tab" data-target="mapEditorPanel">Map</button>
+            <button class="btn" data-target="waveEditorPanel">Waves</button>
+            <button class="btn" data-target="abilityEditorPanel">Abilities</button>
+        </div>
+        <div class="editor-panels-container">
+            
+            <div id="mapEditorPanel" class="editor-panel map-layout-wrapper"> 
+                
+                <div class="map-size-controls">
+                    <label for="mapWidth">Width:</label>
+                    <input type="number" id="mapWidth" min="3" value="11" class="input-small">
+                    
+                    <label for="mapHeight">Height:</label>
+                    <input type="number" id="mapHeight" min="3" value="3" class="input-small">
+
+                    <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
+                </div>
+
+                <div id="mapCanvasContainer" class="map-canvas-container">
+                    <canvas id="mapCanvas"></canvas>
+                </div>
+
+                <div id="tileKey" class="tile-key-container"></div>
+            </div>
+            
+            <div id="waveEditorPanel" class="editor-panel d-none">
+                <h2>Wave Editor</h2>
+                <p>This is where you'll edit waves and enemy properties.</p>
+                </div>
+
+            <div id="abilityEditorPanel" class="editor-panel d-none">
+                <h2>Ability Editor</h2>
+                <p>This is where you'll define active and passive abilities.</p>
+                </div>
+            
+        </div>
+        
+        <h3>Final JSON</h3>
         <textarea id="jsonEditor" class="json-textarea"></textarea>
 
-        <!-- Controls: Action buttons and status -->
         <div class="controls">
             <div class="button-group">
                 <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn">Format & Copy JSON</button>
@@ -23,47 +60,22 @@
             </div>
             
             <div class="status-and-nav">
-                <!-- Validation and Visibility Buttons -->
                 <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate">Check Map</button>
-                <button onclick="window.app.mapEditor.toggleMapVisibility()" class="btn btn-toggle-map">Toggle Map</button>
             </div>
 
-            <!-- Status Message area -->
             <div id="statusMessage" class="status-message d-none"></div>
         </div>
         
-        <!-- Map Layout Wrapper (for visibility toggle) -->
-        <div id="mapLayoutWrapper" class="map-layout-wrapper">
-            
-            <div class="map-size-controls">
-                <label for="mapWidth">Width:</label>
-                <input type="number" id="mapWidth" min="3" value="11" class="input-small">
-                
-                <label for="mapHeight">Height:</label>
-                <input type="number" id="mapHeight" min="3" value="3" class="input-small">
-
-                <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
-            </div>
-
-            <!-- Canvas Container for Panning/Scrolling -->
-            <div id="mapCanvasContainer" class="map-canvas-container">
-                <canvas id="mapCanvas"></canvas>
-            </div>
-
-            <!-- Tile Key will be rendered inside mapLayoutWrapper by JS -->
-            <div id="tileKey" class="tile-key-container"></div>
-        </div>
-
         <div class="text-center mt-4">
             <a href="/" class="btn">← Back to Main Menu</a>
         </div>
         
     </div>
     
-    <!-- Import Modules -->
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/map_editor.js"></script>
     <script type="module" src="js/level_editor/main.js"></script>
+    <script type="module" src="js/level_editor/UI.js"></script>
 </body>
 </html>

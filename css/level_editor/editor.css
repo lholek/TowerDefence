@@ -21,6 +21,15 @@ body, h1, h2, p, button, input, textarea {
     font-family: 'Inter', sans-serif;
 }
 
+h2, h3 {
+    margin: 0;
+    color: #f0c674;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 26px;
+    text-align: center;
+}
+
 .editor-body {
     background-color: #121212;
     color: #e0e0e0;
@@ -265,4 +274,19 @@ body, h1, h2, p, button, input, textarea {
     padding: 4px 8px;
     border-radius: 4px;
     font-weight: bold;
+}
+
+/* --- Editor Tabs --- */
+.editor-tabs {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* Center the buttons */
+}
+
+.active-tab {
+    /* Style for the currently visible editor tab's button */
+    background-color: rgb(240, 198, 116) !important; /* Primary accent color */
+    color: var(--main-bg-color) !important; /* Dark text on light background */
+    box-shadow: inset 0 -3px 0 rgb(180, 140, 70);
 }
