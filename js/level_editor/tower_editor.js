@@ -1,9 +1,9 @@
 // js/level_editor/tower_editor.js
 
 import { currentLevelData } from './level_data.js'; // To access the tower data
-import { modifyJson } from './json_functions.js';    // To save changes back to the JSON editor
+import { modifyJson, customConfirm } from './json_functions.js'; // Import both utilities
 
-let contentContainer = null; // 1. Initialize as null, will be set in 'initialize'
+let contentContainer = null; 
 
 // --- New Tower Default Structure ---
 const newTowerStructure = {
@@ -17,9 +17,8 @@ const newTowerStructure = {
     "speed": 3
 };
 
-// 2. Define the initialize function
+// --- Initialization ---
 export const initialize = () => {
-    // Set the reference to the DOM element here, after DOMContentLoaded
     contentContainer = document.getElementById('towerEditorContent');
     if (!contentContainer) {
         console.error("Tower Editor Error: Element #towerEditorContent not found.");
@@ -27,21 +26,43 @@ export const initialize = () => {
 };
 
 /**
- * Finds the next sequential three-digit ID (e.g., "005" if "004" is the highest).
+ * Finds the next sequential three-digit ID based on the current highest.
+ * This is used ONLY when ADDING a new tower.
  */
 function getNextTowerId() {
     const towerTypes = currentLevelData.maps[0].towerTypes;
     const existingIds = Object.keys(towerTypes);
     
-    // Find the highest numeric ID
     const maxId = existingIds.reduce((max, id) => {
         const numId = parseInt(id, 10);
         return numId > max ? numId : max;
-    }, 0); // Start at 0
+    }, 0); 
 
-    // Format the next ID as a three-digit string
     const nextId = maxId + 1;
     return nextId.toString().padStart(3, '0');
+}
+
+/**
+ * Reorganizes tower IDs sequentially (001, 002, 003, ...).
+ * @param {object} towerTypes - The object holding all tower definitions.
+ * @returns {object} The new, re-indexed towerTypes object.
+ */
+function reIndexTowerIds(towerTypes) {
+    const newTowerTypes = {};
+    const oldTowers = Object.values(towerTypes); // Get the tower objects, lose the old IDs
+
+    // Sort by old ID keys to maintain user order preference, then assign new IDs
+    // NOTE: This relies on Object.keys being implicitly sorted for the numeric keys, 
+    // but Object.values() discards that order. We must manually sort.
+    const sortedKeys = Object.keys(towerTypes).sort();
+    const sortedTowers = sortedKeys.map(key => towerTypes[key]);
+    
+    sortedTowers.forEach((tower, index) => {
+        const newId = (index + 1).toString().padStart(3, '0');
+        newTowerTypes[newId] = tower;
+    });
+
+    return newTowerTypes;
 }
 
 
@@ -50,12 +71,9 @@ export const towerEditor = (() => {
     // --- Repeater Rendering Function ---
     const renderTowerRepeater = (towerTypes) => {
         if (!contentContainer) {
-            // This case should be handled by calling initialize() first in main.js
             console.error("Tower Editor Error: Content container is null."); 
             return; 
         }
-        
-        // Also add a check for the data being passed in
         if (!towerTypes || typeof towerTypes !== 'object') {
             contentContainer.innerHTML = "<p>No tower data found in JSON.</p>";
             return;
@@ -66,12 +84,11 @@ export const towerEditor = (() => {
         for (const towerId in towerTypes) {
             const tower = towerTypes[towerId];
             
-            // Generate the HTML block for a single tower
+            // HTML remains the same (it relies on window.app.towerEditor.deleteTower)
             html += `
                 <div class="tower-card box" data-tower-id="${towerId}">
                     <div class="card-header">
                         <input type="text" class="input-tower-id input-small" value="${towerId}" placeholder="ID" disabled>
-                        <h3>${tower.name}</h3>
                         <button onclick="window.app.towerEditor.deleteTower('${towerId}')" class="btn btn-delete">X</button>
                     </div>
                     
@@ -93,7 +110,7 @@ export const towerEditor = (() => {
         attachChangeListeners();
     };
 
-    // 1. Function to handle saving changes (NOW IMPLEMENTED)
+    // 1. Function to handle saving changes
     const attachChangeListeners = () => {
         if (!contentContainer) return; 
 
@@ -111,7 +128,7 @@ export const towerEditor = (() => {
         });
     };
 
-    // 2. Function to add a new tower (NOW IMPLEMENTED)
+    // 2. Function to add a new tower
     const addTower = () => {
         modifyJson((data) => {
             const newId = getNextTowerId();
@@ -120,25 +137,36 @@ export const towerEditor = (() => {
 
             data.maps[0].towerTypes[newId] = newTower;
             
-            // Re-render the repeater to show the new tower
+            // No need to re-index when adding, just re-render
             renderTowerRepeater(data.maps[0].towerTypes);
 
         }, `New tower added with ID: ${getNextTowerId()}`);
     };
 
-    // 3. Function to delete a tower (NOW IMPLEMENTED)
-    const deleteTower = (towerId) => {
-        if (!confirm(`Are you sure you want to delete Tower ${towerId}: ${currentLevelData.maps[0].towerTypes[towerId].name}?`)) {
+    // 3. Function to delete a tower (FIXED WITH CUSTOM CONFIRM & RE-ID)
+    const deleteTower = async (towerId) => {
+        const towerName = currentLevelData.maps[0].towerTypes[towerId].name;
+        
+        const confirmed = await customConfirm(
+            "Confirm Deletion",
+            `Are you sure you want to delete Tower ${towerId}: ${towerName}? This will re-index all subsequent tower IDs.`
+        );
+
+        if (!confirmed) {
             return;
         }
         
         modifyJson((data) => {
+            // 1. Delete the tower
             delete data.maps[0].towerTypes[towerId];
 
-            // Re-render the repeater to reflect the deletion
+            // 2. Re-index all remaining towers
+            data.maps[0].towerTypes = reIndexTowerIds(data.maps[0].towerTypes);
+
+            // 3. Re-render the repeater to reflect the deletion and new IDs
             renderTowerRepeater(data.maps[0].towerTypes);
             
-        }, `Tower ${towerId} deleted.`);
+        }, `Tower ${towerId} (${towerName}) deleted and IDs re-indexed.`);
     };
 
     return {

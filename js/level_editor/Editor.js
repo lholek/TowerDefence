@@ -372,7 +372,21 @@ function renderMap(layout) {
 
     mapGrid.innerHTML = '';
     
+    if (!layout || !Array.isArray(layout) || layout.length === 0) {
+        setStatus("Error: Map layout data is missing or empty.", true);
+        // Optionally clear the canvas if an error occurs
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        return; 
+    }
     const rows = layout.length;
+
+    // Check 2: Does the first row exist and is it not empty? 
+    // This prevents the "Cannot read properties of undefined (reading 'length')" error
+    if (!layout[0] || !Array.isArray(layout[0]) || layout[0].length === 0) {
+        setStatus("Error: Map layout's first row is missing or empty.", true);
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        return; 
+    }
     const cols = layout[0].length;
     
     mapGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;

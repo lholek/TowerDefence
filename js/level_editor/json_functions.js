@@ -5,6 +5,54 @@ let editor;
 let setStatus;
 let renderMap;
 
+// popup
+// Global callback storage for the custom confirm utility
+let resolvePromise; 
+
+// References for the new popup elements (ensure these are in your HTML)
+const confirmPopup = document.getElementById('customConfirmPopup');
+const popupTitle = document.getElementById('popupTitle');
+const popupMessage = document.getElementById('popupMessage');
+const confirmButton = document.getElementById('confirmActionButton');
+const cancelButton = document.getElementById('cancelActionButton');
+
+// --- Custom Confirmation Utility ---
+if (confirmPopup) {
+    // Add event listeners once
+    confirmButton.addEventListener('click', () => {
+        confirmPopup.classList.add('d-none');
+        if (resolvePromise) resolvePromise(true);
+    });
+
+    cancelButton.addEventListener('click', () => {
+        confirmPopup.classList.add('d-none');
+        if (resolvePromise) resolvePromise(false);
+    });
+}
+
+
+/**
+ * Shows a custom confirmation dialog.
+ * @param {string} title - The title for the popup.
+ * @param {string} message - The message body.
+ * @returns {Promise<boolean>} Resolves to true if confirmed, false otherwise.
+ */
+export function customConfirm(title, message) {
+    if (!confirmPopup) {
+        // Fallback if HTML structure is missing
+        console.warn("Custom confirmation HTML not found. Falling back to native confirm.");
+        return Promise.resolve(window.confirm(message));
+    }
+    
+    return new Promise(resolve => {
+        resolvePromise = resolve; // Store the resolve function globally
+        popupTitle.textContent = title;
+        popupMessage.textContent = message;
+        confirmPopup.classList.remove('d-none');
+    });
+}
+// popup
+
 // Placeholder for external module references
 export function setModuleReferences(refs) {
     editor = refs.editor;

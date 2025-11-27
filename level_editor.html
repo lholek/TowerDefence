@@ -10,8 +10,6 @@
 <body class="editor-body">
     <div class="editor-container box">
         <h1 class="title cl-primary text-center">The CZSrna's Tower Defence – Level Editor</h1>
-        <p class="text-center">Map editor via json format ready to copy</p>
-        
         <div class="editor-tabs">
             <button class="btn active-tab" data-target="mapEditorPanel">Map</button>
             <button class="btn active-tab" data-target="towerEditorPanel">Towers</button>
@@ -65,16 +63,15 @@
 
         <div class="controls">
             <div class="button-group">
-                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn">Format & Copy JSON</button>
-                <button onclick="window.app.jsonFunctions.addWave()" class="btn">+ Add Wave</button>
-                <button onclick="window.app.jsonFunctions.addAbility()" class="btn">+ Add Ability</button>
+                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy">Format & Copy JSON</button>
             </div>
+
+            <div id="statusMessage" class="status-message text-center d-none"></div>
             
             <div class="status-and-nav">
                 <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate">Check Map</button>
             </div>
 
-            <div id="statusMessage" class="status-message d-none"></div>
         </div>
         
         <div class="text-center mt-4">
@@ -82,7 +79,16 @@
         </div>
         
     </div>
-    
+    <div id="customConfirmPopup" class="modal-overlay d-none">
+        <div class="return-content box">
+            <h3 id="popupTitle">Delete Tower</h3>
+            <p id="popupMessage">Are you sure you want to delete this entity?</p>
+            <div class="return-buttons">
+                <button id="confirmActionButton" class="btn btn-delete">Yes, remove</button>
+                <button id="cancelActionButton" class="btn">Cancel</button>
+            </div>
+        </div>
+    </div>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/map_editor.js"></script>

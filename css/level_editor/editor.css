@@ -145,17 +145,30 @@ h2, h3 {
 .btn:active { transform: translateY(0); }
 
 
-.btn-validate {
+.btn-copy {
     background-color: #3F7D3C; 
     box-shadow: none;
     border: none;
 }
 
-.btn-validate:hover {
+.btn-copy:hover {
     background-color: #60914A;
     box-shadow: none;
     border: none;
 }
+
+.btn-validate {
+    background-color: #334b63 !important; 
+    box-shadow: none;
+    border: none;
+}
+
+.btn-validate:hover {
+    background-color: #334b63 !important; 
+    box-shadow: none;
+    border: none;
+}
+
 
 .btn-toggle-map {
     background-color: #5255d9;
@@ -288,4 +301,64 @@ h2, h3 {
     background-color: rgb(240, 198, 116) !important; /* Primary accent color */
     color: var(--main-bg-color) !important; /* Dark text on light background */
     box-shadow: inset 0 -3px 0 rgb(180, 140, 70);
+}
+
+/* --- Popup --- */
+/* --- 1. Modal Overlay (The dimmed background) --- */
+.modal-overlay {
+    position: fixed; /* Fixes it to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    z-index: 1000; /* Ensure it's above all other editor content */
+    
+    /* Centering the content horizontally and vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- 2. Modal Content (The box inside the overlay) --- */
+.return-content {
+    /* The 'box' class likely provides background/padding/border-radius */
+    max-width: 400px;
+    padding: 30px;
+    text-align: center;
+    /* Optional: Add a subtle lift */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
+    
+    /* Ensure z-index is above the overlay, though not strictly necessary 
+       if using flexbox centering like above, but good practice. */
+    z-index: 1001; 
+}
+
+.return-content h3 {
+    color: #f0f0f0;
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.return-content p {
+    color: #ccc;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+/* --- 3. Button Layout --- */
+.return-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+}
+
+.return-buttons .btn {
+    flex-grow: 1; /* Makes buttons expand to fill space */
+    padding: 10px 15px;
+}
+
+/* Hide utility (used in HTML to toggle visibility) */
+.d-none {
+    display: none !important;
 }
