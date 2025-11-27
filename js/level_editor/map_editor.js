@@ -10,12 +10,17 @@ const TILE_SIZE = 60; // Base size for drawing tiles (this.tileSize equivalent)
 
 // Camera State 
 const camera = {
-      x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
-      minZoom: 0.1, maxZoom: 1
+    x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
+    minZoom: 0.1, maxZoom: 1
 };
 
 // Global variable to store the position of the currently hovered tile
 let hoveredTile = { r: -1, c: -1 };
+
+// --- New Drawing State Variables ---
+let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
+let isDrawingRight = false; // Tracks if right button (2) is held for erasing
+let hasDrawn = false; // Tracks if any tile was modified during a draw session
 
 // Placeholder for external module references
 export function setModuleReferences(refs) {
@@ -72,6 +77,12 @@ function clampCamera() {
     const containerHeight = rect.height;
     
     const layout = currentLevelData.maps[0].layout;
+
+    // Guard against empty layout before accessing layout[0].length
+    if (!layout || layout.length === 0 || layout[0].length === 0) {
+        return; 
+    }
+
     const rows = layout.length;
     const cols = layout[0].length;
     
@@ -157,38 +168,131 @@ function handleZoom(e) {
     clampCamera(); 
 }
 
-// --- Interaction Handlers ---
+// --- Drawing Logic Helpers ---
+
+/**
+ * Applies the given tile type to the current mouse position in the map.
+ * Updates the currentLevelData directly for performance during drawing.
+ */
+function applyTileToCurrentPosition(screenX, screenY, tileType) {
+    const layout = currentLevelData.maps[0].layout;
+    
+    // Guard clause
+    if (!layout || layout.length === 0 || layout[0].length === 0) return false; 
+
+    const { row, col } = getTileFromScreen(screenX, screenY, layout.length, layout[0].length);
+    
+    // Check if within bounds
+    if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
+        // Optimization: Only update and re-render if the tile actually changes
+        if (layout[row][col] !== tileType) {
+            // DIRECTLY MODIFY currentLevelData for drag-painting performance
+            currentLevelData.maps[0].layout[row][col] = tileType;
+            hasDrawn = true;
+            renderMap(layout); // Re-render the map immediately for visual feedback
+            return true;
+        }
+    }
+    return false;
+}
+
+// --- Interaction Handlers (Drawing/Erasing) ---
+
+function handleMapDrawStart(e) {
+    // If we are currently panning with the middle mouse button, ignore drawing attempt
+    if (camera.dragging) return; 
+
+    // Left click (button 0)
+    if (e.button === 0) {
+        isDrawingLeft = true;
+        isDrawingRight = false; // Ensure only one mode is active
+        hasDrawn = false;
+        applyTileToCurrentPosition(e.clientX, e.clientY, currentTileType);
+    } 
+    // Right click (button 2)
+    else if (e.button === 2) {
+        e.preventDefault(); // Prevents context menu
+        isDrawingRight = true;
+        isDrawingLeft = false; // Ensure only one mode is active
+        hasDrawn = false;
+        applyTileToCurrentPosition(e.clientX, e.clientY, '-'); // Default tile for erasing
+    }
+}
+
+function handleMapDrawStop() {
+    // 1. Sync changes to the JSON editor if drawing occurred
+    if (hasDrawn && (isDrawingLeft || isDrawingRight)) {
+        // Call modifyJson with an empty operation to sync the already-changed currentLevelData 
+        // back to the JSON editor and trigger any required updates.
+        modifyJson(() => {}, `Map updated by drag-drawing.`, true);
+    }
+
+    // 2. Clear drawing state
+    isDrawingLeft = false;
+    isDrawingRight = false;
+    hasDrawn = false;
+}
+
+function handleMapDrawMove(e) {
+    // If panning is active, do not draw
+    if (camera.dragging) return; 
+    
+    // Apply tile if the left button is held down
+    if (isDrawingLeft) {
+        applyTileToCurrentPosition(e.clientX, e.clientY, currentTileType);
+    } 
+    // Apply default tile if the right button is held down
+    else if (isDrawingRight) {
+        applyTileToCurrentPosition(e.clientX, e.clientY, '-');
+    }
+}
+
+/**
+ * Resets the drawing state when the window loses focus (e.g., Alt+Tab is used).
+ * This is crucial to prevent the continuous drawing feature from getting stuck "on".
+ */
+function handleWindowFocusChange() {
+    handleMapDrawStop();
+}
+
+
+// --- Main Interaction Setup ---
 
 export function setupMapInteractions() {
-    // Primary interactions on the canvas container
+    // Primary interactions for Panning/Zooming
     mapCanvasContainer.addEventListener('mousedown', startDrag);
     mapCanvasContainer.addEventListener('mousemove', drag);
     mapCanvasContainer.addEventListener('mouseup', stopDrag);
     mapCanvasContainer.addEventListener('mouseleave', stopDrag);
     mapCanvasContainer.addEventListener('wheel', handleZoom);
     
-    // Disable context menu (right-click) on the canvas to allow tile placement
+    // Disable context menu (right-click)
     canvas.addEventListener('contextmenu', e => e.preventDefault());
     
-    // Single click for tile placement
-    canvas.addEventListener('click', handleMapClick); 
-    
-    // Right click for default tile placement
-    canvas.addEventListener('mousedown', handleMapRightClick); 
-    
-    // Left/Right click and move handlers
-    canvas.addEventListener('mousemove', handleMapDrawClick); 
+    // Setup Continuous Drawing/Erasing
+    canvas.addEventListener('mousedown', handleMapDrawStart); 
+    canvas.addEventListener('mouseup', handleMapDrawStop); 
+    canvas.addEventListener('mouseleave', handleMapDrawStop); 
+    canvas.addEventListener('mousemove', handleMapDrawMove); 
 
     // Tile Hover effect
     canvas.addEventListener('mousemove', handleMapHover);
     canvas.addEventListener('mouseleave', renderMap); // Clear hover when mouse leaves
     
+    // FIX: Reset drawing state if window loses focus (Alt+Tab)
+    window.addEventListener('blur', handleWindowFocusChange);
+
     // Initial clamp/render to ensure map is centered on load
     clampCamera();
 }
 
+
 function handleMapHover(e) {
     const layout = currentLevelData.maps[0].layout;
+
+    // Guard against empty layout
+    if (!layout || layout.length === 0 || layout[0].length === 0) return;
+
     const { row, col } = getTileFromScreen(e.clientX, e.clientY, layout.length, layout[0].length);
 
     if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
@@ -204,42 +308,7 @@ function handleMapHover(e) {
     }
 }
 
-function handleMapRightClick(e) {
-    // Only process right click (button 2) AND ensure we are not dragging
-    if (e.button !== 2 || camera.dragging) return;
-    
-    e.preventDefault(); 
-    
-    const layout = currentLevelData.maps[0].layout;
-    const { row, col } = getTileFromScreen(e.clientX, e.clientY, layout.length, layout[0].length);
-    
-    // Check if click resulted in a valid tile coordinate
-    if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
-        // Set tile to default '-'
-        modifyJson((data) => {
-            data.maps[0].layout[row][col] = '-';
-        }, `Tile [${row}, ${col}] cleared to '-'`);
-    }
-}
 
-function handleMapClick(e) {
-    // Only process left click (button 0) AND ensure we are not dragging
-    if (e.button !== 0 || camera.dragging) return; 
-
-    const layout = currentLevelData.maps[0].layout;
-    const { row, col } = getTileFromScreen(e.clientX, e.clientY, layout.length, layout[0].length);
-    
-    // Check if click resulted in a valid tile coordinate
-    if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
-        modifyJson((data) => {
-            data.maps[0].layout[row][col] = currentTileType;
-        }, `Tile [${row}, ${col}] set to ${currentTileType}`);
-    }
-}
-
-function handleMapDrawClick(e){
-    console.log(e);
-}
 
 // --- Map Rendering (Canvas API) ---
 
@@ -247,10 +316,21 @@ function handleMapDrawClick(e){
  * Renders the map grid onto the canvas.
  */
 export function renderMap(layout = currentLevelData.maps[0].layout) {
-    if (!ctx || !layout || layout.length === 0) return;
+    // ----------------------------------------------------
+    // ADDED GUARD CLAUSES TO PREVENT TypeError
+    // ----------------------------------------------------
+    if (!ctx || !layout || !Array.isArray(layout) || layout.length === 0) return;
 
+    // Check 2: Does the first row exist and is it not empty? 
+    if (!layout[0] || !Array.isArray(layout[0]) || layout[0].length === 0) {
+        setStatus("Error: Map layout's first row is missing or empty.", true);
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        return; 
+    }
+    
     const rows = layout.length;
     const cols = layout[0].length;
+    // ----------------------------------------------------
 
     // 1. Resize Canvas to fit the full map dimensions (unscaled World size)
     canvas.width = 1200;
@@ -263,7 +343,6 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     ctx.save();
     // Transform coordinates based on the canvas container viewport and zoom
     ctx.translate(camera.x, camera.y);
-
     ctx.scale(camera.zoom, camera.zoom); 
     
     // 4. Draw Tiles (Drawing is done in World Space: TILE_SIZE = 60)
@@ -336,8 +415,10 @@ function createTileKey() {
     });
     html += '</div>';
 
-    tileKey.innerHTML = html;
-    updateCurrentTileDisplay();
+    if (tileKey) {
+        tileKey.innerHTML = html;
+        updateCurrentTileDisplay();
+    }
 }
 
 /**
