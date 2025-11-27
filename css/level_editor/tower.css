@@ -1,0 +1,62 @@
+/* --- Tower Editor Repeater Styles --- */
+#towerEditorContent {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tower-card {
+    background-color: #2e261d;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #5c2e0e;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-header h3 {
+    margin: 0;
+    text-align: left;
+    flex-grow: 1;
+    padding-left: 15px;
+}
+
+.card-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.card-body label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.card-body input {
+    padding: 5px;
+    margin-top: 3px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.btn-delete {
+    background-color: #ff4444 !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 5px 10px;
+    font-size: 1rem;
+}
+
+.btn-delete:hover {
+    background-color: #cc3333 !important;
+}

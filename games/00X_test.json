@@ -1,37 +1,25 @@
 {
   "maps": [
     {
-      "name": "Test Map",
-      "startingCoins": 10000000,
-      "startingLives": 5000000,
+      "name": "EDIT TITLE",
+      "startingCoins": 100,
+      "startingLives": 100,
       "description": [
         {
-          "descriptionText": "Only for test",
+          "descriptionText": "Edit description",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "custom",
+          "map_size": "11x3",
           "tower types": 1,
           "abilites": "-"
         }
       ],
       "tileSize": 60,
-       "layout": [
-          ["X","X","X","X","X","X","X","X","X","-","-","-","-","-","-","-","-","-","-","-"],
-          ["S1","O","O","O","X","X","X","X","X","-","-","-","X","X","X","X","X","X","-","-"],
-          ["X","X","X","O","X","X","X","X","-","-","-","-","O","O","O","O","O","X","X","-"],
-          ["X","X","X","O","X","X","-","-","-","-","-","O","O","X","X","X","O","O","X","-"],
-          ["X","X","X","O","X","X","-","-","-","-","O","O","-","X","X","X","X","O","X","-"],
-          ["-","-","-","O","-","-","-","X","X","X","O","-","-","X","X","X","O","O","X","-"],
-          ["-","-","-","O","-","-","X","X","O","O","O","-","-","X","X","X","O","X","X","-"],
-          ["-","O","O","O","X","X","O","O","O","X","-","-","-","-","X","X","O","X","X","-"],
-          ["X","O","X","X","X","X","O","X","X","-","-","-","-","X","X","O","O","X","-","-"],
-          ["X","O","O","X","X","X","O","X","X","-","-","-","X","X","O","O","X","X","-","-"],
-          ["X","X","O","X","X","O","O","X","X","-","-","X","X","O","O","X","X","-","-","-"],
-          ["-","X","O","O","O","O","X","X","-","-","X","X","O","O","X","X","-","-","-","-"],
-          ["-","X","X","X","X","X","X","-","-","-","X","X","O","X","X","-","-","-","-","-"],
-          ["-","-","-","-","-","-","-","-","-","-","X","X","O","X","X","-","-","-","-","-"],
-          ["-","-","-","-","-","-","-","-","-","-","-","X","E1","X","-","-","-","-","-","-"]
-      ],
+      "layout": [
+              ["-","-","-","-","-","-","-","-","-","-","-"],
+              ["S1","O","O","O","O","O","O","O","O","O","E1"],
+              ["-","-","-","-","-","-","-","-","-","-","-"]
+          ],
       "abilities": [
         {
           "_comment": "cooldown - 30000",
@@ -39,11 +27,11 @@
           "name": "Lava Floor",
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
-          "type": "targeted", 
-          "selectionCount": 7, 
+          "type": "targeted",
+          "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250, 
-          "damage_every": 250, 
+          "damage": 250,
+          "damage_every": 250,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
           "effectDuration": 5000,
@@ -64,13 +52,20 @@
           "sellPrice": 1,
           "speed": 2
         }
-      },     
+      },
       "levels": [
         {
           "level": 1,
           "enemies": [
-            {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E2", "interval": 800, "coinReward": 2},
-            {"type": "tank", "count": 5, "health": 100, "speed": 1, "path": "S2E1", "interval": 800, "coinReward": 2}
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1
+            }
           ]
         }
       ]

@@ -1,6 +1,7 @@
 import * as levelData from './level_data.js';
 import * as jsonFunctions from './json_functions.js';
 import * as mapEditor from './map_editor.js';
+import { initialize as initTowerEditor, towerEditor } from './tower_editor.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -15,7 +16,8 @@ function setStatus(message, isError = false) {
 // Attach module functions to a global namespace for HTML access
 window.app = {
     jsonFunctions: jsonFunctions,
-    mapEditor: mapEditor
+    mapEditor: mapEditor,
+    towerEditor: towerEditor
 };
 
 // --- Initialization ---
@@ -56,4 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Initial map render and interaction setup
     mapEditor.renderMap(levelData.currentLevelData.maps[0].layout);
     mapEditor.setupMapInteractions();
+    
+    // --- TOWER EDITOR SETUP ---
+    initTowerEditor(); // 3. Initialize the tower editor to find its DOM elements
+    
+    // 4. Render the tower repeater using the data from levelData.js
+    towerEditor.renderTowerRepeater(levelData.currentLevelData.maps[0].towerTypes);
 });

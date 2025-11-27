@@ -74,10 +74,9 @@ h2, h3 {
 /* --- JSON Editor --- */
 .json-textarea {
     width: 100%;
-    min-height: 250px;
+    min-height: 400px;
     background-color: #967456;
     color: #f0f0f0;
-    padding: 10px;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 14px;
     border: 1px solid #967456;

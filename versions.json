@@ -2,6 +2,7 @@
   "versions": [
     {
       "version": "Alpha 0.0.10",
+      "relase": "TBC",
       "changes": [
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
         "TODO: Multipath Map - whit more starts and ends",
@@ -14,6 +15,7 @@
     }, 
     {
       "version": "Alpha 0.0.9",
+      "relase": "2025-11-20",
       "changes": [
         "Improved - Adapted for any FPS monitors",
         "Improved - Added second ADVENTURE MAP (Islands)",
@@ -33,6 +35,7 @@
     }, 
     {
       "version": "Alpha 0.0.8",
+      "relase": "2025-11-07",
       "changes": [
         "Improvment - Set basic settings where player can set FPS",
         "Improvment - Added ABILITY Lava floor 🌋",
@@ -53,6 +56,7 @@
     }, 
     {
       "version": "Alpha 0.0.7",
+      "relase": "2025-11-01",
       "changes": [
         "Improvment - Set - dynamic starting Lives and Coins different for each game",
         "Improvment - Tiles are now showing color where you can built or not",
@@ -73,6 +77,7 @@
     }, 
     {
       "version": "Alpha 0.0.6",
+      "relase": "2025-10-30",
       "changes": [
         "Added Enemy health bars",
         "Added music",
@@ -84,6 +89,7 @@
       },
     {
       "version": "Alpha 0.0.5",
+      "relase": "2025-10-28",
       "changes": [
         "Changed basic behaviour of the game - now game works trough drag/drop and wheel to so you can move around map",
         "Added 3rd map",
@@ -94,6 +100,7 @@
     },
     {
       "version": "Alpha 0.0.4",
+      "relase": "2025-10-28",
       "changes": [
         "Full clickable towers and extra life cards",
         "Removed resume button; replaced with (P) indicator",

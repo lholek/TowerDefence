@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The CZSrna's Tower Defence – Level Editor</title>
     <link rel="stylesheet" href="css/level_editor/editor.css" /> 
+    <link rel="stylesheet" href="css/level_editor/tower.css" /> 
 </head>
 <body class="editor-body">
     <div class="editor-container box">
@@ -13,8 +14,9 @@
         
         <div class="editor-tabs">
             <button class="btn active-tab" data-target="mapEditorPanel">Map</button>
-            <button class="btn" data-target="waveEditorPanel">Waves</button>
-            <button class="btn" data-target="abilityEditorPanel">Abilities</button>
+            <button class="btn active-tab" data-target="towerEditorPanel">Towers</button>
+            <button class="btn active-tab" data-target="waveEditorPanel">Waves</button>
+            <button class="btn active-tab" data-target="abilityEditorPanel">Abilities</button>
         </div>
         <div class="editor-panels-container">
             
@@ -37,18 +39,27 @@
                 <div id="tileKey" class="tile-key-container"></div>
             </div>
             
-            <div id="waveEditorPanel" class="editor-panel d-none">
+            <div id="towerEditorPanel" class="editor-panel"> 
+                <h2>Tower Editor</h2>
+                <button onclick="window.app.towerEditor.addTower()" class="btn btn-validate">+ Add New Tower</button>
+                
+                <div id="towerEditorContent" class="repeater-container">
+                    <p>Load JSON to display tower types...</p>
+                </div>
+            </div>
+
+            <div id="waveEditorPanel" class="editor-panel">
                 <h2>Wave Editor</h2>
                 <p>This is where you'll edit waves and enemy properties.</p>
                 </div>
 
-            <div id="abilityEditorPanel" class="editor-panel d-none">
+            <div id="abilityEditorPanel" class="editor-panel">
                 <h2>Ability Editor</h2>
                 <p>This is where you'll define active and passive abilities.</p>
                 </div>
             
         </div>
-        
+        <hr>
         <h3>Final JSON</h3>
         <textarea id="jsonEditor" class="json-textarea"></textarea>
 
@@ -75,6 +86,7 @@
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/map_editor.js"></script>
+    <script type="module" src="js/level_editor/tower_editor.js"></script>
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
 </body>
