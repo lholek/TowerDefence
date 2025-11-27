@@ -170,12 +170,15 @@ export function setupMapInteractions() {
     // Disable context menu (right-click) on the canvas to allow tile placement
     canvas.addEventListener('contextmenu', e => e.preventDefault());
     
-    // Single click for tile placement (Left Click: button 0)
+    // Single click for tile placement
     canvas.addEventListener('click', handleMapClick); 
     
-    // Right click for default tile placement (Right Click: button 2)
+    // Right click for default tile placement
     canvas.addEventListener('mousedown', handleMapRightClick); 
     
+    // Left/Right click and move handlers
+    canvas.addEventListener('mousemove', handleMapDrawClick); 
+
     // Tile Hover effect
     canvas.addEventListener('mousemove', handleMapHover);
     canvas.addEventListener('mouseleave', renderMap); // Clear hover when mouse leaves
@@ -234,6 +237,9 @@ function handleMapClick(e) {
     }
 }
 
+function handleMapDrawClick(e){
+    console.log(e);
+}
 
 // --- Map Rendering (Canvas API) ---
 

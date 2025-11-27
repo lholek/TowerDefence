@@ -21,6 +21,10 @@ body, h1, h2, p, button, input, textarea {
     font-family: 'Inter', sans-serif;
 }
 
+.box{
+    background: var(--main-bg-color);
+}
+
 h2, h3 {
     margin: 0;
     color: #f0c674;
@@ -158,13 +162,13 @@ h2, h3 {
 }
 
 .btn-validate {
-    background-color: #334b63 !important; 
+    background-color: #3F7D3C !important; 
     box-shadow: none;
     border: none;
 }
 
 .btn-validate:hover {
-    background-color: #334b63 !important; 
+    background-color: #3F7D3C !important; 
     box-shadow: none;
     border: none;
 }
