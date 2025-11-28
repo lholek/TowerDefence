@@ -68,6 +68,12 @@ h2, h3 {
     border: 1px solid #333;
 }
 
+.tower-editor-layout {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px; 
+}
+
 /* --- Typography & Colors --- */
 .title {
     font-size: 2.2rem;
@@ -176,18 +182,21 @@ h2, h3 {
     border: none;
 }
 
-.btn-validate {
+.btn-green {
     background-color: #3F7D3C !important; 
     box-shadow: none;
     border: none;
 }
 
-.btn-validate:hover {
+.btn-green:hover {
     background-color: #3F7D3C !important; 
     box-shadow: none;
     border: none;
 }
 
+.btn-right {
+    margin-left: auto;
+}
 
 .btn-toggle-map {
     background-color: #5255d9;
@@ -264,9 +273,9 @@ h2, h3 {
 .tile-key-container {
     margin-top: 15px;
     padding: 10px;
-    border: 1px solid #444;
+    border: 1px solid #967456;
     border-radius: 6px;
-    background-color: #333;
+    background-color: #967456;
     color: #ccc;
 }
 

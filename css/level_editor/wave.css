@@ -1,0 +1,34 @@
+.wave-card{
+    margin: 1rem;
+    background-color: #2e261d;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #5c2e0e;
+}
+
+.enemy-card {
+    float: left;
+    margin: 1rem;
+}
+.wave-card input{
+    background-color: #967456;
+    padding: 5px;
+    margin-top: 3px;
+    border: 1px solid #555;
+    color: #f0f0f0;
+    border-radius: 4px;
+}
+
+
+.wave-card input::placeholder {
+  color: white; /* Change this to your desired color */
+  opacity: 1; /* Ensure full opacity if needed, as some browsers default to lower opacity */
+}
+.wave-card select{
+    background-color: #967456;
+    padding: 5px;
+    margin-top: 3px;
+    border: 1px solid #555;
+    color: #f0f0f0;
+    border-radius: 4px;
+}

@@ -75,19 +75,19 @@ export const waveEditor = (() => {
     const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
         return `
             <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
-                <div class="card-header-inner">
+            <button onclick="window.app.waveEditor.deleteEnemyFromWave(${waveIndex}, ${enemyIndex})" class="btn btn-delete btn-small">X</button>
+            <div class="card-header-inner">
                     <label>Type: 
                         <select data-key="type" class="input-enemy-type">
                             ${getEnemyTypeOptions(enemy.type)}
                         </select>
                     </label>
-                    <button onclick="window.app.waveEditor.deleteEnemyFromWave(${waveIndex}, ${enemyIndex})" class="btn btn-delete btn-small">X</button>
                 </div>
                 <div class="card-body-inner">
-                    <label>Count <input type="number" data-key="count" value="${enemy.count}" min="1"></label>
-                    <label>Health <input type="number" data-key="health" value="${enemy.health}" min="1"></label>
-                    <label>Speed <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01"></label>
-                    <label>Coin Reward <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0"></label>
+                    <label>⭐ Count <input type="number" data-key="count" value="${enemy.count}" min="1"></label>
+                    <label>❤️ Health <input type="number" data-key="health" value="${enemy.health}" min="1"></label>
+                    <label>🗲 Speed <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01"></label>
+                    <label>🪙 Coin Reward <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0"></label>
                 </div>
             </div>
         `;
@@ -124,20 +124,20 @@ export const waveEditor = (() => {
             html += `
                 <div class="wave-card box" data-wave-index="${waveIndex}">
                     <div class="card-header">
-                        <label class="level-label">Wave ${wave.level}</label>
-                        <label class="comment-label">Comment 
-                            <input type="text" data-key="_comment" value="${wave._comment || ''}" placeholder="E.g., ${totalCoins} coins">
+                        <div class="level-label">Wave ${wave.level}</div>
+                        <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
+                            <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${totalCoins || ''}" placeholder="${totalCoins} coins">
                         </label>
+                        <h4>Enemies (Total Coins: ${totalCoins})</h4>
                         <button onclick="window.app.waveEditor.deleteWave(${waveIndex})" class="btn btn-delete">X</button>
                     </div>
                     
                     <div class="card-body waves-body">
-                        <h4>Enemies (Total Coins: ${totalCoins})</h4>
                         <div class="enemies-container">
                             ${enemiesHtml}
                         </div>
-                        <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add">Add Enemy Group</button>
-                    </div>
+                        </div>
+                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add">Add Enemy Group</button>
                 </div>
             `;
         });
