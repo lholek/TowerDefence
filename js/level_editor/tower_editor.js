@@ -94,13 +94,13 @@ export const towerEditor = (() => {
                     
                     <div class="card-body">
                         <label>Name: <input type="text" data-key="name" value="${tower.name}"></label>
-                        <label>Price: <input type="number" data-key="price" value="${tower.price}" min="0"></label>
-                        <label>Damage: <input type="number" data-key="damage" value="${tower.damage}" min="0"></label>
-                        <label>Fire Rate (ms): <input type="number" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
-                        <label>Range: <input type="number" data-key="range" value="${tower.range}" min="1"></label>
-                        <label>Speed: <input type="number" data-key="speed" value="${tower.speed}" min="1"></label>
+                        <label>🪙 Price: <input type="number" data-key="price" value="${tower.price}" min="0"></label>
+                        <label>⚔️ Damage: <input type="number" data-key="damage" value="${tower.damage}" min="0"></label>
+                        <label>🕐 Fire Rate (ms): <input type="number" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
+                        <label>🎯 Range: <input type="number" data-key="range" value="${tower.range}" min="1"></label>
+                        <label>🗲 Speed: <input type="number" data-key="speed" value="${tower.speed}" min="1"></label>
                         <label>Color: <input type="color" data-key="color" value="${tower.color}"></label>
-                        <label>Sell Price: <input type="number" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
+                        <label>💰 Sell Price: <input type="number" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
                     </div>
                 </div>
             `;

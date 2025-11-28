@@ -30,6 +30,22 @@ if (confirmPopup) {
     });
 }
 
+// Enter DELETING confirm
+document.addEventListener('keydown', (event) => {
+    // Check if the Enter key ('Enter' is the standard value for modern browsers) was pressed
+    if (event.key === 'Enter') {
+        
+        // Check if the confirmation popup is visible (i.e., does NOT have 'd-none')
+        if (confirmPopup && !confirmPopup.classList.contains('d-none')) {
+            
+            // Prevent default browser behavior (e.g., if there's an input on the page)
+            event.preventDefault(); 
+            
+            // Trigger the existing logic attached to the 'Yes, remove' button
+            confirmButton.click();
+        }
+    }
+});
 
 /**
  * Shows a custom confirmation dialog.
