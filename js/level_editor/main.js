@@ -1,7 +1,7 @@
 import * as levelData from './level_data.js';
 import * as jsonFunctions from './json_functions.js';
-import * as mapEditor from './map_editor.js';
-import { initialize as initTowerEditor, towerEditor } from './tower_editor.js';
+import * as mapEditor from './editor_map.js';
+import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
 
 // Global utility function
 function setStatus(message, isError = false) {

@@ -8,13 +8,13 @@ let contentContainer = null;
 // --- New Tower Default Structure ---
 const newTowerStructure = {
     "name": "New Tower",
-    "price": 10,
-    "damage": 5,
-    "fireRate": 1000,
-    "range": 200,
-    "color": "#ffaa00",
-    "sellPrice": 5,
-    "speed": 3
+    "price": 0,
+    "damage": 0,
+    "fireRate": 0,
+    "range": 0,
+    "color": "#ffffff",
+    "sellPrice": 0,
+    "speed": 0
 };
 
 // --- Initialization ---
@@ -89,18 +89,18 @@ export const towerEditor = (() => {
                 <div class="tower-card box" data-tower-id="${towerId}">
                     <div class="card-header">
                         <input type="text" class="input-tower-id input-small" value="${towerId}" placeholder="ID" disabled>
+                        <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
                         <button onclick="window.app.towerEditor.deleteTower('${towerId}')" class="btn btn-delete">X</button>
                     </div>
                     
                     <div class="card-body">
-                        <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
-                        <label>🪙 Price <input type="number" data-key="price" value="${tower.price}" min="0"></label>
-                        <label>⚔️ Damage <input type="number" data-key="damage" value="${tower.damage}" min="0"></label>
-                        <label>🕐 Fire Rate (ms) <input type="number" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
-                        <label>🎯 Range <input type="number" data-key="range" value="${tower.range}" min="1"></label>
-                        <label>🗲 Speed <input type="number" data-key="speed" value="${tower.speed}" min="1"></label>
-                        <label>💰 Sell Price <input type="number" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
-                        <label>Color <input type="color" data-key="color" value="${tower.color}"></label>
+                        <label>🪙 Price <input type="number" name="price" data-key="price" value="${tower.price}" min="0"></label>
+                        <label>⚔️ Damage <input type="number" name="demage" data-key="damage" value="${tower.damage}" min="0"></label>
+                        <label>🕐 Fire Rate (ms) <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
+                        <label>🎯 Range <input type="number" name="range" data-key="range" value="${tower.range}" min="1"></label>
+                        <label>🗲 Speed <input type="number" name="speed" data-key="speed" value="${tower.speed}" min="1"></label>
+                        <label>💰 Sell Price <input type="number" name="sell_price" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
+                        <label>Color <input type="color" name="color" data-key="color" value="${tower.color}"></label>
                     </div>
                 </div>
             `;
@@ -133,7 +133,7 @@ export const towerEditor = (() => {
         modifyJson((data) => {
             const newId = getNextTowerId();
             const newTower = JSON.parse(JSON.stringify(newTowerStructure));
-            newTower.name = `New Tower (${newId})`; 
+            newTower.name = `Tower`; 
 
             data.maps[0].towerTypes[newId] = newTower;
             
