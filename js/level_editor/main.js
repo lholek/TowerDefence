@@ -2,6 +2,7 @@ import * as levelData from './level_data.js';
 import * as jsonFunctions from './json_functions.js';
 import * as mapEditor from './editor_map.js';
 import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
+import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -17,7 +18,8 @@ function setStatus(message, isError = false) {
 window.app = {
     jsonFunctions: jsonFunctions,
     mapEditor: mapEditor,
-    towerEditor: towerEditor
+    towerEditor: towerEditor,
+    waveEditor: waveEditor
 };
 
 // --- Initialization ---
@@ -64,4 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 4. Render the tower repeater using the data from levelData.js
     towerEditor.renderTowerRepeater(levelData.currentLevelData.maps[0].towerTypes);
+
+    // 3. NEW: WAVE EDITOR SETUP ---
+    // Initialize the wave editor, passing the setStatus function as a dependency.
+    // This call also triggers the initial rendering of the waves.
+    initWaveEditor({ setStatus });
 });
