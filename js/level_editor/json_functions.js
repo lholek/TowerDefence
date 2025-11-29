@@ -1,14 +1,9 @@
-import { currentLevelData, setCurrentLevelData, newWaveStructure, newAbilityStructure } from './level_data.js';
+import { currentLevelData, updateCurrentLevelData, newWaveStructure, newAbilityStructure } from './level_data.js';
 
-// Get references to elements (will be imported by main.js)
-let editor;
-let setStatus;
-let renderMap;
+// The 'modules' object is the single source for references to all external components (editors, setStatus, etc.)
+let modules = {};
 
-// popup
-// Global callback storage for the custom confirm utility
-let resolvePromise; 
-
+// --- Custom Confirmation Utility ---
 // References for the new popup elements (ensure these are in your HTML)
 const confirmPopup = document.getElementById('customConfirmPopup');
 const popupTitle = document.getElementById('popupTitle');
@@ -16,8 +11,10 @@ const popupMessage = document.getElementById('popupMessage');
 const confirmButton = document.getElementById('confirmActionButton');
 const cancelButton = document.getElementById('cancelActionButton');
 
-// --- Custom Confirmation Utility ---
 if (confirmPopup) {
+    // Global callback storage for the custom confirm utility
+    let resolvePromise; 
+
     // Add event listeners once
     confirmButton.addEventListener('click', () => {
         confirmPopup.classList.add('d-none');
@@ -28,24 +25,18 @@ if (confirmPopup) {
         confirmPopup.classList.add('d-none');
         if (resolvePromise) resolvePromise(false);
     });
+
+    // Enter DELETING confirm
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            if (confirmPopup && !confirmPopup.classList.contains('d-none')) {
+                event.preventDefault(); 
+                confirmButton.click();
+            }
+        }
+    });
 }
 
-// Enter DELETING confirm
-document.addEventListener('keydown', (event) => {
-    // Check if the Enter key ('Enter' is the standard value for modern browsers) was pressed
-    if (event.key === 'Enter') {
-        
-        // Check if the confirmation popup is visible (i.e., does NOT have 'd-none')
-        if (confirmPopup && !confirmPopup.classList.contains('d-none')) {
-            
-            // Prevent default browser behavior (e.g., if there's an input on the page)
-            event.preventDefault(); 
-            
-            // Trigger the existing logic attached to the 'Yes, remove' button
-            confirmButton.click();
-        }
-    }
-});
 
 /**
  * Shows a custom confirmation dialog.
@@ -61,31 +52,27 @@ export function customConfirm(title, message) {
     }
     
     return new Promise(resolve => {
-        resolvePromise = resolve; // Store the resolve function globally
+        let resolvePromise = resolve; // Store the resolve function globally
         popupTitle.textContent = title;
         popupMessage.textContent = message;
         confirmPopup.classList.remove('d-none');
     });
 }
-// popup
 
-// Placeholder for external module references
+/**
+ * Stores references to the UI editor modules and utility functions.
+ * FIX: Unified all references into the 'modules' object.
+ */
 export function setModuleReferences(refs) {
-    editor = refs.editor;
-    setStatus = refs.setStatus;
-    renderMap = refs.renderMap;
+    modules = refs;
 }
 
 /**
  * Creates a custom JSON string with compact formatting for the 'layout' array.
- * FIX: The implementation now correctly removes the placeholders and handles newlines/quotes.
  */
 export function formatCompactLayout(jsonObject) {
     let compactLayoutContent = null;
-    // Indentation for the content inside the "layout" key (12 spaces for object + 2 spaces for "layout" key + 2 spaces for array start = 16 spaces total if using 4 space standard, but using 2 space standard it's 12 spaces in total)
-    // JSON.stringify uses 2 spaces, so the outer object indent is 2, the 'maps' array is 4, the inner object is 6, the 'layout' key is 8, the inner array is 10.
-    // Let's use 12 spaces for indentation of the inner content rows.
-    const innerContentIndent = ' '.repeat(14); // 7 levels of 2-space indentation + 2 extra for row brackets = 14
+    const innerContentIndent = ' '.repeat(14); 
 
     // 1. Convert the JSON object to a string using a replacer
     let jsonString = JSON.stringify(jsonObject, (key, value) => {
@@ -103,14 +90,10 @@ export function formatCompactLayout(jsonObject) {
     }, 2); 
 
     // 3. Replace the quoted/escaped marker with the actual compact content.
-    // The marker will appear as: "\"__COMPACT_LAYOUT_MARKER__\"" (wrapped in quotes by JSON.stringify)
     if (compactLayoutContent) {
-        // Find the marker, which is guaranteed to be wrapped in quotes by JSON.stringify
         jsonString = jsonString.replace(
             /"__COMPACT_LAYOUT_MARKER__"/, 
             () => {
-                // Replace the marker with the content, adding necessary newlines and indentation.
-                // The key "layout" is indented by 8 spaces, the value starts at 10 spaces.
                 return `[\n${innerContentIndent}${compactLayoutContent}\n${' '.repeat(10)}]`;
             }
         );
@@ -136,32 +119,94 @@ export function modifyJson(modifyFn, successMessage) {
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
     const formattedJson = formatCompactLayout(currentLevelData);
-    editor.value = formattedJson;
-    setStatus(successMessage);
+    modules.editor.value = formattedJson; // FIX: Use modules.editor
+    modules.setStatus(successMessage); // FIX: Use modules.setStatus
     
-    // 4. Rerender the visual map after modification
-    renderMap(currentLevelData.maps[0].layout);
+    // 4. Rerender all components after modification (especially important if map changed)
+    if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
+        modules.mapEditor.renderMap(currentLevelData.maps[0].layout);
+    }
+    if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
+        modules.towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes || {});
+    }
+    if (modules.waveEditor && typeof modules.waveEditor.renderWaveRepeater === 'function') {
+        modules.waveEditor.renderWaveRepeater(currentLevelData.maps[0].levels || []);
+    }
+    if (modules.abilityEditor && typeof modules.abilityEditor.renderAbilityRepeater === 'function') {
+        modules.abilityEditor.renderAbilityRepeater(currentLevelData.maps[0].abilities || []);
+    }
     
     return true;
 }
 
 /**
- * Attempts to parse the JSON in the editor and update the central data store if successful.
- * Triggered when the user manually types in the JSON area.
+ * Parses JSON from the editor, updates the central data, and triggers all necessary UI re-renders.
+ * This function is automatically called on every 'input' event from the editor (via main.js).
  */
 export function updateMapFromEditor() {
-    let jsonText = editor.value;
-    try {
-        const parsedJson = JSON.parse(jsonText);
-        
-        // CRITICAL: Update the clean source of truth
-        setCurrentLevelData(parsedJson); 
+    // 1. Get editor reference and JSON string
+    const editor = modules.editor;
+    if (!editor) return;
+    
+    const jsonString = editor.value.trim();
+    if (!jsonString) {
+        modules.setStatus('Editor is empty. No update performed.', true);
+        return;
+    }
 
-        if (parsedJson.maps && parsedJson.maps[0] && parsedJson.maps[0].layout) {
-            renderMap(parsedJson.maps[0].layout);
+    try {
+        const newData = JSON.parse(jsonString);
+        
+        // Safety check
+        if (!newData.maps || newData.maps.length === 0) {
+             modules.setStatus('Error: JSON must contain a "maps" array.', true);
+             return;
         }
-    } catch (e) {
-        // Ignore parsing errors while user is typing
+
+        // 2. Update Central Data Source (This is the critical step using the fixed level_data.js function)
+        const updateSuccess = updateCurrentLevelData(newData);
+        if (!updateSuccess) {
+            modules.setStatus('Error: Failed to update internal data structure.', true);
+            return;
+        }
+        
+        const mapData = currentLevelData.maps[0]; // Get the newly updated map data
+
+        // 3. Trigger All UI Re-renders (This forces the visual update on all linked modules)
+        
+        // A. Map Editor 
+        if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
+            modules.mapEditor.renderMap(mapData.layout || []);
+            // FIX: Removed direct DOM manipulation for enemyTypesInput here. Relying on waveEditor.updateEnemyTypesEditor()
+        }
+        
+        // B. Tower Editor
+        if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
+            modules.towerEditor.renderTowerRepeater(mapData.towerTypes || {});
+        }
+
+        // C. Wave Editor
+        if (modules.waveEditor && typeof modules.waveEditor.renderWaveRepeater === 'function') {
+            modules.waveEditor.renderWaveRepeater(mapData.levels || []);
+            
+            // FIX: Explicitly call this function to refresh enemy dropdowns if the JSON changed the enemyTypes array.
+            if (modules.waveEditor.updateEnemyTypesEditor) {
+                modules.waveEditor.updateEnemyTypesEditor();
+            }
+        }
+        
+        // D. Ability Editor
+        if (modules.abilityEditor && typeof modules.abilityEditor.renderAbilityRepeater === 'function') {
+            modules.abilityEditor.renderAbilityRepeater(mapData.abilities || []);
+        }
+
+        // 4. Success Message
+        modules.setStatus('Configuration updated successfully!', false);
+
+    } catch (error) {
+        // Handle JSON parsing error
+        modules.setStatus('Error: Invalid JSON format. Check console for details.', true);
+        console.error('JSON Parsing Error:', error);
     }
 }
 
@@ -173,26 +218,25 @@ export function updateMapFromEditor() {
  */
 export function copyFormattedJson() {
     const formattedJson = formatCompactLayout(currentLevelData);
-    editor.value = formattedJson;
+    modules.editor.value = formattedJson; // FIX: Use modules.editor
 
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(formattedJson).then(() => {
-            setStatus('JSON formatted and copied to clipboard successfully!');
+            modules.setStatus('JSON formatted and copied to clipboard successfully!'); // FIX: Use modules.setStatus
         }).catch(() => {
-            editor.select();
+            modules.editor.select(); // FIX: Use modules.editor
             document.execCommand('copy');
-            setStatus('Copy failed. JSON formatted and selected. Copy manually!', true);
+            modules.setStatus('Copy failed. JSON formatted and selected. Copy manually!', true); // FIX: Use modules.setStatus
         });
     } else {
-         editor.select();
+         modules.editor.select(); // FIX: Use modules.editor
          document.execCommand('copy');
-         setStatus('JSON formatted and selected. Copy manually!', true);
+         modules.setStatus('JSON formatted and selected. Copy manually!', true); // FIX: Use modules.setStatus
     }
 }
 
 /**
  * Adds a new wave (level) object.
- * FIX: nextLevel calculated in the outer scope to be used in the success message.
  */
 export function addWave() {
     // Calculate the next level number based on current data
@@ -217,4 +261,68 @@ export function addAbility() {
         const newAbility = JSON.parse(JSON.stringify(newAbilityStructure));
         abilities.push(newAbility);
     }, `Ability "${newAbilityStructure.name}" added!`);
+}
+
+export function updateUIFromLoadedData() {
+    // Safety check to ensure all necessary modules are loaded
+    if (!currentLevelData || !modules.mapEditor || !modules.towerEditor || !modules.waveEditor || !modules.abilityEditor) {
+        console.error("UI Update Failed: Missing data or editor module references.");
+        return;
+    }
+    
+    const mapData = currentLevelData.maps[0];
+    
+    // 1. Map Editor Update (Renders the new grid layout)
+    if (modules.mapEditor.renderMap) {
+        modules.mapEditor.renderMap(mapData.layout);
+    }
+    
+    // 2. Tower Editor Update (Renders the new tower list)
+    if (modules.towerEditor.renderTowerRepeater) {
+        modules.towerEditor.renderTowerRepeater(mapData.towerTypes);
+    }
+    
+    // 3. Wave Editor Update (Renders the new wave list and enemy dropdowns)
+    if (modules.waveEditor.renderWaveRepeater) {
+        modules.waveEditor.renderWaveRepeater(mapData.levels);
+        
+        // This is the specific fix for the enemy types input field
+        if (modules.waveEditor.updateEnemyTypesEditor) {
+            modules.waveEditor.updateEnemyTypesEditor();
+        }
+    }
+
+    // 4. Ability Editor Update (Renders the new ability list)
+    if (modules.abilityEditor.renderAbilityRepeater) {
+        modules.abilityEditor.renderAbilityRepeater(mapData.abilities);
+    }
+
+    // 5. JSON Editor Update (to reflect the new, clean data structure)
+    if (modules.editor && modules.editor.value !== undefined) {
+        modules.editor.value = formatCompactLayout(currentLevelData);
+    }
+    
+    modules.setStatus("Editor UI successfully synced with loaded map data.");
+}
+
+// --- Placeholder for the File Loading Logic (Example of how to use the function) ---
+export function handleFileLoad(newJsonContent) {
+    try {
+        const parsedData = JSON.parse(newJsonContent);
+        
+        // 1. Update the source of truth
+        const updateSuccess = updateCurrentLevelData(parsedData); // FIX: Use updateCurrentLevelData
+        
+        if (updateSuccess) {
+            // 2. Refresh the UI
+            updateUIFromLoadedData();
+            modules.setStatus("New map JSON loaded and UI updated.");
+        } else {
+             modules.setStatus("Loaded JSON format is invalid.", true);
+        }
+        
+    } catch (error) {
+        modules.setStatus(`Error loading JSON file: ${error.message}`, true);
+        console.error("JSON Load Error:", error);
+    }
 }

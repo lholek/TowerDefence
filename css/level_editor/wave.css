@@ -10,6 +10,39 @@
     float: left;
     margin: 1rem;
 }
+.enemy-types-editor input {
+    width: 100%;
+    box-sizing: border-box; 
+    background-color: transparent !important; 
+    box-shadow: 0 0 0 1000px #967456 inset !important; 
+    color: #f0f0f0 !important;
+    -webkit-text-fill-color: #f0f0f0 !important; 
+    padding: 5px;
+    margin-top: 3px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    transition: background-color 5000s ease-in-out 0s; 
+}
+
+.enemy-types-editor input:-internal-autofill-selected {
+    color: #f0f0f0 !important; 
+}
+
+.enemy-types-editor input::placeholder {
+    color: #f0f0f0 !important; 
+}
+
+.enemy-types-editor input:-internal-autofill-selected {
+    background-color: #967456 !important;
+    color: #f0f0f0 !important;
+}
+
+.enemyTypesEditorDescription{
+    margin-top: 10px;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
 .wave-card input{
     background-color: #967456;
     padding: 5px;

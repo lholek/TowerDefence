@@ -54,16 +54,22 @@
                 </div>
             </div>
 
-            <div id="enemyEditorPanel" class="p-4">
+            <div id="waveEditorPanel" class="editor-panel d-none"> 
                 <hr>
-                <h2 class="text-2xl font-bold mb-4 text-white">Enemy Definitions</h2>
-                <button id="add-enemy-button" class="btn bg-indigo-600 hover:bg-indigo-700 mb-6">
-                    + Add New Enemy Type
-                </button>
-                <div id="enemyEditorContent" class="space-y-4">
-                </div>
-            </div>
+                <h3>Wave Editor</h3>
 
+                 <div class="enemy-types-editor box-card repeater-header mb-4">
+                    <h3>Enemy Types List (Comma Separated)</h3>
+                    <input type="text" id="enemyTypesEditor" placeholder="e.g., basic, tank, fast, boss"/> 
+
+                    <p class="enemyTypesEditorDescription">Here you can type (comma seperated) enemy types, that will apper in the Wave Editor</p>
+                    <button id="save-enemy-types-button" class="btn btn-primary mt-2">Save Enemy Types</button>
+                </div>
+                <div id="waves-editor-container" class="repeater-container">
+                </div>
+                <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
+            </div>
+            
             <div id="waveEditorPanel" class="editor-panel d-none"> 
                 <hr>
                 <h3>Wave Editor</h3>

@@ -79,7 +79,7 @@ const defaultLevelJson = {
                     "sellPrice": 1,
                     "speed": 2
                 }
-            },     
+            },      
             "levels": [
                 {
                     "level": 1,
@@ -102,12 +102,22 @@ export function getCurrentMap() {
 export let currentTileType = 'O'; 
 export const tileTypes = ['-', 'O', 'X', 'S1', 'E1', 'S2', 'E2', 'S3', 'E3']; 
 
-// Setter function for the level data, used by json_functions.js
-export function setCurrentLevelData(data) {
-    currentLevelData = data;
+/**
+ * FIX: Renamed from setCurrentLevelData to updateCurrentLevelData
+ * to match the import in json_functions.js.
+ * This function also performs critical validation.
+ * @param {Object} data - The full parsed JSON object.
+ * @returns {boolean} True if update was successful.
+ */
+export function updateCurrentLevelData(data) {
+    if (data && data.maps && data.maps.length > 0) {
+        currentLevelData = data;
+        return true;
+    }
+    return false;
 }
 
-// Setter function for the current tile type, used by map_editor.js
+// Old setter function (renamed above, but keeping setter logic for the tile type)
 export function setCurrentTileType(type) {
     currentTileType = type;
 }

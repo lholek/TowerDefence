@@ -5,11 +5,60 @@ import { modifyJson, customConfirm } from './json_functions.js'; // Import utili
 
 let contentContainer = null; 
 let setStatus = () => {}; // Dependency Injection for status messages
+let enemyTypesEditor = null; // 💡 RE-ADDED: Element reference for the input field
 
-// Available enemy types based on the user's JSON example
-const ENEMY_TYPES = [
-    "basic", "tank", "fast", "boss", "super-tank", "fast-boss", "armor-boss", "final-boss"
-];
+// The hard-coded ENEMY_TYPES constant is REMOVED
+
+/**
+ * 💡 RE-ADDED: Reads the enemy types from the JSON data.
+ * Falls back to a default list if not present (for compatibility).
+ * @returns {Array<string>} The list of enemy type IDs.
+ */
+export function getEnemyTypes() {
+    const currentMap = getCurrentMap();
+    if (currentMap.enemyTypes && Array.isArray(currentMap.enemyTypes) && currentMap.enemyTypes.length > 0) {
+        return currentMap.enemyTypes;
+    }
+    // Fallback if data is missing or empty in the JSON
+    return [
+        "basic", "tank", "fast", "boss"
+    ];
+}
+
+/**
+ * 💡 RE-ADDED: Saves the enemy types from the input back to the JSON.
+ */
+function saveEnemyTypes() {
+    if (!enemyTypesEditor) return;
+
+    const inputString = enemyTypesEditor.value.trim();
+    // Split by comma, clean up spaces, and filter out empty strings
+    const newTypes = inputString.split(',')
+                                .map(type => type.trim())
+                                .filter(type => type.length > 0);
+
+    if (newTypes.length === 0) {
+        setStatus("Enemy Types list cannot be empty! Reverted to previous list.", true);
+        // Re-load the previous valid value
+        enemyTypesEditor.value = getEnemyTypes().join(', '); 
+        return;
+    }
+    
+    modifyJson((data) => {
+        // Save the cleaned array to the map data
+        data.maps[0].enemyTypes = newTypes;
+        
+        // After saving, immediately re-render the waves to update the dropdowns
+        waveEditor.renderWaveRepeater(data.maps[0].levels);
+
+    }, `Enemy Types list updated to: ${newTypes.join(', ')}.`);
+}
+
+export function updateEnemyTypesEditor() {
+    if (enemyTypesEditor) {
+        enemyTypesEditor.value = getEnemyTypes().join(', ');
+    }
+}
 
 // --- Dependency Injection and Initialization ---
 /**
@@ -21,6 +70,22 @@ export const initialize = (refs) => {
     // CRITICAL: Ensure your level_editor.html has an element with this ID
     contentContainer = document.getElementById('waves-editor-container'); 
     
+    // 💡 RE-ADDED: Get the enemy types editor element
+    enemyTypesEditor = document.getElementById('enemyTypesEditor'); 
+
+    // 💡 RE-ADDED: Initialize the enemy types editor field and button
+    if (enemyTypesEditor) {
+        // Load the current types from data, join with comma-space
+        enemyTypesEditor.value = getEnemyTypes().join(', ');
+        
+        // Attach event listener for the save button
+        const saveButton = document.getElementById('save-enemy-types-button');
+        if (saveButton) {
+            saveButton.removeEventListener('click', saveEnemyTypes); // Prevent double-binding
+            saveButton.addEventListener('click', saveEnemyTypes);
+        }
+    }
+
     if (!contentContainer) {
         console.error("Wave Editor Error: Element #waves-editor-container not found.");
     }
@@ -58,7 +123,9 @@ function reIndexWaves(levels) {
  * @returns {string} HTML string of option tags.
  */
 function getEnemyTypeOptions(selectedType) {
-    return ENEMY_TYPES.map(type => 
+    // 💡 CRITICAL CHANGE: Use the list from the dynamic getter function!
+    const enemyTypes = getEnemyTypes();
+    return enemyTypes.map(type => 
         `<option value="${type}" ${type === selectedType ? 'selected' : ''}>${type}</option>`
     ).join('');
 }
@@ -126,7 +193,7 @@ export const waveEditor = (() => {
                     <div class="card-header">
                         <div class="level-label">Wave ${wave.level}</div>
                         <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
-                            <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${totalCoins || ''}" placeholder="${totalCoins} coins">
+                            <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="${totalCoins} coins">
                         </label>
                         <h4>Enemies (Total Coins: ${totalCoins})</h4>
                         <button onclick="window.app.waveEditor.deleteWave(${waveIndex})" class="btn btn-delete">X</button>
@@ -201,8 +268,10 @@ export const waveEditor = (() => {
             
             // Ensure the new wave has at least one basic enemy group
             if (!newWave.enemies || newWave.enemies.length === 0) {
+                // IMPORTANT: Use the first enemy type from the live list as the default
+                const defaultEnemyType = getEnemyTypes()[0] || "basic";
                  newWave.enemies = [
-                     { "type": "basic", "count": 5, "health": 100, "speed": 1.0, "coinReward": 5 }
+                     { "type": defaultEnemyType, "count": 5, "health": 100, "speed": 1.0, "coinReward": 5 }
                  ];
             }
             
@@ -251,15 +320,17 @@ export const waveEditor = (() => {
      */
     const addEnemyToWave = (waveIndex) => {
         // FIX: Get the wave level from the current data *before* modifyJson 
-        // This variable (waveLevel) is now in the outer scope and accessible to the status message.
         const waveLevel = getCurrentMap().levels[waveIndex].level;
+        
+        // IMPORTANT: Use the first enemy type from the live list as the default
+        const defaultEnemyType = getEnemyTypes()[0] || "basic";
 
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex];
 
             // Default enemy structure
-            const newEnemy = { "type": "basic", "count": 1, "health": 1000, "speed": 1.0, "coinReward": 10 };
+            const newEnemy = { "type": defaultEnemyType, "count": 1, "health": 1000, "speed": 1.0, "coinReward": 10 };
 
             if (!wave.enemies) {
                 wave.enemies = [];
@@ -280,7 +351,6 @@ export const waveEditor = (() => {
      */
     const deleteEnemyFromWave = (waveIndex, enemyIndex) => {
         // FIX: Get the wave level from the current data *before* modifyJson
-        // This variable (waveLevel) is now in the outer scope and accessible to the status message.
         const waveLevel = getCurrentMap().levels[waveIndex].level;
         
         modifyJson((data) => {
@@ -302,6 +372,7 @@ export const waveEditor = (() => {
         addWave,
         deleteWave,
         addEnemyToWave,
-        deleteEnemyFromWave
+        deleteEnemyFromWave,
+        updateEnemyTypesEditor
     };
 })();

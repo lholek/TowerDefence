@@ -4,6 +4,7 @@ import * as mapEditor from './editor_map.js';
 import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
 import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
 import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js'; 
+
 // Global utility function
 function setStatus(message, isError = false) {
     const statusMessage = document.getElementById('statusMessage');
@@ -33,15 +34,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapCanvasContainer = document.getElementById('mapCanvasContainer');
     const mapLayoutWrapper = document.getElementById('mapLayoutWrapper');
     const tileKey = document.getElementById('tileKey');
-    
-    // 2. Set module references (Dependency Injection)
+
+    // 2. Pass core utilities to json_functions
+    // CRITICAL: Passing all editor modules so json_functions can refresh the UI
     jsonFunctions.setModuleReferences({ 
         editor, 
-        setStatus, 
-        renderMap: mapEditor.renderMap 
+        setStatus,
+        mapEditor: mapEditor,
+        towerEditor: towerEditor,
+        waveEditor: waveEditor,
+        abilityEditor: abilityEditor 
     });
-    
-    mapEditor.setModuleReferences({ 
+
+    // 3. Initialize map editor with references
+    mapEditor.setModuleReferences({
         canvas, 
         ctx, 
         mapCanvasContainer,
@@ -51,11 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Initialize editor with formatted JSON
-    // The previous error (jsonFunctions.formatCompactLayout is not a function) is fixed 
-    // by exporting the function in json_functions.js.
     editor.value = jsonFunctions.formatCompactLayout(levelData.currentLevelData);
 
     // 4. Set up event listener for the textarea input (manual editing)
+    // FIX: Corrected function name to updateMapFromEditor
     editor.addEventListener('input', jsonFunctions.updateMapFromEditor);
 
     // 5. Initial map render and interaction setup
@@ -63,19 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
     mapEditor.setupMapInteractions();
     
     // --- TOWER EDITOR SETUP ---
-    initTowerEditor(); // 3. Initialize the tower editor to find its DOM elements
-    
-    // 4. Render the tower repeater using the data from levelData.js
+    initTowerEditor(); 
     towerEditor.renderTowerRepeater(levelData.currentLevelData.maps[0].towerTypes);
 
-    // 3. NEW: WAVE EDITOR SETUP ---
-    // Initialize the wave editor, passing the setStatus function as a dependency.
-    // This call also triggers the initial rendering of the waves.
+    // 3. WAVE EDITOR SETUP ---
     initWaveEditor({ setStatus });
 
-    // --- NEW: ABILITY EDITOR SETUP ---
-    initAbilityEditor(); // Initialize the ability editor to find its DOM elements
-    
-    // Render the initial abilities
+    // --- ABILITY EDITOR SETUP ---
+    initAbilityEditor(); 
     abilityEditor.renderAbilityRepeater(levelData.currentLevelData.maps[0].abilities);
 });
