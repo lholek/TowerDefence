@@ -24,6 +24,7 @@
         ["X","O","O","O","O","O","X","X","O","X"],
         ["X","X","X","X","X","X","X","X","O","E1"]
       ],
+      "abilities": [],
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
@@ -67,7 +68,7 @@
         }
       },
       "enemyTypes": [
-                "basic", "fast", "tank", "boss"
+        "basic", "fast", "tank", "boss"
       ],
       "levels": [
         {

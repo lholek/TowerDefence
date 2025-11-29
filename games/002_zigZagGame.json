@@ -23,6 +23,7 @@
         ["S1","O","X","O","O","O","X","O","O","O","X"],
         ["X","X","X","X","X","X","X","X","X","X","X"]
       ],
+      "abilities": [],
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
