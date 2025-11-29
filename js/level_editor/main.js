@@ -3,7 +3,7 @@ import * as jsonFunctions from './json_functions.js';
 import * as mapEditor from './editor_map.js';
 import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
 import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
-
+import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js'; 
 // Global utility function
 function setStatus(message, isError = false) {
     const statusMessage = document.getElementById('statusMessage');
@@ -19,7 +19,8 @@ window.app = {
     jsonFunctions: jsonFunctions,
     mapEditor: mapEditor,
     towerEditor: towerEditor,
-    waveEditor: waveEditor
+    waveEditor: waveEditor,
+    abilityEditor: abilityEditor
 };
 
 // --- Initialization ---
@@ -71,4 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the wave editor, passing the setStatus function as a dependency.
     // This call also triggers the initial rendering of the waves.
     initWaveEditor({ setStatus });
+
+    // --- NEW: ABILITY EDITOR SETUP ---
+    initAbilityEditor(); // Initialize the ability editor to find its DOM elements
+    
+    // Render the initial abilities
+    abilityEditor.renderAbilityRepeater(levelData.currentLevelData.maps[0].abilities);
 });
