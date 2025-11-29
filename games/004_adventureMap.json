@@ -94,6 +94,9 @@
                 "speed": 5
               }
           },
+          "enemyTypes": [
+            "basic", "fast", "boss", "tank", "super-tank" 
+          ],
           "levels": [
             {"level":1,"enemies":[{"type":"basic","count":7,"health":40,"speed":0.95,"coinReward":3}]},
             {"level":2,"enemies":[{"type":"basic","count":7,"health":60,"speed":1.0,"coinReward":2}]},

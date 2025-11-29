@@ -135,6 +135,9 @@
               "speed": 10
             }
         },
+        "enemyTypes": [
+            "basic", "tank", "fast", "boss", "super-tank", "fast-boss", "armor-boss", "final-boss"
+        ],
         "levels": [
             {
               "level": 1,

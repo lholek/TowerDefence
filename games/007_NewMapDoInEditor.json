@@ -75,6 +75,9 @@
           "speed": 2
         }
       },
+      "enemyTypes": [
+        "basic"
+      ],
       "levels": [
         {
           "level": 1,

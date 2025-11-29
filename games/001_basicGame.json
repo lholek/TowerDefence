@@ -66,6 +66,9 @@
           "speed": 5
         }
       },
+      "enemyTypes": [
+                "basic", "fast", "tank", "boss"
+      ],
       "levels": [
         {
           "level": 1,
