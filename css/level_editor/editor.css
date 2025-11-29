@@ -57,6 +57,7 @@ h2, h3 {
 }
 
 .editor-panel{
+    text-align: center;
     margin-top: 15px;
 }
 
@@ -186,6 +187,7 @@ h2, h3 {
     background-color: #3F7D3C !important; 
     box-shadow: none;
     border: none;
+    margin: 0 auto;
 }
 
 .btn-green:hover {
