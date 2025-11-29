@@ -370,7 +370,7 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
             ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
 
             // Draw border (adjusted for scale)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.strokeStyle = '#2e261d';
             ctx.lineWidth = 1 / camera.zoom; // Keep border size visually constant
             ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
 

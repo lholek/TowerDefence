@@ -19,6 +19,7 @@
             <button class="btn active-tab" data-target="waveEditorPanel">Waves</button>
             <button class="btn active-tab" data-target="abilityEditorPanel">Abilities</button>
         </div>
+
         <div class="editor-panels-container">
             
             <div id="mapEditorPanel" class="editor-panel map-layout-wrapper"> 
@@ -32,9 +33,10 @@
 
                     <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
                 </div>
-
+                
                 <div id="mapCanvasContainer" class="map-canvas-container">
                     <canvas id="mapCanvas"></canvas>
+                    <div id="cloudsLayer" class="cloudsLayer"></div>
                 </div>
 
                 <div id="tileKey" class="tile-key-container"></div>
