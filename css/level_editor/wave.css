@@ -31,3 +31,8 @@
     color: #f0f0f0;
     border-radius: 4px;
 }
+
+.card-body-inner label, .card-header-inner label{
+    margin-top: 8px;
+    margin-bottom: 4px;
+}

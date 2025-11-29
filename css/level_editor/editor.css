@@ -320,26 +320,34 @@ h2, h3 {
 .tile-options {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
     margin-top: 10px;
 }
 
 .tile-selector-btn {
     padding: 5px 10px;
-    border: 1px solid #555;
+    border: none;
     border-radius: 4px;
     font-weight: 500;
     transition: background-color 0.1s;
     min-width: 40px;
 }
 
+.tile-selector-btn:hover {
+    transform: scale(1.2);
+}
 /* Tile color styling for the key and display */
-.tile-o, .tile-s1, .tile-e1 {
+.tile-o {
     background-color: #8B4513; /* Path/Start/End color */
     color: white;
 }
-.tile-x {
+.tile-x, .tile-s {
     background-color: #3F7D3C; /* Defense/Block color */
+    color: white;
+}
+.tile-e{
+    background-color: #AD3333; /* Defense/Block color */
     color: white;
 }
 .tile- {
@@ -367,6 +375,16 @@ h2, h3 {
     background-color: rgb(240, 198, 116) !important; /* Primary accent color */
     color: var(--main-bg-color) !important; /* Dark text on light background */
     box-shadow: inset 0 -3px 0 rgb(180, 140, 70);
+}
+
+.editor-tabs.is-sticky {
+    position: fixed;
+    top: 0;
+    /* Use a high max-width that matches your main container's width, or the page width */
+    max-width: 1000px; /* Adjust this value if your main content box is a different width */
+    left: 50%; 
+    transform: translateX(-50%); /* Centers the fixed element */
+    z-index: 100;
 }
 
 /* --- Popup --- */
