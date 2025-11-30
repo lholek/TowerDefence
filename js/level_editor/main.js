@@ -77,4 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ABILITY EDITOR SETUP ---
     initAbilityEditor(); 
     abilityEditor.renderAbilityRepeater(levelData.currentLevelData.maps[0].abilities);
+
+    // -- call FinalJSON rewrite on reaload
+    jsonFunctions.modifyJson(()=>{});
 });

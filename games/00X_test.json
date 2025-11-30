@@ -1,36 +1,30 @@
 {
   "maps": [
     {
-      "name": "EDIT TITLE",
-      "startingCoins": 100,
+      "name": "Map Editor test",
+      "startingCoins": 25,
       "startingLives": 100,
       "description": [
         {
           "descriptionText": "Edit description",
-          "level count": 1,
-          "difficulty": "⭐",
-          "map_size": "30x15",
-          "tower types": 1,
-          "abilites": "-"
+          "level count": 3,
+          "difficulty": "⭐⭐",
+          "map_size": "15x10",
+          "abilites": "Lava Floor🌋"
         }
       ],
       "tileSize": 60,
       "layout": [
-              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
-              ["S1","O","O","O","O","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
-              ["-","-","-","-","O","-","-","-","-","-","O","O","O","O","O","-","-","O","O","O","O","O","-","-","-","-","-","-","-","-"],
-              ["-","-","-","-","O","-","-","-","-","-","O","X","X","X","O","-","-","O","X","X","X","O","-","-","O","O","O","O","O","-"],
-              ["-","-","-","-","O","-","-","O","O","O","O","X","X","X","O","-","-","O","X","X","X","O","-","-","O","X","X","X","O","-"],
-              ["-","-","-","-","O","-","-","O","X","X","X","X","X","X","O","-","-","O","X","X","X","O","-","-","O","X","X","X","O","-"],
-              ["-","-","-","-","O","-","-","O","X","X","X","X","X","X","O","-","-","O","X","X","X","O","-","-","O","X","X","X","O","-"],
-              ["-","-","O","O","O","-","-","O","X","X","X","X","X","X","O","-","-","O","X","X","X","O","-","-","O","X","X","X","O","-"],
-              ["-","-","O","X","X","X","X","O","O","O","-","-","O","O","O","X","X","O","X","X","X","O","-","-","O","X","X","X","O","-"],
-              ["-","-","O","X","X","X","X","X","X","O","-","-","O","X","X","X","X","O","X","X","X","O","O","O","O","X","X","X","O","-"],
-              ["-","-","O","X","X","X","X","X","X","O","-","-","O","X","X","X","X","O","X","X","X","X","X","X","X","X","X","O","O","-"],
-              ["-","-","O","O","O","O","O","O","O","O","-","-","O","X","X","X","X","O","X","X","X","O","O","O","O","O","O","O","-","-"],
-              ["-","-","-","-","-","-","-","-","-","-","-","-","O","O","O","O","O","O","X","X","X","O","-","-","-","-","-","-","-","-"],
-              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","O","O","O","O","O","O","O","O","E1"],
-              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
+              ["-","X","X","X","X","X","X","X","X","X","-","-","-","-","-"],
+              ["S1","O","O","O","O","X","X","O","O","O","O","O","-","-","-"],
+              ["-","X","X","X","O","X","X","O","X","X","X","O","O","O","E1"],
+              ["-","X","X","X","O","X","O","O","X","X","X","X","X","-","-"],
+              ["-","-","X","X","O","X","O","X","X","X","X","X","X","X","X"],
+              ["-","-","-","X","O","X","O","O","X","X","X","X","X","X","X"],
+              ["-","-","-","X","O","X","X","O","O","O","O","O","O","X","X"],
+              ["-","-","-","X","O","X","X","X","X","X","X","X","O","X","X"],
+              ["-","-","-","X","O","O","O","O","O","O","O","O","O","X","X"],
+              ["-","-","-","X","X","X","X","X","X","X","X","X","X","X","X"]
           ],
       "abilities": [
         {
@@ -40,13 +34,13 @@
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 7,
+          "selectionCount": 11,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
-          "damage_every": 250,
+          "damage": 100,
+          "damage_every": 100,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
-          "effectDuration": 5000,
+          "effectDuration": 2500,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
@@ -56,33 +50,111 @@
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
-          "price": 1,
+          "price": 25,
           "damage": 50,
           "fireRate": 400,
-          "range": 2500,
+          "range": 2000,
           "color": "#468bb0",
-          "sellPrice": 1,
+          "sellPrice": 100,
           "speed": 2
+        },
+        "002": {
+          "name": "New Tower 002",
+          "price": 50,
+          "damage": 75,
+          "fireRate": 500,
+          "range": 3000,
+          "color": "#ffffff",
+          "sellPrice": 100,
+          "speed": 5
         }
       },
-      "enemyTypes": [
-                "basic"
-      ],
       "levels": [
         {
           "level": 1,
           "enemies": [
             {
-              "type": "basic",
+              "type": "tank",
               "count": 5,
               "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 10
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 10
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 10
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 10
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 10,
+              "health": 200,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 2
+            },
+            {
+              "type": "tank",
+              "count": 7,
+              "health": 500,
               "speed": 1,
               "path": "S1E1",
               "interval": 1000,
               "coinReward": 1
             }
           ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 10000,
+              "speed": 0.45,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 2
+            }
+          ]
         }
+      ],
+      "enemyTypes": [
+        "basic",
+        "tank",
+        "fast",
+        "boss",
+        "test"
       ]
     }
   ]

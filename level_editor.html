@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The CZSrna's Tower Defence – Map Editor</title>
     <link rel="stylesheet" href="css/level_editor/editor.css" /> 
+    <link rel="stylesheet" href="css/level_editor/basic_data.css" /> 
     <link rel="stylesheet" href="css/level_editor/tower.css" /> 
     <link rel="stylesheet" href="css/level_editor/wave.css" /> 
     <link rel="stylesheet" href="css/level_editor/ability.css" /> 
@@ -41,22 +42,47 @@
 
                 <div id="tileKey" class="tile-key-container"></div>
             </div>
-            // TODO BASIC INFO DESCRIPTION (Last thing to update)
-                "name": "EDIT TITLE",
-                "startingCoins": 100,
-                "startingLives": 100,
-                "description": [
-                  {
-                    "descriptionText": "Edit description",
-                    "level count": 1,
-                    "difficulty": "⭐",
-                    "map_size": "25x25",
-                    "tower types": 1,
-                    "abilites": "-"
-                  }
-                ],
-                "tileSize": 60,
-            // TODO BASIC INFO DESCRIPTION (Last thing to update)
+
+            <div id="basicInfoEditorPanel" class="editor-panel editor-description">
+                <h3>Map Information</h3>
+
+                <div class="input-row">
+                    <div class="input-group mt-4">
+                        <label for="mapNameInput">🗺️ Map Title</label>
+                        <input type="text" id="mapNameInput" value="EDIT TITLE"
+                               onchange="window.app.jsonFunctions.updateBasicInfo('name', this.value)">
+                    </div>
+                    <div class="input-group mt-4">
+                        <label for="startingCoinsInput">🪙 Starting Coins</label>
+                        <input type="number" id="startingCoinsInput" value="0" min="0"
+                               onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', parseInt(this.value))">
+                    </div>
+                    <div class="input-group mt-4">
+                        <label for="startingLivesInput">❤️ Starting Lives</label>
+                        <input type="number" id="startingLivesInput" value="1" min="1"
+                               onchange="window.app.jsonFunctions.updateBasicInfo('startingLives', parseInt(this.value))">
+                    </div>
+                </div>
+
+                <h3 class="mt-4">Map Description</h3>
+                <div class="input-group mt-4">
+                    <label for="descriptionTextInput">📋 Description Text</label>
+                    <textarea id="descriptionTextInput" rows="3"
+                              onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
+                </div>
+                <div class="input-row two-column-grid  mt-4">
+                    <div class="input-group">
+                        <label>Map Tile Size</label>
+                        <input type="number" id="tileSizeInput" class="text-center" value="60" readonly title="Tile size for the map canvas."
+                               onchange="window.app.jsonFunctions.updateBasicInfo('tileSize', parseInt(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label for="difficultyInput">Difficulty</label>
+                        <input type="text" id="difficultyInput" class="text-center" value="⭐"
+                               onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                    </div>
+                </div>
+            </div>
 
             <div id="towerEditorPanel" class="editor-panel"> 
                 <hr>

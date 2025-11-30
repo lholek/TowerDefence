@@ -1,0 +1,58 @@
+/* Add this to your editor.css or relevant style file */
+
+.input-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.input-row .input-group {
+    flex-grow: 1;
+    min-width: 100px; /* Ensure fields aren't too small */
+}
+
+/* For fields that need more columns */
+.two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+    gap: 15px 20px;
+}
+
+/* Base styling for input groups */
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--cl-secondary); /* Assuming you have a color variable */
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group textarea {
+    background-color: #967456;
+    padding: 5px;
+    margin-top: 3px;
+    border: 1px solid #555;
+    color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.input-group input[readonly] {
+    background-color: #1a1a1a;
+    opacity: 0.7;
+    cursor: default;
+}
+
+#basicInfoEditorPanel h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.text-secondary {
+    font-size: 0.9em;
+    color: #999;
+}

@@ -123,6 +123,13 @@ export function modifyJson(modifyFn, successMessage) {
     const width = layout.length > 0 ? layout[0].length : 0;
     const height = layout.length;
     currentLevelData.maps[0].description[0].map_size = `${width}x${height}`;
+    console.log(currentLevelData.maps[0]);
+    currentLevelData.maps[0].description[0]["level count"] = currentLevelData.maps[0].levels.length;
+    currentLevelData.maps[0].description[0]["tower types"] = currentLevelData.maps[0].towerTypes.length;
+    currentLevelData.maps[0].description[0]["abilites"] = currentLevelData.maps[0].abilities.map(x=>x.name+x.ui.icon).join(", ");
+    console.log(currentLevelData.maps[0]);
+
+    console.log(currentLevelData);
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
     const formattedJson = formatCompactLayout(currentLevelData);
@@ -205,6 +212,28 @@ export function updateMapFromEditor() {
             modules.abilityEditor.renderAbilityRepeater(mapData.abilities || []);
         }
 
+        // E. Map information
+        console.log(mapData);
+        console.log(mapData.description);
+        let mapTitle = mapData.name;
+        let mapStartingCoins = mapData.startingCoins;
+        let mapstartingLives = mapData.startingLives;
+        let mapDescription = mapData.description[0].descriptionText;
+        let mapTileSize = mapData.tileSize;
+        let mapDifficulty = mapData.description[0].difficulty;
+        console.log(mapTitle);
+        console.log(mapStartingCoins);
+        console.log(mapstartingLives);
+        console.log(mapDescription);
+        console.log(mapTileSize);
+        console.log(mapDifficulty);
+
+        document.querySelector("#mapNameInput").value = mapTitle;
+        document.querySelector("#startingCoinsInput").value = mapStartingCoins;
+        document.querySelector("#startingLivesInput").value = mapstartingLives;
+        document.querySelector("#descriptionTextInput").value = mapDescription;
+        document.querySelector("#tileSizeInput").value = mapTileSize;
+        document.querySelector("#difficultyInput").value = mapDifficulty;
         // 4. Success Message
         modules.setStatus('Configuration updated successfully!', false);
 
@@ -313,7 +342,9 @@ export function updateUIFromLoadedData() {
     if (modules.editor && modules.editor.value !== undefined) {
         modules.editor.value = formatCompactLayout(currentLevelData);
     }
-    
+
+    updateBasicInfoUI();
+
     modules.setStatus("Editor UI successfully synced with loaded map data.");
 }
 
@@ -337,4 +368,62 @@ export function handleFileLoad(newJsonContent) {
         modules.setStatus(`Error loading JSON file: ${error.message}`, true);
         console.error("JSON Load Error:", error);
     }
+}
+
+// --- BASIC INFO EDITOR FUNCTIONS ---
+
+/**
+ * Updates top-level map properties (name, startingCoins, startingLives).
+ * Called by the HTML inputs (e.g., onchange="...updateBasicInfo(...)")
+ */
+export function updateBasicInfo(key, value) {
+    modifyJson((data) => {
+        data.maps[0][key] = value;
+    }, `Map property '${key}' updated to ${value}.`);
+}
+
+/**
+ * Updates properties inside the description array (descriptionText, difficulty).
+ * Called by the HTML inputs.
+ */
+export function updateDescription(key, value) {
+    modifyJson((data) => {
+        // Ensure description array exists
+        if (!data.maps[0].description) data.maps[0].description = [{}];
+        
+        data.maps[0].description[0][key] = value;
+    }, `Description '${key}' updated.`);
+}
+
+/**
+ * SYNC UI FROM DATA: Populates the Basic Info inputs using the current JSON data.
+ * This is called when you load/paste JSON or when data changes.
+ */
+export function updateBasicInfoUI() {
+    // 1. Get the current data
+    const map = currentLevelData.maps[0];
+    console.log(map);
+    const desc = (map.description && map.description[0]) ? map.description[0] : {};
+
+    // 2. Helper to safely set input values by ID
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = (val !== undefined && val !== null) ? val : "";
+    };
+
+    // 3. Update Editable Inputs (Top-level)
+    setVal('mapNameInput', map.name);
+    setVal('startingCoinsInput', map.startingCoins);
+    setVal('startingLivesInput', map.startingLives);
+    setVal('tileSizeInput', map.tileSize); // Read-only in your HTML, but good to set
+
+    // 4. Update Description Inputs
+    setVal('descriptionTextInput', desc.descriptionText);
+    setVal('difficultyInput', desc.difficulty);
+
+    // 5. Update Read-Only Metadata (Calculated Counts)
+    setVal('mapSizeDisplay', desc.map_size || "-");
+    setVal('levelCountDisplay', desc["level count"] || 0);
+    setVal('towerTypesDisplay', desc["tower types"] || 0);
+    setVal('abilitiesDisplay', desc.abilites || "-");
 }
