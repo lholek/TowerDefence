@@ -1,4 +1,4 @@
-import { currentLevelData, currentTileType, setCurrentTileType, tileTypes } from './level_data.js';
+import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, getCurrentMap } from './level_data.js';
 import { modifyJson } from './json_functions.js';
 
 // Get references to elements (will be imported by main.js)
@@ -391,6 +391,9 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
     // Re-render the key/palette every time
     createTileKey();
+
+    // Call the update function to ensure the "map_size" metadata is correct
+    updateMapInfo();
 }
 
 /**
@@ -606,4 +609,58 @@ function findPath(layout, start, end) {
     }
 
     return false;
+}
+
+/**
+ * Updates the map_size field in the map's description based on the current layout
+ * AND updates the display elements with IDs 'mapWidth' and 'mapHeight'.
+ */
+function updateMapSizeDescription() {
+    const map = getCurrentMap(); 
+    const layout = map.layout;
+    
+    // Check for a non-empty, non-malformed layout array
+    if (layout.length > 0 && Array.isArray(layout[0]) && layout[0].length > 0) {
+        // Width is number of columns (length of first row)
+        const width = layout[0].length; 
+        // Height is number of rows (length of the layout array)
+        const height = layout.length;
+
+        // --- FIX: Update the DOM display elements ---
+        const widthElement = document.getElementById('mapWidth');
+        const heightElement = document.getElementById('mapHeight');
+        
+        // Use .value for inputs/textareas, .textContent for everything else (span, div, etc.)
+        const updateElement = (element, value) => {
+            if (element) {
+                const tagName = element.tagName;
+                if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
+                    element.value = value;
+                } else {
+                    element.textContent = value;
+                }
+            }
+        };
+
+        updateElement(widthElement, width);
+        updateElement(heightElement, height);
+        // ---------------------------------------------
+        
+        const newMapSize = `${width}x${height}`;
+
+        // Update JSON metadata only if the value has actually changed
+        // This part remains critical to ensuring the JSON source of truth is correct.
+        if (map.description[0]["map_size"] !== newMapSize) {
+            // Use modifyJson to update the source of truth and refresh the UI
+            modifyJson((data) => {
+                // Update the description field
+                data.maps[0].description[0]["map_size"] = newMapSize;
+            }, `Map size metadata updated to ${newMapSize}.`);
+        }
+    }
+}
+
+// New public function that can be called externally (e.g., from main.js or json_functions.js)
+export function updateMapInfo() {
+    updateMapSizeDescription();
 }
