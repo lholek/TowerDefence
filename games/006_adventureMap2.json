@@ -1,330 +1,715 @@
 {
   "maps": [
-      {
-        "name": "Adventure Map II - Islands",
-        "_startingCoins": 50,
-        "startingCoins": 50,
-        "startingLives": 10,
-        "description": [
-          {
-            "descriptionText": "3 main islands to build the towers",
-            "level count": 20,
-            "map_size": "20x14",
-            "difficulty": "⭐⭐⭐⭐",
-            "tower types": 7,
-            "abilites": "Lava floor 🌋"
+    {
+      "name": "Adventure Map II - Islands",
+      "_startingCoins": 50,
+      "startingCoins": 50,
+      "startingLives": 10,
+      "description": [
+        {
+          "descriptionText": "3 main islands to build the towers",
+          "level count": 20,
+          "map_size": "20x24",
+          "difficulty": "⭐⭐⭐⭐",
+          "tower types": 7,
+          "abilites": "Lava floor 🌋"
+        }
+      ],
+      "tileSize": 60,
+      "layout": [
+              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
+              ["-","-","X","X","X","X","X","X","X","X","X","-","-","-","X","X","X","X","X","-"],
+              ["-","X","X","O","O","O","O","O","O","O","X","X","-","X","X","X","X","X","X","X"],
+              ["-","X","X","O","X","X","X","X","X","O","X","X","-","X","X","X","O","O","O","E1"],
+              ["-","X","X","O","X","X","X","X","X","O","X","X","-","X","X","O","O","X","X","X"],
+              ["-","X","X","O","O","X","X","X","O","O","X","X","-","X","X","O","X","X","X","-"],
+              ["-","X","X","X","O","O","X","O","O","X","X","X","-","X","X","O","X","X","X","-"],
+              ["-","X","X","X","X","O","X","O","X","X","X","X","-","X","X","O","X","X","X","-"],
+              ["-","-","X","X","X","O","X","O","X","X","X","-","-","X","X","O","X","X","-","-"],
+              ["-","-","-","X","X","O","X","O","X","X","-","-","-","X","X","O","X","X","-","-"],
+              ["-","-","-","-","-","O","X","O","-","-","-","-","-","X","X","O","X","X","-","-"],
+              ["S1","O","O","O","O","O","-","O","-","-","-","-","X","X","X","O","X","X","-","-"],
+              ["-","-","-","-","-","-","-","O","-","-","-","X","X","X","X","O","X","X","-","-"],
+              ["-","-","-","-","-","-","-","O","-","-","X","X","X","X","O","O","X","X","-","-"],
+              ["-","-","X","X","X","X","X","O","-","-","X","X","X","X","O","X","X","X","-","-"],
+              ["-","X","X","X","X","O","O","O","-","-","X","X","X","O","O","X","X","X","-","-"],
+              ["-","X","X","X","O","O","X","X","-","-","X","O","O","O","X","X","X","X","-","-"],
+              ["-","X","X","O","O","X","X","X","-","-","X","O","X","X","X","X","X","-","-","-"],
+              ["-","X","X","O","X","X","X","O","O","O","O","O","X","X","X","X","-","-","-","-"],
+              ["-","X","X","O","O","X","O","O","-","-","X","X","X","X","X","-","-","-","-","-"],
+              ["-","X","X","X","O","O","O","X","-","-","X","X","X","X","-","-","-","-","-","-"],
+              ["-","X","X","X","X","X","X","X","-","-","-","X","X","-","-","-","-","-","-","-"],
+              ["-","-","X","X","X","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-"],
+              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 25000",
+          "id": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Demage - 400dmg / 0.5s",
+          "description_text": "5 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 11,
+          "__comment": "400dmg / 0.5s ",
+          "damage": 400,
+          "damage_every": 500,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 45000,
+          "effectDuration": 10000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
           }
-        ],
-        "tileSize": 60,
-        "layout": [
-          ["-", "-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
-          ["-", "-","X","X","X","X","X","X","X","X","X","-","-","-","X","X","X","X","X","-"],
-          ["-", "X","X","O","O","O","O","O","O","O","X","X","-","X","X","X","X","X","X","X"],
-          ["-", "X","X","O","X","X","X","X","X","O","X","X","-","X","X","X","O","O","O","E1"],
-          ["-", "X","X","O","X","X","X","X","X","O","X","X","-","X","X","O","O","X","X","X"],
-          ["-", "X","X","O","O","X","X","X","O","O","X","X","-","X","X","O","X","X","X","-"],
-          ["-", "X","X","X","O","O","X","O","O","X","X","X","-","X","X","O","X","X","X","-"],
-          ["-", "X","X","X","X","O","X","O","X","X","X","X","-","X","X","O","X","X","X","-"],
-          ["-", "-","X","X","X","O","X","O","X","X","X","-","-","X","X","O","X","X","-","-"],
-          ["-", "-","-","X","X","O","X","O","X","X","-","-","-","X","X","O","X","X","-","-"],
-          ["-", "-","-","-","-","O","X","O","-","-","-","-","-","X","X","O","X","X","-","-"],
-          ["S1","O","O","O","O","O","-","O","-","-","-","-","X","X","X","O","X","X","-","-"],
-          ["-", "-","-","-","-","-","-","O","-","-","-","X","X","X","X","O","X","X","-","-"],
-          ["-", "-","-","-","-","-","-","O","-","-","X","X","X","X","O","O","X","X","-","-"],
-          ["-", "-","X","X","X","X","X","O","-","-","X","X","X","X","O","X","X","X","-","-"],
-          ["-", "X","X","X","X","O","O","O","-","-","X","X","X","O","O","X","X","X","-","-"],
-          ["-", "X","X","X","O","O","X","X","-","-","X","O","O","O","X","X","X","X","-","-"],
-          ["-", "X","X","O","O","X","X","X","-","-","X","O","X","X","X","X","X","-","-","-"],
-          ["-", "X","X","O","X","X","X","O","O","O","O","O","X","X","X","X","-","-","-","-"],
-          ["-", "X","X","O","O","X","O","O","-","-","X","X","X","X","X","-","-","-","-","-"],
-          ["-", "X","X","X","O","O","O","X","-","-","X","X","X","X","-","-","-","-","-","-"],
-          ["-", "X","X","X","X","X","X","X","-","-","-","X","X","-","-","-","-","-","-","-"],
-          ["-", "-","X","X","X","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-"],
-          ["-", "-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
-        ],
-        "abilities": [
-          {
-            "_comment": "cooldown - 25000",
-            "id": "lava_floor",
-            "name": "Lava Floor",
-            "description": "Demage - 400dmg / 0.5s",
-            "description_text": "5 tile before and after selected tile",
-            "type": "targeted", 
-            "selectionCount": 11, 
-            "__comment": "400dmg / 0.5s ",
-            "damage": 400, 
-            "damage_every": 500, 
-            "___comment": "cooldown - includes effectDuration !!!",
-            "cooldown": 45000,
-            "effectDuration": 10000,
-            "color": "rgba(245, 164, 66, 0.6)",
-            "ui": {
-              "icon": "🌋"
-            }
-          }
-        ],
-        "towerTypes": {
-            "001": {
-              "name": "Windpost Tower",
-              "price": 10,
-              "damage": 15,
-              "fireRate": 1100,
-              "range": 200,
-              "color": "#8f94a8",
-              "sellPrice": 8,
-              "speed": 1.9
-            },
-            "002": {
-              "name": "Cloud Tower",
-              "price": 25,
-              "damage": 30,
-              "fireRate": 1000,
-              "range": 200,
-              "color": "#454854",
-              "sellPrice": 20,
-              "speed": 2.1
-            },
-            "003": {
-              "name": "Highwind Tower",
-              "price": 50,
-              "damage": 60,
-              "fireRate": 850,
-              "range": 220,
-              "color": "#187d96",
-              "sellPrice": 40,
-              "speed": 2.3
-            },
-            "004": {
-              "name": "StarNight Tower",
-              "price": 100,
-              "damage": 100,
-              "fireRate": 750,
-              "range": 230,
-              "color": "#162424",
-              "sellPrice": 75,
-              "speed": 2.5
-            },
-            "005": {
-              "name": "Thunder Tower",
-              "price": 250,
-              "damage": 200,
-              "fireRate": 650,
-              "range": 300,
-              "color": "#25347d",
-              "sellPrice": 150,
-              "speed": 3.25
-            },
-            "006": {
-              "name": "Heavenforge Tower",
-              "price": 500,
-              "damage": 250,
-              "fireRate": 500,
-              "range": 500,
-              "color": "#b3ab15",
-              "sellPrice": 200,
-              "speed": 4
-            },
-            "007": {
-              "name": "Sky Dominion Tower",
-              "price": 1500,
-              "damage": 600,
-              "fireRate": 200,
-              "range": 1000,
-              "color": "#ffffff",
-              "sellPrice": 0,
-              "speed": 10
-            }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Windpost Tower",
+          "price": 10,
+          "damage": 15,
+          "fireRate": 1100,
+          "range": 200,
+          "color": "#8f94a8",
+          "sellPrice": 8,
+          "speed": 1.9
         },
-        "enemyTypes": [
-            "basic", "tank", "fast", "boss", "super-tank", "fast-boss", "armor-boss", "final-boss"
-        ],
-        "levels": [
+        "002": {
+          "name": "Cloud Tower",
+          "price": 25,
+          "damage": 30,
+          "fireRate": 1000,
+          "range": 200,
+          "color": "#454854",
+          "sellPrice": 20,
+          "speed": 2.1
+        },
+        "003": {
+          "name": "Highwind Tower",
+          "price": 50,
+          "damage": 60,
+          "fireRate": 850,
+          "range": 220,
+          "color": "#187d96",
+          "sellPrice": 40,
+          "speed": 2.3
+        },
+        "004": {
+          "name": "StarNight Tower",
+          "price": 100,
+          "damage": 100,
+          "fireRate": 750,
+          "range": 230,
+          "color": "#162424",
+          "sellPrice": 75,
+          "speed": 2.5
+        },
+        "005": {
+          "name": "Thunder Tower",
+          "price": 250,
+          "damage": 200,
+          "fireRate": 650,
+          "range": 300,
+          "color": "#25347d",
+          "sellPrice": 150,
+          "speed": 3.25
+        },
+        "006": {
+          "name": "Heavenforge Tower",
+          "price": 500,
+          "damage": 250,
+          "fireRate": 500,
+          "range": 500,
+          "color": "#b3ab15",
+          "sellPrice": 200,
+          "speed": 4
+        },
+        "007": {
+          "name": "Sky Dominion Tower",
+          "price": 1500,
+          "damage": 600,
+          "fireRate": 200,
+          "range": 1000,
+          "color": "#ffffff",
+          "sellPrice": 0,
+          "speed": 10
+        }
+      },
+      "enemyTypes": [
+        "basic",
+        "tank",
+        "fast",
+        "boss",
+        "super-tank",
+        "fast-boss",
+        "armor-boss",
+        "final-boss",
+        "extereme-boss"
+      ],
+      "levels": [
+        {
+          "level": 1,
+          "_comment": "25 coins",
+          "enemies": [
             {
-              "level": 1,
-              "_comment": "25 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 50, "speed": 0.9, "coinReward": 5 }
-              ]
-            },
-            {
-              "level": 2,
-              "_comment": "35 coins",
-              "enemies": [
-                { "type": "basic", "count": 7, "health": 70, "speed": 0.95, "coinReward": 5 }
-              ]
-            },
-            {
-              "level": 3,
-              "_comment": "55 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 100, "speed": 1, "coinReward": 7 },
-                { "type": "tank", "count": 1, "health": 500, "speed": 0.75, "coinReward": 20 }
-              ]
-            },
-            {
-              "level": 4,
-              "_comment": "55 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 200, "speed": 1, "coinReward": 8 },
-                { "type": "fast", "count": 1, "health": 400, "speed": 1.25, "coinReward": 15 }
-              ]
-            },
-            {
-              "level": 5,
-              "_comment": "143 coins",
-              "enemies": [
-                { "type": "basic", "count": 6, "health": 300, "speed": 1.05, "coinReward": 8 },
-                { "type": "fast", "count": 3, "health": 250, "speed": 1.3, "coinReward": 15 },
-                { "type": "boss", "count": 1, "health": 1000, "speed": 0.75, "coinReward": 50 }
-              ]
-            },  
-            {
-              "level": 6,
-              "_comment": "125 coins",
-              "enemies": [
-                { "type": "basic", "count": 8, "health": 500, "speed": 1.05, "coinReward": 10 },
-                { "type": "tank", "count": 3, "health": 900, "speed": 0.85, "coinReward": 15 }
-              ]
-            },
-            {
-              "level": 7,
-              "_comment": "154 coins",
-              "enemies": [
-                { "type": "basic", "count": 7, "health": 700, "speed": 1.05, "coinReward": 12 },
-                { "type": "fast", "count": 2, "health": 800, "speed": 1.35, "coinReward": 15 },
-                { "type": "tank", "count": 2, "health": 1100, "speed": 0.8, "coinReward": 20 }
-              ]
-            },
-            {
-              "level": 8,
-              "_comment": "200 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 900, "speed": 1, "coinReward": 15 },
-                { "type": "fast", "count": 5, "health": 850, "speed": 1.35, "coinReward": 25 }
-              ]
-            },
-            {
-              "level": 9,
-              "_comment": "320 coins",
-              "enemies": [
-                { "type": "basic", "count": 10, "health": 1000, "speed": 1, "coinReward": 20 },
-                { "type": "tank", "count": 4, "health": 2000, "speed": 0.85, "coinReward": 30 }
-              ]
-            },
-            {
-              "level": 10,
-              "_comment": "700 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 1500, "speed": 1.05, "coinReward": 30 },
-                { "type": "tank", "count": 5, "health": 3000, "speed": 0.85, "coinReward": 35 },
-                { "type": "fast", "count": 5, "health": 2000, "speed": 1.4, "coinReward": 35 },
-                { "type": "boss", "count": 1, "health": 7000, "speed": 1, "coinReward": 200 }
-              ]
-            },
-            {
-              "level": 11,
-              "_comment": "760 coins",
-              "enemies": [
-                { "type": "basic", "count": 10, "health": 3000, "speed": 1.05, "coinReward": 40 },
-                { "type": "tank", "count": 5, "health": 5000, "speed": 0.85, "coinReward": 45 },
-                { "type": "fast", "count": 3, "health": 2500, "speed": 1.45, "coinReward": 45 }
-              ]
-            },
-            {
-              "level": 12,
-              "_comment": "875 coins",
-              "_comment2": "Při testu mi zbylo cca 1200 coinu",
-              "enemies": [
-                { "type": "tank", "count": 4, "health": 7500, "speed": 0.85, "coinReward": 50 },
-                { "type": "basic", "count": 5, "health": 4000, "speed": 1.05, "coinReward": 45 },
-                { "type": "tank", "count": 4, "health": 7500, "speed": 0.85, "coinReward": 50 },
-                { "type": "fast", "count": 5, "health": 3000, "speed": 1.5, "coinReward": 50 }
-              ]
-            },
-            {
-              "level": 13,
-              "_comment": "840 coins",
-              "enemies": [
-                { "type": "tank", "count": 5, "health": 8000, "speed": 0.85, "coinReward": 55 },
-                { "type": "basic", "count": 6, "health": 4500, "speed": 1.10, "coinReward": 50 },
-                { "type": "super-tank", "count": 1, "health": 14000, "speed": 0.65, "coinReward": 100 },
-                { "type": "fast", "count": 3, "health": 3500, "speed": 1.5, "coinReward": 55 }
-              ]
-            },
-            {
-              "level": 14,
-              "_comment": "1000 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 5000, "speed": 1.15, "coinReward": 50 },
-                { "type": "tank", "count": 5, "health": 7500, "speed": 0.85, "coinReward": 60 },
-                { "type": "basic", "count": 3, "health": 5000, "speed": 1.15, "coinReward": 50 },
-                { "type": "fast", "count": 5, "health": 4000, "speed": 1.5, "coinReward": 60 }
-              ]
-            },
-            {
-              "level": 15,
-              "_comment": "1510 coins",
-              "enemies": [
-                { "type": "basic", "count": 8, "health": 6000, "speed": 1.15, "coinReward": 50 },
-                { "type": "tank", "count": 6, "health": 8000, "speed": 0.85, "coinReward": 60 },
-                { "type": "basic", "count": 5, "health": 6000, "speed": 1.15, "coinReward": 50 },
-                { "type": "boss", "count": 1, "health": 50000, "speed": 0.65, "coinReward": 500 }
-              ]
-            },
-            {
-              "level": 16,
-              "_comment": "1890 coins",
-              "enemies": [
-                { "type": "basic", "count": 5, "health": 15000, "speed": 1.15, "coinReward": 75 },
-                { "type": "tank", "count": 6, "health": 40000, "speed": 0.85, "coinReward": 95 },
-                { "type": "basic", "count": 5, "health": 15000, "speed": 1.15, "coinReward": 75 },
-                { "type": "fast", "count": 6, "health": 11000, "speed": 1.5, "coinReward": 95 }
-              ]
-            },
-            {
-              "level": 17,
-              "_comment": "2160 coins",
-              "enemies": [
-                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
-                { "type": "tank", "count": 6, "health": 45000, "speed": 0.85, "coinReward": 100 },
-                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
-                { "type": "fast", "count": 6, "health": 12500, "speed": 1.5, "coinReward": 100 }
-              ]
-            },
-            {
-              "level": 18,
-              "_comment": "2270 coins",
-              "enemies": [
-                { "type": "basic", "count": 6, "health": 22000, "speed": 1.2, "coinReward": 85 },
-                { "type": "tank", "count": 6, "health": 60000, "speed": 0.9, "coinReward": 110 },
-                { "type": "fast", "count": 6, "health": 18000, "speed": 1.5, "coinReward": 110 },
-                { "type": "tank", "count": 4, "health": 60000, "speed": 0.9, "coinReward": 110 }
-
-              ]
-            },
-            {
-              "level": 19,
-              "_comment": " coins",
-              "enemies": [
-                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
-                { "type": "tank", "count": 6, "health": 45000, "speed": 0.85, "coinReward": 100 },
-                { "type": "basic", "count": 6, "health": 17500, "speed": 1.2, "coinReward": 80 },
-                { "type": "fast", "count": 6, "health": 12500, "speed": 1.5, "coinReward": 100 }
-              ]
-            },
-            {
-              "level": 20,
-              "_comment": "2160 coins",
-              "enemies": [
-                { "type": "basic", "count": 10, "health": 20000, "speed": 1.2, "coinReward": 85 },
-                { "type": "fast", "count": 10, "health": 17500, "speed": 1.5, "coinReward": 85 },
-                { "type": "tank", "count": 10, "health": 45000, "speed": 0.85, "coinReward": 100 },
-                { "type": "fast-boss", "count": 1, "health": 35000, "speed": 1.5, "coinReward": 1000 },
-                { "type": "armor-boss", "count": 1, "health": 125000, "speed": 0.9, "coinReward": 1000 },
-                { "type": "final-boss", "count": 1, "health": 1000000, "speed": 0.5, "coinReward": 1000 }
-              ]
+              "type": "basic",
+              "count": 5,
+              "health": 50,
+              "speed": 0.9,
+              "coinReward": 5
             }
-        ]
+          ]
+        },
+        {
+          "level": 2,
+          "_comment": "35 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 70,
+              "speed": 0.95,
+              "coinReward": 5
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "_comment": "55 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "coinReward": 7
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 500,
+              "speed": 0.75,
+              "coinReward": 20
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "_comment": "55 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 200,
+              "speed": 1,
+              "coinReward": 8
+            },
+            {
+              "type": "fast",
+              "count": 1,
+              "health": 400,
+              "speed": 1.25,
+              "coinReward": 15
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "_comment": "143 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 300,
+              "speed": 1.05,
+              "coinReward": 8
+            },
+            {
+              "type": "fast",
+              "count": 3,
+              "health": 250,
+              "speed": 1.3,
+              "coinReward": 15
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 1000,
+              "speed": 0.75,
+              "coinReward": 50
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "_comment": "125 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 500,
+              "speed": 1.05,
+              "coinReward": 10
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 900,
+              "speed": 0.85,
+              "coinReward": 15
+            }
+          ]
+        },
+        {
+          "level": 7,
+          "_comment": "154 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 700,
+              "speed": 1.05,
+              "coinReward": 12
+            },
+            {
+              "type": "fast",
+              "count": 2,
+              "health": 800,
+              "speed": 1.35,
+              "coinReward": 15
+            },
+            {
+              "type": "tank",
+              "count": 2,
+              "health": 1100,
+              "speed": 0.8,
+              "coinReward": 20
+            }
+          ]
+        },
+        {
+          "level": 8,
+          "_comment": "200 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 900,
+              "speed": 1,
+              "coinReward": 15
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 850,
+              "speed": 1.35,
+              "coinReward": 25
+            }
+          ]
+        },
+        {
+          "level": 9,
+          "_comment": "320 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 1000,
+              "speed": 1,
+              "coinReward": 20
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 2000,
+              "speed": 0.85,
+              "coinReward": 30
+            }
+          ]
+        },
+        {
+          "level": 10,
+          "_comment": "700 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 1500,
+              "speed": 1.05,
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 3000,
+              "speed": 0.85,
+              "coinReward": 35
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 2000,
+              "speed": 1.4,
+              "coinReward": 35
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 7000,
+              "speed": 1,
+              "coinReward": 200
+            }
+          ]
+        },
+        {
+          "level": 11,
+          "_comment": "760 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 3000,
+              "speed": 1.05,
+              "coinReward": 40
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 5000,
+              "speed": 0.85,
+              "coinReward": 45
+            },
+            {
+              "type": "fast",
+              "count": 3,
+              "health": 2500,
+              "speed": 1.45,
+              "coinReward": 45
+            }
+          ]
+        },
+        {
+          "level": 12,
+          "_comment": "875 coins",
+          "_comment2": "Při testu mi zbylo cca 1200 coinu",
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 7500,
+              "speed": 0.85,
+              "coinReward": 50
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 4000,
+              "speed": 1.05,
+              "coinReward": 45
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 7500,
+              "speed": 0.85,
+              "coinReward": 50
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.5,
+              "coinReward": 50
+            }
+          ]
+        },
+        {
+          "level": 13,
+          "_comment": "840 coins",
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 8000,
+              "speed": 0.85,
+              "coinReward": 55
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4500,
+              "speed": 1.1,
+              "coinReward": 50
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 14000,
+              "speed": 0.65,
+              "coinReward": 100
+            },
+            {
+              "type": "fast",
+              "count": 3,
+              "health": 3500,
+              "speed": 1.5,
+              "coinReward": 55
+            }
+          ]
+        },
+        {
+          "level": 14,
+          "_comment": "1000 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 5000,
+              "speed": 1.15,
+              "coinReward": 50
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 7500,
+              "speed": 0.85,
+              "coinReward": 60
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 5000,
+              "speed": 1.15,
+              "coinReward": 50
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 4000,
+              "speed": 1.5,
+              "coinReward": 60
+            }
+          ]
+        },
+        {
+          "level": 15,
+          "_comment": "1510 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 6000,
+              "speed": 1.15,
+              "coinReward": 50
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 8000,
+              "speed": 0.85,
+              "coinReward": 60
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 6000,
+              "speed": 1.15,
+              "coinReward": 50
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 50000,
+              "speed": 0.65,
+              "coinReward": 500
+            }
+          ]
+        },
+        {
+          "level": 16,
+          "_comment": "1890 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 15000,
+              "speed": 1.15,
+              "coinReward": 75
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 40000,
+              "speed": 0.85,
+              "coinReward": 95
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 15000,
+              "speed": 1.15,
+              "coinReward": 75
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 11000,
+              "speed": 1.5,
+              "coinReward": 95
+            }
+          ]
+        },
+        {
+          "level": 17,
+          "_comment": "2160 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 17500,
+              "speed": 1.2,
+              "coinReward": 80
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 45000,
+              "speed": 0.85,
+              "coinReward": 100
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 17500,
+              "speed": 1.2,
+              "coinReward": 80
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 12500,
+              "speed": 1.5,
+              "coinReward": 100
+            }
+          ]
+        },
+        {
+          "level": 18,
+          "_comment": "2270 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 22000,
+              "speed": 1.2,
+              "coinReward": 85
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 60000,
+              "speed": 0.9,
+              "coinReward": 110
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 18000,
+              "speed": 1.5,
+              "coinReward": 110
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 60000,
+              "speed": 0.9,
+              "coinReward": 110
+            }
+          ]
+        },
+        {
+          "level": 19,
+          "_comment": " 2160 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 17500,
+              "speed": 1.2,
+              "coinReward": 80
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 45000,
+              "speed": 0.85,
+              "coinReward": 100
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 17500,
+              "speed": 1.2,
+              "coinReward": 80
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 12500,
+              "speed": 1.5,
+              "coinReward": 100
+            }
+          ]
+        },
+        {
+          "level": 20,
+          "_comment": "2160 coins",
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 20000,
+              "speed": 1.2,
+              "coinReward": 85
+            },
+            {
+              "type": "fast",
+              "count": 10,
+              "health": 17500,
+              "speed": 1.5,
+              "coinReward": 85
+            },
+            {
+              "type": "tank",
+              "count": 10,
+              "health": 45000,
+              "speed": 0.85,
+              "coinReward": 100
+            },
+            {
+              "type": "fast-boss",
+              "count": 1,
+              "health": 35000,
+              "speed": 1.5,
+              "coinReward": 1000
+            },
+            {
+              "type": "armor-boss",
+              "count": 1,
+              "health": 125000,
+              "speed": 0.9,
+              "coinReward": 1000
+            },
+            {
+              "type": "final-boss",
+              "count": 1,
+              "health": 1000000,
+              "speed": 0.5,
+              "coinReward": 1000
+            }
+          ]
+        }
+      ]
     }
   ]
 }
