@@ -111,14 +111,14 @@ export const towerEditor = (() => {
         attachDeleteListeners();
     };
 
-    // NEW: Function to attach delete listeners
+    // NEW: Function to attach delete listeners (Moved up for proper scope)
     const attachDeleteListeners = () => {
         if (!contentContainer) return;
 
         contentContainer.querySelectorAll('.btn-delete-tower').forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', async (e) => { // ADD async
                 const towerId = e.target.getAttribute('data-delete-id');
-                deleteTower(towerId); // Directly call the internal function
+                await deleteTower(towerId); // ADD await
             });
         });
     };
@@ -143,17 +143,20 @@ export const towerEditor = (() => {
 
     // 2. Function to add a new tower
     const addTower = () => {
+        // Calculate the ID here to use it for both the data and the status message.
+        const newId = getNextTowerId(); 
+        
         modifyJson((data) => {
-            const newId = getNextTowerId();
             const newTower = JSON.parse(JSON.stringify(newTowerStructure));
-            newTower.name = `Tower`; 
+            // Use the determined new ID in the name for immediate clarity
+            newTower.name = `New Tower ${newId}`; 
 
             data.maps[0].towerTypes[newId] = newTower;
             
             // No need to re-index when adding, just re-render
             renderTowerRepeater(data.maps[0].towerTypes);
 
-        }, `New tower added with ID: ${getNextTowerId()}`);
+        }, `New tower added with ID: ${newId}`); // CORRECTED: Use the calculated newId
     };
 
     // 3. Function to delete a tower (FIXED WITH CUSTOM CONFIRM & RE-ID)
@@ -169,7 +172,7 @@ export const towerEditor = (() => {
             return;
         }
         
-        modifyJson((data) => {
+        await modifyJson((data) => {
             // 1. Delete the tower
             delete data.maps[0].towerTypes[towerId];
 

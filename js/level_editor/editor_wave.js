@@ -214,31 +214,31 @@ export const waveEditor = (() => {
         attachDeleteListeners();
     };
 
+    // --- Interaction Functions ---
+
     // NEW: Function to attach delete listeners
     const attachDeleteListeners = () => {
         if (!contentContainer) return;
         
         // 1. Delete Wave Listeners
         contentContainer.querySelectorAll('.btn-delete-wave').forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', async (e) => { // ADD async
                 // Get index from the button's data attribute
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
-                deleteWave(waveIndex); // Directly call the internal function
+                await deleteWave(waveIndex); // ADD await
             });
         });
 
         // 2. Delete Enemy Group Listeners
         contentContainer.querySelectorAll('.btn-delete-enemy').forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', async (e) => { // ADD async
                 // Get indices from the button's data attributes
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
                 const enemyIndex = parseInt(e.target.getAttribute('data-enemy-index'), 10);
-                deleteEnemyFromWave(waveIndex, enemyIndex); // Directly call the internal function
+                await deleteEnemyFromWave(waveIndex, enemyIndex); // ADD await
             });
         });
     };
-    // --- Interaction Functions ---
-
     /**
      * Attaches change listeners to all input fields and selects within the wave editor.
      */
@@ -308,54 +308,64 @@ export const waveEditor = (() => {
     };
 
     /**
-     * Deletes a wave by index and re-indexes the remaining waves.
+     * Deletes an entire wave and re-indexes the remaining waves.
      * @param {number} waveIndex - The array index of the wave to delete.
      */
-    const deleteWave = async (waveIndex) => {
-        const waveLevel = getCurrentMap().levels[waveIndex].level;
+    const deleteWave = async (waveIndex) => { 
+        // Get the wave level BEFORE the deletion prompt
+        const waveLevel = getCurrentMap().levels[waveIndex].level; 
         
         const confirmed = await customConfirm(
-            "Confirm Wave Deletion",
-            `Are you sure you want to delete Wave ${waveLevel}? This will re-index all subsequent waves.`
+            "Confirm Deletion",
+            `Are you sure you want to delete Wave ${waveLevel}? This will re-index subsequent waves.`
         );
 
         if (!confirmed) {
             return;
         }
         
-        modifyJson((data) => {
+        await modifyJson((data) => {
             const levels = data.maps[0].levels;
             
-            // 1. Delete the wave
+            // 1. Delete the wave by array index
             levels.splice(waveIndex, 1);
 
-            // 2. Re-index all remaining waves to update their 'level' property
-            reIndexWaves(levels);
+            // 2. Re-index levels from 1 up
+            levels.forEach((wave, index) => {
+                wave.level = index + 1;
+            });
 
-            // 3. Re-render
+            // 3. Re-render the repeater to reflect the deletion and new IDs
             renderWaveRepeater(levels);
             
         }, `Wave ${waveLevel} deleted and subsequent waves re-indexed.`);
     };
 
     /**
-     * Adds a new enemy spawn group to a specific wave.
+     * Adds a new default enemy spawn group to an existing wave.
      * @param {number} waveIndex - The array index of the wave to modify.
      */
-    const addEnemyToWave = (waveIndex) => {
-        // FIX: Get the wave level from the current data *before* modifyJson 
+    const addEnemyToWave = async (waveIndex) => { // 💡 ADD async
+        // FIX: Get the wave level from the current data *before* modifyJson
         const waveLevel = getCurrentMap().levels[waveIndex].level;
+        const wave = getCurrentMap().levels[waveIndex];
+
+        // Create a new enemy structure based on a basic default or the first enemy type
+        const newEnemy = {
+            "type": getEnemyTypes()[0] || "basic", 
+            "count": 1, 
+            "health": 100, 
+            "speed": 1, 
+            "path": "S1E1", 
+            "interval": 1000, 
+            "coinReward": 1
+        };
         
-        // IMPORTANT: Use the first enemy type from the live list as the default
-        const defaultEnemyType = getEnemyTypes()[0] || "basic";
-
-        modifyJson((data) => {
+        await modifyJson((data) => { // 💡 ADD await
             const levels = data.maps[0].levels;
-            const wave = levels[waveIndex];
+            const wave = levels[waveIndex]; // Get the modified wave reference
 
-            // Default enemy structure
-            const newEnemy = { "type": defaultEnemyType, "count": 1, "health": 1000, "speed": 1.0, "coinReward": 10 };
-
+            // Ensure the enemies array exists
             if (!wave.enemies) {
                 wave.enemies = [];
             }
@@ -365,7 +375,7 @@ export const waveEditor = (() => {
             // Re-render the entire repeater to show the new enemy group
             renderWaveRepeater(levels);
 
-        }, `New enemy group added to Wave ${waveLevel}.`); // Now uses waveLevel
+        }, `New enemy group added to Wave ${waveLevel}.`); 
     };
 
     /**
@@ -373,11 +383,11 @@ export const waveEditor = (() => {
      * @param {number} waveIndex - The array index of the wave to modify.
      * @param {number} enemyIndex - The array index of the enemy group to delete.
      */
-    const deleteEnemyFromWave = (waveIndex, enemyIndex) => {
+    const deleteEnemyFromWave = async (waveIndex, enemyIndex) => { // ADD async
         // FIX: Get the wave level from the current data *before* modifyJson
         const waveLevel = getCurrentMap().levels[waveIndex].level;
         
-        modifyJson((data) => {
+        await modifyJson((data) => { // ADD await
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex];
             

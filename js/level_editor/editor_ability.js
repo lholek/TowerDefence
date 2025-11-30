@@ -109,20 +109,20 @@ export const abilityEditor = (() => {
         
         contentContainer.innerHTML = html;
         attachChangeListeners();
-        attachDeleteListeners(contentContainer);
+        attachDeleteListeners();
     };
         
-    // 1. Function to handle saving changes
-    
-    // NEW: Function to attach delete listeners
-    const attachDeleteListeners = (container) => {
-        if (!container) return;
+    const attachDeleteListeners = () => {
+        if (!contentContainer) return;
         
-        container.querySelectorAll('.btn-delete-ability').forEach(button => {
-            button.addEventListener('click', (e) => {
-                // Get index from the button's data attribute
-                const index = parseInt(e.target.getAttribute('data-ability-index'), 10);
-                deleteAbility(index); // Directly call the internal function
+        contentContainer.querySelectorAll('.btn-delete-ability').forEach(button => {
+            button.addEventListener('click', async (e) => { 
+                // FIX: Use e.currentTarget instead of e.target. 
+                // e.currentTarget is guaranteed to be the button the listener is attached to,
+                // which ensures the 'data-ability-index' is correctly retrieved.
+                const index = parseInt(e.currentTarget.getAttribute('data-ability-index'), 10);
+                console.log(index);
+                await deleteAbility(index); 
             });
         });
     };
@@ -190,17 +190,17 @@ export const abilityEditor = (() => {
             "Confirm Deletion",
             `Are you sure you want to delete Ability ${abilityIndex}: ${abilityName}?`
         );
-
+    
         if (!confirmed) {
             return;
         }
         
-        modifyJson((data) => {
+        await modifyJson((data) => {
             const abilities = data.maps[0].abilities;
             
             // 1. Delete the ability by array index
             abilities.splice(abilityIndex, 1);
-
+        
             // 2. Re-render the repeater to reflect the deletion
             renderAbilityRepeater(abilities);
             
