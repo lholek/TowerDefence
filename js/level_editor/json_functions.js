@@ -11,19 +11,26 @@ const popupMessage = document.getElementById('popupMessage');
 const confirmButton = document.getElementById('confirmActionButton');
 const cancelButton = document.getElementById('cancelActionButton');
 
-if (confirmPopup) {
-    // Global callback storage for the custom confirm utility
-    let resolvePromise; 
+let resolvePromise = null; 
 
+if (confirmPopup) {
     // Add event listeners once
     confirmButton.addEventListener('click', () => {
         confirmPopup.classList.add('d-none');
-        if (resolvePromise) resolvePromise(true);
+        // Resolve the stored promise with true
+        if (resolvePromise) {
+            resolvePromise(true);
+            resolvePromise = null; // Clear after resolution
+        }
     });
 
     cancelButton.addEventListener('click', () => {
         confirmPopup.classList.add('d-none');
-        if (resolvePromise) resolvePromise(false);
+        // Resolve the stored promise with false
+        if (resolvePromise) {
+            resolvePromise(false);
+            resolvePromise = null; // Clear after resolution
+        }
     });
 
     // Enter DELETING confirm
@@ -52,7 +59,8 @@ export function customConfirm(title, message) {
     }
     
     return new Promise(resolve => {
-        let resolvePromise = resolve; // Store the resolve function globally
+        // FIX 2: Assign the local resolve function to the global resolvePromise variable.
+        resolvePromise = resolve; 
         popupTitle.textContent = title;
         popupMessage.textContent = message;
         confirmPopup.classList.remove('d-none');
@@ -61,7 +69,6 @@ export function customConfirm(title, message) {
 
 /**
  * Stores references to the UI editor modules and utility functions.
- * FIX: Unified all references into the 'modules' object.
  */
 export function setModuleReferences(refs) {
     modules = refs;
@@ -119,8 +126,8 @@ export function modifyJson(modifyFn, successMessage) {
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
     const formattedJson = formatCompactLayout(currentLevelData);
-    modules.editor.value = formattedJson; // FIX: Use modules.editor
-    modules.setStatus(successMessage); // FIX: Use modules.setStatus
+    modules.editor.value = formattedJson;
+    modules.setStatus(successMessage);
     
     // 4. Rerender all components after modification (especially important if map changed)
     if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
@@ -136,12 +143,12 @@ export function modifyJson(modifyFn, successMessage) {
         modules.abilityEditor.renderAbilityRepeater(currentLevelData.maps[0].abilities || []);
     }
     
-    return true;
+    // FIX 3: Return a resolved Promise to support async/await from caller functions (like deleteTower/deleteAbility).
+    return Promise.resolve(true);
 }
 
 /**
  * Parses JSON from the editor, updates the central data, and triggers all necessary UI re-renders.
- * This function is automatically called on every 'input' event from the editor (via main.js).
  */
 export function updateMapFromEditor() {
     // 1. Get editor reference and JSON string
@@ -163,21 +170,20 @@ export function updateMapFromEditor() {
              return;
         }
 
-        // 2. Update Central Data Source (This is the critical step using the fixed level_data.js function)
+        // 2. Update Central Data Source
         const updateSuccess = updateCurrentLevelData(newData);
         if (!updateSuccess) {
             modules.setStatus('Error: Failed to update internal data structure.', true);
             return;
         }
         
-        const mapData = currentLevelData.maps[0]; // Get the newly updated map data
+        const mapData = currentLevelData.maps[0]; 
 
-        // 3. Trigger All UI Re-renders (This forces the visual update on all linked modules)
+        // 3. Trigger All UI Re-renders
         
         // A. Map Editor 
         if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
             modules.mapEditor.renderMap(mapData.layout || []);
-            // FIX: Removed direct DOM manipulation for enemyTypesInput here. Relying on waveEditor.updateEnemyTypesEditor()
         }
         
         // B. Tower Editor
@@ -189,7 +195,6 @@ export function updateMapFromEditor() {
         if (modules.waveEditor && typeof modules.waveEditor.renderWaveRepeater === 'function') {
             modules.waveEditor.renderWaveRepeater(mapData.levels || []);
             
-            // FIX: Explicitly call this function to refresh enemy dropdowns if the JSON changed the enemyTypes array.
             if (modules.waveEditor.updateEnemyTypesEditor) {
                 modules.waveEditor.updateEnemyTypesEditor();
             }
@@ -218,20 +223,20 @@ export function updateMapFromEditor() {
  */
 export function copyFormattedJson() {
     const formattedJson = formatCompactLayout(currentLevelData);
-    modules.editor.value = formattedJson; // FIX: Use modules.editor
+    modules.editor.value = formattedJson;
 
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(formattedJson).then(() => {
-            modules.setStatus('JSON formatted and copied to clipboard successfully!'); // FIX: Use modules.setStatus
+            modules.setStatus('JSON formatted and copied to clipboard successfully!');
         }).catch(() => {
-            modules.editor.select(); // FIX: Use modules.editor
+            modules.editor.select();
             document.execCommand('copy');
-            modules.setStatus('Copy failed. JSON formatted and selected. Copy manually!', true); // FIX: Use modules.setStatus
+            modules.setStatus('Copy failed. JSON formatted and selected. Copy manually!', true);
         });
     } else {
-         modules.editor.select(); // FIX: Use modules.editor
-         document.execCommand('copy');
-         modules.setStatus('JSON formatted and selected. Copy manually!', true); // FIX: Use modules.setStatus
+          modules.editor.select();
+          document.execCommand('copy');
+          modules.setStatus('JSON formatted and selected. Copy manually!', true);
     }
 }
 
@@ -249,7 +254,7 @@ export function addWave() {
         newWave.level = nextLevel;
         
         data.maps[0].levels.push(newWave);
-    }, `Wave added! (Now level ${nextLevel})`); // nextLevel is now defined here
+    }, `Wave added! (Now level ${nextLevel})`); 
 }
 
 /**
@@ -259,8 +264,15 @@ export function addAbility() {
     modifyJson((data) => {
         const abilities = data.maps[0].abilities;
         const newAbility = JSON.parse(JSON.stringify(newAbilityStructure));
+        
+        // FIX 4: Add unique ID and name generation logic for new abilities
+        const newIndex = abilities.length;
+        newAbility.id = `new_ability_${newIndex + 1}`;
+        newAbility.name = `New Ability ${newIndex + 1}`;
+        
         abilities.push(newAbility);
-    }, `Ability "${newAbilityStructure.name}" added!`);
+        
+    }, `Ability "New Ability" added!`);
 }
 
 export function updateUIFromLoadedData() {
@@ -311,7 +323,7 @@ export function handleFileLoad(newJsonContent) {
         const parsedData = JSON.parse(newJsonContent);
         
         // 1. Update the source of truth
-        const updateSuccess = updateCurrentLevelData(parsedData); // FIX: Use updateCurrentLevelData
+        const updateSuccess = updateCurrentLevelData(parsedData); 
         
         if (updateSuccess) {
             // 2. Refresh the UI
