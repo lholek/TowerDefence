@@ -77,7 +77,7 @@ export const abilityEditor = (() => {
                     <div class="card-header">
                         <label>ID <input type="text" class="input-ability-id input-small" value="${ability.id}" placeholder="Unique ID" data-key="id"></label> 
                         <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
-                        <button onclick="window.app.abilityEditor.deleteAbility(${index})" class="btn btn-delete">X</button>
+                        <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
                     </div>
                     
                     <div class="card-body">
@@ -109,6 +109,22 @@ export const abilityEditor = (() => {
         
         contentContainer.innerHTML = html;
         attachChangeListeners();
+        attachDeleteListeners(contentContainer);
+    };
+        
+    // 1. Function to handle saving changes
+    
+    // NEW: Function to attach delete listeners
+    const attachDeleteListeners = (container) => {
+        if (!container) return;
+        
+        container.querySelectorAll('.btn-delete-ability').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Get index from the button's data attribute
+                const index = parseInt(e.target.getAttribute('data-ability-index'), 10);
+                deleteAbility(index); // Directly call the internal function
+            });
+        });
     };
         
     // 1. Function to handle saving changes

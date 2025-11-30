@@ -139,10 +139,10 @@ export const waveEditor = (() => {
     /**
      * Renders the HTML structure for a single enemy spawn group within a wave.
      */
-    const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
+        const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
         return `
             <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
-            <button onclick="window.app.waveEditor.deleteEnemyFromWave(${waveIndex}, ${enemyIndex})" class="btn btn-delete btn-small">X</button>
+            <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
             <div class="card-header-inner">
                     <label>Type: 
                         <select data-key="type" class="input-enemy-type">
@@ -196,7 +196,7 @@ export const waveEditor = (() => {
                             <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="${totalCoins} coins">
                         </label>
                         <h4>Enemies (Total Coins: ${totalCoins})</h4>
-                        <button onclick="window.app.waveEditor.deleteWave(${waveIndex})" class="btn btn-delete">X</button>
+                        <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
                     </div>
                     
                     <div class="card-body waves-body">
@@ -211,8 +211,32 @@ export const waveEditor = (() => {
         
         contentContainer.innerHTML = html;
         attachChangeListeners();
+        attachDeleteListeners();
     };
 
+    // NEW: Function to attach delete listeners
+    const attachDeleteListeners = () => {
+        if (!contentContainer) return;
+        
+        // 1. Delete Wave Listeners
+        contentContainer.querySelectorAll('.btn-delete-wave').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Get index from the button's data attribute
+                const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
+                deleteWave(waveIndex); // Directly call the internal function
+            });
+        });
+
+        // 2. Delete Enemy Group Listeners
+        contentContainer.querySelectorAll('.btn-delete-enemy').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Get indices from the button's data attributes
+                const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
+                const enemyIndex = parseInt(e.target.getAttribute('data-enemy-index'), 10);
+                deleteEnemyFromWave(waveIndex, enemyIndex); // Directly call the internal function
+            });
+        });
+    };
     // --- Interaction Functions ---
 
     /**

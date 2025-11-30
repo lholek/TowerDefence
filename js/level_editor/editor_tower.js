@@ -90,7 +90,7 @@ export const towerEditor = (() => {
                     <div class="card-header">
                         <input type="text" class="input-tower-id input-small" value="${towerId}" placeholder="ID" disabled>
                         <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
-                        <button onclick="window.app.towerEditor.deleteTower('${towerId}')" class="btn btn-delete">X</button>
+                        <button class="btn btn-delete btn-delete-tower" data-delete-id="${towerId}">X</button>
                     </div>
                     
                     <div class="card-body">
@@ -108,6 +108,19 @@ export const towerEditor = (() => {
         
         contentContainer.innerHTML = html;
         attachChangeListeners();
+        attachDeleteListeners();
+    };
+
+    // NEW: Function to attach delete listeners
+    const attachDeleteListeners = () => {
+        if (!contentContainer) return;
+
+        contentContainer.querySelectorAll('.btn-delete-tower').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const towerId = e.target.getAttribute('data-delete-id');
+                deleteTower(towerId); // Directly call the internal function
+            });
+        });
     };
 
     // 1. Function to handle saving changes
