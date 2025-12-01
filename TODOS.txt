@@ -16,70 +16,90 @@ TODOS:
 
 0.0.10 ideas:
 - Level editor
-- Multipaht enemis like this:
-{
-  "maps": [
-    {
-      "name": "Test Map",
-      "layout": [
-        // Now you can use S1, E1, S2, E2, E3, etc., freely
-        ["-","-","-","-","-","-","-","-","-","-","-"],
-        ["S1","O","O","O","O","O","O","O","O","O","E2"], 
-        // ... (middle section)
-        ["S2","O","O","O","O","O","O","O","O","O","E3"],
-        // ...
-        ["S3","O","O","O","O","O","O","O","O","O","E1"]
-      ],
-
-            
-          {"level":1,"enemies":[{"type":"basic","count":7,"health":40,"speed":0.95,"coinReward":3}]},
-
+Přepsat stáré levely na :
       "levels": [
         {
           "level": 1,
           "enemies": [
             {
-              "delay": 5000, // delay of entire wave
-              "groups": [
-                {
-                  "type": "basic", 
-                  "count": 5,
-                  "health":40,
-                  "speed":0.95,
-                  "coinReward":3
-                  "path": "S1E2", 
-                  "interval": 400 // Spawns one enemy every 400 ms
-                },
-                {
-                  "type": "basic", 
-                  "count": 5,
-                  "health":40,
-                  "speed": 1,
-                  "coinReward":3
-                  "path": "S2E1", 
-                  "interval": 1500 // Spawns one enemy every 1500 ms
-                }
-              ]
+            "delay": 0,
+            "groups": [
+              {
+                "type": "basic",
+                "count": 5,
+                "health": 100,
+                "speed": 1,
+                "path": "S1E1",
+                "interval": 1000,
+                "firstDelay": 0,
+                "coinReward": 10
+              },
+              {
+                "type": "basic",
+                "count": 5,
+                "health": 100,
+                "speed": 1,
+                "path": "S2E2",
+                "interval": 1000,
+                "firstDelay": 0,
+                "coinReward": 10
+              }
+            ]
             },
             {
-              "delay": 2000, 
-              "groups": [
-                  {
-                  "type": "basic", 
-                  "count": 5,
-                  "health":40,
-                  "speed": 1,
-                  "coinReward":3
-                  "path": "S1E1", 
-                  "interval": 1500 // Spawns one enemy every 1500 ms
-                },
-              ]
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 10
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 10,
+              "health": 200,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 750,
+              "firstDelay": 0,
+              "coinReward": 2
+            },
+            {
+              "type": "tank",
+              "count": 7,
+              "health": 500,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 1
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 10000,
+              "speed": 0.45,
+              "path": "S1E1",
+              "interval": 750,
+              "firstDelay": 0,
+              "coinReward": 2
             }
           ]
         }
-      ]
-      
-  }
+      ],
+
 - import map from json file
 
 0.0.11:

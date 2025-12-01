@@ -74,22 +74,38 @@
           "level": 1,
           "enemies": [
             {
-              "type": "tank",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
-              "firstDelay": 3000,
-              "coinReward": 10
+            "delay": 0,
+            "groups": [
+              {
+                "type": "basic",
+                "count": 5,
+                "health": 100,
+                "speed": 1,
+                "path": "S1E1",
+                "interval": 1000,
+                "firstDelay": 0,
+                "coinReward": 10
+              },
+              {
+                "type": "basic",
+                "count": 5,
+                "health": 100,
+                "speed": 1,
+                "path": "S2E2",
+                "interval": 1000,
+                "firstDelay": 0,
+                "coinReward": 10
+              }
+            ]
             },
             {
-              "type": "fast",
+              "type": "basic",
               "count": 5,
               "health": 100,
               "speed": 1,
               "path": "S2E2",
               "interval": 1000,
+              "firstDelay": 0,
               "coinReward": 10
             }
           ]
@@ -104,6 +120,7 @@
               "speed": 1,
               "path": "S1E1",
               "interval": 750,
+              "firstDelay": 0,
               "coinReward": 2
             },
             {
@@ -113,6 +130,7 @@
               "speed": 1,
               "path": "S1E1",
               "interval": 1000,
+              "firstDelay": 0,
               "coinReward": 1
             }
           ]
@@ -127,6 +145,7 @@
               "speed": 0.45,
               "path": "S1E1",
               "interval": 750,
+              "firstDelay": 0,
               "coinReward": 2
             }
           ]
