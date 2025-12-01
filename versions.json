@@ -4,7 +4,7 @@
       "version": "Alpha 0.1.0",
       "relase": "TBC (Early 2026 ?)",
       "changes": [
-        "Multipath Maps - Maps now have multiple starts and Ends",
+        "Multipath Maps - Maps can have multiple starts and Ends",
         "TODO: Rewrite ALL current Levels to new system like its in 00X_test.json (Groups system)",
         "TODO: Fix editor generating enemies into JSON",
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
