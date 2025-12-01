@@ -58,10 +58,10 @@ export default class Game {
       if (this.abilityManager) this.abilityManager.updatePreview(-9999, -9999);
       this.hoveredTile = null;
     });
-    //document.getElementById('overlayClose').addEventListener('click', () => this.togglePause());
-    /*document.addEventListener('keydown', e => {
-      if (e.key.toLowerCase() === 'p') this.togglePause();
-    });*/
+
+    // Game time
+    this.elapsedTime = 0; // Total time the game has been running (in ms)
+    this.timeDisplay = document.getElementById('gameTimeDisplay');
   }
 
   async loadGameData(file) {
@@ -192,6 +192,10 @@ export default class Game {
   update(deltaTime) {
     // 1. Safety Checks
     if (!this.levelData) return;
+
+    this.elapsedTime += deltaTime;
+    this.timeDisplay.textContent = this.formatTime(this.elapsedTime);
+
     const level = this.levelData.levels[this.currentLevelIndex];
 
     let allWavesComplete = true; 
@@ -796,4 +800,18 @@ export default class Game {
         bullet.active = false;
         this.bulletPool.push(bullet);
     } 
+
+    formatTime(ms) {
+        // Convert ms to seconds
+        const totalSeconds = Math.floor(ms / 1000);
+
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        // Pad with leading zeros (e.g., 5 becomes 05)
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
 }
