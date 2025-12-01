@@ -194,11 +194,10 @@ export default class Game {
     if (!this.levelData) return;
     const level = this.levelData.levels[this.currentLevelIndex];
     
-    // Track if we are done spawning for this level
     let allWavesComplete = true; 
 
     // ----------------------------------------------------------------
-    // 2. SPAWNING LOGIC (Supports both New 'Groups' and Old 'Flat' formats)
+    // 2. SPAWNING LOGIC 
     // ----------------------------------------------------------------
     for (const item of level.enemies) {
       
@@ -208,7 +207,7 @@ export default class Game {
         if (item._delayTimer > 0) {
           item._delayTimer -= deltaTime;
           allWavesComplete = false; 
-          continue; // Wait for delay to finish before processing this wave
+          continue; 
         }
 
         // B. Process Groups inside the Wave
@@ -218,8 +217,9 @@ export default class Game {
             group._intervalTimer += deltaTime;
 
             if (group._intervalTimer >= group.interval) {
-               group._intervalTimer = 0; // Reset timer
-               this.spawnEnemy(group);   // Spawn specific group type
+               // --- CRITICAL CHANGE: Accurate timer reset ---
+               group._intervalTimer -= group.interval; 
+               this.spawnEnemy(group);   
                group._remaining--;
             }
           }
@@ -231,17 +231,18 @@ export default class Game {
          if (item._remaining > 0) {
             allWavesComplete = false;
             
-            // Default to 1000ms if no fireRate/interval is found
+            // Get the calculated spawn rate (item.interval - item.firstDelay) from setLevel
             const spawnRate = item.fireRate || item.interval || 1000;
             
-            // Initialize timer if undefined
-            if (typeof item._intervalTimer === 'undefined') item._intervalTimer = 0;
+            // Initialize timer if undefined (should be initialized in setLevel)
+            if (typeof item._intervalTimer === 'undefined') item._intervalTimer = spawnRate - (item.firstDelay || 0);
 
             item._intervalTimer += deltaTime;
 
             if (item._intervalTimer >= spawnRate) {
-              item._intervalTimer = 0;
-              this.spawnEnemy(item); // Spawn using item config
+              // --- CRITICAL CHANGE: Accurate timer reset ---
+              item._intervalTimer -= spawnRate; 
+              this.spawnEnemy(item); 
               item._remaining--;
             }
          }
@@ -264,7 +265,7 @@ export default class Game {
         this.playerCoins += e.coinReward || 1;
         this.enemiesKilled++;
         this.updateUI();
-        return false; // Remove from array
+        return false; 
       }
 
       // Case B: Enemy Reached End
@@ -278,20 +279,18 @@ export default class Game {
           this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
           setTimeout(() => this.resetGameToMenu(), 5000);
         }
-        return false; // Remove from array
+        return false; 
       }
 
-      return true; // Keep enemy
+      return true; 
     });
 
     // ----------------------------------------------------------------
     // 5. LEVEL COMPLETION CHECK
     // ----------------------------------------------------------------
-    // If all waves are spawned AND no enemies are alive on map
     if (this.playerLives > 0 && allWavesComplete && this.enemies.length === 0) {
       this.currentLevelIndex++;
       
-      // Check if there are more levels
       if (this.currentLevelIndex >= this.levelData.levels.length) {
         // Game Won
         this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
@@ -332,7 +331,7 @@ export default class Game {
     
     const level = this.levelData.levels[index];
     
-    // SAFE CALCULATION: Handles both "groups" (new) and flat enemies (old)
+    // SAFE CALCULATION: Total enemies (Handles both new 'groups' and old 'flat' formats)
     this.totalEnemiesInLevel = level.enemies.reduce((sum, item) => {
       if (item.groups) {
         // New format: Sum counts of all groups
@@ -343,21 +342,32 @@ export default class Game {
       }
     }, 0);
 
-    // Initialize Timers
+    // Initialize Timers and Remaining Counts
     level.enemies.forEach(item => {
-      // Setup for New Format
+      
+      // Setup for New Format (Waves with Groups)
       if (item.groups) {
-        item._delayTimer = item.delay || 0;
-        item.groups.forEach(g => {
-           g._remaining = g.count;
-           g._intervalTimer = g.interval || 0;
-        });
+        item._delayTimer = item.delay || 0; // Wave delay
+        
+        if (item.groups) {
+          item.groups.forEach(g => {
+             g._remaining = g.count;
+             
+             // --- NEW: Calculate initial timer based on firstDelay and interval ---
+             const groupInterval = g.interval || 1000;
+             const groupFirstDelay = g.firstDelay || 0;
+             g._intervalTimer = groupInterval - groupFirstDelay; // Timer starts at a negative/zero offset
+          });
+        }
       } 
-      // Setup for Old Format (Auto-convert to a single "group" logic internally)
+      // Setup for Old Format (Flat Enemy List)
       else {
         item._remaining = item.count;
-        item._intervalTimer = 0; 
-        // We'll treat the item itself as having a 'path' property if added
+        
+        // --- NEW: Apply firstDelay to old format if present ---
+        const itemInterval = item.fireRate || item.interval || 1000; // Use existing rate
+        const itemFirstDelay = item.firstDelay || 0;
+        item._intervalTimer = itemInterval - itemFirstDelay; 
       }
     });
 
