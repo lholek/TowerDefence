@@ -5,7 +5,8 @@
       "relase": "TBC (Early 2026 ?)",
       "changes": [
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
-        "TODO: Multipath Map - whit more starts and ends",
+        "?Working TODO: Multipath Map - whit more starts and ends",
+        "TODO: Custom enemy delays",
         "TODO: Level editor",
         "TODO: Load maps from json",
         "TODO: New maps",

@@ -80,6 +80,7 @@
               "speed": 1,
               "path": "S1E1",
               "interval": 1000,
+              "firstDelay": 1000,
               "coinReward": 10
             },
             {
