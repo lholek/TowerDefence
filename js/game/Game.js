@@ -190,78 +190,181 @@ export default class Game {
   }
 
   update(deltaTime) {
+    // 1. Safety Checks
     if (!this.levelData) return;
     const level = this.levelData.levels[this.currentLevelIndex];
+    
+    // Track if we are done spawning for this level
+    let allWavesComplete = true; 
 
-    this.spawnTimer += deltaTime;
-    if (this.spawnTimer >= this.spawnInterval) {
-      const nextType = level.enemies.find(e => e._remaining > 0);
-      if (nextType) {
-        // choose start token. If your levels define startToken, use it. Otherwise choose 'S1' by default
-        const startToken = nextType.start || 'S1';
-        const path = this.map.paths[startToken] || [];
+    // ----------------------------------------------------------------
+    // 2. SPAWNING LOGIC (Supports both New 'Groups' and Old 'Flat' formats)
+    // ----------------------------------------------------------------
+    for (const item of level.enemies) {
       
-        if (path && path.length > 0) {
-          // pass path to Enemy (constructor accepts map + path)
-          this.enemies.push(new Enemy(this.map, path, 0, 0, nextType.speed, nextType.health, nextType.coinReward));
-          nextType._remaining--;
-        } else {
-          // fallback: still spawn at first open 'O' tile if no path
-          console.warn(`No path for ${startToken}. Enemy not spawned or pick fallback.`);
+      // --- NEW FORMAT: Wave containing Groups ---
+      if (item.groups) {
+        // A. Handle Wave Delay
+        if (item._delayTimer > 0) {
+          item._delayTimer -= deltaTime;
+          allWavesComplete = false; 
+          continue; // Wait for delay to finish before processing this wave
         }
+
+        // B. Process Groups inside the Wave
+        for (const group of item.groups) {
+          if (group._remaining > 0) {
+            allWavesComplete = false;
+            group._intervalTimer += deltaTime;
+
+            if (group._intervalTimer >= group.interval) {
+               group._intervalTimer = 0; // Reset timer
+               this.spawnEnemy(group);   // Spawn specific group type
+               group._remaining--;
+            }
+          }
+        }
+      } 
+      
+      // --- OLD FORMAT: Flat Enemy List (Backward Compatibility) ---
+      else {
+         if (item._remaining > 0) {
+            allWavesComplete = false;
+            
+            // Default to 1000ms if no fireRate/interval is found
+            const spawnRate = item.fireRate || item.interval || 1000;
+            
+            // Initialize timer if undefined
+            if (typeof item._intervalTimer === 'undefined') item._intervalTimer = 0;
+
+            item._intervalTimer += deltaTime;
+
+            if (item._intervalTimer >= spawnRate) {
+              item._intervalTimer = 0;
+              this.spawnEnemy(item); // Spawn using item config
+              item._remaining--;
+            }
+         }
       }
-      this.spawnTimer = 0;
     }
 
+    // ----------------------------------------------------------------
+    // 3. UPDATE ENTITIES
+    // ----------------------------------------------------------------
     this.enemies.forEach(e => e.update(deltaTime));
     this.towers.forEach(t => t.update(deltaTime, this.enemies));
     this.abilityManager.update(deltaTime);
 
+    // ----------------------------------------------------------------
+    // 4. REMOVE DEAD/ESCAPED ENEMIES & CHECK GAME OVER
+    // ----------------------------------------------------------------
     this.enemies = this.enemies.filter(e => {
+      // Case A: Enemy Killed
       if (e.health <= 0) {
         this.playerCoins += e.coinReward || 1;
         this.enemiesKilled++;
         this.updateUI();
-        return false;
+        return false; // Remove from array
       }
+
+      // Case B: Enemy Reached End
       if (e.currentIndex >= e.path.length - 1) {
         this.playerLives--;
         this.updateUI();
+
+        // Check for Game Over (Loss)
         if (this.playerLives <= 0) {
           this.gameStarted = false;
-          this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves.  Returning to Main menu...`);
-          // return to the main start overlay (no reload)
-          setTimeout(() => this.resetGameToMenu(), 5000); // slight delay so player sees the message
+          this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
+          setTimeout(() => this.resetGameToMenu(), 5000);
         }
-        return false;
+        return false; // Remove from array
       }
-      return true;
+
+      return true; // Keep enemy
     });
 
-    const remaining = level.enemies.reduce((s, it) => s + (it._remaining || 0), 0);
-    if (this.playerLives > 0 && remaining === 0 && this.enemies.length === 0) {
+    // ----------------------------------------------------------------
+    // 5. LEVEL COMPLETION CHECK
+    // ----------------------------------------------------------------
+    // If all waves are spawned AND no enemies are alive on map
+    if (this.playerLives > 0 && allWavesComplete && this.enemies.length === 0) {
       this.currentLevelIndex++;
+      
+      // Check if there are more levels
       if (this.currentLevelIndex >= this.levelData.levels.length) {
+        // Game Won
         this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
         setTimeout(() => this.resetGameToMenu(), 5000);
         this.gameStarted = false;
       } else {
+        // Start Next Level
         this.setLevel(this.currentLevelIndex);
       }
     }
   }
 
+  // Helper method to spawn a single enemy based on config
+  spawnEnemy(config) {
+     // Default to S1E1 if no path is specified
+     const pathKey = config.path || 'S1E1'; 
+     const path = this.map.paths[pathKey];
+
+     if (path && path.length > 0) {
+       // Create enemy with the specific path for this group
+       this.enemies.push(new Enemy(
+         this.map, 
+         path, 
+         0, 0, 
+         config.speed, 
+         config.health, 
+         config.coinReward
+       ));
+     } else {
+       // Warn only if we expected a path but didn't find one
+       console.warn(`Path '${pathKey}' not found! Check your map tokens (S#/E#) or JSON.`);
+     }
+  }
+
   setLevel(index) {
     this.currentLevelIndex = index;
     this.enemiesKilled = 0;
-    this.spawnTimer = 0;
+    
     const level = this.levelData.levels[index];
-    this.totalEnemiesInLevel = level.enemies.reduce((s, e) => s + (e.count || 0), 0);
-    level.enemies.forEach(e => { if (e._remaining === undefined) e._remaining = e.count; });
+    
+    // SAFE CALCULATION: Handles both "groups" (new) and flat enemies (old)
+    this.totalEnemiesInLevel = level.enemies.reduce((sum, item) => {
+      if (item.groups) {
+        // New format: Sum counts of all groups
+        return sum + item.groups.reduce((gSum, g) => gSum + (g.count || 0), 0);
+      } else {
+        // Old format: The item itself is an enemy definition
+        return sum + (item.count || 0);
+      }
+    }, 0);
+
+    // Initialize Timers
+    level.enemies.forEach(item => {
+      // Setup for New Format
+      if (item.groups) {
+        item._delayTimer = item.delay || 0;
+        item.groups.forEach(g => {
+           g._remaining = g.count;
+           g._intervalTimer = g.interval || 0;
+        });
+      } 
+      // Setup for Old Format (Auto-convert to a single "group" logic internally)
+      else {
+        item._remaining = item.count;
+        item._intervalTimer = 0; 
+        // We'll treat the item itself as having a 'path' property if added
+      }
+    });
+
     this.updateUI();
     this.logEvent(`Wave ${index + 1} started`);
   }
-
+  
   updateUI() {
     this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
     this.livesText.textContent = `❤️ Lives: ${this.playerLives}`;

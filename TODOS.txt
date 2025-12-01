@@ -30,36 +30,55 @@ TODOS:
         // ...
         ["S3","O","O","O","O","O","O","O","O","O","E1"]
       ],
+
+            
+          {"level":1,"enemies":[{"type":"basic","count":7,"health":40,"speed":0.95,"coinReward":3}]},
+
       "levels": [
         {
           "level": 1,
-          "waves": [
+          "enemies": [
             {
               "delay": 5000, // delay of entire wave
               "groups": [
                 {
                   "type": "basic", 
-                  "count": 50, 
+                  "count": 5,
+                  "health":40,
+                  "speed":0.95,
+                  "coinReward":3
                   "path": "S1E2", 
                   "interval": 400 // Spawns one enemy every 400 ms
                 },
                 {
-                  "type": "tank", 
-                  "count": 10, 
+                  "type": "basic", 
+                  "count": 5,
+                  "health":40,
+                  "speed": 1,
+                  "coinReward":3
                   "path": "S2E1", 
-                  "delay": 2000, // delay of group
-                  "interval": 1500 // Spawns one tank every 1500 ms (1.5 seconds)
+                  "interval": 1500 // Spawns one enemy every 1500 ms
                 }
               ]
             },
             {
               "delay": 2000, 
               "groups": [
+                  {
+                  "type": "basic", 
+                  "count": 5,
+                  "health":40,
+                  "speed": 1,
+                  "coinReward":3
+                  "path": "S1E1", 
+                  "interval": 1500 // Spawns one enemy every 1500 ms
+                },
               ]
             }
           ]
         }
       ]
+      
   }
 - import map from json file
 

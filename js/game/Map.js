@@ -114,18 +114,26 @@ export default class Map {
   // Generate paths for all matching S# -> E# (S1 -> E1, S2->E2)
   generatePaths() {
     const paths = {};
-    for (const sKey of Object.keys(this.starts)) {
-      // match number part
-      const id = sKey.replace(/^S/i, '');
-      const eKey = 'E' + id;
-      if (this.ends[eKey]) {
-        const p = this.findPathBFS(this.starts[sKey], this.ends[eKey]);
-        if (p) paths[sKey] = p;
-        else paths[sKey] = []; // empty path means no route
+    
+    // Loop through every Start point (S1, S2...)
+    for (const [startKey, startCoords] of Object.entries(this.starts)) {
+      
+      // Loop through every End point (E1, E2...)
+      for (const [endKey, endCoords] of Object.entries(this.ends)) {
+        
+        // Create a unique key like "S1E2"
+        const pathKey = startKey + endKey;
+        
+        // Calculate path specifically between these two points
+        const path = this.findPathBFS(startCoords, endCoords);
+        
+        if (path && path.length > 0) {
+          paths[pathKey] = path;
+        } else {
+          paths[pathKey] = []; // Empty array if no path possible
+        }
       }
     }
-    // fallback: if there are no S/E pairs, maybe old maps use single path 'O' sequence.
-    // We do NOT create fallback path here; Game can handle missing paths.
     return paths;
   }
 
