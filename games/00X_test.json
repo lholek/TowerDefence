@@ -82,8 +82,8 @@
                 "health": 100,
                 "speed": 1,
                 "path": "S1E1",
-                "interval": 500,
-                "firstDelay": 5000,
+                "interval": 1000,
+                "firstDelay": 0,
                 "coinReward": 10
               },
               {
@@ -92,7 +92,7 @@
                 "health": 100,
                 "speed": 1,
                 "path": "S2E2",
-                "interval": 500,
+                "interval": 1000,
                 "firstDelay": 0,
                 "coinReward": 10
               }

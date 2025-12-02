@@ -151,12 +151,31 @@ export default class Map {
 
         const tok = String(this.grid[r][c] ?? '');
         let fill = '#444';
-        if (tok === 'O') fill = '#8b6d4f';
-        else if (/^S/i.test(tok)) fill = '#8b6d4f';
-        else if (/^E/i.test(tok)) fill = '#8b6d4f';
-        else if (tok === '-') fill = 'transparent';
-        else if (tok === 'X') fill = '#3f7d3c';
-        else fill = '#4a4a4a';
+        
+        // --- TILE TYPE SWITCH ---
+        switch (true) {
+          case (tok === 'O'):
+              fill = '#8b6d4f'; // Path block
+              break;
+          case (tok === 'X'):
+              fill = '#3f7d3c'; // Obstacle/Wall
+              break;
+          case (tok === '-'):
+              fill = 'transparent'; // Empty space
+              break;
+          case (/^S/i.test(tok)):
+              // Start/Entrance (S1, S2, etc.)
+              fill = '#8b6d4f'; 
+              // Note: You must handle the 'continue' logic outside the switch or keep the logic that skips rendering.
+              break; 
+          case (/^E/i.test(tok)):
+              // End/Exit (E1, E2, etc.)
+              fill = '#8b6d4f'; 
+              break;
+          default:
+              fill = '#4a4a4a'; // Catch all
+              break;
+        }
 
         ctx.fillStyle = fill;
         ctx.fillRect(x, y, this.tileSize, this.tileSize);
@@ -231,6 +250,7 @@ export default class Map {
     this.camera.lastY = e.clientY;
     this.canvas.style.cursor = 'grabbing';
   }
+
   drag(e) {
     if (!this.camera.dragging) return;
     const dx = e.clientX - this.camera.lastX;
@@ -241,6 +261,7 @@ export default class Map {
     this.camera.lastY = e.clientY;
     this.clampCamera();
   }
+
   stopDrag() {
     if (this.camera.dragging) {
       this.camera.dragging = false;
@@ -248,6 +269,7 @@ export default class Map {
       this.clampCamera();
     }
   }
+  
   handleZoom(e) {
     e.preventDefault();
     const zoomFactor = 1.05;
