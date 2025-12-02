@@ -154,6 +154,9 @@ export const waveEditor = (() => {
                     <label>⭐ Count <input type="number" data-key="count" value="${enemy.count}" min="1"></label>
                     <label>❤️ Health <input type="number" data-key="health" value="${enemy.health}" min="1"></label>
                     <label>🗲 Speed <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01"></label>
+                    <label>Path <input type="text" data-key="path" value="${enemy.path}"></label>
+                    <label>Interval <input type="text" data-key="interval" value="${enemy.interval}"></label>
+                    <label>FirstDelay <input type="text" data-key="firstDelay" value="${enemy.firstDelay}"></label>
                     <label>🪙 Coin Reward <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0"></label>
                 </div>
             </div>
@@ -354,10 +357,11 @@ export const waveEditor = (() => {
         const newEnemy = {
             "type": getEnemyTypes()[0] || "basic", 
             "count": 1, 
-            "health": 100, 
+            "health": 1, 
             "speed": 1, 
             "path": "S1E1", 
             "interval": 1000, 
+            "firstDelay": 0, 
             "coinReward": 1
         };
         
