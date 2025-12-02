@@ -5,7 +5,7 @@
       "relase": "TBC (Early 2026 ?)",
       "changes": [
         "Multipath Maps - Maps can have multiple starts and Ends",
-        "TODO: Fix editor generating enemies into JSON",
+        "!!TODO: Fix editor generating enemies into JSON",
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
         "TODO: Custom enemy delays",
         "TODO: Level editor",

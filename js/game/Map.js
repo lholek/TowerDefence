@@ -165,12 +165,12 @@ export default class Map {
               break;
           case (/^S/i.test(tok)):
               // Start/Entrance (S1, S2, etc.)
-              fill = '#8b6d4f'; 
+              fill = '#295e32'; 
               // Note: You must handle the 'continue' logic outside the switch or keep the logic that skips rendering.
               break; 
           case (/^E/i.test(tok)):
               // End/Exit (E1, E2, etc.)
-              fill = '#8b6d4f'; 
+              fill = '#9e1616'; 
               break;
           default:
               fill = '#4a4a4a'; // Catch all
