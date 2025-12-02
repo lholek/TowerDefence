@@ -8,72 +8,100 @@ export default class LavaFloor extends Ability {
     this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
   }
 
-  // compute centered tile list along map.path
-  _getCenteredPathTiles(centerTile, count) {
-    const map = this.game?.map;
-    if (!map) return [];
-    
-    // Collect candidate path arrays (support legacy single path + new multiple paths)
-    let candidatePaths = [];
-    
-    if (Array.isArray(map.path)) {
-      candidatePaths.push(map.path);
+/**
+ * Finds the 'count' closest path-block tiles ('O' tiles) to the centerTile on the map grid.
+ * NOTE: This implementation ignores map path sequences and uses Manhattan distance 
+ * to find the closest tiles marked 'O' in the map's grid data (map.tiles).
+ * * @param {{col: number, row: number}} centerTile - The tile to center the search on.
+ * @param {number} count - The number of closest tiles to return.
+ * @returns {Array<{col: number, row: number}>} An array of the closest 'count' path-block tiles.
+ */
+_getCenteredPathTiles(centerTile, count) {
+    // 1. Setup and Input Validation
+    if (!this.game || !this.game.map || !centerTile || count <= 0) {
+        return [];
     }
-  
-    if (map.paths && typeof map.paths === 'object') {
-      // map.paths is an object like { S1: [{col,row}, ...], S2: [...] }
-      candidatePaths = candidatePaths.concat(Object.values(map.paths));
+    
+    // FIX: Use 'this.game.map.grid' to access the tile layout
+    const mapGrid = this.game.map.grid;
+    
+    if (!mapGrid || !Array.isArray(mapGrid) || mapGrid.length === 0) {
+        return [];
     }
-  
-    // Nothing to search
-    if (candidatePaths.length === 0) return [];
-  
-    // Normalizer: turn an entry into {col,row}
-    const normalizePath = (p) => {
-      return p.map(node => {
-        if (!node) return null;
-        if (typeof node.col === 'number' && typeof node.row === 'number') return { col: node.col, row: node.row };
-        if (typeof node.x === 'number' && typeof node.y === 'number') return { col: node.x, row: node.y };
-        // fallback: try r/c or c/r
-        if (typeof node.r === 'number' && typeof node.c === 'number') return { col: node.c, row: node.r };
-        return null;
-      });
-    };
-  
-    // find the path that contains centerTile
-    for (const rawPath of candidatePaths) {
-      if (!Array.isArray(rawPath) || rawPath.length === 0) continue;
-      const path = normalizePath(rawPath);
+
+    const maxRows = mapGrid.length;
+    // Safety check for empty rows
+    if (maxRows === 0 || mapGrid[0].length === 0) return [];
+    const maxCols = mapGrid[0].length;
     
-      const idx = path.findIndex(n => n && n.col === centerTile.col && n.row === centerTile.row);
-      if (idx === -1) continue;
-    
-      // calculate centered window
-      const half = Math.floor(count / 2);
-      let start = idx - half;
-      let end = start + count - 1;
-    
-      // clamp to path bounds
-      if (start < 0) {
-        start = 0;
-        end = Math.min(count - 1, path.length - 1);
-      }
-      if (end > path.length - 1) {
-        end = path.length - 1;
-        start = Math.max(0, end - (count - 1));
-      }
-    
-      const tiles = [];
-      for (let i = start; i <= end; i++) {
-        const n = path[i];
-        if (n) tiles.push({ col: n.col, row: n.row });
-      }
-      return tiles;
+    const { col: startCol, row: startRow } = centerTile;
+
+    // Check if the centerTile is within bounds and is a path block ('O')
+    if (startRow < 0 || startRow >= maxRows || startCol < 0 || startCol >= maxCols) {
+        return [];
     }
-  
-    // not on any path
-    return [];
-  }
+    const centerTileType = mapGrid[startRow][startCol];
+    
+    // If the starting tile isn't a path tile, we can't search for connected path tiles.
+    // Allowing 'O', 'S', and 'E' markers to be valid start points.
+    const isPathTile = ['O', 'S1', 'S2', 'E1', 'E2'].includes(centerTileType);
+    if (!isPathTile) { 
+        return [];
+    }
+
+    // 2. Breadth-First Search (BFS) for Connected Tiles
+    
+    // Queue for BFS: stores { col, row }
+    const queue = [{ col: startCol, row: startRow }];
+    // Set to track visited tiles
+    const visited = new Set();
+    visited.add(`${startCol},${startRow}`);
+    
+    // Array to store the connected 'O' tiles found
+    const connectedTiles = [];
+    
+    // Direction vectors (Up, Down, Left, Right)
+    const directions = [
+        { dc: 0, dr: -1 }, 
+        { dc: 0, dr: 1 }, 
+        { dc: -1, dr: 0 }, 
+        { dc: 1, dr: 0 }
+    ];
+
+    while (queue.length > 0 && connectedTiles.length < count) {
+        const { col, row } = queue.shift();
+        
+        // Only add pure 'O' tiles to the result set. 
+        if (mapGrid[row][col] === 'O') {
+            connectedTiles.push({ col, row });
+        }
+        
+        // Explore neighbors
+        for (const dir of directions) {
+            const nextCol = col + dir.dc;
+            const nextRow = row + dir.dr;
+            const nextKey = `${nextCol},${nextRow}`;
+
+            // Check Bounds and ensure tile hasn't been visited
+            if (
+                nextRow >= 0 && nextRow < maxRows &&
+                nextCol >= 0 && nextCol < maxCols &&
+                !visited.has(nextKey)
+            ) {
+                const tileType = mapGrid[nextRow][nextCol];
+                // Only queue it if it is a path block or a start/end marker
+                const isNextPathTile = ['O', 'S1', 'S2', 'E1', 'E2'].includes(tileType);
+                if (isNextPathTile) {
+                    visited.add(nextKey);
+                    queue.push({ col: nextCol, row: nextRow });
+                }
+            }
+        }
+    }
+    
+    // 3. Return the connected tiles found
+    return connectedTiles;
+}
 
   // override to handle placement click (we expect tile coords)
   handleCanvasClick(worldX, worldY) {

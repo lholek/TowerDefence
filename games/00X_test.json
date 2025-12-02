@@ -16,13 +16,13 @@
       "tileSize": 60,
       "layout": [
               ["-","X","X","X","X","X","X","X","X","X","-","-","-","-","-"],
-              ["S1","O","O","O","O","X","X","O","O","O","O","O","-","-","-"],
-              ["-","X","X","X","O","X","X","O","X","X","X","O","O","O","E1"],
-              ["S2","O","O","O","O","X","O","O","X","X","X","X","X","-","-"],
-              ["-","X","X","X","O","X","O","X","X","X","X","X","X","X","X"],
-              ["-","X","X","X","O","X","O","O","X","X","X","X","X","X","X"],
-              ["-","-","-","X","O","X","X","O","O","O","O","O","O","X","X"],
-              ["-","-","-","X","O","X","X","X","X","X","X","X","O","X","X"],
+              ["S1","O","O","O","O","O","O","O","O","O","O","O","-","-","-"],
+              ["-","X","X","X","O","X","X","X","X","X","X","O","O","O","E1"],
+              ["S2","O","O","O","O","X","X","X","X","X","X","O","X","-","-"],
+              ["-","X","X","X","O","X","O","O","O","O","X","O","X","X","X"],
+              ["-","X","X","X","O","X","O","X","X","O","X","O","X","X","X"],
+              ["-","-","-","X","O","X","O","X","O","O","X","O","O","O","X"],
+              ["-","-","-","X","O","X","O","X","O","X","X","X","X","O","X"],
               ["-","-","-","X","O","O","O","O","O","O","O","O","O","O","E2"],
               ["-","-","-","X","X","X","X","X","X","X","X","X","X","X","X"]
           ],
@@ -34,7 +34,7 @@
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 11,
+          "selectionCount": 5,
           "__comment": "250dmg / 0.25s ",
           "damage": 100,
           "damage_every": 100,
@@ -82,8 +82,8 @@
                 "health": 100,
                 "speed": 1,
                 "path": "S1E1",
-                "interval": 1000,
-                "firstDelay": 0,
+                "interval": 500,
+                "firstDelay": 5000,
                 "coinReward": 10
               },
               {
@@ -92,7 +92,7 @@
                 "health": 100,
                 "speed": 1,
                 "path": "S2E2",
-                "interval": 1000,
+                "interval": 500,
                 "firstDelay": 0,
                 "coinReward": 10
               }
@@ -143,7 +143,7 @@
               "count": 1,
               "health": 10000,
               "speed": 0.45,
-              "path": "S1E1",
+              "path": "S2E1",
               "interval": 750,
               "firstDelay": 0,
               "coinReward": 2
