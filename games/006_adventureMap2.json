@@ -11,8 +11,7 @@
           "level count": 20,
           "map_size": "20x24",
           "difficulty": "⭐⭐⭐⭐",
-          "tower types": 7,
-          "abilites": "Lava floor 🌋"
+          "abilites": "Lava Floor🌋"
         }
       ],
       "tileSize": 60,
@@ -157,9 +156,9 @@
               "health": 50,
               "speed": 0.9,
               "coinReward": 5,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             }
           ]
         },
@@ -173,9 +172,9 @@
               "health": 70,
               "speed": 0.95,
               "coinReward": 5,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             }
           ]
         },
@@ -189,9 +188,9 @@
               "health": 100,
               "speed": 1,
               "coinReward": 7,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -199,9 +198,9 @@
               "health": 500,
               "speed": 0.75,
               "coinReward": 20,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             }
           ]
         },
@@ -215,9 +214,9 @@
               "health": 200,
               "speed": 1,
               "coinReward": 8,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "fast",
@@ -225,9 +224,9 @@
               "health": 400,
               "speed": 1.25,
               "coinReward": 15,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             }
           ]
         },
@@ -241,9 +240,9 @@
               "health": 300,
               "speed": 1.05,
               "coinReward": 8,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "fast",
@@ -251,9 +250,9 @@
               "health": 250,
               "speed": 1.3,
               "coinReward": 15,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "6000"
             },
             {
               "type": "boss",
@@ -261,9 +260,9 @@
               "health": 1000,
               "speed": 0.75,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "9000"
             }
           ]
         },
@@ -277,9 +276,9 @@
               "health": 500,
               "speed": 1.05,
               "coinReward": 10,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -287,9 +286,9 @@
               "health": 900,
               "speed": 0.85,
               "coinReward": 15,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "8000"
             }
           ]
         },
@@ -303,9 +302,9 @@
               "health": 700,
               "speed": 1.05,
               "coinReward": 12,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "fast",
@@ -313,9 +312,9 @@
               "health": 800,
               "speed": 1.35,
               "coinReward": 15,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000"
             },
             {
               "type": "tank",
@@ -323,9 +322,9 @@
               "health": 1100,
               "speed": 0.8,
               "coinReward": 20,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "9000"
             }
           ]
         },
@@ -339,9 +338,9 @@
               "health": 900,
               "speed": 1,
               "coinReward": 15,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "fast",
@@ -349,9 +348,9 @@
               "health": 850,
               "speed": 1.35,
               "coinReward": 25,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             }
           ]
         },
@@ -365,9 +364,9 @@
               "health": 1000,
               "speed": 1,
               "coinReward": 20,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -375,9 +374,9 @@
               "health": 2000,
               "speed": 0.85,
               "coinReward": 30,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "10000"
             }
           ]
         },
@@ -391,9 +390,9 @@
               "health": 1500,
               "speed": 1.05,
               "coinReward": 30,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -401,9 +400,9 @@
               "health": 3000,
               "speed": 0.85,
               "coinReward": 35,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             },
             {
               "type": "fast",
@@ -411,9 +410,9 @@
               "health": 2000,
               "speed": 1.4,
               "coinReward": 35,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "10000"
             },
             {
               "type": "boss",
@@ -421,9 +420,9 @@
               "health": 7000,
               "speed": 1,
               "coinReward": 200,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "15000"
             }
           ]
         },
@@ -437,9 +436,9 @@
               "health": 3000,
               "speed": 1.05,
               "coinReward": 40,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -447,9 +446,9 @@
               "health": 5000,
               "speed": 0.85,
               "coinReward": 45,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "10000"
             },
             {
               "type": "fast",
@@ -457,9 +456,9 @@
               "health": 2500,
               "speed": 1.45,
               "coinReward": 45,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "15000"
             }
           ]
         },
@@ -474,9 +473,9 @@
               "health": 7500,
               "speed": 0.85,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "basic",
@@ -484,9 +483,9 @@
               "health": 4000,
               "speed": 1.05,
               "coinReward": 45,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "4000"
             },
             {
               "type": "tank",
@@ -494,9 +493,9 @@
               "health": 7500,
               "speed": 0.85,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "9000"
             },
             {
               "type": "fast",
@@ -504,9 +503,9 @@
               "health": 3000,
               "speed": 1.5,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "13000"
             }
           ]
         },
@@ -520,9 +519,9 @@
               "health": 8000,
               "speed": 0.85,
               "coinReward": 55,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "basic",
@@ -530,9 +529,9 @@
               "health": 4500,
               "speed": 1.1,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             },
             {
               "type": "super-tank",
@@ -540,9 +539,9 @@
               "health": 14000,
               "speed": 0.65,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "11000"
             },
             {
               "type": "fast",
@@ -550,9 +549,9 @@
               "health": 3500,
               "speed": 1.5,
               "coinReward": 55,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "12000"
             }
           ]
         },
@@ -566,9 +565,9 @@
               "health": 5000,
               "speed": 1.15,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -576,9 +575,9 @@
               "health": 7500,
               "speed": 0.85,
               "coinReward": 60,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             },
             {
               "type": "basic",
@@ -586,9 +585,9 @@
               "health": 5000,
               "speed": 1.15,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "10000"
             },
             {
               "type": "fast",
@@ -596,9 +595,9 @@
               "health": 4000,
               "speed": 1.5,
               "coinReward": 60,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "13000"
             }
           ]
         },
@@ -612,9 +611,9 @@
               "health": 6000,
               "speed": 1.15,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -622,9 +621,9 @@
               "health": 8000,
               "speed": 0.85,
               "coinReward": 60,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "8000"
             },
             {
               "type": "basic",
@@ -632,9 +631,9 @@
               "health": 6000,
               "speed": 1.15,
               "coinReward": 50,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "14000"
             },
             {
               "type": "boss",
@@ -642,9 +641,9 @@
               "health": 50000,
               "speed": 0.65,
               "coinReward": 500,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "19000"
             }
           ]
         },
@@ -658,9 +657,9 @@
               "health": 15000,
               "speed": 1.15,
               "coinReward": 75,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -668,9 +667,9 @@
               "health": 40000,
               "speed": 0.85,
               "coinReward": 95,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "5000"
             },
             {
               "type": "basic",
@@ -678,9 +677,9 @@
               "health": 15000,
               "speed": 1.15,
               "coinReward": 75,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "11000"
             },
             {
               "type": "fast",
@@ -688,9 +687,9 @@
               "health": 11000,
               "speed": 1.5,
               "coinReward": 95,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "16000"
             }
           ]
         },
@@ -704,9 +703,9 @@
               "health": 17500,
               "speed": 1.2,
               "coinReward": 80,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -714,9 +713,9 @@
               "health": 45000,
               "speed": 0.85,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "6000"
             },
             {
               "type": "basic",
@@ -724,9 +723,9 @@
               "health": 17500,
               "speed": 1.2,
               "coinReward": 80,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "12000"
             },
             {
               "type": "fast",
@@ -734,9 +733,9 @@
               "health": 12500,
               "speed": 1.5,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "18000"
             }
           ]
         },
@@ -750,9 +749,9 @@
               "health": 22000,
               "speed": 1.2,
               "coinReward": 85,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -760,9 +759,9 @@
               "health": 60000,
               "speed": 0.9,
               "coinReward": 110,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "6000"
             },
             {
               "type": "fast",
@@ -770,9 +769,9 @@
               "health": 18000,
               "speed": 1.5,
               "coinReward": 110,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "12000"
             },
             {
               "type": "tank",
@@ -780,9 +779,9 @@
               "health": 60000,
               "speed": 0.9,
               "coinReward": 110,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "18000"
             }
           ]
         },
@@ -796,9 +795,9 @@
               "health": 17500,
               "speed": 1.2,
               "coinReward": 80,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "tank",
@@ -806,9 +805,9 @@
               "health": 45000,
               "speed": 0.85,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "6000"
             },
             {
               "type": "basic",
@@ -816,9 +815,9 @@
               "health": 17500,
               "speed": 1.2,
               "coinReward": 80,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "12000"
             },
             {
               "type": "fast",
@@ -826,9 +825,9 @@
               "health": 12500,
               "speed": 1.5,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "18000"
             }
           ]
         },
@@ -842,9 +841,9 @@
               "health": 20000,
               "speed": 1.2,
               "coinReward": 85,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
             },
             {
               "type": "fast",
@@ -852,9 +851,9 @@
               "health": 17500,
               "speed": 1.5,
               "coinReward": 85,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "10000"
             },
             {
               "type": "tank",
@@ -862,9 +861,9 @@
               "health": 45000,
               "speed": 0.85,
               "coinReward": 100,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "20000"
             },
             {
               "type": "fast-boss",
@@ -872,9 +871,9 @@
               "health": 35000,
               "speed": 1.5,
               "coinReward": 1000,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "30000"
             },
             {
               "type": "armor-boss",
@@ -882,9 +881,9 @@
               "health": 125000,
               "speed": 0.9,
               "coinReward": 1000,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "31000"
             },
             {
               "type": "final-boss",
@@ -892,9 +891,9 @@
               "health": 1000000,
               "speed": 0.5,
               "coinReward": 1000,
-              "path":"S1E1",
-              "interval":1000,
-              "firstDelay":0
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "32000"
             }
           ]
         }
