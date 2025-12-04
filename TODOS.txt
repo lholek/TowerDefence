@@ -20,10 +20,10 @@ FIXED :
 001_basicGame.json
 002_zigZagGame.json
 003_longMapGame.json
+005_abilityMap.json
 
 TODO:
 004_adventureMap.json
-005_abilityMap.json
 006_adventureMap2.json
 007_NewMapDoInEditor.json
 
