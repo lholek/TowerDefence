@@ -34,7 +34,7 @@
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 25,
+          "selectionCount": 13,
           "__comment": "250dmg / 0.25s ",
           "damage": 100,
           "damage_every": 100,

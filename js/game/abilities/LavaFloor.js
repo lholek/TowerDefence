@@ -44,7 +44,7 @@ _getCenteredPathTiles(centerTile, count) {
     
     // If the starting tile isn't a path tile, we can't search for connected path tiles.
     // Allowing 'O', 'S', and 'E' markers to be valid start points.
-    const isPathTile = ['O', 'S1', 'S2', 'E1', 'E2'].includes(centerTileType);
+    const isPathTile = centerTileType === 'O' || centerTileType.startsWith('S') || centerTileType.startsWith('E');
     if (!isPathTile) { 
         return [];
     }
@@ -90,7 +90,7 @@ _getCenteredPathTiles(centerTile, count) {
             ) {
                 const tileType = mapGrid[nextRow][nextCol];
                 // Only queue it if it is a path block or a start/end marker
-                const isNextPathTile = ['O', 'S1', 'S2', 'E1', 'E2'].includes(tileType);
+                const isNextPathTile = tileType === 'O' || tileType.startsWith('S') || tileType.startsWith('E');
                 if (isNextPathTile) {
                     visited.add(nextKey);
                     queue.push({ col: nextCol, row: nextRow });

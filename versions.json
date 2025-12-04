@@ -4,9 +4,8 @@
       "version": "Alpha 0.1.0",
       "relase": "TBC (Early 2026 ?)",
       "changes": [
-        "Multipath Maps - Maps can have multiple starts and Ends",
-        "Fixed LAVA Floor in multipath maps",
-        "Custom enemy delays",
+        "Improved - Multipath Maps - Maps can have multiple starts and Ends",
+        "Improved - Custom enemy delays",
         "!!!TODO: Rewrite all maps first delays",
         "!!TODO: Fix editor generating enemies into JSON - (enemy generating interval * count + first_delay)",
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
