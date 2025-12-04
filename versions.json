@@ -8,7 +8,7 @@
         "Fixed LAVA Floor in multipath maps",
         "Custom enemy delays",
         "!!!TODO: Rewrite all maps first delays",
-        "!!TODO: Fix editor generating enemies into JSON",
+        "!!TODO: Fix editor generating enemies into JSON - (enemy generating interval * count + first_delay)",
         "TODO: Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
         "TODO: Fix minimap",
         "TODO: Level editor",
