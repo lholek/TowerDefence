@@ -75,7 +75,7 @@
           "level": 1,
           "enemies": [
             {"type": "basic", "count": 5, "health": 2, "speed": 1, "coinReward": 1, "path": "S1E1","interval": 1000, "firstDelay": 0 },
-            {"type": "basic", "count": 3, "health": 4, "speed": 1.2, "coinReward": 2, "path": "S1E1","interval": 1000, "firstDelay": 0}
+            {"type": "basic", "count": 3, "health": 4, "speed": 1.2, "coinReward": 2, "path": "S1E1","interval": 1000, "firstDelay": 5000}
           ]
         },
         {

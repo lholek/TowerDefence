@@ -89,7 +89,7 @@
                   "health": 100,
                   "speed": 1,
                   "path": "S3E3",
-                  "interval": 0,
+                  "interval": 500,
                   "firstDelay": 0,
                   "coinReward": 10
                 },
@@ -100,7 +100,7 @@
                   "speed": 1,
                   "path": "S4E4",
                   "interval": 1000,
-                  "firstDelay": 0,
+                  "firstDelay": 3000,
                   "coinReward": 10
                 },
                 {
@@ -109,21 +109,10 @@
                   "health": 100,
                   "speed": 1,
                   "path": "S2E2",
-                  "interval": 1000,
-                  "firstDelay": 0,
+                  "interval": 500,
+                  "firstDelay": 8000,
                   "coinReward": 10
                 }
-            ,
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S2E2",
-              "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 10
-            }
           ]
         },
         {

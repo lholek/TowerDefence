@@ -189,7 +189,7 @@ export default class Game {
     requestAnimationFrame(this.loop.bind(this));
   }
 
-  update(deltaTime) {
+update(deltaTime) {
     // 1. Safety Checks and Timer Update
     if (!this.levelData) return;
     
@@ -197,79 +197,65 @@ export default class Game {
     this.timeDisplay.textContent = this.formatTime(this.elapsedTime);
 
     const level = this.levelData.levels[this.currentLevelIndex];
-    let allWavesComplete = true; 
+    // We will now calculate allGroupsFinished, then derive allWavesComplete
+    let allGroupsFinished = true; 
 
     // ----------------------------------------------------------------
-    // 2. CORRECTED SPAWNING LOGIC 
+    // 2. FIXED CONCURRENT SPAWNING LOGIC (Iterates over ALL groups)
     // ----------------------------------------------------------------
     
-    const currentGroupIndex = level._currentGroupIndex;
-    
-    // Check if there are still items left to process in the enemies array
-    if (currentGroupIndex < level.enemies.length) {
+    // Iterate through ALL defined enemy groups/types in the current level.
+    for (const item of level.enemies) {
         
-        allWavesComplete = false;
-        const item = level.enemies[currentGroupIndex];
-        
-        // --- CASE 1: NEW FORMAT (Wave with concurrent Groups) ---
-        if (item.groups) {
+        // --- Handle Simple/Flat Group Format (Concurrent Spawning) ---
+        // If the item is marked as finished OR if it was already part of a completed complex wave, skip.
+        if (item._remaining === 0 || item._waveFinished) {
+            continue; 
+        }
+
+        // If any group still has enemies remaining, the wave is NOT completely spawned.
+        allGroupsFinished = false;
+
+        // A. Spawning
+        if (item._remaining > 0) {
+            const spawnRate = item.interval || 1000;
             
-            // A. Handle Wave Delay
-            if (item._delayTimer > 0) {
-                item._delayTimer -= deltaTime;
-            } else {
-                // B. Process Groups inside the Wave (Concurrent Spawning)
-                let waveFinished = true;
-                for (const group of item.groups) {
-                    if (group._remaining > 0) {
-                        waveFinished = false; 
-                        
-                        group._intervalTimer += deltaTime;
+            // B. Timer Initialization with firstDelay offset
+            if (typeof item._intervalTimer === 'undefined') {
+                // Initialize timer to negative firstDelay so it waits for that duration.
+                item._intervalTimer = -(item.firstDelay || 0);
+            }
 
-                        // --- CRITICAL FIX: Use WHILE for robustness ---
-                        while (group._remaining > 0 && group._intervalTimer >= group.interval) {
-                            group._intervalTimer -= group.interval; 
-                            this.spawnEnemy(group);   
-                            group._remaining--;
-                        }
-                    }
-                }
-                
-                // C. Check if Wave (New Format) is completed
-                if (waveFinished) {
-                    level._currentGroupIndex++; 
-                }
+            // C. Update Timer
+            item._intervalTimer += deltaTime;
+
+            // D. Spawn one or more enemies if enough time has accumulated
+            while (item._remaining > 0 && item._intervalTimer >= 0) {
+              this.spawnEnemy(item); 
+              item._intervalTimer -= spawnRate; 
+                item._remaining--;
             }
         } 
         
-        // --- CASE 2: OLD FORMAT (Flat single Enemy type - Must be sequential) ---
-        else {
-            // A. Spawning
-            if (item._remaining > 0) {
-                const spawnRate = item.fireRate || item.interval || 1000;
-                
-                // Note: Timer initialization should be handled by setLevel, but we ensure it here too.
-                if (typeof item._intervalTimer === 'undefined') {
-                    item._intervalTimer = -(item.firstDelay || 0);
-                }
+        // No need for a separate check to advance level._currentGroupIndex, 
+        // as we rely on allGroupsFinished at the end.
+    }
 
-                item._intervalTimer += deltaTime;
-
-                // --- CRITICAL FIX: Use WHILE for robustness and sequential spawning ---
-                while (item._remaining > 0 && item._intervalTimer >= spawnRate) {
-                    item._intervalTimer -= spawnRate; 
-                    this.spawnEnemy(item); 
-                    item._remaining--;
-                }
-            } 
-            
-            // B. Check if Old Group is finished
-            if (item._remaining === 0) {
-                level._currentGroupIndex++; 
-            }
+    // Determine if all enemy groups have finished spawning
+    let overallSpawningComplete = true;
+    for (const item of level.enemies) {
+        // If item has a remaining count OR is an unfinished complex wave
+        if (item._remaining > 0 || (item.groups && !item._waveFinished)) {
+            overallSpawningComplete = false;
+            break;
         }
-    } 
+    }
     
+    // The previous logic's 'allWavesComplete' check now relies on overallSpawningComplete
+    // to check for the spawning part of the level.
+    let allWavesComplete = overallSpawningComplete;
+
+
     // ----------------------------------------------------------------
     // 3. UPDATE ENTITIES
     // ----------------------------------------------------------------
@@ -281,43 +267,45 @@ export default class Game {
     // 4. REMOVE DEAD/ESCAPED ENEMIES & CHECK GAME OVER
     // ----------------------------------------------------------------
     this.enemies = this.enemies.filter(e => {
-      // Case A: Enemy Killed
-      if (e.health <= 0) {
-        this.playerCoins += e.coinReward || 1;
-        this.enemiesKilled++;
-        this.updateUI();
-        return false; 
-      }
-
-      // Case B: Enemy Reached End
-      if (e.currentIndex >= e.path.length - 1) {
-        this.playerLives--;
-        this.updateUI();
-
-        if (this.playerLives <= 0) {
-          this.gameStarted = false;
-          this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
-          setTimeout(() => this.resetGameToMenu(), 5000);
+        // Case A: Enemy Killed
+        if (e.health <= 0) {
+            this.playerCoins += e.coinReward || 1;
+            this.enemiesKilled++;
+            this.updateUI();
+            return false; 
         }
-        return false; 
-      }
 
-      return true; 
+        // Case B: Enemy Reached End
+        if (e.currentIndex >= e.path.length - 1) {
+            this.playerLives--;
+            this.updateUI();
+
+            if (this.playerLives <= 0) {
+                this.gameStarted = false;
+                this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
+                setTimeout(() => this.resetGameToMenu(), 5000);
+            }
+            return false; 
+        }
+
+        return true; 
     });
 
     // ----------------------------------------------------------------
     // 5. LEVEL COMPLETION CHECK
     // ----------------------------------------------------------------
+    // The level is complete when ALL enemy groups have finished spawning AND 
+    // ALL spawned enemies currently on the map have been defeated or escaped.
     if (this.playerLives > 0 && allWavesComplete && this.enemies.length === 0) {
-      this.currentLevelIndex++;
-      
-      if (this.currentLevelIndex >= this.levelData.levels.length) {
-        this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
-        setTimeout(() => this.resetGameToMenu(), 5000);
-        this.gameStarted = false;
-      } else {
-        this.setLevel(this.currentLevelIndex);
-      }
+        this.currentLevelIndex++;
+        
+        if (this.currentLevelIndex >= this.levelData.levels.length) {
+            this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
+            setTimeout(() => this.resetGameToMenu(), 5000);
+            this.gameStarted = false;
+        } else {
+            this.setLevel(this.currentLevelIndex);
+        }
     }
 }
 
