@@ -1,104 +1,18 @@
 TODOS:
 + price to unlock towers
 + UI music
-+ More paths
-+ Editory (map builder)
 + Teleports
-+ Wave delay
 + Explosive enemies
 + Ability enemies (10s imunity - no demage (50% chance on spawn), Explosive enemies)
 + heroes like ablity - on the start you will choose hero whit special ablity
 + all Abilities have duration - PROBLEM 
-+ ability levling
++ ability leveling
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
 ++ LONG TODO: Sending ways, playing from toher side
 
 0.0.10 ideas:
 - Level editor
-Přepsat stáré levely na :
-      "levels": [
-        {
-          "level": 1,
-          "enemies": [
-            {
-            "delay": 0,
-            "groups": [
-              {
-                "type": "basic",
-                "count": 5,
-                "health": 100,
-                "speed": 1,
-                "path": "S1E1",
-                "interval": 1000,
-                "firstDelay": 0,
-                "coinReward": 10
-              },
-              {
-                "type": "basic",
-                "count": 5,
-                "health": 100,
-                "speed": 1,
-                "path": "S2E2",
-                "interval": 1000,
-                "firstDelay": 0,
-                "coinReward": 10
-              }
-            ]
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S2E2",
-              "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 10
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "enemies": [
-            {
-              "type": "tank",
-              "count": 10,
-              "health": 200,
-              "speed": 1,
-              "path": "S1E1",
-              "interval": 750,
-              "firstDelay": 0,
-              "coinReward": 2
-            },
-            {
-              "type": "tank",
-              "count": 7,
-              "health": 500,
-              "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 1
-            }
-          ]
-        },
-        {
-          "level": 3,
-          "enemies": [
-            {
-              "type": "boss",
-              "count": 1,
-              "health": 10000,
-              "speed": 0.45,
-              "path": "S1E1",
-              "interval": 750,
-              "firstDelay": 0,
-              "coinReward": 2
-            }
-          ]
-        }
-      ],
 
 - import map from json file
 FIXED :
