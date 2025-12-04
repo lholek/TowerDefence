@@ -101,6 +101,17 @@ Přepsat stáré levely na :
       ],
 
 - import map from json file
+FIXED :
+00X_test.json
+001_basicGame.json
+
+TODO:
+002_zigZagGame.json
+003_longMapGame.json
+004_adventureMap.json
+005_abilityMap.json
+006_adventureMap2.json
+007_NewMapDoInEditor.json
 
 0.0.11:
   "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
