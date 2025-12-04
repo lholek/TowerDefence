@@ -104,10 +104,10 @@ Přepsat stáré levely na :
 FIXED :
 00X_test.json
 001_basicGame.json
-
-TODO:
 002_zigZagGame.json
 003_longMapGame.json
+
+TODO:
 004_adventureMap.json
 005_abilityMap.json
 006_adventureMap2.json
