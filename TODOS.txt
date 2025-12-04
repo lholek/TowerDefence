@@ -21,11 +21,11 @@ FIXED :
 002_zigZagGame.json
 003_longMapGame.json
 005_abilityMap.json
+004_adventureMap.json
+007_NewMapDoInEditor.json
 
 TODO:
-004_adventureMap.json
 006_adventureMap2.json
-007_NewMapDoInEditor.json
 
 alpha 0.1.1:
   "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
