@@ -414,3 +414,10 @@ max-width: 400px;
   border-radius: 12px;
   overflow: hidden;
 }
+.game-time{
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #f0c674;
+}
