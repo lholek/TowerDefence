@@ -88,6 +88,7 @@ export default class Game {
     this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
     this.createTowerShop();
     this.createAbilityBar();
+    this.createLifePurchaseButton();
     this.setLevel(this.currentLevelIndex);
     this.updateUI();
 }
@@ -416,46 +417,6 @@ update(deltaTime) {
         }
       });
     }
-
-    // Extra life item
-
-    // --- Ensure lifePrice is initialized ---
-    if (typeof this.lifePrice === 'undefined') {
-      this.lifePrice = 10; // starting price
-    }
-
-    // --- Extra life item ---
-    const lifeDiv = document.createElement('div');
-    lifeDiv.className = 'shop-item';
-    lifeDiv.innerHTML = `
-      <div class="name">❤️ Extra Life</div>
-      <div class="price">🪙 Price: ${this.lifePrice}</div>
-    `;
-    shopDiv.appendChild(lifeDiv);
-
-    lifeDiv.addEventListener('click', () => {
-      if (this.playerCoins >= this.lifePrice) {
-        this.playerCoins -= this.lifePrice;
-        this.playerLives += 1;
-        this.updateUI();
-        this.logEvent(`Player bought 1 life for ${this.lifePrice}`);
-      
-        // --- Price progression ---
-        const nextPrices = [10, 25, 50, 75, 100, 150, 200];
-        const currentIndex = nextPrices.indexOf(this.lifePrice);
-        if (currentIndex !== -1 && currentIndex < nextPrices.length - 1) {
-          this.lifePrice = nextPrices[currentIndex + 1];
-        } else {
-          this.lifePrice = 200; // cap at 200
-        }
-      
-        // Update displayed price
-        lifeDiv.querySelector('.price').textContent = `🪙 Price: ${this.lifePrice}`;
-      } else {
-        this.showOverlayMessage('Not enough coins!');
-        setTimeout(() => this.gameOverlay.style.display = 'none', 900);
-      }
-    });
   }
 
   createAbilityBar() {
@@ -550,6 +511,55 @@ update(deltaTime) {
         }
       }
     }, 250);
+  }
+
+  createLifePurchaseButton() {
+    // Ensure the container for the new button exists. 
+    const container = document.getElementById('lifeButtonContainer');
+    if (!container) return; // Exit if container not found
+    
+    // 🌟 FIX: Clear the container before adding a new button
+    container.innerHTML = ''; 
+    // --------------------------------------------------------
+    
+    // --- Ensure lifePrice is initialized ---
+    if (typeof this.lifePrice === 'undefined') {
+      this.lifePrice = 10; // starting price
+    }
+
+    const lifeButton = document.createElement('button');
+    // ... rest of the function remains the same ...
+    lifeButton.id = 'extraLifeBtn';
+    lifeButton.className = 'switch-btn life-purchase-btn';
+
+    // The initial display must be set when the button is created
+    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
+
+    container.appendChild(lifeButton);
+
+    lifeButton.addEventListener('click', () => {
+      if (this.playerCoins >= this.lifePrice) {
+        this.playerCoins -= this.lifePrice;
+        this.playerLives += 1;
+        this.updateUI();
+        this.logEvent(`Player bought 1 life ❤️ for ${this.lifePrice} 🪙`);
+      
+        // --- Price progression logic ---
+        const nextPrices = [10, 25, 50, 75, 100, 150, 200];
+        const currentIndex = nextPrices.indexOf(this.lifePrice);
+
+        if (currentIndex !== -1 && currentIndex < nextPrices.length - 1) {
+          this.lifePrice = nextPrices[currentIndex + 1];
+        } else {
+          this.lifePrice = 200; // cap at 200
+        }
+      
+        // --- Update the button's displayed price ---
+        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
+      } else {
+        this.logEvent('Not enough coins to buy Extra life!');
+      }
+    });
   }
 
   // Start cooldown visuals for a given ability and card.

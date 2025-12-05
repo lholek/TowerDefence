@@ -200,7 +200,7 @@
 .ability-timer { font-size:11px; color:#f55; margin-top:4px; }
 .ability-bar {display: flex; justify-content: space-around;}
 .shopAndAbilitiesWrap{
-  margin-top: -33px;
+  margin-top: -10px;
   z-index: 1;
 }
 

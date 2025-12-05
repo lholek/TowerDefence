@@ -43,7 +43,8 @@ h3 {
 .title {
     text-align: center;
     color: #f0c674;
-    margin-top: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     position: relative;
     z-index: 101;
 }
@@ -75,7 +76,7 @@ h3 {
 /* events log left column */
 #eventsBox {
     width: 250px;
-    max-height: 800px;
+    max-height: 900px;
     background: var(--main-bg-color);;
     padding: 10px;
     border-radius: 8px;
@@ -95,7 +96,7 @@ h3 {
   display: flex;            /* stack children vertically */
   flex-direction: column;
   gap: 8px;                 /* space between lines */
-  align-items: stretch;     /* children fill width by default */
+  align-items: center;
 }
 
 /* small info lines */
@@ -176,7 +177,6 @@ margin: 0.25rem;
     height: 25px;
     border-radius: 6px;
     position: relative;
-    margin-bottom: 10px;
     overflow: hidden;
 }
 

@@ -60,7 +60,7 @@
 }
 
 #eventsList {
-  max-height: 250px; /* reduce a bit to make space */
+  max-height: 370px; /* reduce a bit to make space */
   overflow-y: auto;
 }
 
