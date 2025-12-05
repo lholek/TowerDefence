@@ -1,82 +1,142 @@
 {
   "maps": [
     {
-      "name": "EDIT TITLE",
-      "startingCoins": 100,
-      "startingLives": 100,
+      "name": "Adventure Map III (Crossroads)",
+      "startingCoins": 100000,
+      "startingLives": 5,
       "description": [
         {
-          "descriptionText": "Edit description",
-          "level count": 1,
-          "difficulty": "⭐",
-          "map_size": "25x25",
-          "tower types": 1,
-          "abilites": "-"
+          "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
+          "level count": 8,
+          "map_size": "33x33",
+          "difficulty": "⭐⭐⭐⭐⭐",
+          "abilites": ""
         }
       ],
       "tileSize": 60,
       "layout": [
-              ["-","-","-","-","-","-","-","X","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
-              ["-","-","O","O","O","X","X","X","X","X","X","X","-","-","-","X","X","X","X","X","X","-","-","-","-"],
-              ["-","O","O","X","O","O","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","-","-","-"],
-              ["-","O","X","X","X","O","O","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","-","-"],
-              ["-","O","O","X","X","X","O","O","X","X","X","X","X","-","-","X","X","X","O","O","O","X","X","X","-"],
-              ["-","X","O","O","X","X","X","O","O","O","O","O","-","-","-","-","O","O","O","X","O","O","O","X","-"],
-              ["-","X","X","O","O","X","X","X","X","X","X","O","-","-","-","-","O","X","X","X","X","X","O","X","-"],
-              ["-","X","X","X","O","O","X","X","X","X","X","O","-","-","-","-","O","X","X","X","X","X","O","X","-"],
-              ["-","-","X","X","X","O","O","X","X","X","O","O","X","-","-","X","O","O","X","X","X","X","O","O","-"],
-              ["-","-","-","X","X","X","O","X","X","X","O","X","X","X","X","X","X","O","X","X","X","X","X","O","-"],
-              ["-","-","-","-","X","X","O","X","X","O","O","X","X","X","X","X","X","O","O","X","X","X","X","O","-"],
-              ["-","-","-","X","X","X","O","X","X","O","X","X","X","X","X","X","X","X","O","X","X","X","O","O","-"],
-              ["S1","O","O","O","X","X","O","X","X","O","X","X","X","X","X","X","X","X","O","X","X","X","O","-","-"],
-              ["-","-","-","O","X","X","O","X","X","O","X","X","X","X","X","X","X","X","O","X","X","X","O","-","-"],
-              ["-","-","-","O","X","X","O","X","X","O","O","X","X","X","X","X","X","O","O","X","X","X","O","-","-"],
-              ["-","-","-","O","X","X","O","X","X","X","O","X","X","X","X","X","X","O","X","X","X","O","O","-","-"],
-              ["-","-","-","O","X","X","O","X","X","X","O","O","X","X","X","X","O","O","X","X","X","O","-","-","-"],
-              ["-","-","-","O","X","X","O","X","X","X","X","O","X","X","X","X","O","X","X","X","-","O","-","-","-"],
-              ["-","-","O","O","X","X","O","O","X","X","X","O","X","X","X","X","O","X","X","X","-","O","-","-","-"],
-              ["-","O","O","X","X","X","X","O","O","X","X","O","O","O","O","O","O","X","X","X","-","O","O","O","E1"],
-              ["-","O","X","X","X","X","X","X","O","X","X","X","X","X","X","X","X","X","X","-","-","-","-","-","-"],
-              ["-","O","O","X","X","X","X","O","O","-","X","X","X","X","X","X","X","X","-","-","-","-","-","-","-"],
-              ["-","-","O","O","X","X","O","O","-","-","-","X","X","X","X","X","X","-","-","-","-","-","X","X","-"],
-              ["-","-","-","O","O","O","O","-","-","-","-","-","-","-","-","-","-","-","-","-","-","X","X","X","-"],
-              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
+              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
+              ["-","-","-","-","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","X","X","-","-"],
+              ["X","X","X","-","-","X","X","-","-","-","-","-","-","-","-","X","X","-","-","-","-","X","X","X","X","X","-","-","-","-","X","X","-"],
+              ["X","X","X","X","-","-","X","-","-","X","X","X","-","-","X","X","X","X","-","-","X","X","X","X","X","X","X","-","-","-","-","X","-"],
+              ["X","X","X","X","X","-","-","-","X","X","X","X","X","-","-","X","X","-","-","X","X","X","X","X","X","X","X","X","-","-","-","-","-"],
+              ["X","X","X","X","X","X","-","X","X","X","X","X","X","X","-","-","-","-","X","X","X","X","O","O","O","X","X","X","X","X","-","-","-"],
+              ["S1","O","O","X","X","X","X","X","X","X","X","X","X","X","X","-","-","X","X","X","X","O","O","X","O","O","X","X","X","X","X","-","-"],
+              ["X","X","O","O","X","X","X","X","X","O","O","O","X","X","X","X","X","X","X","X","O","O","X","X","X","O","O","X","X","X","X","X","-"],
+              ["-","X","X","O","O","X","X","X","O","O","X","O","O","X","X","X","X","X","X","O","O","X","X","X","X","X","O","O","X","X","X","X","X"],
+              ["-","-","X","X","O","O","X","O","O","X","X","X","O","O","X","X","X","X","O","O","X","X","-","-","-","X","X","O","O","O","X","X","X"],
+              ["-","-","-","X","X","O","O","O","X","X","-","X","X","O","O","X","X","O","O","X","X","X","-","-","-","X","X","X","X","O","O","X","X"],
+              ["-","-","-","X","X","X","X","X","X","-","-","-","X","X","O","O","O","O","X","X","X","X","X","X","X","X","X","X","X","X","O","O","E1"],
+              ["X","X","X","X","X","X","X","X","X","X","X","-","-","X","X","X","O","X","X","X","X","X","O","O","O","X","X","X","X","X","X","X","X"],
+              ["S2","O","O","X","X","X","X","O","O","O","X","X","-","X","X","O","O","X","X","X","X","O","O","X","O","O","X","X","X","X","X","X","X"],
+              ["X","X","O","O","X","X","O","O","X","O","O","X","X","X","O","O","X","X","X","X","O","O","X","X","X","O","O","X","X","X","X","X","X"],
+              ["-","X","X","O","O","O","O","X","X","X","O","O","X","X","O","X","X","X","X","O","O","X","X","-","X","X","O","O","O","O","O","O","E2"],
+              ["-","-","X","X","X","X","X","X","X","X","X","O","O","O","O","O","O","O","O","O","X","X","-","-","-","X","X","X","X","X","X","X","X"],
+              ["-","X","X","O","O","O","O","X","X","X","O","O","X","X","O","X","X","X","X","O","O","X","X","-","X","X","O","O","O","O","O","O","E3"],
+              ["X","X","O","O","X","X","O","O","X","O","O","X","X","X","O","O","X","X","X","X","O","O","X","X","X","O","O","X","X","X","X","X","X"],
+              ["S3","O","O","X","X","X","X","O","O","O","X","X","-","X","X","O","O","X","X","X","X","O","O","X","O","O","X","X","X","X","X","X","X"],
+              ["X","X","X","X","X","X","X","X","X","X","X","-","-","X","X","X","O","X","X","X","X","X","O","O","O","X","X","X","X","X","X","X","X"],
+              ["-","-","-","X","X","X","X","X","X","-","-","-","X","X","O","O","O","O","X","X","X","X","X","X","X","X","X","X","X","X","O","O","E4"],
+              ["-","-","-","X","X","O","O","O","X","X","-","X","X","O","O","X","X","O","O","X","X","X","-","-","-","X","X","X","X","O","O","X","X"],
+              ["-","-","X","X","O","O","X","O","O","X","X","X","O","O","X","X","X","X","O","O","X","X","-","-","-","X","X","O","O","O","X","X","X"],
+              ["-","X","X","O","O","X","X","X","O","O","X","O","O","X","X","X","X","X","X","O","O","X","X","X","X","X","O","O","X","X","X","X","X"],
+              ["X","X","O","O","X","X","X","X","X","O","O","O","X","X","X","X","X","X","X","X","O","O","X","X","X","O","O","X","X","X","X","X","X"],
+              ["S4","O","O","X","X","X","X","X","X","X","X","X","X","X","X","-","-","X","X","X","X","O","O","X","O","O","X","X","X","X","X","-","-"],
+              ["X","X","X","X","X","X","-","X","X","X","X","X","X","X","-","-","-","-","X","X","X","X","O","O","O","X","X","X","X","X","-","-","-"],
+              ["X","X","X","X","X","-","-","-","X","X","X","X","X","-","-","X","X","-","-","X","X","X","X","X","X","X","X","X","-","-","-","-","-"],
+              ["X","X","X","X","-","-","X","-","-","X","X","X","-","-","X","X","X","X","-","-","X","X","X","X","X","X","X","-","-","-","-","X","-"],
+              ["X","X","X","-","-","X","X","-","-","-","-","-","-","-","-","X","X","-","-","-","-","X","X","X","X","X","-","-","-","-","X","X","-"],
+              ["-","-","-","-","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","X","X","-","-"],
+              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
           ],
-      "abilities": [
-        {
-          "_comment": "cooldown - 30000",
-          "id": "lava_floor",
-          "name": "Lava Floor",
-          "description": "Demage - 250dmg / 0.25s",
-          "description_text": "3 tile before and after selected tile",
-          "type": "targeted",
-          "selectionCount": 7,
-          "__comment": "250dmg / 0.25s ",
-          "damage": 250,
-          "damage_every": 250,
-          "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
-          "effectDuration": 5000,
-          "color": "rgba(245, 164, 66, 0.6)",
-          "ui": {
-            "icon": "🌋"
-          }
-        }
-      ],
+      "abilities": [],
       "towerTypes": {
         "001": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 50,
+          "name": "Castle Tower",
+          "price": 20,
+          "damage": 30,
+          "fireRate": 1200,
+          "range": 220,
+          "color": "#797c79",
+          "sellPrice": 15,
+          "speed": 1.75
+        },
+        "002": {
+          "name": "Wind Tower",
+          "price": 20,
+          "damage": 8,
+          "fireRate": 300,
+          "range": 180,
+          "color": "#54a6d9",
+          "sellPrice": 15,
+          "speed": 2.2
+        },
+        "003": {
+          "name": "High Tower",
+          "price": 75,
+          "damage": 60,
+          "fireRate": 750,
+          "range": 300,
+          "color": "#281f6b",
+          "sellPrice": 50,
+          "speed": 2.25
+        },
+        "004": {
+          "name": "Gryph Tower",
+          "price": 125,
+          "damage": 100,
+          "fireRate": 700,
+          "range": 450,
+          "color": "#2a8d43",
+          "sellPrice": 75,
+          "speed": 2.4
+        },
+        "005": {
+          "name": "Angel Tower",
+          "price": 300,
+          "damage": 250,
+          "fireRate": 500,
+          "range": 700,
+          "color": "#ffffff",
+          "sellPrice": 150,
+          "speed": 2.75
+        },
+        "006": {
+          "name": "Archangel Tower",
+          "price": 750,
+          "damage": 600,
+          "fireRate": 500,
+          "range": 1000,
+          "color": "#ab9717",
+          "sellPrice": 200,
+          "speed": 3
+        },
+        "007": {
+          "name": "DEMI-GOD TOWER",
+          "price": 2000,
+          "damage": 1000,
           "fireRate": 400,
-          "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
-          "speed": 2
+          "range": 1250,
+          "color": "#000000",
+          "sellPrice": 400,
+          "speed": 3.75
+        },
+        "008": {
+          "name": "GOD TOWER",
+          "price": 4000,
+          "damage": 2000,
+          "fireRate": 250,
+          "range": 1500,
+          "color": "#ababab",
+          "sellPrice": 0,
+          "speed": 5
         }
       },
       "enemyTypes": [
-        "basic"
+        "basic",
+        "fast",
+        "tank",
+        "boss"
       ],
       "levels": [
         {
@@ -85,11 +145,267 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 100,
+              "health": 2,
               "speed": 1,
+              "coinReward": 1,
               "path": "S1E1",
               "interval": 1000,
-              "coinReward": 1
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 4,
+              "speed": 1.2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 5000
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 8,
+              "speed": 1.2,
+              "coinReward": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 5,
+              "speed": 2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 10000
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 10,
+              "speed": 1.3,
+              "coinReward": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "fast",
+              "count": 8,
+              "health": 6,
+              "speed": 2.2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 10000
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 15,
+              "health": 12,
+              "speed": 1.4,
+              "coinReward": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "fast",
+              "count": 10,
+              "health": 8,
+              "speed": 2.4,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 15000
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 30,
+              "speed": 0.8,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 25000
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 15,
+              "health": 35,
+              "speed": 1.5,
+              "coinReward": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "fast",
+              "count": 15,
+              "health": 20,
+              "speed": 2.5,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 15000
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 60,
+              "speed": 1,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 30000
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 15,
+              "health": 60,
+              "speed": 2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 45,
+              "speed": 3,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 15000
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 750,
+              "speed": 1,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 20000
+            }
+          ]
+        },
+        {
+          "level": 7,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 15,
+              "health": 60,
+              "speed": 2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "tank",
+              "count": 2,
+              "health": 750,
+              "speed": 1,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 15000
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 45,
+              "speed": 3,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 17000
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 750,
+              "speed": 1,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 22000
+            }
+          ]
+        },
+        {
+          "level": 8,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 20,
+              "health": 120,
+              "speed": 2,
+              "coinReward": 2,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 750,
+              "speed": 1,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 20000
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 45,
+              "speed": 3,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 25000
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 3000,
+              "speed": 2,
+              "coinReward": 5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 31000
             }
           ]
         }
