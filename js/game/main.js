@@ -73,14 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
     
-      // create/map name element if missing
-      /*let nameEl = document.getElementById('mapName');
-      if (!nameEl) {
-        nameEl = document.createElement('h3');
-        nameEl.id = 'mapName';
-        mapInfo.prepend(nameEl); // add at top
-      }*/
-    
       // minimap container
       let minimap = document.getElementById('minimap');
       if (!minimap) {
@@ -117,40 +109,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     
       // create tiles
       for (let r = 0; r < rows; r++) {
-        const rowStr = mapData.layout[r];
+        // Assuming mapData.layout[r] is now an ARRAY of tile identifiers
+        const rowTiles = mapData.layout[r]; 
+            
+        // Iterate through the tile identifiers in the array
         for (let c = 0; c < cols; c++) {
-          const ch = rowStr[c] || 'X';
+          // Get the full tile identifier (e.g., 'S1', 'E2', 'O', '-')
+          const tileIdentifier = rowTiles[c] || 'X'; 
           const tile = document.createElement('div');
           tile.className = 'minimap-tile';
-          switch (ch) {
-            case 'O':
-              tile.classList.add('path');
-              break;
-            case 'S1':
-              tile.classList.add('path');
-              break; 
-            case 'S2':
-              tile.classList.add('path');
-              break;  
-            case 'S3':
-              tile.classList.add('path');
-              break;  
-            case 'E1':
-              tile.classList.add('path');
-              break;   
-            case 'E2':
-              tile.classList.add('path');
-              break;
-            case 'E3':
-              tile.classList.add('path');
-              break;
-            case '-':
-              tile.classList.add('sky');
-              break;     
-            default:
-              tile.classList.add('block');
-              break;
+        
+          // 🌟 Use a regular expression to match all 'O', 'S[number]', and 'E[number]' patterns
+          const isPathTile = /^(O|S\d+|E\d+)$/.test(tileIdentifier);
+
+          if (isPathTile) {
+            tile.classList.add('path');
+          } else if (tileIdentifier === '-') {
+            tile.classList.add('sky');
+          } else {
+            // Default for 'X' or any other unknown/unhandled identifier
+            tile.classList.add('block');
           }
+        
           minimap.appendChild(tile);
         }
       }
