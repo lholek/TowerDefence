@@ -475,8 +475,9 @@ update(deltaTime) {
     }
 
     // start periodic updater to refresh timers (reads ability._lastUsed timestamps)
-    this.abilityTimerInterval = setInterval(() => {
-      const now = performance.now();
+    this.abilityManager.updateUiCooldown();
+    /*this.abilityTimerInterval = setInterval(() => {
+      const now = this.now();
       for (const { card, ability } of Object.values(this.abilityCards)) {
         const overlay = card.querySelector('.cooldown-overlay');
         const timer = card.querySelector('.cooldown-timer');
@@ -510,7 +511,7 @@ update(deltaTime) {
           if (timer) timer.textContent = '';
         }
       }
-    }, 250);
+    }, 250);*/
   }
 
   createLifePurchaseButton() {
@@ -560,47 +561,6 @@ update(deltaTime) {
         this.logEvent('Not enough coins to buy Extra life!');
       }
     });
-  }
-
-  // Start cooldown visuals for a given ability and card.
-  // This sets ability._lastUsed so periodic updater (above) can pick it up.
-  startAbilityCooldownTimer(ability, card) {
-    if (!ability || !ability.cooldown) return;
-    ability._lastUsed = performance.now();
-
-    const overlay = card?.querySelector('.cooldown-overlay');
-    const timer = card?.querySelector('.cooldown-timer');
-    if (overlay) {
-      overlay.style.display = 'block';
-      overlay.style.height = '100%';
-      overlay.style.background = 'rgba(0,0,0,0.5)';
-      overlay.style.top = '0';
-      overlay.style.left = '0';
-      overlay.style.width = '100%';
-      overlay.style.transition = `height ${ability.cooldown}ms linear`;
-
-      // trigger shrink animation on next frame
-      requestAnimationFrame(() => {
-        overlay.style.height = '0%';
-      });
-    }
-
-    // update immediate timer text
-    if (timer) {
-      const updateOnce = () => {
-        const now = performance.now();
-        const remaining = Math.max(0, ability._lastUsed + ability.cooldown - now);
-        const sec = Math.ceil(remaining / 1000);
-        timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
-        if (remaining <= 0) {
-          timer.textContent = '';
-        } else {
-          // schedule next quick update
-          setTimeout(updateOnce, Math.min(300, remaining));
-        }
-      };
-      updateOnce();
-    }
   }
 
   render() {
