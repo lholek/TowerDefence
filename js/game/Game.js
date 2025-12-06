@@ -445,7 +445,7 @@ update(deltaTime) {
           <div class="ability-name">${a.name}</div>
           <div class="ability-meta">
             <span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>
-            <span class="ability-cooldown">⏳ Cooldown: ${Math.max(0, (a.cooldown - (a.effectDuration||0)))} ms</span>
+            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
             <div class="ability-dmg">⚔️${a.description || ''}</div>
             <div class="ability-desc">${a.description_text || ''}</div>
             <div class="ability-timer" data-ability="${a.id}"></div>
@@ -475,9 +475,7 @@ update(deltaTime) {
     }
 
     // start periodic updater to refresh timers (reads ability._lastUsed timestamps)
-    this.abilityManager.updateUiCooldown();
-    /*this.abilityTimerInterval = setInterval(() => {
-      const now = this.now();
+    this.abilityTimerInterval = setInterval(() => {
       for (const { card, ability } of Object.values(this.abilityCards)) {
         const overlay = card.querySelector('.cooldown-overlay');
         const timer = card.querySelector('.cooldown-timer');
@@ -494,7 +492,7 @@ update(deltaTime) {
           if (timer) timer.textContent = '';
           continue;
         }
-        const remaining = Math.max(0, last + ability.cooldown - now);
+        const remaining = ability.remainingCooldown;
         if (remaining > 0) {
           if (overlay) {
             overlay.style.display = 'block';
@@ -511,7 +509,7 @@ update(deltaTime) {
           if (timer) timer.textContent = '';
         }
       }
-    }, 250);*/
+    }, 250);
   }
 
   createLifePurchaseButton() {

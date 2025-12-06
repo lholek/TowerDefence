@@ -96,7 +96,6 @@ export default class AbilityManager {
 
   update(deltaTime) {
     for (const a of this.abilities) a.update(deltaTime);
-    for (const a of this.abilities) this.updateUiCooldown(deltaTime);
   }
 
   render(ctx) {
@@ -169,62 +168,5 @@ export default class AbilityManager {
         overlay.style.height = '0%';
       });
     }
-
-    // update immediate timer text
-    /*if (timer) {
-      const updateOnce = () => {
-        const now = performance.now();
-        const remaining = Math.max(0, ability._lastUsed + ability.cooldown - now);
-        const sec = Math.ceil(remaining / 1000);
-        if(this.paused){
-          setTimeout(updateOnce, Math.min(300, remaining));
-          return;
-        }
-        timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
-        if (remaining <= 0) {
-          timer.textContent = '';
-        } else {
-          // schedule next quick update
-          setTimeout(updateOnce, Math.min(300, remaining));
-        }
-      };
-      updateOnce();
-    }*/
-  }
-
-  updateUiCooldown(deltaTime){
-      for (const { card, ability } of Object.values(this.abilityCards)) {
-        const overlay = card.querySelector('.cooldown-overlay');
-        const timer = card.querySelector('.cooldown-timer');
-        // no cooldown defined -> hide visuals
-        if (!ability.cooldown) {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
-          continue;
-        }
-        // only treat abilities with an explicit numeric _lastUsed > 0 as "used"
-        const last = ability._lastUsed;
-        if (typeof last !== 'number' || last <= 0) {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
-          continue;
-        }
-        const remaining = Math.max(0, last + ability.cooldown - deltaTime);
-        if (remaining > 0) {
-          if (overlay) {
-            overlay.style.display = 'block';
-            const pct = (remaining / ability.cooldown) * 100;
-            overlay.style.height = pct + '%';
-            overlay.style.transition = 'height 250ms linear';
-          }
-          if (timer) {
-            const sec = Math.ceil(remaining / 1000);
-            timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
-          }
-        } else {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
-        }
-      }
   }
 }
