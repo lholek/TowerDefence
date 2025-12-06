@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
-          "level count": 1,
+          "level count": 3,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
           "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
@@ -196,7 +196,7 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
+              "count": 6,
               "health": 30,
               "speed": 1,
               "coinReward": 3,
@@ -206,7 +206,7 @@
             },
             {
               "type": "tank",
-              "count": 5,
+              "count": 6,
               "health": 60,
               "speed": 0.75,
               "coinReward": 4,
@@ -216,7 +216,7 @@
             },
             {
               "type": "basic",
-              "count": 5,
+              "count": 6,
               "health": 30,
               "speed": 1,
               "path": "S3E3",
@@ -226,13 +226,143 @@
             },
             {
               "type": "tank",
-              "count": 5,
+              "count": 6,
               "health": 60,
               "speed": 0.75,
               "path": "S4E4",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 4
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 90,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": "1000",
+              "coinReward": 4,
+              "firstDelay": "0"
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 60,
+              "speed": 1,
+              "path": "S2E1",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 90,
+              "speed": 1,
+              "path": "S3E4",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 60,
+              "speed": 1,
+              "path": "S4E3",
+              "interval": "1000",
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 75,
+              "speed": 1,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 5
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 120,
+              "speed": 0.85,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 4
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 250,
+              "speed": 1.1,
+              "path": "S1E1",
+              "interval": "850",
+              "coinReward": 3,
+              "firstDelay": "0"
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 400,
+              "speed": 0.95,
+              "path": "S2E2",
+              "interval": "850",
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "tank",
+              "count": 6,
+              "health": 400,
+              "speed": 1.1,
+              "path": "S3E3",
+              "interval": "850",
+              "firstDelay": 0,
+              "coinReward": 3
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 250,
+              "speed": 0.95,
+              "path": "S4E4",
+              "interval": "850",
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 400,
+              "speed": 0.95,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": "4800",
+              "coinReward": 6
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 250,
+              "speed": 0.95,
+              "path": "S3E4",
+              "interval": 1000,
+              "firstDelay": "4800",
+              "coinReward": 6
             }
           ]
         }
