@@ -10,7 +10,7 @@
           "level count": 1,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
-          "abilites": ""
+          "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
         }
       ],
       "tileSize": 60,
@@ -49,7 +49,56 @@
               ["-","-","-","-","X","X","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","X","X","-","-"],
               ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"]
           ],
-      "abilities": [],
+      "abilities": [
+        {
+          "id": "lava_floor",
+          "name": "WildFire",
+          "description": "4s - 75 dmg /  200 ms",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 75,
+          "damage_every": 200,
+          "cooldown": 20000,
+          "effectDuration": 4000,
+          "color": "#3bba5b",
+          "ui": {
+            "icon": "🔥"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "name": "DarkFire",
+          "description": "15s - 150 dmg /  150 ms",
+          "description_text": "7 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 15,
+          "damage": 150,
+          "damage_every": 150,
+          "cooldown": 60000,
+          "effectDuration": 15000,
+          "color": "#403a3a",
+          "ui": {
+            "icon": "🔥🔥"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "name": "DragonFire",
+          "description": "30s - 250 dmg /  100 ms",
+          "description_text": "Detailed usage description.",
+          "type": "targeted",
+          "selectionCount": 21,
+          "damage": 250,
+          "damage_every": 100,
+          "cooldown": 180000,
+          "effectDuration": 30000,
+          "color": "#e21212",
+          "ui": {
+            "icon": "🔥🔥🔥"
+          }
+        }
+      ],
       "towerTypes": {
         "001": {
           "name": "Castle Tower",
