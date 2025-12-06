@@ -7,7 +7,8 @@ let contentContainer = null;
 
 // --- New Ability Default Structure ---
 const newAbilityStructure = {
-    "id": "lava_floor", 
+    "id": "lava_floor",
+    "configId": "new_ability_id",
     "name": "New Ability",
     "description": "Short description of the ability.",
     "description_text": "Detailed usage description.",
@@ -75,7 +76,8 @@ export const abilityEditor = (() => {
             html += `
                 <div class="ability-card box" data-ability-index="${index}">
                     <div class="card-header">
-                        <label>ID <input type="text" class="input-ability-id input-small" value="${ability.id}" placeholder="Unique ID" data-key="id"></label> 
+                        <label>Class ID <input type="text" size="50" class="input-ability-id input-medium" value="${ability.id}" placeholder="Class ID" data-key="id"></label> 
+                        <label>Config ID <input type="text" class="input-ability-id input-medium" value="${ability.configId || ''}" placeholder="Unique Config ID" data-key="configId"></label>
                         <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
                         <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
                     </div>
@@ -170,16 +172,19 @@ export const abilityEditor = (() => {
         modifyJson((data) => {
             const abilities = data.maps[0].abilities;
             const newAbility = JSON.parse(JSON.stringify(newAbilityStructure));
-
-            // 3. REMOVED: Automatic ID generation. Uses fixed placeholder ID.
+            
+            // 1. Update generated properties
             newAbility.name = `New Ability ${abilities.length + 1}`;
             
+            // 2. Make the unique configId unique by appending the current count
+            newAbility.configId = `new_ability_id_${abilities.length + 1}`;
+
             abilities.push(newAbility);
-            
+
             // Re-render
             renderAbilityRepeater(abilities);
 
-        }, `New ability added. Remember to change the ID from '${newAbilityStructure.id}'.`); // Added warning
+        }, `New ability added. Remember to change the **Config ID** from '${newAbility.configId}' for a unique identifier.`); // Updated warning
     };
 
     // 3. Function to delete an ability

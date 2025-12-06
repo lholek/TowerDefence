@@ -4,6 +4,7 @@ import Ability from './Ability.js';
 export default class LavaFloor extends Ability {
   constructor(game, config = {}) {
     super(game, config);
+    this.id = config.configId || this.id;
     this.damageEvery = config.damage_every || 500;
     this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
   }

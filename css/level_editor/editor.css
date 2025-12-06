@@ -303,6 +303,15 @@ h2, h3 {
     border-radius: 4px;
 }
 
+.input-medium {
+    width: 120px;
+    padding: 5px;
+    border: 1px solid #967456;
+    background-color: #967456;
+    color: #f0f0f0;
+    border-radius: 4px;
+}
+
 .map-canvas-container {
     /* Critical: Use hidden overflow to rely on custom camera pan/zoom */
     overflow: hidden; 
