@@ -184,7 +184,7 @@ export const abilityEditor = (() => {
             // Re-render
             renderAbilityRepeater(abilities);
 
-        }, `New ability added. Remember to change the **Config ID** from '${newAbility.configId}' for a unique identifier.`); // Updated warning
+        }, `<b>New ability added. Remember to change the **Config ID** for a unique identifier!</b>`); // Updated warning
     };
 
     // 3. Function to delete an ability
