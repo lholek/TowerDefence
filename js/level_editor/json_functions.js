@@ -427,3 +427,60 @@ export function updateBasicInfoUI() {
     setVal('towerTypesDisplay', desc["tower types"] || 0);
     setVal('abilitiesDisplay', desc.abilites || "-");
 }
+
+// --- NEW EXPORT UTILITIES ---
+
+/**
+ * Handles the actual file download using the Blob and Anchor Tag API.
+ * @param {string} data The content to be downloaded (e.g., JSON string).
+ * @param {string} filename The name of the file (e.g., 'map.json').
+ * @param {string} mimeType The MIME type of the content (e.g., 'application/json').
+ */
+function downloadFile(data, filename, mimeType) {
+    // 1. Create a Blob object from the data string
+    const blob = new Blob([data], { type: mimeType });
+
+    // 2. Create a local URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // 3. Create a temporary anchor element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename; // Set the desired filename
+
+    // 4. Trigger the download and clean up
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url); // Release the temporary Blob URL
+}
+
+/**
+ * EXPORT DATA: Gets the current map data, formats it compactly, and triggers a download.
+ */
+export function exportLevelData() {
+    try {
+        // 1. Get the current, clean data object
+        const data = currentLevelData;
+        
+        // 2. Format the data into a compact, downloadable JSON string
+        // We use your existing formatCompactLayout for consistency with copyFormattedJson
+        const jsonString = formatCompactLayout(data);
+
+        // 3. Determine the filename based on the map's name
+        // Clean the map name (e.g., "My Awesome Map" -> "my_awesome_map")
+        const mapName = data.maps[0].name.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'exported_map';
+        const filename = `${mapName}.json`;
+        
+        // 4. Trigger the download
+        downloadFile(jsonString, filename, 'application/json');
+
+        // 5. Provide user feedback using the module reference
+        modules.setStatus(`Map exported successfully as "${filename}".`);
+        
+    } catch (error) {
+        console.error("Export failed:", error);
+        // Use the imported setStatus from the modules reference
+        modules.setStatus(`Export FAILED. Check the console for errors.`, true); 
+    }
+}
