@@ -20,6 +20,7 @@ alpha 0.1.1:
   "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
   "TODO: ? New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",
   " + bulding time" , " + zvuky stavění"
+  " + Mountins and Lakes"
   + game statisticks - time, killed enmies, escaped enemies, towers built, towers sold, arrows shot
 
 + https://vercel.com/ - kouknout se na to můžu to tam nahrát 

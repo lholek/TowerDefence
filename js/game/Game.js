@@ -688,6 +688,7 @@ update(deltaTime) {
 
   logEvent(text) {
     const div = document.createElement('div');
+    div.classList.add('text-center');
     div.textContent = text;
     this.eventsList.appendChild(div);
     if (this.eventsList.children.length > 30) this.eventsList.removeChild(this.eventsList.children[0]);
