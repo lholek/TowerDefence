@@ -29,31 +29,42 @@
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
-      <select id="mapSelect" class="styled-select">
-        <option value="./games/00X_test.json">Test Map</option>
-        <option value="./games/007_adventureMap3.json">Testing - Adventure Map III</option>
-        <option value="./games/001_basicGame.json">Basic</option>
-        <option value="./games/004_adventureMap.json">Adventure Map</option>
-        <option value="./games/006_adventureMap2.json">Adventure Map II (Islands)</option>
-        <option value="./games/005_abilityMap.json">Lava Map</option>
-        <option value="./games/002_zigZagGame.json">Zig-Zag</option>
-        <option value="./games/003_longMapGame.json">Long Map</option>
+      <div id="mapSelectionArea" class="map-mode">
+        <select id="mapSelect" class="styled-select">
+          <option value="./games/00X_test.json">Test Map</option>
+          <option value="./games/007_adventureMap3.json">Testing - Adventure Map III</option>
+          <option value="./games/001_basicGame.json">Basic</option>
+          <option value="./games/004_adventureMap.json">Adventure Map</option>
+          <option value="./games/006_adventureMap2.json">Adventure Map II (Islands)</option>
+          <option value="./games/005_abilityMap.json">Lava Map</option>
+          <option value="./games/002_zigZagGame.json">Zig-Zag</option>
+          <option value="./games/003_longMapGame.json">Long Map</option>
+        </select>
+      </div>
 
-      </select>
-        <div id="mapInfo" class="mapInfo">
-          <div>
-            <p><b>Description:</b> <br>Very basic map to learn game mechanics</p>
-            <p><b>Level count:</b> 8</p>
-            <p><b>Difficulty:</b> ⭐</p>
-            <p><b>Map size:</b> 10x7</p>
-            <p><b>Tower Types:</b> 4</p>
-            <p><b>Abilities:</b> -</p>
-          </div>
-          <div id="minimapContainer">
-            <div id="minimap" style="grid-template-rows: repeat(7, 10px); grid-template-columns: repeat(10, 10px);">
-              <div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div></div>
-          </div>
+      <div id="fileUploadArea" style="display: none;">
+        <input type="file" id="mapFileInput" accept=".json">
+      </div>
+      
+<div class="map-mode-toggle">
+    <button id="modeSelectBtn" class="btn active-mode">Přednastavená mapa</button>
+    <button id="modeFileBtn" class="btn">Načíst ze souboru</button>
+</div>
+
+      <div id="mapInfo" class="mapInfo">
+        <div>
+          <p><b>Description:</b> <br>Very basic map to learn game mechanics</p>
+          <p><b>Level count:</b> 8</p>
+          <p><b>Difficulty:</b> ⭐</p>
+          <p><b>Map size:</b> 10x7</p>
+          <p><b>Tower Types:</b> 4</p>
+          <p><b>Abilities:</b> -</p>
         </div>
+        <div id="minimapContainer">
+          <div id="minimap" style="grid-template-rows: repeat(7, 10px); grid-template-columns: repeat(10, 10px);">
+          <div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile block"></div><div class="minimap-tile path"></div><div class="minimap-tile path"></div></div>
+        </div>
+      </div>
       </div>
       <!-- ⚙️ Settings Popup -->
       <div id="settingsPopup" class="settings-popup hidden">

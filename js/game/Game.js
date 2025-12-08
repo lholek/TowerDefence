@@ -64,34 +64,81 @@ export default class Game {
     this.timeDisplay = document.getElementById('gameTimeDisplay');
   }
 
-  async loadGameData(file) {
-    const res = await fetch(file);
-    if (!res.ok) throw new Error(`Failed to load JSON: ${res.status}`);
-    const data = await res.json();
+/**
+ * Načte herní data mapy buď z URL, nebo z již předaného JSON objektu.
+ * @param {string|object} mapSource URL/cesta k souboru mapy, NEBO parsovaný JSON objekt.
+ */
+async loadGameData(mapSource) {
+    let rawData;
 
-    this.levelData = data.maps[0];
+    // 1. ROZHODNUTÍ O ZDROJI DAT
+    if (typeof mapSource === 'string') {
+        // ZDROJ JE URL (pro přednastavené mapy)
+        console.log(`Načítání mapy z URL: ${mapSource}`);
+        const res = await fetch(mapSource);
+        if (!res.ok) {
+            throw new Error(`Failed to load JSON: ${res.status} ${res.statusText}`);
+        }
+        rawData = await res.json();
+    } else if (typeof mapSource === 'object' && mapSource !== null) {
+        // ZDROJ JE PŘÍMÝ JSON OBJEKT (pro nahraný soubor)
+        console.log('Načítání mapy z lokálního souboru (JSON objekt).');
+        rawData = mapSource;
+    } else {
+        throw new Error("Neplatný zdroj mapy pro loadGameData. Očekáván string (URL) nebo objekt (JSON data).");
+    }
+
+    // Váš původní JSON předpokládal, že data mapy jsou pod klíčem 'maps[0]',
+    // ale lokální soubor asi obsahuje rovnou data mapy. Zkontrolujte, zda data
+    // potřebují být obalena (rawData.maps[0]) nebo ne (rawData).
+    // Používám logiku, že nahraný soubor by měl obsahovat celý objekt mapy.
+    
+    // Zvolíme data mapy: použijeme 'maps[0]' pokud existuje, jinak použijeme celý objekt
+    this.levelData = rawData.maps?.[0] || rawData;
+
+    // 2. INICIALIZACE ZÁKLADNÍCH HERNÍCH HODNOT
+    // Použijte ?? pro nastavení výchozí hodnoty, pokud je hodnota v JSONu undefined nebo null
     this.playerCoins = this.levelData.startingCoins ?? 10;
     this.playerLives = this.levelData.startingLives ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
-    this.loadMap(this.levelData.layout);
-
-    // load abilities array if present
+    
+    // 3. NAČTENÍ MAPY A SCHOPNOSTÍ
+    // Předpokládáme, že Map.js má metodu loadMap nebo je inicializován v konstruktoru
+    // Vycházím z vaší původní logiky: this.loadMap(this.levelData.layout);
+    // Pokud máte mapu inicializovanou v Game konstruktoru: this.map = new Map(..., this.levelData.layout);
+    // Doporučuji upravit tak, aby přijímala layout zde:
+    if (!this.map) {
+        // Pokud mapa ještě nebyla inicializována (např. v konstruktoru Game)
+        this.map = new Map(this.canvas, this.levelData.layout);
+    } else {
+        // Pokud je mapa již vytvořena (méně časté), aktualizujte její rozložení
+        this.map.loadLayout(this.levelData.layout); // Předpokládá metodu pro aktualizaci
+    }
+    
+    // Načtení pole schopností, pokud existuje
     this.abilityManager.loadFromConfigs(this.levelData.abilities || []);
 
-    // Hide or show Abilities button depending on ability presence
+    // 4. AKTUALIZACE UI NA ZÁKLADĚ DAT
+    // Skrýt nebo zobrazit tlačítko "Abilities"
     const abilityModeBtn = document.getElementById('abilityModeBtn');
     if (abilityModeBtn) {
-      const hasAbilities = (this.levelData.abilities && this.levelData.abilities.length > 0);
-      abilityModeBtn.style.display = hasAbilities ? 'block' : 'none';
+        const hasAbilities = (this.levelData.abilities && this.levelData.abilities.length > 0);
+        abilityModeBtn.style.display = hasAbilities ? 'block' : 'none';
     }
 
-    this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
+    // 5. NASTAVENÍ ÚROVNÍ A OBCHODŮ
+    // Resetování počtu nepřátel
+    if (this.levelData.levels) {
+        this.levelData.levels.forEach(l => l.enemies.forEach(e => e._remaining = e.count));
+    }
+    
+    // Vytvoření UI prvků
     this.createTowerShop();
     this.createAbilityBar();
     this.createLifePurchaseButton();
-    this.setLevel(this.currentLevelIndex);
-    this.updateUI();
-}
+    this.setLevel(this.currentLevelIndex); // Zde se nastaví data pro aktuální level
+    this.updateUI(); // Aktualizuje Lives, Coins, Level atd.
+  }
 
   loadMap(layout) {
     this.map = new Map(this.canvas, layout);
