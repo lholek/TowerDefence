@@ -288,4 +288,53 @@ document.addEventListener('DOMContentLoaded', async () => {
           infoDiv.textContent = "Failed to load map info.";
         }
     });
+
+    mapFileInput.addEventListener('change', async () => {
+        if (!mapFileInput.files.length) return;
+
+        const infoDiv = document.getElementById('mapInfo');
+        infoDiv.innerHTML = 'Loading map info...';
+
+        try {
+            const data = await loadMapDataFromFile(mapFileInput.files[0]);
+            console.log(data);
+            const map = extractMapObject(data);
+
+            if (!map) {
+                infoDiv.textContent = 'Invalid map file.';
+                return;
+            }
+
+            // SAME behavior as JSON select
+            if (map.description && map.description.length > 0) {
+                const desc = map.description[0];
+                infoDiv.innerHTML = `
+                    <div>
+                        <p><b>Description:</b><br>${desc.descriptionText || '-'}</p>
+                        <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
+                        <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
+                        <p><b>Map size:</b> ${desc['map_size'] || '-'}</p>
+                        <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
+                        <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
+                    </div>
+                `;
+            } else {
+                infoDiv.textContent = 'No description available.';
+            }
+
+            renderMinimap(map);
+
+        } catch (err) {
+            console.error('Error loading imported map:', err);
+            infoDiv.textContent = 'Failed to load map file.';
+        }
+    });
+
+    function extractMapObject(data) {
+        if (!data) return null;
+        if (data.maps && Array.isArray(data.maps)) {
+            return data.maps[0];
+        }
+        return data;
+    }
 });
