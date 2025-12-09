@@ -48,6 +48,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    async function updateMapPreview() {
+        const infoDiv = document.getElementById('mapInfo');
+        infoDiv.innerHTML = 'Loading map info...';
+
+        try {
+            const isFileMode = modeFileBtn.classList.contains('active-mode');
+            let map;
+
+            if (isFileMode) {
+                if (!mapFileInput.files.length) {
+                    infoDiv.textContent = 'No map file selected.';
+                    return;
+                }
+
+                const data = await loadMapDataFromFile(mapFileInput.files[0]);
+                map = data.maps ? data.maps[0] : data;
+
+            } else {
+                if (!mapSelect.value) {
+                    infoDiv.textContent = 'No map selected.';
+                    return;
+                }
+
+                const res = await fetch(mapSelect.value);
+                if (!res.ok) throw new Error('Fetch failed');
+                const data = await res.json();
+                map = data.maps ? data.maps[0] : data;
+            }
+
+            if (!map) {
+                infoDiv.textContent = 'Invalid map data.';
+                return;
+            }
+
+            // ✅ description
+            if (map.description && map.description.length) {
+                const d = map.description[0];
+                infoDiv.innerHTML = `
+                    <div>
+                        <p><b>Description:</b><br>${d.descriptionText || '-'}</p>
+                        <p><b>Level count:</b> ${d['level count'] || '-'}</p>
+                        <p><b>Difficulty:</b> ${d.difficulty || '-'}</p>
+                        <p><b>Map size:</b> ${d.map_size || '-'}</p>
+                        <p><b>Tower Types:</b> ${d['tower types'] || '-'}</p>
+                        <p><b>Abilities:</b> ${d.abilites || '-'}</p>
+                    </div>
+                `;
+            } else {
+                infoDiv.textContent = 'No description available.';
+            }
+
+            renderMinimap(map);
+
+        } catch (err) {
+            console.error(err);
+            infoDiv.textContent = 'Failed to load map preview.';
+        }
+    }
     // --- Logika přepínání režimů mapy (Select / File) ---
 
     // Nastaví výchozí režim
@@ -254,87 +312,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Map info
-    mapSelect.addEventListener('change', async () => {
-        const selectedMapFile = mapSelect.value;
-        const infoDiv = document.getElementById('mapInfo');
-        infoDiv.innerHTML = 'Loading map info...';
-        console.log(selectedMapFile);
-        try {
-          const res = await fetch(selectedMapFile);
-          if (!res.ok) throw new Error(`Failed to load: ${res.status}`);
-          const data = await res.json();
-          const map = data.maps[0];
-        
-          if (map && map.description && map.description.length > 0) {
-            const desc = map.description[0]; // use first description object
-            infoDiv.innerHTML = `
-            <div>
-              <p><b>Description:</b><br>${desc.descriptionText}</p>
-              <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
-              <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
-              <p><b>Map size:</b> ${desc['map_size'] || '-'}</p>
-              <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
-              <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
-            </div>
-            `;
-            renderMinimap(map);
+    mapSelect.addEventListener('change', updateMapPreview);
+    mapFileInput.addEventListener('change', updateMapPreview);
 
-          } else {
-            infoDiv.textContent = "No description available.";
-          }
-        } catch (err) {
-          console.error("Error loading map description:", err);
-          infoDiv.textContent = "Failed to load map info.";
-        }
+    modeSelectBtn.addEventListener('click', () => {
+        mapSelectArea.style.display = 'block';
+        fileUploadArea.style.display = 'none';
+        modeSelectBtn.classList.add('active-mode');
+        modeFileBtn.classList.remove('active-mode');
+
+        updateMapPreview(); // ✅ refresh from SELECT
     });
-
-    mapFileInput.addEventListener('change', async () => {
-        if (!mapFileInput.files.length) return;
-
-        const infoDiv = document.getElementById('mapInfo');
-        infoDiv.innerHTML = 'Loading map info...';
-
-        try {
-            const data = await loadMapDataFromFile(mapFileInput.files[0]);
-            console.log(data);
-            const map = extractMapObject(data);
-
-            if (!map) {
-                infoDiv.textContent = 'Invalid map file.';
-                return;
-            }
-
-            // SAME behavior as JSON select
-            if (map.description && map.description.length > 0) {
-                const desc = map.description[0];
-                infoDiv.innerHTML = `
-                    <div>
-                        <p><b>Description:</b><br>${desc.descriptionText || '-'}</p>
-                        <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
-                        <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
-                        <p><b>Map size:</b> ${desc['map_size'] || '-'}</p>
-                        <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
-                        <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
-                    </div>
-                `;
-            } else {
-                infoDiv.textContent = 'No description available.';
-            }
-
-            renderMinimap(map);
-
-        } catch (err) {
-            console.error('Error loading imported map:', err);
-            infoDiv.textContent = 'Failed to load map file.';
-        }
-    });
-
-    function extractMapObject(data) {
-        if (!data) return null;
-        if (data.maps && Array.isArray(data.maps)) {
-            return data.maps[0];
-        }
-        return data;
-    }
 });
