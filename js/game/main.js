@@ -181,4 +181,111 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.href = 'level_editor.html'; 
         });
     }
+
+    //Render minimap
+    function renderMinimap(mapData) {
+      // find or create container elements safely
+      const mapInfo = document.getElementById('mapInfo');
+      if (!mapInfo) {
+        console.warn('renderMinimap: #mapInfo not found in DOM. Aborting minimap render.');
+        return;
+      }
+    
+      // minimap container
+      let minimap = document.getElementById('minimap');
+      if (!minimap) {
+        const container = document.createElement('div');
+        container.id = 'minimapContainer';
+        const inner = document.createElement('div');
+        inner.id = 'minimap';
+        container.appendChild(inner);
+        mapInfo.appendChild(container);
+        minimap = inner;
+      }
+    
+      // clear previous
+      minimap.innerHTML = '';
+    
+      // Update name/description safely
+      const mapName = mapData.name || 'Unnamed Map';
+      const desc = (mapData.description && mapData.description[0] && mapData.description[0].descriptionText) || '';
+      //nameEl.textContent = mapName;
+    
+      // layout must be an array of strings
+      if (!mapData.layout || !Array.isArray(mapData.layout) || mapData.layout.length === 0) {
+        console.warn('renderMinimap: invalid layout in mapData', mapData);
+        return;
+      }
+    
+      const rows = mapData.layout.length;
+      const cols = mapData.layout[0].length;
+    
+      // set grid template based on rows/cols
+      const tileSize = 10; // px - tweak if needed
+      minimap.style.gridTemplateRows = `repeat(${rows}, ${tileSize}px)`;
+      minimap.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
+    
+      // create tiles
+      for (let r = 0; r < rows; r++) {
+        // Assuming mapData.layout[r] is now an ARRAY of tile identifiers
+        const rowTiles = mapData.layout[r]; 
+            
+        // Iterate through the tile identifiers in the array
+        for (let c = 0; c < cols; c++) {
+          // Get the full tile identifier (e.g., 'S1', 'E2', 'O', '-')
+          const tileIdentifier = rowTiles[c] || 'X'; 
+          const tile = document.createElement('div');
+          tile.className = 'minimap-tile';
+        
+          // 🌟 Use a regular expression to match all 'O', 'S[number]', and 'E[number]' patterns
+          const isPathTile = /^(O|S\d+|E\d+)$/.test(tileIdentifier);
+
+          if (isPathTile) {
+            tile.classList.add('path');
+          } else if (tileIdentifier === '-') {
+            tile.classList.add('sky');
+          } else {
+            // Default for 'X' or any other unknown/unhandled identifier
+            tile.classList.add('block');
+          }
+        
+          minimap.appendChild(tile);
+        }
+      }
+    }
+
+    // Map info
+    mapSelect.addEventListener('change', async () => {
+        const selectedMapFile = mapSelect.value;
+        const infoDiv = document.getElementById('mapInfo');
+        infoDiv.innerHTML = 'Loading map info...';
+        console.log(selectedMapFile);
+        try {
+          const res = await fetch(selectedMapFile);
+          if (!res.ok) throw new Error(`Failed to load: ${res.status}`);
+          const data = await res.json();
+          const map = data.maps[0];
+        
+          if (map && map.description && map.description.length > 0) {
+            const desc = map.description[0]; // use first description object
+            infoDiv.innerHTML = `
+            <div>
+              <p><b>Description:</b><br>${desc.descriptionText}</p>
+              <p><b>Level count:</b> ${desc['level count'] || '-'}</p>
+              <p><b>Difficulty:</b> ${desc.difficulty || '-'}</p>
+              <p><b>Map size:</b> ${desc['map_size'] || '-'}</p>
+              <p><b>Tower Types:</b> ${desc['tower types'] || '-'}</p>
+              <p><b>Abilities:</b> ${desc['abilites'] || '-'}</p>
+            </div>
+            `;
+            renderMinimap(map);
+
+          } else {
+            infoDiv.textContent = "No description available.";
+          }
+        } catch (err) {
+          console.error("Error loading map description:", err);
+          infoDiv.textContent = "Failed to load map info.";
+        }
+    });
 });
