@@ -14,7 +14,7 @@ TODOS:
 alpha 0.1.0 ideas:
 - Level editor
 - import map from json file
-
++ po testu zbylo 306 coinu
 
 alpha 0.1.1:
   "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",

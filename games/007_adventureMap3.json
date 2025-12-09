@@ -106,7 +106,7 @@
         "001": {
           "name": "Castle Tower",
           "price": 20,
-          "damage": 32,
+          "damage": 45,
           "fireRate": 1200,
           "range": 350,
           "color": "#797c79",
