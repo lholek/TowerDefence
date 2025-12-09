@@ -106,9 +106,9 @@
         "001": {
           "name": "Castle Tower",
           "price": 20,
-          "damage": 30,
+          "damage": 32,
           "fireRate": 1200,
-          "range": 220,
+          "range": 350,
           "color": "#797c79",
           "sellPrice": 15,
           "speed": 1.75
@@ -116,9 +116,9 @@
         "002": {
           "name": "Wind Tower",
           "price": 20,
-          "damage": 8,
+          "damage": 10,
           "fireRate": 300,
-          "range": 180,
+          "range": 350,
           "color": "#54a6d9",
           "sellPrice": 15,
           "speed": 2.2
@@ -126,9 +126,9 @@
         "003": {
           "name": "High Tower",
           "price": 75,
-          "damage": 60,
+          "damage": 70,
           "fireRate": 750,
-          "range": 300,
+          "range": 450,
           "color": "#281f6b",
           "sellPrice": 50,
           "speed": 2.25
@@ -136,9 +136,9 @@
         "004": {
           "name": "Gryph Tower",
           "price": 125,
-          "damage": 100,
+          "damage": 120,
           "fireRate": 700,
-          "range": 450,
+          "range": 500,
           "color": "#2a8d43",
           "sellPrice": 75,
           "speed": 2.4
