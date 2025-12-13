@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
-          "level count": 9,
+          "level count": 10,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
           "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
@@ -852,7 +852,7 @@
               "speed": 1.5,
               "path": "S3E2",
               "interval": "1000",
-              "coinReward": 11,
+              "coinReward": 15,
               "firstDelay": "0"
             },
             {
@@ -863,7 +863,7 @@
               "path": "S2E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 11
+              "coinReward": 15
             },
             {
               "type": "basic",
@@ -873,7 +873,7 @@
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 11
+              "coinReward": 15
             },
             {
               "type": "basic",
@@ -883,7 +883,112 @@
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 11
+              "coinReward": 15
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 500,
+              "speed": 1.65,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "8000",
+              "coinReward": 17
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 500,
+              "speed": 1.65,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": "8000",
+              "coinReward": 17
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 500,
+              "speed": 1.651,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": "8000",
+              "coinReward": 17
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 500,
+              "speed": 1.65,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "8000",
+              "coinReward": 17
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 1000,
+              "speed": 1,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 16
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 1000,
+              "speed": 1,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 16
+            }
+          ]
+        },
+        {
+          "level": 10,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 1125,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": 750,
+              "coinReward": 16,
+              "firstDelay": "0"
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 1125,
+              "speed": 1,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 1125,
+              "speed": 1,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 1125,
+              "speed": 1,
+              "path": "S4E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
             }
           ]
         }
