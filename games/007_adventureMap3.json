@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
-          "level count": 11,
+          "level count": 12,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
           "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
@@ -1175,6 +1175,21 @@
               "interval": 1000,
               "firstDelay": "25000",
               "coinReward": 21
+            }
+          ]
+        },
+        {
+          "level": 12,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 9999,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 2,
+              "firstDelay": "0"
             }
           ]
         }
