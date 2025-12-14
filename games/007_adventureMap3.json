@@ -56,14 +56,14 @@
           "configId": "lava_floor_wild",
           "name": "WildFire",
           "description": "4s - 75 dmg /  200 ms",
-          "description_text": "3 tile before and after selected tile",
+          "description_text": "3 tiles before and after selected tile",
           "type": "targeted",
           "selectionCount": 7,
           "damage": 75,
           "damage_every": 200,
           "cooldown": 20000,
           "effectDuration": 4000,
-          "color": "#3bba5b",
+          "color": "rgba(59,186,91,0.7)",
           "ui": {
             "icon": "🔥"
           }
@@ -73,14 +73,14 @@
           "configId": "lava_floor_dark",
           "name": "DarkFire",
           "description": "15s - 150 dmg /  150 ms",
-          "description_text": "7 tile before and after selected tile",
+          "description_text": "7 tiles before and after selected tile",
           "type": "targeted",
           "selectionCount": 15,
           "damage": 150,
           "damage_every": 150,
           "cooldown": 60000,
           "effectDuration": 15000,
-          "color": "#403a3a",
+          "color": "rgba(64,58,58,0.7)",
           "ui": {
             "icon": "🔥🔥"
           }
@@ -90,14 +90,14 @@
           "configId": "lava_floor_dragon",
           "name": "DragonFire",
           "description": "30s - 250 dmg /  100 ms",
-          "description_text": "Detailed usage description.",
+          "description_text": "10 tiles before and after selected tile",
           "type": "targeted",
           "selectionCount": 21,
           "damage": 250,
           "damage_every": 100,
           "cooldown": 180000,
           "effectDuration": 30000,
-          "color": "#e21212",
+          "color": "rgba(226,18,18,0.7) ",
           "ui": {
             "icon": "🔥🔥🔥"
           }
