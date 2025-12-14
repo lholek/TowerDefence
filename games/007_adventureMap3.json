@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
-          "level count": 12,
+          "level count": 14,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
           "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
@@ -189,6 +189,7 @@
         "fast",
         "slow",
         "tank",
+        "snake",
         "super-tank",
         "boss"
       ],
@@ -805,7 +806,7 @@
               "type": "super-tank",
               "count": 1,
               "health": 4500,
-              "speed": 0.5,
+              "speed": 0.65,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "12000",
@@ -815,7 +816,7 @@
               "type": "super-tank",
               "count": 1,
               "health": 4500,
-              "speed": 0.5,
+              "speed": 0.65,
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": "12000",
@@ -825,7 +826,7 @@
               "type": "super-tank",
               "count": 1,
               "health": 4500,
-              "speed": 0.5,
+              "speed": 0.65,
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": "12000",
@@ -835,7 +836,7 @@
               "type": "super-tank",
               "count": 1,
               "health": 4500,
-              "speed": 0.5,
+              "speed": 0.65,
               "path": "S4E4",
               "interval": 1000,
               "firstDelay": "12000",
@@ -1183,7 +1184,157 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 9999,
+              "count": 8,
+              "health": 1600,
+              "speed": 1.2,
+              "path": "S1E2",
+              "interval": 750,
+              "coinReward": 26,
+              "firstDelay": "0"
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 800,
+              "speed": 1.7,
+              "path": "S2E2",
+              "interval": "1500",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 800,
+              "speed": 1.7,
+              "path": "S3E3",
+              "interval": "1500",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 1600,
+              "speed": 1.2,
+              "path": "S4E3",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 26
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 5000,
+              "speed": 0.9,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 5000,
+              "speed": 0.9,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 30
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 1600,
+              "speed": 1.2,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 26
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 1600,
+              "speed": 1.2,
+              "path": "S4E2",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 26
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 800,
+              "speed": 1.7,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": "18000",
+              "coinReward": 28
+            },
+            {
+              "type": "fast",
+              "count": 4,
+              "health": 800,
+              "speed": 1.7,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": "18000",
+              "coinReward": 28
+            }
+          ]
+        },
+        {
+          "level": 13,
+          "enemies": [
+            {
+              "type": "snake",
+              "count": 10,
+              "health": 1800,
+              "speed": 0.8,
+              "path": "S1E2",
+              "interval": "100",
+              "coinReward": 34,
+              "firstDelay": "0"
+            },
+            {
+              "type": "snake",
+              "count": 10,
+              "health": 1800,
+              "speed": 0.8,
+              "path": "S2E2",
+              "interval": "100",
+              "firstDelay": "3500",
+              "coinReward": 34
+            },
+            {
+              "type": "snake",
+              "count": 10,
+              "health": 1800,
+              "speed": 0.8,
+              "path": "S3E3",
+              "interval": "100",
+              "firstDelay": "3500",
+              "coinReward": 34
+            },
+            {
+              "type": "snake",
+              "count": 10,
+              "health": 1800,
+              "speed": 0.8,
+              "path": "S4E3",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 34
+            }
+          ]
+        },
+        {
+          "level": 14,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 100000,
               "health": 200,
               "speed": 1.5,
               "path": "S1E1",
