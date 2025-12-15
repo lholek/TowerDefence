@@ -1802,7 +1802,7 @@
               "speed": 1,
               "path": "S4E4",
               "interval": 1000,
-              "firstDelay": 0,
+              "firstDelay": "10000",
               "coinReward": 45
             },
             {
@@ -1812,7 +1812,7 @@
               "speed": 1,
               "path": "S4E4",
               "interval": 1000,
-              "firstDelay": 0,
+              "firstDelay": "10000",
               "coinReward": 45
             }
           ]
