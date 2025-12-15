@@ -11,7 +11,10 @@
         "Improved - Fixed bug - Fix that ability wont run out during pause (vissualy)",
         "Improved - Added Level Editor where you can edit map or build new one",
         "Improved - Added option to load custom levels built in the editor",
-        "TODO: Added 3rd adveture map, whit mutliple paths and multiple Lava Floors",
+        "Improved - Added 3rd adveture map, whit mutliple paths and multiple Lava Floors",
+        "TODO: Do a proper rewiev of Alpha 0.1.0 and try to fix a lot of bugs",
+        "TODO: BUGs - Center close button in version history ",
+        "TODO: BUGs - Try to find as many bugs as i can ",
         "TODO: -------------------",
         "?TODO: Second Ability - Towers Fury",
         "?TODO: Add mountins(maybe next verision ?) and Lakes to the map so player can not shoot trough ceritan objects on map"

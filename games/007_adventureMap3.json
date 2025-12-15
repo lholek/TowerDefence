@@ -1,10 +1,8 @@
 {
   "maps": [
     {
-      "name": "Adventure Map III (Crossroads) - Otestovano 15 levelu",
+      "name": "Adventure Map III (Crossroads)",
       "startingCoins": 100,
-      "_zustaek_po_testu_lvl_16": 2356,
-      "__zustaek_po_testu_lvl_16": "2 god tower",
       "startingLives": 5,
       "description": [
         {

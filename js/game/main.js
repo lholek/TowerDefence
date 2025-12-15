@@ -91,8 +91,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p><b>Level count:</b> ${d['level count'] || '-'}</p>
                         <p><b>Difficulty:</b> ${d.difficulty || '-'}</p>
                         <p><b>Map size:</b> ${d.map_size || '-'}</p>
-                        <p><b>Tower Types:</b> ${d['tower types'] || '-'}</p>
-                        <p><b>Abilities:</b> ${d.abilites || '-'}</p>
+                        <p><b>Tower Types:</b> ${Object.keys(map.towerTypes).length || '-'}</p>
+                        <p>
+                        <b>Abilities:</b> 
+                          ${
+                            map.abilities && map.abilities.length > 0
+                              ? map.abilities.map(ab => `${ab.name} ${ab.ui.icon}`).join('<br>')
+                              : '-'
+                          }
+                        </p>
                     </div>
                 `;
             } else {
