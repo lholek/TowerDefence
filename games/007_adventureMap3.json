@@ -9,7 +9,7 @@
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",
-          "level count": 19,
+          "level count": 20,
           "map_size": "33x33",
           "difficulty": "⭐⭐⭐⭐⭐",
           "abilites": "WildFire🔥, DarkFire🔥🔥, DragonFire🔥🔥🔥"
@@ -1050,7 +1050,7 @@
               "count": 1,
               "health": 5000,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S2E2",
               "interval": 1000,
               "firstDelay": "20000",
               "coinReward": 400
@@ -1060,7 +1060,7 @@
               "count": 1,
               "health": 5000,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S3E3",
               "interval": 1000,
               "firstDelay": "20000",
               "coinReward": 400
@@ -1070,7 +1070,7 @@
               "count": 1,
               "health": 5000,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S4E4",
               "interval": 1000,
               "firstDelay": "20000",
               "coinReward": 400
@@ -1141,7 +1141,7 @@
               "coinReward": 28
             },
             {
-              "type": "slow",
+              "type": "double",
               "count": 8,
               "health": 1000,
               "speed": 1,
@@ -1151,7 +1151,7 @@
               "coinReward": 21
             },
             {
-              "type": "slow",
+              "type": "double",
               "count": 8,
               "health": 1000,
               "speed": 1,
@@ -1161,7 +1161,7 @@
               "coinReward": 21
             },
             {
-              "type": "slow",
+              "type": "double",
               "count": 8,
               "health": 1000,
               "speed": 1,
@@ -1171,7 +1171,7 @@
               "coinReward": 21
             },
             {
-              "type": "slow",
+              "type": "double",
               "count": 8,
               "health": 1000,
               "speed": 1,
@@ -1821,13 +1821,98 @@
           "level": 19,
           "enemies": [
             {
+              "type": "snake",
+              "count": 8,
+              "health": 5500,
+              "speed": 0.95,
+              "path": "S1E3",
+              "interval": "100",
+              "coinReward": 50,
+              "firstDelay": "0"
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 5500,
+              "speed": 0.95,
+              "path": "S2E2",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 50
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 5500,
+              "speed": 0.95,
+              "path": "S3E3",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 50
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 5500,
+              "speed": 0.95,
+              "path": "S4E2",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 50
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 7000,
+              "speed": 1.38,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": "5000",
+              "coinReward": 45
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 7000,
+              "speed": 1.38,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": "5000",
+              "coinReward": 45
+            },
+            {
+              "type": "super-tank",
+              "count": 2,
+              "health": 40000,
+              "speed": 0.8,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "13000",
+              "coinReward": 250
+            },
+            {
+              "type": "super-tank",
+              "count": 2,
+              "health": 40000,
+              "speed": 0.8,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "13000",
+              "coinReward": 250
+            }
+          ]
+        },
+        {
+          "level": 20,
+          "enemies": [
+            {
               "type": "basic",
               "count": 1000,
               "health": 200,
               "speed": 1.5,
               "path": "S1E1",
               "interval": 750,
-              "coinReward": 40,
+              "coinReward": 2,
               "firstDelay": "0"
             }
           ]
