@@ -200,7 +200,7 @@ async loadGameData(mapSource) {
       this.towers.push(tower);
       this.playerCoins -= type.price;
       this.updateUI();
-      this.logEvent(`Player built "${type.name}"`);
+      this.logEvent(`Player built <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
     } else {
       this.logEvent("Not enough coins!");
     }
@@ -223,7 +223,7 @@ async loadGameData(mapSource) {
           this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
           this.towers = this.towers.filter(t => t !== tower);
           this.updateUI();
-          this.logEvent(`Sold tower "${type ? type.name : tower.typeKey}"`);
+          this.logEvent(`Player sold <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
       }
   }
 
@@ -686,12 +686,14 @@ update(deltaTime) {
       // --- END OPTIMIZATION ---
   }
 
-  logEvent(text) {
+  logEvent(htmlString) {
     const div = document.createElement('div');
     div.classList.add('text-center');
-    div.textContent = text;
+    div.innerHTML = htmlString;
     this.eventsList.appendChild(div);
-    if (this.eventsList.children.length > 30) this.eventsList.removeChild(this.eventsList.children[0]);
+    if (this.eventsList.children.length > 30) {
+      this.eventsList.removeChild(this.eventsList.children[0]);
+    }
     this.eventsList.scrollTop = this.eventsList.scrollHeight;
   }
 

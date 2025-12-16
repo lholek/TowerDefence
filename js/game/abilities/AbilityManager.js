@@ -90,6 +90,7 @@ export default class AbilityManager {
     ability._lastUsed = performance.now();
     const card = document.getElementById(ability.id);
     if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
+      this.game.logEvent(`Player used ability <span style="font-weight:600;">${ability.name}</span>`);
       this.startAbilityCooldownTimer(ability, card);
     }
   }
