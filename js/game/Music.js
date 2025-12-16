@@ -20,12 +20,15 @@ export class MusicManager {
             './assets/sounds/background/medieval_007.mp3',
             './assets/sounds/background/medieval_008.mp3',
             './assets/sounds/background/medieval_009_Medieval-Abbey.mp3',
-            './assets/sounds/background/medieval_010_Medieval-Background.mp3'
+            './assets/sounds/background/medieval_010_Medieval-Background.mp3',
+            './assets/sounds/background/medieval_011_Medieval-Escape.mp3',
+            './assets/sounds/background/medieval_012_The-Minstrels-Return.mp3'
         ];
         this.trackNames = [
             'medieval_001', 'medieval_002', 'medieval_003', 'medieval_004',
             'medieval_005', 'medieval_006', 'medieval_007', 'medieval_008',
-            'Medieval Abbey (009)', 'Medieval Background (010)'
+            'Medieval Abbey (009)', 'Medieval Background (010)', 'Medieval Escape (011)',
+            'The Minstrels Return (012)'
         ];
 
         // Load settings
