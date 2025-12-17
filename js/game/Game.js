@@ -16,7 +16,7 @@ export default class Game {
     this.enemies = [];
 
     this.playerCoins = 10;
-    this.playerLives = 10;
+    this.playerLifes = 10;
 
     this.lastTime = 0;
     this.spawnTimer = 0;
@@ -39,7 +39,7 @@ export default class Game {
     this.abilityManager = new AbilityManager(this);
 
     this.levelText = document.getElementById('levelText');
-    this.livesText = document.getElementById('livesText');
+    this.lifesText = document.getElementById('lifesText');
     this.coinsText = document.getElementById('coinsText');
     this.progressBar = document.getElementById('progressBar');
     this.gameOverlay = document.getElementById('gameOverlay');
@@ -99,7 +99,7 @@ async loadGameData(mapSource) {
     // 2. INICIALIZACE ZÁKLADNÍCH HERNÍCH HODNOT
     // Použijte ?? pro nastavení výchozí hodnoty, pokud je hodnota v JSONu undefined nebo null
     this.playerCoins = this.levelData.startingCoins ?? 10;
-    this.playerLives = this.levelData.startingLives ?? 10;
+    this.playerLifes = this.levelData.startingLifes ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
     
     // 3. NAČTENÍ MAPY A SCHOPNOSTÍ
@@ -137,7 +137,7 @@ async loadGameData(mapSource) {
     this.createAbilityBar();
     this.createLifePurchaseButton();
     this.setLevel(this.currentLevelIndex); // Zde se nastaví data pro aktuální level
-    this.updateUI(); // Aktualizuje Lives, Coins, Level atd.
+    this.updateUI(); // Aktualizuje Lifes, Coins, Level atd.
   }
 
   loadMap(layout) {
@@ -230,7 +230,7 @@ async loadGameData(mapSource) {
   loop(now) {
     const deltaTime = now - (this.lastTime || now);
     this.lastTime = now;
-    if (!this.paused && this.gameStarted && this.playerLives > 0) {
+    if (!this.paused && this.gameStarted && this.playerLifes > 0) {
       this.update(deltaTime);
       this.render();
     }
@@ -325,10 +325,10 @@ update(deltaTime) {
 
         // Case B: Enemy Reached End
         if (e.currentIndex >= e.path.length - 1) {
-            this.playerLives--;
+            this.playerLifes--;
             this.updateUI();
 
-            if (this.playerLives <= 0) {
+            if (this.playerLifes <= 0) {
                 this.gameStarted = false;
                 this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
                 setTimeout(() => this.resetGameToMenu(), 5000);
@@ -344,7 +344,7 @@ update(deltaTime) {
     // ----------------------------------------------------------------
     // The level is complete when ALL enemy groups have finished spawning AND 
     // ALL spawned enemies currently on the map have been defeated or escaped.
-    if (this.playerLives > 0 && allWavesComplete && this.enemies.length === 0) {
+    if (this.playerLifes > 0 && allWavesComplete && this.enemies.length === 0) {
         this.currentLevelIndex++;
         
         if (this.currentLevelIndex >= this.levelData.levels.length) {
@@ -428,7 +428,7 @@ update(deltaTime) {
   
   updateUI() {
     this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
-    this.livesText.textContent = `❤️ Lives: ${this.playerLives}`;
+    this.lifesText.textContent = `❤️ Lifes: ${this.playerLifes}`;
     this.coinsText.textContent = `🪙 Coins: ${this.playerCoins}`;
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
@@ -586,7 +586,7 @@ update(deltaTime) {
     lifeButton.addEventListener('click', () => {
       if (this.playerCoins >= this.lifePrice) {
         this.playerCoins -= this.lifePrice;
-        this.playerLives += 1;
+        this.playerLifes += 1;
         this.updateUI();
         this.logEvent(`Player bought 1 life ❤️ for ${this.lifePrice} 🪙`);
       
@@ -706,7 +706,7 @@ update(deltaTime) {
 
     // Use dynamic defaults from current map if defined
     this.playerCoins = this.levelData?.startingCoins ?? 10;
-    this.playerLives = this.levelData?.startingLives ?? 10;
+    this.playerLifes = this.levelData?.startingLifes ?? 10;
 
     this.currentLevelIndex = 0;
     this.enemiesKilled = 0;
@@ -751,7 +751,7 @@ update(deltaTime) {
 
     // restore dynamic defaults (if JSON provided)
     this.playerCoins = this.levelData?.startingCoins ?? 10;
-    this.playerLives = this.levelData?.startingLives ?? 10;
+    this.playerLifes = this.levelData?.startingLifes ?? 10;
 
     // reset UI
     this.updateUI();

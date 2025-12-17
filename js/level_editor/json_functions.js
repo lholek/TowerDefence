@@ -217,20 +217,20 @@ export function updateMapFromEditor() {
         console.log(mapData.description);
         let mapTitle = mapData.name;
         let mapStartingCoins = mapData.startingCoins;
-        let mapstartingLives = mapData.startingLives;
+        let mapstartingLifes = mapData.startingLifes;
         let mapDescription = mapData.description[0].descriptionText;
         let mapTileSize = mapData.tileSize;
         let mapDifficulty = mapData.description[0].difficulty;
         console.log(mapTitle);
         console.log(mapStartingCoins);
-        console.log(mapstartingLives);
+        console.log(mapstartingLifes);
         console.log(mapDescription);
         console.log(mapTileSize);
         console.log(mapDifficulty);
 
         document.querySelector("#mapNameInput").value = mapTitle;
         document.querySelector("#startingCoinsInput").value = mapStartingCoins;
-        document.querySelector("#startingLivesInput").value = mapstartingLives;
+        document.querySelector("#startingLifesInput").value = mapstartingLifes;
         document.querySelector("#descriptionTextInput").value = mapDescription;
         document.querySelector("#tileSizeInput").value = mapTileSize;
         document.querySelector("#difficultyInput").value = mapDifficulty;
@@ -373,7 +373,7 @@ export function handleFileLoad(newJsonContent) {
 // --- BASIC INFO EDITOR FUNCTIONS ---
 
 /**
- * Updates top-level map properties (name, startingCoins, startingLives).
+ * Updates top-level map properties (name, startingCoins, startingLifes).
  * Called by the HTML inputs (e.g., onchange="...updateBasicInfo(...)")
  */
 export function updateBasicInfo(key, value) {
@@ -414,7 +414,7 @@ export function updateBasicInfoUI() {
     // 3. Update Editable Inputs (Top-level)
     setVal('mapNameInput', map.name);
     setVal('startingCoinsInput', map.startingCoins);
-    setVal('startingLivesInput', map.startingLives);
+    setVal('startingLifesInput', map.startingLifes);
     setVal('tileSizeInput', map.tileSize); // Read-only in your HTML, but good to set
 
     // 4. Update Description Inputs

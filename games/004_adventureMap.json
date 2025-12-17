@@ -3,7 +3,7 @@
     {
       "name": "Adventure Map",
       "startingCoins": 25,
-      "startingLives": 5,
+      "startingLifes": 5,
       "description": [
         {
           "descriptionText": "First proper Adventure for this game, multiple enemy types, massive map, multiple tower types",

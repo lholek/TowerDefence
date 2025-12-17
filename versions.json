@@ -1,19 +1,6 @@
 {
   "versions": [
     {
-      "version": "Alpha 0.1.1",
-      "relase": "TBC",
-      "changes": [
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates Upcoming updates Upcoming updates Upcoming updates",
-        "Upcoming updates"
-        ]
-    }, 
-    {
       "version": "Alpha 0.1.0",
       "relase": "2025-12-16",
       "changes": [
@@ -75,7 +62,7 @@
       "version": "Alpha 0.0.7",
       "relase": "2025-11-01",
       "changes": [
-        "Improvment - Set - dynamic starting Lives and Coins different for each game",
+        "Improvment - Set - dynamic starting Lifes and Coins different for each game",
         "Improvment - Tiles are now showing color where you can built or not",
         "Improvment - Make the Tower row scrollable so player can choose from more towers",        
         "Improvment - Dynamic live prices, so the game is harder",        

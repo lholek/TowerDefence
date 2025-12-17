@@ -3,7 +3,7 @@
     {
       "name": "Adventure Map III (Crossroads)",
       "startingCoins": 100,
-      "startingLives": 5,
+      "startingLifes": 5,
       "description": [
         {
           "descriptionText": "Massive Map whit multiple Paths, Starts, Exits, Towers,  Abilites. CHALLANGE!!",

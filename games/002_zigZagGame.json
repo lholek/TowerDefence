@@ -3,7 +3,7 @@
     {
       "name": "Zig-Zag",
       "startingCoins": 10,
-      "startingLives": 10,
+      "startingLifes": 10,
       "description": [
         {
           "descriptionText": "Middle map, medium difficulty, less towers",

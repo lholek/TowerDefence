@@ -3,7 +3,7 @@
     {
       "name": "Map Editor test",
       "startingCoins": 25,
-      "startingLives": 100,
+      "startingLifes": 100,
       "description": [
         {
           "descriptionText": "Edit description",

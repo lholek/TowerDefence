@@ -3,7 +3,7 @@
       {
         "name": "Lava Map",
         "startingCoins": 50,
-        "startingLives": 5,
+        "startingLifes": 5,
         "description": [
           {
             "descriptionText": "First proper map to test Abilites",

@@ -4,7 +4,7 @@
       "name": "Adventure Map II - Islands",
       "_startingCoins": 50,
       "startingCoins": 50,
-      "startingLives": 10,
+      "startingLifes": 10,
       "description": [
         {
           "descriptionText": "3 main islands to build the towers",

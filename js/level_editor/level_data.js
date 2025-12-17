@@ -32,7 +32,7 @@ const defaultLevelJson = {
         {
             "name": "EDIT TITLE",
             "startingCoins": 100,
-            "startingLives": 100,
+            "startingLifes": 100,
             "description": [
                 {
                     "descriptionText": "Edit description",
