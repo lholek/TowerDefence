@@ -45,115 +45,159 @@ export default class Tower {
     // NEW METHOD
     _preRenderTower(tileSize) {
         const size = Math.round(tileSize * TOWER_SIZE);
-        const half = size / 2;
 
-        // Create an off-screen canvas
         const offCanvas = document.createElement("canvas");
-        // Make canvas larger to avoid clipping shadows or flags
-        const canvasSize = tileSize * 2;
+        const canvasSize = tileSize * 2.5; 
         offCanvas.width = canvasSize;
         offCanvas.height = canvasSize;
         const ctx = offCanvas.getContext("2d");
 
-        // Center the drawing in the off-screen canvas
-        // We use the same 'cy' offset as your original render
-        const cx = canvasSize / 2;
-        const cy = canvasSize / 2 + 14;
+        const cx = canvasSize / 2.5;
+        const cy = canvasSize / 2; 
 
-        // --- PASTE ALL YOUR STATIC DRAWING CODE FROM render() HERE ---
-        // (Ensure 'roundRect' is now a global helper)
-
-        // shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.18)';
-        ctx.beginPath();
-        ctx.ellipse(cx + 4, cy + half * 0.6, half * 0.95, half * 0.48, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // base
-        const baseW = size * 1.08;
+        // 3. BASE POSITION 
+        const baseW = size * 1.0;
         const baseH = size * 0.32;
         const baseX = cx - baseW / 2;
         const baseY = cy - baseH * 0.3;
+
+        // --- DRAWING ---
+
+        // Deep Ground Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 2, baseW * 0.5, baseH * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Base Gradient
         const baseGrad = ctx.createLinearGradient(baseX, baseY, baseX, baseY + baseH);
         baseGrad.addColorStop(0, '#7a7a7a');
-        baseGrad.addColorStop(1, '#525252');
+        baseGrad.addColorStop(1, '#444');
         ctx.fillStyle = baseGrad;
         roundRect(ctx, baseX, baseY, baseW, baseH, 6, true, true);
 
-        // main body
+        // 4. MAIN BODY
         const bodyW = size * 0.9;
-        const bodyH = size * 1.18;
+        const bodyH = size * 1.4; 
         const bodyX = cx - bodyW / 2;
-        const bodyY = baseY - bodyH + 8;
-        const bodyGrad = ctx.createLinearGradient(bodyX, bodyY, bodyX, bodyY + bodyH);
-        bodyGrad.addColorStop(0, '#60666e');
-        bodyGrad.addColorStop(1, '#4f5459');
+        const bodyY = baseY - bodyH + 8; 
+
+        // 3D Cylinder Lighting
+        const bodyGrad = ctx.createLinearGradient(bodyX, bodyY, bodyX + bodyW, bodyY);
+        bodyGrad.addColorStop(0, '#5a6069'); 
+        bodyGrad.addColorStop(0.2, '#7a818a'); 
+        bodyGrad.addColorStop(0.8, '#3d4145'); 
+        bodyGrad.addColorStop(1, '#2a2d30'); 
         ctx.fillStyle = bodyGrad;
         roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 5, true, true);
 
-        // brick pattern
-        ctx.fillStyle = 'rgba(0,0,0,0.08)';
-        const rowH = Math.max(6, Math.round(bodyH / 7));
+        // 5. BRICK PATTERN
+        ctx.save();
+        roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 5, false, false);
+        ctx.clip();
+        const rowH = Math.max(6, Math.round(bodyH / 8));
         for (let r = 0; r < Math.floor(bodyH / rowH); r++) {
             const y = bodyY + r * rowH;
-            const offset = (r % 2) ? rowH * 0.5 : 0;
-            for (let x = bodyX - offset; x < bodyX + bodyW; x += rowH * 1.4) {
-                ctx.fillRect(x + 2, y + 2, rowH * 1.2, rowH - 4);
+            const isOffset = (r % 2 === 0);
+            const brickW = rowH * 1.5;
+            for (let x = bodyX - (isOffset ? brickW/2 : 0); x < bodyX + bodyW; x += brickW) {
+                ctx.fillStyle = `rgba(0,0,0,${0.12 + Math.random() * 0.08})`;
+                ctx.fillRect(x + 1, y + 1, brickW - 2, rowH - 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.03)';
+                ctx.fillRect(x + 1, y + 1, brickW - 2, 1);
             }
         }
 
-        // door
-        const doorW = size * 0.24;
-        const doorH = size * 0.42;
-        const doorX = cx - doorW / 2;
-        const doorY = bodyY + bodyH * 0.45;
-        ctx.fillStyle = '#6b4423';
-        roundRect(ctx, doorX, doorY, doorW, doorH, 3, true, true);
-        ctx.strokeStyle = '#3d2817';
+        // --- NEW: VERTICAL "CARPET" BANNER ---
+        // This hangs from the top and uses the tower's color
+        const bannerW = bodyW * 0.25;
+        const bannerH = bodyH * 0.45;
+        const bannerX = bodyX + (bodyW * 0.08); // Left-ish side
+        const bannerY = bodyY; 
+
+        ctx.fillStyle = this.color || '#b22222';
+        ctx.beginPath();
+        ctx.moveTo(bannerX, bannerY);
+        ctx.lineTo(bannerX + bannerW, bannerY);
+        ctx.lineTo(bannerX + bannerW, bannerY + bannerH);
+        ctx.lineTo(bannerX + bannerW / 2, bannerY + bannerH + 8); // V-shape bottom
+        ctx.lineTo(bannerX, bannerY + bannerH);
+        ctx.closePath();
+        ctx.fill();
+        // Shadow under banner to make it pop
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(bannerX, bannerY, 2, bannerH);
+
+        ctx.restore();
+
+        // 6. GLOWING WINDOW
+        const winW = size * 0.2;
+        const winH = size * 0.28;
+        const winX = cx - winW / 2;
+        const winY = bodyY + bodyH * 0.25; 
+
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#d9d193';
+        ctx.fillStyle = '#bfb782';
+        roundRect(ctx, winX, winY, winW, winH, 4, true, false);
+        ctx.shadowBlur = 0;
+
+        // --- NEW: SMALL WOODEN DOOR (No knob) ---
+        const doorW = size * 0.22;
+        const doorH = size * 0.35;
+        const doorX = cx - doorW / 2 ;
+        const doorY = (bodyY + bodyH) - doorH - 2 + 2;
+
+        // Brown Wood color
+        ctx.fillStyle = '#5d3a1a'; 
+        roundRect(ctx, doorX, doorY, doorW, doorH, 2, true, true);
+        // Plank lines for texture
+        ctx.strokeStyle = '#3e2712';
         ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(doorX + doorW/2, doorY);
+        ctx.lineTo(doorX + doorW/2, doorY + doorH);
         ctx.stroke();
 
-        // battlements
-        const battW = bodyW + 10;
-        const battH = size * 0.14;
+        // 7. BATTLEMETS 
+        const battW = bodyW + 8;
+        const battH = size * 0.16;
         const battX = cx - battW / 2;
         const battY = bodyY - battH + 2;
-        ctx.fillStyle = '#5a5a5a';
-        for (let i = 0; i < 5; i++) {
-            const bw = battW / 5;
-            const x = battX + i * bw;
-            roundRect(ctx, x + 2, battY, bw - 4, battH, 2, true, true);
+        for (let i = 0; i < 4; i++) {
+            const bw = battW / 4;
+            const bx = battX + i * bw;
+            const bGrad = ctx.createLinearGradient(bx, battY, bx, battY + battH);
+            bGrad.addColorStop(0, '#666');
+            bGrad.addColorStop(1, '#333');
+            ctx.fillStyle = bGrad;
+            roundRect(ctx, bx + 1, battY, bw - 2, battH, 2, true, true);
         }
 
-        // flag pole
-        const poleX = cx + battW * 0.3;
-        const poleTopY = battY - battH * 2.2;
+        // 8. FLAG POLE & WAVE FLAG
+        const poleX = cx + (bodyW * 0.4); 
+        const poleTopY = bodyY - (size * 0.35); 
         ctx.strokeStyle = '#222';
-        ctx.lineWidth = Math.max(1, Math.round(size * 0.03));
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(poleX, battY);
+        ctx.moveTo(poleX, bodyY);
         ctx.lineTo(poleX, poleTopY);
         ctx.stroke();
 
-        // flag
-        const flagW = battW * 0.72;
-        const flagH = battH * 6.0;
-        const fx = poleX + 2;
-        const fy = poleTopY + 4;
+        const flagW = size * 0.5;
+        const flagH = size * 0.25;
         ctx.fillStyle = this.color || '#b22222';
         ctx.beginPath();
-        ctx.moveTo(fx, fy);
-        ctx.lineTo(fx + flagW * 0.85, fy + flagH * 0.35);
-        ctx.lineTo(fx + flagW * 0.45, fy + flagH * 0.65);
-        ctx.closePath();
+        ctx.moveTo(poleX, poleTopY);
+        ctx.bezierCurveTo(poleX + flagW*0.4, poleTopY - 5, poleX + flagW*0.6, poleTopY + 5, poleX + flagW, poleTopY);
+        ctx.lineTo(poleX + flagW * 0.85, poleTopY + flagH/2);
+        ctx.lineTo(poleX + flagW, poleTopY + flagH);
+        ctx.bezierCurveTo(poleX + flagW*0.6, poleTopY + flagH + 5, poleX + flagW*0.4, poleTopY + flagH - 5, poleX, poleTopY + flagH);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
 
         return offCanvas;
     }
-
+    
     update(deltaTime, enemies) {
 
         // --- 1) DO NOT recompute world pos every frame ---
