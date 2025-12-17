@@ -48,7 +48,6 @@ export default class Enemy {
 
   _preRenderEnemy(size) {
     const canvas = document.createElement("canvas");
-    // Extra wide to accommodate the charging sword and shield
     canvas.width = size * 4;
     canvas.height = size * 4;
     const ctx = canvas.getContext("2d");
@@ -56,101 +55,104 @@ export default class Enemy {
     const cx = canvas.width / 2;
     const cy = canvas.height - (size * 0.8);
 
-    // --- 1. THE BIG CHEST (Heavy Plate) ---
-    const bodyW = size * 1.3; // Increased width for "Big Chest"
+    // --- 1. THE BIG CHEST (Heavy Antique Plate) ---
+    const bodyW = size * 1.3; 
     const bodyH = size * 1.1;
     const bodyX = cx - bodyW / 2;
     const bodyY = cy - bodyH;
     
+    // DARK KINGSGUARD PALETTE: Burnished Gold -> Antique Brass -> Deep Umber
     const armorGrad = ctx.createLinearGradient(bodyX, bodyY, bodyX + bodyW, bodyY);
-    armorGrad.addColorStop(0, '#1a1a1a'); 
-    armorGrad.addColorStop(0.3, '#404040'); // Metallic ridge
-    armorGrad.addColorStop(1, '#050505');
+    armorGrad.addColorStop(0, '#5c4a26');   // Dark Bronze Shadow
+    armorGrad.addColorStop(0.4, '#a38b4d'); // Burnished Gold (Darker Highlight)
+    armorGrad.addColorStop(1, '#2e230f');   // Deep Recessed Shadow
     
     ctx.fillStyle = armorGrad;
-    // Layered Chest Plate (rounded but bulky)
+    // Layered Chest Plate
     roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 12, true, true);
     
-    // Armor Detail: Center line and pectoral ridges
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-    ctx.lineWidth = 2;
+    // Armor Detail: Dark etched lines for muscle/plate definition
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)'; 
+    ctx.lineWidth = 1.5;
     ctx.strokeRect(bodyX + bodyW*0.2, bodyY + 10, bodyW*0.6, bodyH*0.4);
 
     // --- 2. THE RECTANGLE HELMET (Great Helm) ---
     const helmW = size * 0.8;
     const helmH = size * 0.9;
     const helmX = cx - helmW / 2;
-    const helmY = bodyY - helmH + 4; // Tucked into chest
+    const helmY = bodyY - helmH + 4; 
     
     ctx.fillStyle = armorGrad;
     roundRect(ctx, helmX, helmY, helmW, helmH, 4, true, true);
     
-    // Eye Slits (Rectangle Medieval Style)
+    // Eye Slits (Pure Black Void)
     ctx.fillStyle = '#000';
-    ctx.fillRect(helmX + 6, helmY + helmH * 0.3, helmW/3, 4); // Left eye
-    ctx.fillRect(helmX + helmW - 6 - helmW/3, helmY + helmH * 0.3, helmW/3, 4); // Right eye
-    // Breathing holes (dots)
+    ctx.fillRect(helmX + 6, helmY + helmH * 0.3, helmW/3, 4); 
+    ctx.fillRect(helmX + helmW - 6 - helmW/3, helmY + helmH * 0.3, helmW/3, 4);
+    
+    // Breathing holes
     for(let i=0; i<3; i++) {
         for(let j=0; j<2; j++) {
             ctx.fillRect(helmX + 10 + (i*6), helmY + helmH*0.6 + (j*6), 2, 2);
         }
     }
 
-    // --- 3. HANDS & ARMS ---
-    ctx.fillStyle = '#262626';
-    // Right Hand (Sword arm)
+    // --- 3. HANDS & ARMS (Antique Gold Gauntlets) ---
+    ctx.fillStyle = '#7a6533'; 
+    // Right Hand
     ctx.beginPath();
     ctx.arc(bodyX + bodyW + 4, bodyY + bodyH * 0.3, 8, 0, Math.PI * 2); 
     ctx.fill();
-    // Left Hand (Shield arm - raised)
+    // Left Hand
     ctx.beginPath();
     ctx.arc(bodyX - 4, bodyY + bodyH * 0.2, 8, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- 4. THE SHIELD (Held Higher) ---
+    // --- 4. THE SHIELD (Blood Wine Red) ---
     const shieldW = size * 0.8;
     const shieldH = size * 1.3;
     const shieldX = bodyX - shieldW + 10;
-    const shieldY = bodyY - 10; // Positioned higher
+    const shieldY = bodyY - 10;
     
-    ctx.fillStyle = '#3e2723'; // Dark Wood
+    ctx.fillStyle = '#3d0a0a'; // Very dark crimson
     roundRect(ctx, shieldX, shieldY, shieldW, shieldH, 5, true, true);
-    // Metal Trim
-    ctx.strokeStyle = '#262626';
+    // Darkened Gold Trim
+    ctx.strokeStyle = '#5c4a26';
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // --- 5. THE CHARGING SWORD (Held High & Right) ---
+    // --- 5. THE CHARGING SWORD (Smoke Steel) ---
     ctx.save();
     ctx.translate(bodyX + bodyW + 4, bodyY + bodyH * 0.3);
-    ctx.rotate(-Math.PI / 8); // Angled forward/up
+    ctx.rotate(-Math.PI / 8);
     
-    // Broadsword Blade
     const swordL = size * 1.6;
-    ctx.fillStyle = '#525252';
+    ctx.fillStyle = '#121212'; // Almost black
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(swordL, -5); // Pointy tip
+    ctx.lineTo(swordL, -5);
     ctx.lineTo(0, 15);
     ctx.closePath();
     ctx.fill();
-    // Shine
-    ctx.fillStyle = '#a3a3a3';
-    ctx.fillRect(5, 2, swordL - 10, 2);
     
-    // Hilt
-    ctx.fillStyle = '#171717';
+    // Antique Gold Hilt
+    ctx.fillStyle = '#5c4a26';
     ctx.fillRect(-5, -5, 10, 25);
     ctx.restore();
 
-    // --- 6. SHORT STURDY LEGS ---
-    ctx.fillStyle = '#0a0a0a';
+    // --- 6. STURDY LEGS (Darkened Armor) ---
+    ctx.fillStyle = armorGrad;
     ctx.fillRect(cx - 15, cy - 2, 10, 12);
     ctx.fillRect(cx + 5, cy - 2, 10, 12);
+    // Dark outline for legs
+    ctx.strokeStyle = '#2e230f';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - 15, cy - 2, 10, 12);
+    ctx.strokeRect(cx + 5, cy - 2, 10, 12);
 
     return canvas;
   }
-
+  
   render(ctx) {
     const time = Date.now() * 0.015;
     const bob = Math.sin(time * 2.5) * 4;  
