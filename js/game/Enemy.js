@@ -55,28 +55,40 @@ export default class Enemy {
     const cx = canvas.width / 2;
     const cy = canvas.height - (size * 0.8);
 
-    // --- 1. THE BIG CHEST (Heavy Antique Plate) ---
+    // --- PALETA PROKLETÉHO RYTÍŘE ---
+    const armorMetal = '#1e1b4b'; // Velmi tmavá modro-černá (Void)
+    const armorHighlight = '#4b5563'; // Studená ocelová
+    const voidGlow = '#a855f7'; // Fialová záře portálu
+    const voidGlowLight = '#d8b4fe'; // Světlá fialová pro vnitřní záři
+
+    // --- 1. TRUP (Duté brnění) ---
     const bodyW = size * 1.3; 
     const bodyH = size * 1.1;
     const bodyX = cx - bodyW / 2;
     const bodyY = cy - bodyH;
     
-    // DARK KINGSGUARD PALETTE: Burnished Gold -> Antique Brass -> Deep Umber
+    // Gradient pro studený kov
     const armorGrad = ctx.createLinearGradient(bodyX, bodyY, bodyX + bodyW, bodyY);
-    armorGrad.addColorStop(0, '#5c4a26');   // Dark Bronze Shadow
-    armorGrad.addColorStop(0.4, '#a38b4d'); // Burnished Gold (Darker Highlight)
-    armorGrad.addColorStop(1, '#2e230f');   // Deep Recessed Shadow
+    armorGrad.addColorStop(0, '#111827'); 
+    armorGrad.addColorStop(0.5, armorHighlight);
+    armorGrad.addColorStop(1, '#000000');
     
     ctx.fillStyle = armorGrad;
-    // Layered Chest Plate
+    ctx.strokeStyle = armorMetal;
+    ctx.lineWidth = 2;
     roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 12, true, true);
-    
-    // Armor Detail: Dark etched lines for muscle/plate definition
-    ctx.strokeStyle = 'rgba(0,0,0,0.4)'; 
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(bodyX + bodyW*0.2, bodyY + 10, bodyW*0.6, bodyH*0.4);
 
-    // --- 2. THE RECTANGLE HELMET (Great Helm) ---
+    // --- FIALOVÁ ZÁŘE ZE SPÁR ---
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = voidGlow;
+    ctx.strokeStyle = voidGlow;
+    ctx.beginPath();
+    ctx.moveTo(bodyX + bodyW * 0.2, bodyY + bodyH * 0.5);
+    ctx.lineTo(bodyX + bodyW * 0.8, bodyY + bodyH * 0.5);
+    ctx.stroke();
+    ctx.shadowBlur = 0; // Vypnout shadow pro další vrstvy
+
+    // --- 2. HELMICE (Great Helm) ---
     const helmW = size * 0.8;
     const helmH = size * 0.9;
     const helmX = cx - helmW / 2;
@@ -85,49 +97,43 @@ export default class Enemy {
     ctx.fillStyle = armorGrad;
     roundRect(ctx, helmX, helmY, helmW, helmH, 4, true, true);
     
-    // Eye Slits (Pure Black Void)
-    ctx.fillStyle = '#000';
-    ctx.fillRect(helmX + 6, helmY + helmH * 0.3, helmW/3, 4); 
-    ctx.fillRect(helmX + helmW - 6 - helmW/3, helmY + helmH * 0.3, helmW/3, 4);
-    
-    // Breathing holes
-    for(let i=0; i<3; i++) {
-        for(let j=0; j<2; j++) {
-            ctx.fillRect(helmX + 10 + (i*6), helmY + helmH*0.6 + (j*6), 2, 2);
-        }
-    }
+    // OČI (Fialová záře místo prázdnoty)
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = voidGlow;
+    ctx.fillStyle = voidGlowLight;
+    ctx.fillRect(helmX + 6, helmY + helmH * 0.3, helmW/3, 5); 
+    ctx.fillRect(helmX + helmW - 6 - helmW/3, helmY + helmH * 0.3, helmW/3, 5);
+    ctx.shadowBlur = 0;
 
-    // --- 3. HANDS & ARMS (Antique Gold Gauntlets) ---
-    ctx.fillStyle = '#7a6533'; 
-    // Right Hand
-    ctx.beginPath();
-    ctx.arc(bodyX + bodyW + 4, bodyY + bodyH * 0.3, 8, 0, Math.PI * 2); 
-    ctx.fill();
-    // Left Hand
-    ctx.beginPath();
-    ctx.arc(bodyX - 4, bodyY + bodyH * 0.2, 8, 0, Math.PI * 2);
-    ctx.fill();
+    // --- 3. GAUNTLETS (Rukavice) ---
+    ctx.fillStyle = armorMetal;
+    // Pravá ruka
+    ctx.beginPath(); ctx.arc(bodyX + bodyW + 4, bodyY + bodyH * 0.3, 8, 0, Math.PI * 2); ctx.fill();
+    // Levá ruka
+    ctx.beginPath(); ctx.arc(bodyX - 4, bodyY + bodyH * 0.2, 8, 0, Math.PI * 2); ctx.fill();
 
-    // --- 4. THE SHIELD (Blood Wine Red) ---
+    // --- 4. ŠTÍT (Erb prázdnoty) ---
     const shieldW = size * 0.8;
     const shieldH = size * 1.3;
     const shieldX = bodyX - shieldW + 10;
     const shieldY = bodyY - 10;
     
-    ctx.fillStyle = '#3d0a0a'; // Very dark crimson
+    ctx.fillStyle = '#0f172a'; // Černo-modrá
     roundRect(ctx, shieldX, shieldY, shieldW, shieldH, 5, true, true);
-    // Darkened Gold Trim
-    ctx.strokeStyle = '#5c4a26';
-    ctx.lineWidth = 3;
-    ctx.stroke();
+    
+    // Fialový symbol na štítu (Runa)
+    ctx.strokeStyle = voidGlow;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(shieldX + 5, shieldY + 5, shieldW - 10, shieldH - 10);
 
-    // --- 5. THE CHARGING SWORD (Smoke Steel) ---
+    // --- 5. MEČ (Void Blade) ---
     ctx.save();
     ctx.translate(bodyX + bodyW + 4, bodyY + bodyH * 0.3);
     ctx.rotate(-Math.PI / 8);
     
     const swordL = size * 1.6;
-    ctx.fillStyle = '#121212'; // Almost black
+    // Čepel, která vypadá jako ztmavlá ocel s fialovým ostřím
+    ctx.fillStyle = '#000';
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.lineTo(swordL, -5);
@@ -135,20 +141,16 @@ export default class Enemy {
     ctx.closePath();
     ctx.fill();
     
-    // Antique Gold Hilt
-    ctx.fillStyle = '#5c4a26';
-    ctx.fillRect(-5, -5, 10, 25);
+    ctx.strokeStyle = voidGlow;
+    ctx.lineWidth = 1;
+    ctx.stroke(); // Fialové ostří
+    
     ctx.restore();
 
-    // --- 6. STURDY LEGS (Darkened Armor) ---
-    ctx.fillStyle = armorGrad;
-    ctx.fillRect(cx - 15, cy - 2, 10, 12);
-    ctx.fillRect(cx + 5, cy - 2, 10, 12);
-    // Dark outline for legs
-    ctx.strokeStyle = '#2e230f';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(cx - 15, cy - 2, 10, 12);
-    ctx.strokeRect(cx + 5, cy - 2, 10, 12);
+    // --- 6. NOHY ---
+    ctx.fillStyle = '#000';
+    ctx.fillRect(cx - 15, cy - 2, 10, 15);
+    ctx.fillRect(cx + 5, cy - 2, 10, 15);
 
     return canvas;
   }
