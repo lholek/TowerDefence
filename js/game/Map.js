@@ -49,7 +49,7 @@ export default class Map {
         }
     }
     this._generateGrassTiles();
-    this._generateRoadVariants();
+    this._generateRoadTemplates();
   }
 
   // Normalize: expects layout already as array-of-arrays
@@ -265,72 +265,62 @@ export default class Map {
 
   // --- RENDER (keeps your original render but uses tokens) ---
   render(ctx) {
+    // 1. Clear canvas
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     ctx.save();
     ctx.translate(this.camera.x, this.camera.y);
     ctx.scale(this.camera.zoom, this.camera.zoom);
 
-    for (let r = 0; r < this.rows; r++) {
-        for (let c = 0; c < this.cols; c++) {
-            const center = this.tileToWorld(c, r);
-            const x = center.x - this.tileSize / 2;
-            const y = center.y - this.tileSize / 2;
+    // Calculate which tiles are visible (Viewport Culling)
+    const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
+    const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
+    const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
+    const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
+
+    // SINGLE PASS FOR TERRAIN
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c] ?? '');
 
-            if (tok === 'X') {
-                // RENDER DETAILED GRASS
-                const variantIndex = this.terrainIndices[r][c];
-                ctx.drawImage(this.grassVariants[variantIndex], x, y);
-            } else if (tok === 'O') {
-                // 1. Draw the pre-generated tile (The base road)
-                const roadIdx = this.terrainIndices[r][c] % this.roadVariants.length;
-                ctx.drawImage(this.roadVariants[roadIdx], x, y);
+            // 1. SKIP DRAWING IF TRANSPARENT TOKEN
+            if (tok === '-') {
+                continue; // Move to the next tile, leaving this area clear
+            }
+            
+            const bounds = this.getTileBounds(c, r);
 
-                // 2. SEAMLESS OVERLAP LOGIC
-                // We check neighbors. If there's a road to the East or South, 
-                // we draw "Bridge Stones" that literally sit on the line between them.
-                const neighbors = [
-                    { dr: 0, dc: 1, side: 'E' }, // East
-                    { dr: 1, dc: 0, side: 'S' }  // South
-                ];
-              
-                neighbors.forEach((n, i) => {
-                    const nr = r + n.dr;
-                    const nc = c + n.dc;
+            // 1. Always draw grass first as the base
+            const grassIdx = this.terrainIndices[r][c];
+            ctx.drawImage(this.grassVariants[grassIdx], bounds.x, bounds.y);
 
-                    // If the neighbor is also a road
-                    if (nr < this.rows && nc < this.cols && this.grid[nr][nc] === 'O') {
-                        // Use a unique seed based on tile position so stones don't "blink"
-                        const seed = (r * 1000) + c + i;
-
-                        // Draw 3-4 stones directly on the boundary line
-                        for (let j = 0; j < 3; j++) {
-                            const sRand = this._seededRandom(seed + j);
-
-                            // Position stones exactly on the seam
-                            const bridgeX = (n.side === 'E') ? x + this.tileSize : x + (sRand * this.tileSize);
-                            const bridgeY = (n.side === 'S') ? y + this.tileSize : y + (sRand * this.tileSize);
-                        
-                            // Draw the stone (this will overlap both tiles)
-                            this._drawSingleStone(ctx, bridgeX, bridgeY, ["#71717a", "#52525b", "#a1a1aa"]);
-                        }
-                    }
-                });
-            } else if (tok === '-') {
-                ctx.fillStyle = 'transparent';
-                ctx.fillRect(x, y, this.tileSize, this.tileSize);
-            } else {
-                // OTHER TILES
-                let fill = '#111';
-                switch (true) {
-                    case (/^S/i.test(tok)): fill = '#1b4332'; break;
-                    case (/^E/i.test(tok)): fill = '#450a0a'; break;
-                    default: fill = '#1a1a1a'; break;
-                }
-                ctx.fillStyle = fill;
-                ctx.fillRect(x, y, this.tileSize, this.tileSize);
+            // 2. If it's a road, draw the BAKED template on top
+            if (tok === 'O' || /^S/i.test(tok) || /^E/i.test(tok)) {
+                const type = this._getRoadType(r, c);
+                // This image already contains the bricks and the borders!
+                ctx.drawImage(this.roadTiles[type], bounds.x, bounds.y);
             }
         }
     }
+
+    // PASS 2: MARKERS (Keep this separate so they are always on top)
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
+            const tok = String(this.grid[r][c] ?? '');
+            if (/^S/i.test(tok) || /^E/i.test(tok)) {
+                const bounds = this.getTileBounds(c, r);
+                const centerX = bounds.x + this.tileSize / 2;
+                const centerY = bounds.y + this.tileSize / 2;
+
+                if (/^S/i.test(tok)) {
+                    this._drawMarker(ctx, centerX, centerY, "#16a34a", "START", tok);
+                } else {
+                    this._drawMarker(ctx, centerX, centerY, "#dc2626", "END", tok);
+                }
+            }
+        }
+    }
+
     ctx.restore();
   }
 
@@ -453,10 +443,12 @@ export default class Map {
   }
 
   getTileBounds(col, row) {
-    const center = this.tileToWorld(col, row);
-    const x = center.x - this.tileSize / 2;
-    const y = center.y - this.tileSize / 2;
-    return { x, y, width: this.tileSize, height: this.tileSize };
+    return {
+        x: Math.round(col * this.tileSize), // Use Math.round to prevent sub-pixel gaps
+        y: Math.round(row * this.tileSize),
+        width: this.tileSize,
+        height: this.tileSize
+    };
   }
 
   syncSize() {
@@ -485,7 +477,7 @@ export default class Map {
 
   _generateRoadVariants() {
     this.roadVariants = [];
-    // 1. Natural Grey Palette (Zinc, Slate, and Stone Greys)
+    // Natural Grey Palette
     const stoneColors = ["#71717a", "#52525b", "#a1a1aa", "#3f3f46", "#78716c", "#44403c"];
 
     for (let i = 0; i < 8; i++) {
@@ -494,29 +486,27 @@ export default class Map {
         canvas.height = this.tileSize;
         const tctx = canvas.getContext("2d");
 
-        // 2. Draw Grass Background
-        const grassRef = this.grassVariants[i % this.grassVariants.length];
-        tctx.drawImage(grassRef, 0, 0);
+        // FIX 1: Clear canvas to be transparent (No grass drawn here anymore)
+        tctx.clearRect(0, 0, this.tileSize, this.tileSize);
 
-        // 3. Subtle "Dirt Path" underlay
-        tctx.fillStyle = "rgba(68, 64, 60, 0.2)";
+        // FIX 2: Dirt Path Underlay (Using semi-transparent brown)
+        // This gives the stones a "grounded" look on the grass below
+        tctx.fillStyle = "rgba(68, 64, 60, 0.3)";
         tctx.beginPath();
-        tctx.arc(this.tileSize/2, this.tileSize/2, this.tileSize/2.2, 0, Math.PI*2);
+        tctx.arc(this.tileSize / 2, this.tileSize / 2, this.tileSize / 2.2, 0, Math.PI * 2);
         tctx.fill();
 
-        // 4. Higher Density Stone Scatter (Approx 30-40 attempts)
-        for (let j = 0; j < 40; j++) {
+        // 3. Higher Density Stone Scatter
+        for (let j = 0; j < 45; j++) {
             const x = Math.random() * this.tileSize;
             const y = Math.random() * this.tileSize;
 
-            // NATURAL EDGE LOGIC: 
-            // Stones are very likely in the center, but rare at the corners.
             const dx = x - this.tileSize / 2;
             const dy = y - this.tileSize / 2;
-            const dist = Math.sqrt(dx*dx + dy*dy);
+            const dist = Math.sqrt(dx * dx + dy * dy);
             const normalizedDist = dist / (this.tileSize / 2);
             
-            // If we are near the edge (dist > 0.7), we have a high chance to skip drawing
+            // Edge Erosion: Stones are denser in center, sparse at edges
             if (normalizedDist > 0.8 && Math.random() > 0.1) continue;
             if (normalizedDist > 0.6 && Math.random() > 0.4) continue;
 
@@ -527,19 +517,20 @@ export default class Map {
   }
 
   _drawSingleStone(tctx, x, y, colors) {
-    // Use seeded random or math for size if calling from render to prevent blinking
-    // For now, we'll keep it simple:
-    const w = 8 + (Math.abs(Math.sin(x + y)) * 6); 
-    const h = 6 + (Math.abs(Math.cos(x * y)) * 6);
-    const col = colors[Math.floor(Math.abs(Math.sin(x)) * colors.length)];
+    // Deterministic size/color based on position to prevent "flicker"
+    const w = 6 + (Math.abs(Math.sin(x)) * 10);
+    const h = 5 + (Math.abs(Math.cos(y)) * 8);
+    const col = colors[Math.floor(Math.abs(Math.sin(x + y)) * colors.length)];
+    const angle = Math.sin(x * y) * 0.5;
 
     tctx.save();
     tctx.translate(x, y);
+    tctx.rotate(angle);
 
-    // 1. Soft Shadow (makes it look like it's on top of grass)
-    tctx.fillStyle = "rgba(0,0,0,0.25)";
+    // 1. Ambient Occlusion (Soft shadow under stone)
+    tctx.fillStyle = "rgba(0,0,0,0.3)";
     tctx.beginPath();
-    tctx.roundRect(-w/2 + 1, -h/2 + 1, w + 1, h + 1, 3);
+    tctx.roundRect(-w/2 + 2, -h/2 + 2, w, h, 3);
     tctx.fill();
 
     // 2. Stone Body
@@ -548,12 +539,18 @@ export default class Map {
     tctx.roundRect(-w/2, -h/2, w, h, 3);
     tctx.fill();
 
-    // 3. Simple highlight
-    tctx.strokeStyle = "rgba(255,255,255,0.1)";
+    // 3. 3D Highlight (Top-Left bevel)
+    tctx.strokeStyle = "rgba(255,255,255,0.15)";
     tctx.lineWidth = 1;
     tctx.strokeRect(-w/2, -h/2, w, h);
 
     tctx.restore();
+  }
+  
+  // Add this if you haven't yet
+  _seededRandom(seed) {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
   }
 
   _drawRoadShape(ctx, x, y, w, h, n, s, w_edge, e_edge) {
@@ -576,5 +573,156 @@ export default class Map {
   _seededRandom(seed) {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
+  }
+
+  _drawRoadConnections(ctx, r, c, x, y) {
+    const connections = [
+        { dr: 0, dc: 1, type: 'east' },
+        { dr: 1, dc: 0, type: 'south' }
+    ];
+
+    connections.forEach(conn => {
+        const nr = r + conn.dr;
+        const nc = c + conn.dc;
+
+        if (nr < this.rows && nc < this.cols && this.grid[nr][nc] === 'O') {
+            const seed = (r * 31) + (c * 17);
+            const stoneColors = ["#71717a", "#52525b", "#3f3f46", "#a1a1aa"];
+            
+            for (let i = 0; i < 4; i++) {
+                const sRand = this._seededRandom(seed + i);
+                
+                const stoneX = (conn.type === 'east') ? x + this.tileSize : x + (sRand * this.tileSize);
+                const stoneY = (conn.type === 'south') ? y + this.tileSize : y + (sRand * this.tileSize);
+
+                this._drawSingleStone(ctx, stoneX, stoneY, stoneColors);
+            }
+        }
+    });
+  }
+
+  _drawMarker(ctx, x, y, color, label, subtext = "") {
+    const size = this.tileSize * 0.6;
+    ctx.save();
+    ctx.translate(x, y);
+
+    // 1. Outer Glow/Shadow
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+
+    // 2. Stone Plate (3D look)
+    ctx.fillStyle = "#334155"; // Dark stone base
+    this.roundRect(ctx, -size/2, -size/2, size, size, 8, true, false);
+    
+    // 3. Colored Inset
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.8;
+    this.roundRect(ctx, -size/2 + 4, -size/2 + 4, size - 8, size - 8, 4, true, false);
+    ctx.globalAlpha = 1.0;
+
+    // 4. Text Labels
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.font = `bold ${this.tileSize * 0.18}px Arial`;
+    ctx.fillText(label, 0, 5);
+    
+    if (subtext) {
+        ctx.font = `${this.tileSize * 0.12}px Arial`;
+        ctx.fillText(subtext, 0, 18);
+    }
+
+    ctx.restore();
+  }
+
+  _generateRoadTemplates() {
+    this.roadTiles = {};
+    const types = ['H', 'V', 'LU', 'LD', 'RU', 'RD', 'TU', 'TD', 'TL', 'TR', 'CROSS', 'NONE'];
+
+    // Brick settings
+    const bW = this.tileSize / 3;
+    const bH = this.tileSize / 4;
+
+    types.forEach(type => {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.tileSize;
+        canvas.height = this.tileSize;
+        const tctx = canvas.getContext('2d');
+        
+        const ts = this.tileSize;
+        const p = Math.round(ts * 0.1); 
+
+        const up = /V|LU|RU|TU|TL|TR|CROSS/.test(type);
+        const down = /V|LD|RD|TD|TL|TR|CROSS/.test(type);
+        const left = /H|LU|LD|TU|TD|TL|CROSS/.test(type);
+        const right = /H|RU|RD|TU|TD|TR|CROSS/.test(type);
+
+        // 1. MORTAR BASE
+        tctx.fillStyle = "#1e293b"; 
+        tctx.fillRect(0, 0, ts, ts);
+
+        // 2. BAKE CONTINUOUS BRICKS
+        // We simulate the global offset here so they align across tiles
+        tctx.fillStyle = "#475569";
+        for (let i = -1; i < 5; i++) {
+            for (let j = -1; j < 5; j++) {
+                const bx = j * bW;
+                const by = i * bH;
+                
+                // The stagger logic stays the same
+                const rowNum = i; 
+                const stagger = (rowNum % 2 === 0) ? bW / 2 : 0;
+
+                // Draw brick with 1px mortar gap
+                tctx.fillRect(bx + stagger + 1, by + 1, bW - 2, bH - 2);
+                
+                // Add a tiny baked-in highlight for depth
+                tctx.fillStyle = "rgba(255,255,255,0.05)";
+                tctx.fillRect(bx + stagger + 1, by + 1, bW - 2, 1);
+                tctx.fillStyle = "#475569";
+            }
+        }
+
+        // 3. BAKE POLISHED BORDERS ON TOP
+        tctx.fillStyle = "#94a3b8"; 
+        if (!up) tctx.fillRect(0, 0, ts, p);
+        if (!down) tctx.fillRect(0, ts - p, ts, p);
+        if (!left) tctx.fillRect(0, 0, p, ts);
+        if (!right) tctx.fillRect(ts - p, 0, p, ts);
+
+        // Fill the 4 outer corners for perfect connectivity
+        tctx.fillRect(0, 0, p, p);
+        tctx.fillRect(ts - p, 0, p, p);
+        tctx.fillRect(0, ts - p, p, p);
+        tctx.fillRect(ts - p, ts - p, p, p);
+
+        this.roadTiles[type] = canvas;
+    });
+  }
+
+  _getRoadType(r, c) {
+    const check = (row, col) => {
+        const t = this.getTileStatus(col, row);
+        // Returns true if neighbor is a road, start, or end
+        return t === 'O' || /^S/i.test(t) || /^E/i.test(t);
+    };
+
+    const U = check(r - 1, c);
+    const D = check(r + 1, c);
+    const L = check(r, c - 1);
+    const R = check(r, c + 1);
+
+    if (L && R && U && D) return 'CROSS';
+    if (L && R && U) return 'TU';
+    if (L && R && D) return 'TD';
+    if (U && D && L) return 'TL';
+    if (U && D && R) return 'TR';
+    if (L && U) return 'LU';
+    if (L && D) return 'LD';
+    if (R && U) return 'RU';
+    if (R && D) return 'RD';
+    if (L && R) return 'H';
+    if (U && D) return 'V';
+    return 'NONE';
   }
 }
