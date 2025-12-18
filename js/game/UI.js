@@ -157,6 +157,14 @@ document.addEventListener("DOMContentLoaded", () => {
     fpsRunning = true;
     updateFPS();
   }
+
+  // --- Saving differt themes ---
+  const savedBg = localStorage.getItem('game_background') || 'sky'; // 'sky' is the fallback
+  if (bgSelect) {
+      bgSelect.value = savedBg;
+  }
+  applyBackground(savedBg);
+
 });
 
 // Titles
@@ -217,3 +225,27 @@ async function loadVersion() {
 // Execute the function when the DOM is loaded
 // This ensures all elements queried above (document.title, .subtitle-bottom-left) exist.
 document.addEventListener("DOMContentLoaded", loadVersion);
+
+// Inside your settings save event listener
+const bgSelect = document.getElementById('backgroundSelect');
+const gameContainer = document.getElementById('gameContainer');
+
+function applyBackground(type) {
+    const clouds = document.getElementById('cloudsLayer');
+    if (!clouds) return;
+
+    // Remove classes to reset animations
+    clouds.classList.remove('bg-sky', 'bg-sea');
+    
+    // Force a tiny reflow to restart animations if needed
+    void clouds.offsetWidth; 
+
+    clouds.classList.add(`bg-${type}`);
+}
+
+// When saving settings:
+saveSettingsBtn.addEventListener('click', () => {
+    const selectedBg = bgSelect.value;
+    applyBackground(selectedBg);
+    localStorage.setItem('game_background', selectedBg); // Save preference
+});
