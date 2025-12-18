@@ -363,6 +363,7 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
                 case 'S': color = '#38761d'; break; // Start (Dark Green)
                 case 'E': color = '#990000'; break; // End (Dark Red)
                 case 'X': color = '#3F7D3C'; break; // Tower Site (Mid Green)
+                case 'W': color = '#2c4d96'; break; // Tower Site (Mid Green)
                 case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
             }
 

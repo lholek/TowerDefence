@@ -17,13 +17,13 @@
       "layout": [
               ["-","X","X","X","X","X","X","X","X","X","-","-","-","O","E4"],
               ["S1","O","O","O","O","O","O","O","O","O","O","O","-","O","-"],
-              ["-","X","X","X","O","X","X","X","X","X","X","O","O","O","E1"],
-              ["S2","O","O","O","O","X","X","X","X","X","X","O","X","-","-"],
+              ["-","X","X","X","O","X","W","W","W","W","X","O","O","O","E1"],
+              ["S2","O","O","O","O","X","W","W","W","W","X","O","X","-","-"],
               ["-","X","O","X","O","X","O","O","O","O","X","O","X","X","X"],
               ["S3","O","O","X","O","X","O","X","X","O","X","O","X","X","X"],
               ["-","-","O","X","O","X","O","X","O","O","X","O","O","O","E3"],
               ["S4","O","O","X","O","X","O","X","O","X","X","X","X","O","X"],
-              ["-","-","-","X","O","O","O","O","O","O","O","O","O","O","E2"],
+              ["-","W","W","X","O","O","O","O","O","O","O","O","O","O","E2"],
               ["-","-","-","X","X","X","X","X","X","X","X","X","X","X","X"]
           ],
       "abilities": [
@@ -73,46 +73,46 @@
         {
           "level": 1,
           "enemies": [
-                {
-                  "type": "basic",
-                  "count": 5,
-                  "health": 100,
-                  "speed": 1,
-                  "path": "S1E1",
-                  "interval": 1000,
-                  "firstDelay": 0,
-                  "coinReward": 10
-                },
-                {
-                  "type": "basic",
-                  "count": 5,
-                  "health": 100,
-                  "speed": 1,
-                  "path": "S3E3",
-                  "interval": 500,
-                  "firstDelay": 0,
-                  "coinReward": 10
-                },
-                {
-                  "type": "basic",
-                  "count": 5,
-                  "health": 100,
-                  "speed": 1,
-                  "path": "S4E4",
-                  "interval": 1000,
-                  "firstDelay": 3000,
-                  "coinReward": 10
-                },
-                {
-                  "type": "basic",
-                  "count": 5,
-                  "health": 100,
-                  "speed": 1,
-                  "path": "S2E2",
-                  "interval": 500,
-                  "firstDelay": 8000,
-                  "coinReward": 10
-                }
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 10
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 500,
+              "firstDelay": 0,
+              "coinReward": 10
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S4E4",
+              "interval": 1000,
+              "firstDelay": 3000,
+              "coinReward": 10
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 500,
+              "firstDelay": 8000,
+              "coinReward": 10
+            }
           ]
         },
         {

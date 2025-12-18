@@ -4,33 +4,63 @@ export default class Map {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
 
-    // normalize and store grid as 2D token array: this.grid[row][col]
+    // 1. NORMALIZE GRID (Basics first)
     this.grid = this.normalizeLayout(layout);
     this.rows = this.grid.length;
     this.cols = this.grid[0].length;
     this.tileSize = tileSize;
 
-    // camera state (keep your existing camera code)
-    this.camera = {
-      x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
-      minZoom: 0.3, maxZoom: 1
-    };
-
-    // detect special tiles, starts/ends
-    this.starts = {}; // e.g. {S1:{row,col}, ...}
-    this.ends = {};
+    // 2. TERRAIN VARIATION (Required for visuals)
+    // We do this BEFORE the road so the road knows what grass is underneath it
+    this.terrainIndices = [];
     for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const t = String(this.grid[r][c] ?? '');
-        if (/^S/i.test(t)) this.starts[t] = { row: r, col: c };
-        if (/^E/i.test(t)) this.ends[t] = { row: r, col: c };
-      }
+        this.terrainIndices[r] = [];
+        for (let c = 0; c < this.cols; c++) {
+            this.terrainIndices[r][c] = Math.floor(Math.random() * 10);
+        }
     }
 
-    // Precompute paths for pairs S# -> E#
-    this.paths = this.generatePaths();
+    // 3. GENERATE VISUAL ASSETS
+    // CRITICAL FIX: Generate the actual grass images BEFORE calling _prerenderRoad
+    this._generateGrassTiles();
 
-    // Mouse events for drag/zoom (keep existing handlers)
+    // 4. DETECT SPECIAL TILES
+    this.starts = {}; 
+    this.ends = {};
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            const t = String(this.grid[r][c] ?? '');
+            if (/^S/i.test(t)) this.starts[t] = { row: r, col: c };
+            if (/^E/i.test(t)) this.ends[t] = { row: r, col: c };
+        }
+    }
+
+    // 5. PATHS & CAMERA
+    this.paths = this.generatePaths();
+    this.camera = {
+        x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
+        minZoom: 0.3, maxZoom: 1
+    };
+
+    // 6. INITIALIZE AAA ROAD SYSTEM (Prerendering)
+    this.roadLayer = document.createElement('canvas');
+    this.roadLayer.width = this.cols * this.tileSize;
+    this.roadLayer.height = this.rows * this.tileSize;
+
+    // 6b. Initialize Water Layer
+    this.waterLayer = document.createElement('canvas');
+    this.waterLayer.width = this.cols * this.tileSize;
+    this.waterLayer.height = this.rows * this.tileSize;
+    this._prerenderWater();
+    
+    // AAA Atmosphere settings
+    this.sunDir = { x: 1, y: 1 }; 
+    this.shadowOpacity = 0.4;
+
+    // BAKE THE ROAD (Now safe because grass images exist)
+    this._prerenderRoad();
+
+    // 7. INPUTS & FINAL SETUP
     this.canvas.addEventListener('mousedown', e => this.startDrag(e));
     this.canvas.addEventListener('mousemove', e => this.drag(e));
     this.canvas.addEventListener('mouseup', e => this.stopDrag());
@@ -39,18 +69,7 @@ export default class Map {
     this.canvas.style.cursor = 'grab';
 
     this.clampCamera();
-
-    this.terrainIndices = [];
-    for (let r = 0; r < this.rows; r++) {
-        this.terrainIndices[r] = [];
-        for (let c = 0; c < this.cols; c++) {
-            // Assign a random number from 0 to 9
-            this.terrainIndices[r][c] = Math.floor(Math.random() * 10);
-        }
-    }
-    this._generateGrassTiles();
-    this._generateRoadTemplates();
-  }
+}
 
   // Normalize: expects layout already as array-of-arrays
   normalizeLayout(layout) {
@@ -78,6 +97,7 @@ export default class Map {
       const tok = String(this.grid[r][c] ?? '');
       // treat 'O' and any S*/E*/T* as walkable; treat 'X' as obstacle; treat '-' as blocked for pathing
       if (tok === 'X') return false;
+      if (tok === 'W') return false;
       if (tok === '-') return false;
       // everything else is walkable (O, S1, E1, L, etc.)
       return true;
@@ -150,7 +170,7 @@ export default class Map {
 
   _generateGrassTiles() {
     this.grassVariants = [];
-    const baseColor = '#3f7d3c';
+    const baseColors = ['#3f7d3c', '#376d35', '#4a8c46'];
 
     for (let i = 0; i < 10; i++) {
         const canvas = document.createElement('canvas');
@@ -158,170 +178,90 @@ export default class Map {
         canvas.height = this.tileSize;
         const tctx = canvas.getContext('2d');
 
-        // 1. Fill Base
-        tctx.fillStyle = baseColor;
+        tctx.fillStyle = baseColors[i % baseColors.length];
         tctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
-        // 2. Add "Organic Blobs" (This fixes the grid look)
-        // We draw dark/light blobs that cross tile boundaries
-        tctx.fillStyle = 'rgba(0,0,0,0.05)';
-        tctx.beginPath();
-        tctx.arc(Math.random()*this.tileSize, Math.random()*this.tileSize, this.tileSize, 0, Math.PI*2);
-        tctx.fill();
-
-        // 3. Dense Grass Blades (Vertical)
-        for (let j = 0; j < 40; j++) {
-            const gx = Math.random() * this.tileSize;
-            const gy = Math.random() * this.tileSize;
+        // Přidání lístků a jetele
+        for (let j = 0; j < 15; j++) {
+            const lx = Math.random() * this.tileSize;
+            const ly = Math.random() * this.tileSize;
+            tctx.save();
+            tctx.translate(lx, ly);
+            tctx.rotate(Math.random() * Math.PI);
             
-            // Dark blade
-            tctx.fillStyle = 'rgba(0,0,0,0.1)';
-            tctx.fillRect(gx, gy, 1, 4 + Math.random()*4);
-            
-            // Light blade
-            tctx.fillStyle = 'rgba(255,255,255,0.06)';
-            tctx.fillRect(gx+1, gy, 1, 2);
+            if (Math.random() > 0.7) {
+                tctx.fillStyle = "#8a5a23"; // Suchý list
+                tctx.beginPath();
+                tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
+                tctx.fill();
+            } else {
+                tctx.fillStyle = "#4ade80"; // Jetel
+                for(let k=0; k<3; k++) {
+                    tctx.rotate((Math.PI * 2) / 3);
+                    tctx.beginPath();
+                    tctx.arc(2, 0, 1.5, 0, Math.PI * 2);
+                    tctx.fill();
+                }
+            }
+            tctx.restore();
         }
-
-        // 4. THE FIX: Corner Softening
-        // Faintly darken the corners so tiles don't have "sharp" edges
-        const grad = tctx.createRadialGradient(this.tileSize/2, this.tileSize/2, this.tileSize/4, this.tileSize/2, this.tileSize/2, this.tileSize/1.2);
-        grad.addColorStop(0, 'transparent');
-        grad.addColorStop(1, 'rgba(0,0,0,0.08)');
-        tctx.fillStyle = grad;
-        tctx.fillRect(0, 0, this.tileSize, this.tileSize);
-
         this.grassVariants.push(canvas);
-    }
-  }
-
-  _generateStonePath() {
-    this.stonePath = document.createElement("canvas");
-    this.stonePath.width = this.tileSize;
-    this.stonePath.height = this.tileSize;
-    const tctx = this.stonePath.getContext("2d");
-
-    // 1. MORTAR (Pitch Black gaps for maximum depth)
-    tctx.fillStyle = "#0f172a"; 
-    tctx.fillRect(0, 0, this.tileSize, this.tileSize);
-
-    // 2. DARK SLATE STONES (Your specific layout)
-    const stones = [
-        { x: 0, y: 0, w: 0.45, h: 0.45, c: "#5F6366" },       // Slate Grey
-        { x: 0.45, y: 0, w: 0.55, h: 0.35, c: "#62686D" },    // Dark Steel
-        { x: 0, y: 0.45, w: 0.35, h: 0.55, c: "#868686" },    // Blueish Charcoal (Brightest)
-        { x: 0.35, y: 0.35, w: 0.35, h: 0.35, c: "#817E7D" }, // Center Small
-        { x: 0.7, y: 0.35, w: 0.3, h: 0.65, c: "#5F6366" },   // Side Tall
-        { x: 0.35, y: 0.7, w: 0.35, h: 0.3, c: "#817E7D" }    // Bottom wide
-    ];
-
-    stones.forEach(s => {
-        const x = s.x * this.tileSize;
-        const y = s.y * this.tileSize;
-        const w = s.w * this.tileSize;
-        const h = s.h * this.tileSize;
-
-        tctx.save();
-        tctx.fillStyle = s.c;
-
-        // 3. JAGGED SHAPE
-        tctx.beginPath();
-        tctx.moveTo(x + 2, y + 2);
-        tctx.lineTo(x + w - 3, y + 3);
-        tctx.lineTo(x + w - 2, y + h - 3);
-        tctx.lineTo(x + 4, y + h - 2);
-        tctx.closePath();
-        tctx.fill();
-
-        // 4. THE "STUNNING" GLINT (High Contrast Edges)
-        // Even on dark stones, a bright thin edge makes it look premium
-        tctx.strokeStyle = "rgba(255, 255, 255, 0.12)"; 
-        tctx.lineWidth = 1;
-        tctx.beginPath();
-        tctx.moveTo(x + 4, y + h - 4);
-        tctx.lineTo(x + 3, y + 3);
-        tctx.lineTo(x + w - 4, y + 3);
-        tctx.stroke();
-
-        // 5. DEEP CRACKS (Weathering)
-        if (Math.random() > 0.5) {
-            tctx.strokeStyle = "rgba(0,0,0,0.5)";
-            tctx.lineWidth = 1.5;
-            tctx.beginPath();
-            tctx.moveTo(x + w/2, y + 5);
-            tctx.lineTo(x + w/2 - 3, y + h - 5);
-            tctx.stroke();
-        }
-        
-        tctx.restore();
-    });
-
-    // 6. SURFACE NOISE (Subtle Granite Grain)
-    for (let i = 0; i < 40; i++) {
-        tctx.fillStyle = "rgba(255,255,255,0.03)";
-        tctx.fillRect(Math.random() * this.tileSize, Math.random() * this.tileSize, 1, 1);
     }
   }
 
   // --- RENDER (keeps your original render but uses tokens) ---
   render(ctx) {
-    // 1. Clear canvas
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
     ctx.translate(this.camera.x, this.camera.y);
     ctx.scale(this.camera.zoom, this.camera.zoom);
 
-    // Calculate which tiles are visible (Viewport Culling)
+    // 1. VÝPOČET VIDITELNÉ OBLASTI A SOURADNIC (Musí být nahoře!)
     const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
     const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
     const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
     const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
 
-    // SINGLE PASS FOR TERRAIN
+    const sourceX = startCol * this.tileSize;
+    const sourceY = startRow * this.tileSize;
+    const sourceW = (endCol - startCol) * this.tileSize;
+    const sourceH = (endRow - startRow) * this.tileSize;
+
+    // 2. PASS: ZÁKLADNÍ TRÁVA (Vykreslovaná po dlaždicích)
     for (let r = startRow; r < endRow; r++) {
         for (let c = startCol; c < endCol; c++) {
-            const tok = String(this.grid[r][c] ?? '');
-
-            // 1. SKIP DRAWING IF TRANSPARENT TOKEN
-            if (tok === '-') {
-                continue; // Move to the next tile, leaving this area clear
-            }
-            
+            if (this.grid[r][c] === '-') continue;
             const bounds = this.getTileBounds(c, r);
-
-            // 1. Always draw grass first as the base
-            const grassIdx = this.terrainIndices[r][c];
-            ctx.drawImage(this.grassVariants[grassIdx], bounds.x, bounds.y);
-
-            // 2. If it's a road, draw the BAKED template on top
-            if (tok === 'O' || /^S/i.test(tok) || /^E/i.test(tok)) {
-                const type = this._getRoadType(r, c);
-                // This image already contains the bricks and the borders!
-                ctx.drawImage(this.roadTiles[type], bounds.x, bounds.y);
-            }
+            ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], bounds.x, bounds.y);
         }
     }
 
-    // PASS 2: MARKERS (Keep this separate so they are always on top)
+    // 3. PASS: VODA (Prerenderovaná vrstva - nyní už sourceX existuje)
+    ctx.drawImage(this.waterLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
+
+    // 4. PASS: CESTA (Prerenderovaná vrstva)
+    ctx.drawImage(this.roadLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
+
+    // 5. PASS: MARKERY (Start/Cíl)
     for (let r = startRow; r < endRow; r++) {
         for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c] ?? '');
-            if (/^S/i.test(tok) || /^E/i.test(tok)) {
+            if (/^S|E/i.test(tok)) {
                 const bounds = this.getTileBounds(c, r);
-                const centerX = bounds.x + this.tileSize / 2;
-                const centerY = bounds.y + this.tileSize / 2;
-
-                if (/^S/i.test(tok)) {
-                    this._drawMarker(ctx, centerX, centerY, "#16a34a", "START", tok);
-                } else {
-                    this._drawMarker(ctx, centerX, centerY, "#dc2626", "END", tok);
-                }
+                this._drawMarker(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, /^S/i.test(tok) ? "#16a34a" : "#dc2626", tok);
             }
         }
     }
 
-    ctx.restore();
+    ctx.restore(); // Konec transformace kamery
+
+    // 6. PASS: AAA Cinematic Vignette (Screen-space efekt)
+    const vGrad = ctx.createRadialGradient(this.canvas.width/2, this.canvas.height/2, this.canvas.width/4, this.canvas.width/2, this.canvas.height/2, this.canvas.width);
+    vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vGrad.addColorStop(1, 'rgba(0,0,0,0.2)');
+    ctx.fillStyle = vGrad;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   // --- TILE / COORD conversions ---
@@ -365,6 +305,7 @@ export default class Map {
     if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
     if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
     if (tok === '-') return false;        // blocked tiles
+    if (tok === 'W') return false;        // blocked tiles
   
     // everything else (X, B, L, etc.) is buildable
     return true;
@@ -451,13 +392,6 @@ export default class Map {
     };
   }
 
-  syncSize() {
-    const rect = this.canvas.getBoundingClientRect();
-    const DPR = window.devicePixelRatio || 1;
-    this.canvas.width = Math.round(rect.width * DPR);
-    this.canvas.height = Math.round(rect.height * DPR);
-    this.ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  }
 
   roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     ctx.beginPath();
@@ -474,131 +408,9 @@ export default class Map {
     if (fill) ctx.fill();
     if (stroke) ctx.stroke();
   }
-
-  _generateRoadVariants() {
-    this.roadVariants = [];
-    // Natural Grey Palette
-    const stoneColors = ["#71717a", "#52525b", "#a1a1aa", "#3f3f46", "#78716c", "#44403c"];
-
-    for (let i = 0; i < 8; i++) {
-        const canvas = document.createElement("canvas");
-        canvas.width = this.tileSize;
-        canvas.height = this.tileSize;
-        const tctx = canvas.getContext("2d");
-
-        // FIX 1: Clear canvas to be transparent (No grass drawn here anymore)
-        tctx.clearRect(0, 0, this.tileSize, this.tileSize);
-
-        // FIX 2: Dirt Path Underlay (Using semi-transparent brown)
-        // This gives the stones a "grounded" look on the grass below
-        tctx.fillStyle = "rgba(68, 64, 60, 0.3)";
-        tctx.beginPath();
-        tctx.arc(this.tileSize / 2, this.tileSize / 2, this.tileSize / 2.2, 0, Math.PI * 2);
-        tctx.fill();
-
-        // 3. Higher Density Stone Scatter
-        for (let j = 0; j < 45; j++) {
-            const x = Math.random() * this.tileSize;
-            const y = Math.random() * this.tileSize;
-
-            const dx = x - this.tileSize / 2;
-            const dy = y - this.tileSize / 2;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const normalizedDist = dist / (this.tileSize / 2);
-            
-            // Edge Erosion: Stones are denser in center, sparse at edges
-            if (normalizedDist > 0.8 && Math.random() > 0.1) continue;
-            if (normalizedDist > 0.6 && Math.random() > 0.4) continue;
-
-            this._drawSingleStone(tctx, x, y, stoneColors);
-        }
-        this.roadVariants.push(canvas);
-    }
-  }
-
-  _drawSingleStone(tctx, x, y, colors) {
-    // Deterministic size/color based on position to prevent "flicker"
-    const w = 6 + (Math.abs(Math.sin(x)) * 10);
-    const h = 5 + (Math.abs(Math.cos(y)) * 8);
-    const col = colors[Math.floor(Math.abs(Math.sin(x + y)) * colors.length)];
-    const angle = Math.sin(x * y) * 0.5;
-
-    tctx.save();
-    tctx.translate(x, y);
-    tctx.rotate(angle);
-
-    // 1. Ambient Occlusion (Soft shadow under stone)
-    tctx.fillStyle = "rgba(0,0,0,0.3)";
-    tctx.beginPath();
-    tctx.roundRect(-w/2 + 2, -h/2 + 2, w, h, 3);
-    tctx.fill();
-
-    // 2. Stone Body
-    tctx.fillStyle = col;
-    tctx.beginPath();
-    tctx.roundRect(-w/2, -h/2, w, h, 3);
-    tctx.fill();
-
-    // 3. 3D Highlight (Top-Left bevel)
-    tctx.strokeStyle = "rgba(255,255,255,0.15)";
-    tctx.lineWidth = 1;
-    tctx.strokeRect(-w/2, -h/2, w, h);
-
-    tctx.restore();
-  }
-  
-  // Add this if you haven't yet
   _seededRandom(seed) {
       const x = Math.sin(seed) * 10000;
       return x - Math.floor(x);
-  }
-
-  _drawRoadShape(ctx, x, y, w, h, n, s, w_edge, e_edge) {
-    const r = 20; // Road edge roundness
-    ctx.beginPath();
-    // Top-Left
-    if (!n && !w_edge) ctx.moveTo(x + r, y); else ctx.moveTo(x, y);
-    // Top-Right
-    if (!n && !e_edge) { ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); }
-    else ctx.lineTo(x + w, y);
-    // Bottom-Right
-    if (!s && !e_edge) { ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); }
-    else ctx.lineTo(x + w, y + h);
-    // Bottom-Left
-    if (!s && !w_edge) { ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); }
-    else ctx.lineTo(x, y + h);
-    ctx.closePath();
-  }
-
-  _seededRandom(seed) {
-    const x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
-  }
-
-  _drawRoadConnections(ctx, r, c, x, y) {
-    const connections = [
-        { dr: 0, dc: 1, type: 'east' },
-        { dr: 1, dc: 0, type: 'south' }
-    ];
-
-    connections.forEach(conn => {
-        const nr = r + conn.dr;
-        const nc = c + conn.dc;
-
-        if (nr < this.rows && nc < this.cols && this.grid[nr][nc] === 'O') {
-            const seed = (r * 31) + (c * 17);
-            const stoneColors = ["#71717a", "#52525b", "#3f3f46", "#a1a1aa"];
-            
-            for (let i = 0; i < 4; i++) {
-                const sRand = this._seededRandom(seed + i);
-                
-                const stoneX = (conn.type === 'east') ? x + this.tileSize : x + (sRand * this.tileSize);
-                const stoneY = (conn.type === 'south') ? y + this.tileSize : y + (sRand * this.tileSize);
-
-                this._drawSingleStone(ctx, stoneX, stoneY, stoneColors);
-            }
-        }
-    });
   }
 
   _drawMarker(ctx, x, y, color, label, subtext = "") {
@@ -635,94 +447,213 @@ export default class Map {
     ctx.restore();
   }
 
-  _generateRoadTemplates() {
-    this.roadTiles = {};
-    const types = ['H', 'V', 'LU', 'LD', 'RU', 'RD', 'TU', 'TD', 'TL', 'TR', 'CROSS', 'NONE'];
+  _renderGlobalShadows(ctx, sR, eR, sC, eC) {
+    ctx.save();
+    ctx.fillStyle = `rgba(0, 0, 0, ${this.shadowOpacity})`;
+    
+    for (let r = sR; r < eR; r++) {
+        for (let c = sC; c < eC; c++) {
+            const tok = String(this.grid[r][c] ?? '');
+            // Only markers and towers cast these long shadows
+            if (/^S|E/i.test(tok)) {
+                const bounds = this.getTileBounds(c, r);
+                const cx = bounds.x + this.tileSize / 2;
+                const cy = bounds.y + this.tileSize / 2;
 
-    // Brick settings
-    const bW = this.tileSize / 3;
-    const bH = this.tileSize / 4;
-
-    types.forEach(type => {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.tileSize;
-        canvas.height = this.tileSize;
-        const tctx = canvas.getContext('2d');
-        
-        const ts = this.tileSize;
-        const p = Math.round(ts * 0.1); 
-
-        const up = /V|LU|RU|TU|TL|TR|CROSS/.test(type);
-        const down = /V|LD|RD|TD|TL|TR|CROSS/.test(type);
-        const left = /H|LU|LD|TU|TD|TL|CROSS/.test(type);
-        const right = /H|RU|RD|TU|TD|TR|CROSS/.test(type);
-
-        // 1. MORTAR BASE
-        tctx.fillStyle = "#1e293b"; 
-        tctx.fillRect(0, 0, ts, ts);
-
-        // 2. BAKE CONTINUOUS BRICKS
-        // We simulate the global offset here so they align across tiles
-        tctx.fillStyle = "#475569";
-        for (let i = -1; i < 5; i++) {
-            for (let j = -1; j < 5; j++) {
-                const bx = j * bW;
-                const by = i * bH;
-                
-                // The stagger logic stays the same
-                const rowNum = i; 
-                const stagger = (rowNum % 2 === 0) ? bW / 2 : 0;
-
-                // Draw brick with 1px mortar gap
-                tctx.fillRect(bx + stagger + 1, by + 1, bW - 2, bH - 2);
-                
-                // Add a tiny baked-in highlight for depth
-                tctx.fillStyle = "rgba(255,255,255,0.05)";
-                tctx.fillRect(bx + stagger + 1, by + 1, bW - 2, 1);
-                tctx.fillStyle = "#475569";
+                ctx.beginPath();
+                ctx.ellipse(
+                    cx + (this.tileSize * 0.3 * this.sunDir.x), 
+                    cy + (this.tileSize * 0.3 * this.sunDir.y), 
+                    this.tileSize * 0.4, 
+                    this.tileSize * 0.2, 
+                    Math.PI / 4, 0, Math.PI * 2
+                );
+                ctx.fill();
             }
         }
+    }
+    ctx.restore();
+  }
 
-        // 3. BAKE POLISHED BORDERS ON TOP
-        tctx.fillStyle = "#94a3b8"; 
-        if (!up) tctx.fillRect(0, 0, ts, p);
-        if (!down) tctx.fillRect(0, ts - p, ts, p);
-        if (!left) tctx.fillRect(0, 0, p, ts);
-        if (!right) tctx.fillRect(ts - p, 0, p, ts);
+  _prerenderRoad() {
+    const ctx = this.roadLayer.getContext('2d');
+    const ts = this.tileSize;
+    const stoneColors = ["#57534e", "#78716c", "#44403c", "#a8a29e"];
 
-        // Fill the 4 outer corners for perfect connectivity
-        tctx.fillRect(0, 0, p, p);
-        tctx.fillRect(ts - p, 0, p, p);
-        tctx.fillRect(0, ts - p, p, p);
-        tctx.fillRect(ts - p, ts - p, p, p);
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            const tok = String(this.grid[r][c] ?? '');
+            if (tok === 'O' || /^S/i.test(tok) || /^E/i.test(tok)) {
+                const worldX = c * ts;
+                const worldY = r * ts;
 
-        this.roadTiles[type] = canvas;
+                // 1. DRAW GRASS UNDERLAY
+                // This ensures grass is the "mortar" between stones
+                const grassIdx = this.terrainIndices[r][c];
+                ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
+
+                // 2. SUBTLE DIRT BLEND (The "a little bit of brown" you asked for)
+                // A soft radial glow of dirt color so it doesn't look like floating stones
+                const grad = ctx.createRadialGradient(worldX+ts/2, worldY+ts/2, 0, worldX+ts/2, worldY+ts/2, ts/1.2);
+                grad.addColorStop(0, "rgba(69, 53, 39, 0.4)"); // Center dirt
+                grad.addColorStop(1, "rgba(69, 53, 39, 0)");   // Fade to grass
+                ctx.fillStyle = grad;
+                ctx.fillRect(worldX, worldY, ts, ts);
+
+                // 3. DRAW SEAMLESS STONES
+                const density = 4;
+                const step = ts / density;
+                for (let i = 0; i < density; i++) {
+                    for (let j = 0; j < density; j++) {
+                        const gX = c * density + j;
+                        const gY = r * density + i;
+                        const seed = (gX * 1234) ^ (gY * 5678);
+                        const rand = (s) => (Math.abs(Math.sin(s) * 10000) % 1);
+
+                        const x = worldX + (j * step) + (rand(seed) * (step * 0.6));
+                        const y = worldY + (i * step) + (rand(seed + 1) * (step * 0.6));
+                        const size = step * (0.6 + rand(seed + 2) * 0.5);
+                        const rot = rand(seed + 3) * Math.PI;
+                        const color = stoneColors[Math.floor(rand(seed + 4) * stoneColors.length)];
+
+                        this._drawAAAStone(ctx, x, y, size, rot, color, rand(seed + 5));
+                    }
+                }
+
+                // 4. ADD EDGE OVERGROWTH (Grass covering the road edges)
+                this._drawGrassOvergrowth(ctx, r, c);
+            }
+        }
+    }
+  }
+
+  _drawAAAStone(ctx, x, y, size, rotation, color, variation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+
+    const w = size;
+    const h = size * 0.8;
+
+    // 1. SHADOW (Grounds the stone)
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    this.roundRect(ctx, -w/2 + 2, -h/2 + 2, w, h, 4, true);
+
+    // 2. STONE
+    ctx.fillStyle = color;
+    this.roundRect(ctx, -w/2, -h/2, w, h, 4, true);
+
+    // 3. AAA SHARP HIGHLIGHT (The "Pro" Look)
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-w/2 + 4, -h/2 + 1);
+    ctx.lineTo(w/2 - 4, -h/2 + 1);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  _drawOvergrowthEdge(ctx, r, c, side) {
+    const ts = this.tileSize;
+    const wx = c * ts;
+    const wy = r * ts;
+    // How far the grass encroaches onto the road stones (e.g., 25% of a tile)
+    const depth = ts * 0.25; 
+    
+    // Dark, semi-transparent grass color representing unkempt edges
+    ctx.fillStyle = "rgba(47, 79, 31, 0.6)";
+
+    const numPatches = 12; // Number of grass blobs per tile edge
+
+    for (let i = 0; i < numPatches; i++) {
+        const noiseFunc = (s) => (Math.abs(Math.sin(s * (r+c)*i)) % 1);
+        const noise = noiseFunc(i);
+        // Randomize blob size
+        const sizeX = (ts * 0.08) + (noise * ts * 0.1);
+        const sizeY = (ts * 0.08) + (noiseFunc(i+10) * ts * 0.1);
+
+        let x, y;
+
+        // Position blobs randomly along the specified edge
+        if (side === 'N') {
+            x = wx + Math.random() * ts; 
+            y = wy + (noise * depth) - sizeY/2; // Jitter inwards from top
+        } else if (side === 'S') {
+            x = wx + Math.random() * ts; 
+            y = wy + ts - (noise * depth) - sizeY/2; // Jitter inwards from bottom
+        } else if (side === 'W') {
+            x = wx + (noise * depth) - sizeX/2; // Jitter inwards from left
+            y = wy + Math.random() * ts;
+        } else if (side === 'E') {
+            x = wx + ts - (noise * depth) - sizeX/2; // Jitter inwards from right
+            y = wy + Math.random() * ts;
+        }
+        
+        ctx.beginPath();
+        // Draw an irregular oval blob
+        ctx.ellipse(x, y, sizeX, sizeY, Math.random()*Math.PI, 0, Math.PI*2);
+        ctx.fill();
+    }
+  }
+
+  _drawGrassOvergrowth(ctx, r, c) {
+    const ts = this.tileSize;
+    const wx = c * ts;
+    const wy = r * ts;
+
+    const isNotRoad = (nr, nc) => {
+        if (nr < 0 || nr >= this.rows || nc < 0 || nc >= this.cols) return true;
+        const nt = String(this.grid[nr][nc] ?? '');
+        return !(nt === 'O' || /^S/i.test(nt) || /^E/i.test(nt));
+    };
+
+    ctx.fillStyle = "rgba(40, 70, 25, 0.5)"; // Deep grass color
+    
+    // Check neighbors: if North is grass, draw overgrowth on the top of this tile
+    const sides = [
+        { d: [-1, 0], x: wx, y: wy, w: ts, h: ts * 0.2 }, // North
+        { d: [1, 0], x: wx, y: wy + ts * 0.8, w: ts, h: ts * 0.2 }, // South
+        { d: [0, -1], x: wx, y: wy, w: ts * 0.2, h: ts }, // West
+        { d: [0, 1], x: wx + ts * 0.8, y: wy, w: ts * 0.2, h: ts } // East
+    ];
+
+    sides.forEach(s => {
+        if (isNotRoad(r + s.d[0], c + s.d[1])) {
+            // Draw a fuzzy edge of grass over the stones
+            for(let i=0; i<10; i++) {
+                const px = s.x + Math.random() * s.w;
+                const py = s.y + Math.random() * s.h;
+                ctx.beginPath();
+                ctx.arc(px, py, 4 + Math.random() * 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
     });
   }
 
-  _getRoadType(r, c) {
-    const check = (row, col) => {
-        const t = this.getTileStatus(col, row);
-        // Returns true if neighbor is a road, start, or end
-        return t === 'O' || /^S/i.test(t) || /^E/i.test(t);
-    };
+  _prerenderWater() {
+    const ctx = this.waterLayer.getContext('2d');
+    const ts = this.tileSize;
 
-    const U = check(r - 1, c);
-    const D = check(r + 1, c);
-    const L = check(r, c - 1);
-    const R = check(r, c + 1);
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === 'W') {
+                const x = c * ts;
+                const y = r * ts;
 
-    if (L && R && U && D) return 'CROSS';
-    if (L && R && U) return 'TU';
-    if (L && R && D) return 'TD';
-    if (U && D && L) return 'TL';
-    if (U && D && R) return 'TR';
-    if (L && U) return 'LU';
-    if (L && D) return 'LD';
-    if (R && U) return 'RU';
-    if (R && D) return 'RD';
-    if (L && R) return 'H';
-    if (U && D) return 'V';
-    return 'NONE';
+                // Hluboká voda
+                ctx.fillStyle = "#075985";
+                ctx.fillRect(x, y, ts, ts);
+
+                // Odlesky a hloubka
+                const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
+                grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+                grad.addColorStop(1, "rgba(0, 0, 0, 0.2)");
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, ts, ts);
+            }
+        }
+    }
   }
 }

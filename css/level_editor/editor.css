@@ -369,6 +369,10 @@ h2, h3 {
     background-color: #AD3333; /* Defense/Block color */
     color: white;
 }
+.tile-w {
+    background-color: #2c4d96; /* Empty color */
+    color: #ccc;
+}
 .tile- {
     background-color: #2e261d; /* Empty color */
     color: #ccc;
