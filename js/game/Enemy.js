@@ -1,23 +1,29 @@
 export default class Enemy {
-    constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1) {
-      this.map = map;
-      this.path = path;
-      this.offsetX = offsetX;
-      this.offsetY = offsetY;
-      this.speed = speed;
-      this.maxHealth = health;
-      this.health = health;
-      this.coinReward = coinReward;
-      this.currentIndex = 0;
+  constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1) {
+    this.map = map;
+    this.path = path;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.speed = speed;
+    this.maxHealth = health;
+    this.health = health;
+    this.coinReward = coinReward;
+    this.currentIndex = 0;
 
-      // starting pos: use first path node
-      const startTile = path[0];
-      const pos = this.map.tileToWorld(startTile.col, startTile.row);
-      this.x = pos.x + offsetX;
-      this.y = pos.y + offsetY;
+    const startTile = path[0];
+    const pos = this.map.tileToWorld(startTile.col, startTile.row);
+    this.x = pos.x + offsetX;
+    this.y = pos.y + offsetY;
 
-      this.size = 30;
-    }
+    this.size = 30;
+    this.movingLeft = false;
+
+    // 50/50 šance na typ nepřítele
+    this.type = Math.random() > 0.5 ? 'REVENANT' : 'WRAITH';
+    
+    // Generování grafiky do cache
+    this.cachedCanvas = this._preRenderEnemy(this.size);
+  }
 
   update(deltaTime) {
     if (this.currentIndex >= this.path.length - 1) return;
@@ -28,197 +34,193 @@ export default class Enemy {
 
     const dx = targetX - this.x;
     const dy = targetY - this.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
+    const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // --- TURNING LOGIC: Save the direction ---
-    if (Math.abs(dx) > 0.1) { 
-        this.movingLeft = dx < 0; 
-    }
+    if (Math.abs(dx) > 0.1) this.movingLeft = dx < 0;
 
     const moveAmount = this.speed * (deltaTime / (1000 / 144));
     if (dist < moveAmount) {
-        this.x = targetX;
-        this.y = targetY;
-        this.currentIndex++;
+      this.x = targetX;
+      this.y = targetY;
+      this.currentIndex++;
     } else {
-        this.x += (dx / dist) * moveAmount;
-        this.y += (dy / dist) * moveAmount;
+      this.x += (dx / dist) * moveAmount;
+      this.y += (dy / dist) * moveAmount;
     }
   }
 
-  _preRenderEnemy(size) {
-    const canvas = document.createElement("canvas");
-    canvas.width = size * 4;
-    canvas.height = size * 4;
-    const ctx = canvas.getContext("2d");
-    
-    const cx = canvas.width / 2;
-    const cy = canvas.height - (size * 0.8);
-
-    // --- PALETA PROKLETÉHO RYTÍŘE ---
-    const armorMetal = '#1e1b4b'; // Velmi tmavá modro-černá (Void)
-    const armorHighlight = '#4b5563'; // Studená ocelová
-    const voidGlow = '#a855f7'; // Fialová záře portálu
-    const voidGlowLight = '#d8b4fe'; // Světlá fialová pro vnitřní záři
-
-    // --- 1. TRUP (Duté brnění) ---
-    const bodyW = size * 1.3; 
-    const bodyH = size * 1.1;
-    const bodyX = cx - bodyW / 2;
-    const bodyY = cy - bodyH;
-    
-    // Gradient pro studený kov
-    const armorGrad = ctx.createLinearGradient(bodyX, bodyY, bodyX + bodyW, bodyY);
-    armorGrad.addColorStop(0, '#111827'); 
-    armorGrad.addColorStop(0.5, armorHighlight);
-    armorGrad.addColorStop(1, '#000000');
-    
-    ctx.fillStyle = armorGrad;
-    ctx.strokeStyle = armorMetal;
-    ctx.lineWidth = 2;
-    roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 12, true, true);
-
-    // --- FIALOVÁ ZÁŘE ZE SPÁR ---
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = voidGlow;
-    ctx.strokeStyle = voidGlow;
+  // Pomocná funkce pro kreslení zaoblených obdélníků
+  roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     ctx.beginPath();
-    ctx.moveTo(bodyX + bodyW * 0.2, bodyY + bodyH * 0.5);
-    ctx.lineTo(bodyX + bodyW * 0.8, bodyY + bodyH * 0.5);
-    ctx.stroke();
-    ctx.shadowBlur = 0; // Vypnout shadow pro další vrstvy
-
-    // --- 2. HELMICE (Great Helm) ---
-    const helmW = size * 0.8;
-    const helmH = size * 0.9;
-    const helmX = cx - helmW / 2;
-    const helmY = bodyY - helmH + 4; 
-    
-    ctx.fillStyle = armorGrad;
-    roundRect(ctx, helmX, helmY, helmW, helmH, 4, true, true);
-    
-    // OČI (Fialová záře místo prázdnoty)
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = voidGlow;
-    ctx.fillStyle = voidGlowLight;
-    ctx.fillRect(helmX + 6, helmY + helmH * 0.3, helmW/3, 5); 
-    ctx.fillRect(helmX + helmW - 6 - helmW/3, helmY + helmH * 0.3, helmW/3, 5);
-    ctx.shadowBlur = 0;
-
-    // --- 3. GAUNTLETS (Rukavice) ---
-    ctx.fillStyle = armorMetal;
-    // Pravá ruka
-    ctx.beginPath(); ctx.arc(bodyX + bodyW + 4, bodyY + bodyH * 0.3, 8, 0, Math.PI * 2); ctx.fill();
-    // Levá ruka
-    ctx.beginPath(); ctx.arc(bodyX - 4, bodyY + bodyH * 0.2, 8, 0, Math.PI * 2); ctx.fill();
-
-    // --- 4. ŠTÍT (Erb prázdnoty) ---
-    const shieldW = size * 0.8;
-    const shieldH = size * 1.3;
-    const shieldX = bodyX - shieldW + 10;
-    const shieldY = bodyY - 10;
-    
-    ctx.fillStyle = '#0f172a'; // Černo-modrá
-    roundRect(ctx, shieldX, shieldY, shieldW, shieldH, 5, true, true);
-    
-    // Fialový symbol na štítu (Runa)
-    ctx.strokeStyle = voidGlow;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(shieldX + 5, shieldY + 5, shieldW - 10, shieldH - 10);
-
-    // --- 5. MEČ (Void Blade) ---
-    ctx.save();
-    ctx.translate(bodyX + bodyW + 4, bodyY + bodyH * 0.3);
-    ctx.rotate(-Math.PI / 8);
-    
-    const swordL = size * 1.6;
-    // Čepel, která vypadá jako ztmavlá ocel s fialovým ostřím
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(swordL, -5);
-    ctx.lineTo(0, 15);
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
-    ctx.fill();
-    
-    ctx.strokeStyle = voidGlow;
-    ctx.lineWidth = 1;
-    ctx.stroke(); // Fialové ostří
-    
-    ctx.restore();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
+  }
 
-    // --- 6. NOHY ---
+  _preRenderEnemy(size) {
+    if (this.type === 'REVENANT') return this._drawInfernalGolemCanvas(size);
+    return this._drawInfernalEye(size);
+  }
+
+  _drawInfernalGolemCanvas(tileSize) {
+    const size = tileSize * 1.3;
+    const canvas = document.createElement("canvas");
+    canvas.width = tileSize * 6;
+    canvas.height = tileSize * 7;
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    // Posunuto níž - cy je teď blíž spodku
+    const cy = canvas.height * 0.8; 
+
+    const obsidian = '#0a0a0a'; 
+    const lavaRed = '#dc2626';  
+    const lavaYellow = '#fbbf24';
+
+    // Pomocná funkce pro balvanovitý tvar
+    const drawBoulder = (x, y, w, h, glow = false) => {
+        if (glow) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = lavaRed;
+        }
+        ctx.fillStyle = obsidian;
+        ctx.strokeStyle = lavaRed;
+        ctx.lineWidth = 2;
+        
+        // Nepravidelný osmiúhelník (balvan)
+        ctx.beginPath();
+        ctx.moveTo(x + w*0.2, y);
+        ctx.lineTo(x + w*0.8, y);
+        ctx.lineTo(x + w, y + h*0.3);
+        ctx.lineTo(x + w*0.9, y + h*0.9);
+        ctx.lineTo(x + w*0.5, y + h);
+        ctx.lineTo(x + w*0.1, y + h*0.9);
+        ctx.lineTo(x, y + h*0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Vnitřní žluté žilky (detail)
+        ctx.strokeStyle = lavaYellow;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + w*0.3, y + h*0.3);
+        ctx.lineTo(x + w*0.5, y + h*0.5);
+        ctx.stroke();
+    };
+
+    // --- NOHY (Masivní podpěry) ---
+    drawBoulder(cx - size * 0.7, cy - size * 0.5, size * 0.5, size * 0.6); // Levá
+    drawBoulder(cx + size * 0.2, cy - size * 0.5, size * 0.5, size * 0.6); // Pravá
+
+    // --- TRUP (Velký centrální balvan) ---
+    drawBoulder(cx - size * 0.8, cy - size * 1.6, size * 1.6, size * 1.3, true);
+
+    // --- RAMENA ---
+    drawBoulder(cx - size * 1.4, cy - size * 1.7, size * 0.7, size * 0.7);
+    drawBoulder(cx + size * 0.7, cy - size * 1.7, size * 0.7, size * 0.7);
+
+    // --- HLAVA (Malý, zapuštěný balvan) ---
+    drawBoulder(cx - size * 0.3, cy - size * 2.1, size * 0.6, size * 0.5);
+    ctx.fillStyle = lavaYellow;
+    ctx.fillRect(cx - size * 0.2, cy - size * 1.9, size * 0.4, 3); // Oko
+
+    // --- RUCE ---
+    drawBoulder(cx + size * 0.9, cy - size * 1.1, size * 0.6, size * 0.9); // Pěst
+    // Čepel (Levá)
+    ctx.fillStyle = obsidian;
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 1.1, cy - size * 1.0);
+    ctx.lineTo(cx - size * 1.5, cy + size * 0.2);
+    ctx.lineTo(cx - size * 0.7, cy - size * 0.2);
+    ctx.fill();
+    ctx.strokeStyle = lavaRed;
+    ctx.stroke();
+
+    return canvas;
+  }
+
+  _drawInfernalEye(tileSize) {
+    const size = tileSize * 0.6;
+    const canvas = document.createElement("canvas");
+    canvas.width = tileSize * 3;
+    canvas.height = tileSize * 4; // Vyšší, abychom ho mohli dát níž
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    const cy = canvas.height * 0.7; // Posunuto níž na plátně
+
+    const deepRed = '#7f1d1d';
+    const brightRed = '#ef4444';
+    const intenseYellow = '#fbbf24';
+
+    // Žhnoucí aura
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = brightRed;
+
+    // Dokonale kulaté bělmo (přechod)
+    const eyeGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, size);
+    eyeGrad.addColorStop(0, intenseYellow);
+    eyeGrad.addColorStop(0.5, brightRed);
+    eyeGrad.addColorStop(1, deepRed);
+
+    ctx.fillStyle = eyeGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Zornice
+    ctx.shadowBlur = 0;
     ctx.fillStyle = '#000';
-    ctx.fillRect(cx - 15, cy - 2, 10, 15);
-    ctx.fillRect(cx + 5, cy - 2, 10, 15);
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, size * 0.2, size * 0.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Odlesk
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.beginPath();
+    ctx.arc(cx - size * 0.3, cy - size * 0.3, size * 0.1, 0, Math.PI * 2);
+    ctx.fill();
 
     return canvas;
   }
   
-  render(ctx) {
-    const time = Date.now() * 0.015;
-    const bob = Math.sin(time * 2.5) * 4;  
-    const shift = Math.sin(time) * 4;      
-    const lean = 0.08; 
-
-    // 1. GROUND SHADOW
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(this.x + shift, this.y + this.size/4, this.size * 0.9, this.size * 0.3, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    if (!this.cachedCanvas) this.cachedCanvas = this._preRenderEnemy(this.size);
-    
-    ctx.save();
-    
-    // Move to the enemy position
-    ctx.translate(this.x + shift, this.y + bob);
-
-    // 2. THE FLIP (Fixed: using this.movingLeft from update)
-    if (this.movingLeft) {
-        ctx.scale(-1, 1);
-    }
-
-    // Size adjustment (0.80)
-    ctx.scale(0.80, 0.80); 
-
-    // 3. THE LEAN
-    ctx.transform(1, 0, -lean, 1, 0, 0); 
-    
-    ctx.drawImage(
-        this.cachedCanvas, 
-        -this.size * 2, 
-        -this.size * 3.2, 
-        this.size * 4, 
-        this.size * 4
-    );
-    
-    ctx.restore();
-
-    // 4. HEALTH BAR
+  _drawHealthBar(ctx) {
     const hbW = this.size;
     const pct = Math.max(0, this.health / this.maxHealth);
-    const hby = this.y - this.size * 2.4;
+    const hby = this.y - this.size * 2.6;
     ctx.fillStyle = '#000';
     ctx.fillRect(this.x - hbW/2, hby, hbW, 4);
-    ctx.fillStyle = pct > 0.5 ? '#22c55e' : '#ef4444';
+    ctx.fillStyle = pct > 0.5 ? '#a855f7' : '#ef4444';
     ctx.fillRect(this.x - hbW/2, hby, hbW * pct, 4);
   }
-}
 
-function roundRect(c, x, y, w, h, r, fill, stroke) {
-    if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
-    c.beginPath();
-    c.moveTo(x + r.tl, y);
-    c.lineTo(x + w - r.tr, y);
-    c.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-    c.lineTo(x + w, y + h - r.br);
-    c.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-    c.lineTo(x + r.bl, y + h);
-    c.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-    c.lineTo(x, y + r.tl);
-    c.quadraticCurveTo(x, y, x + r.tl, y);
-    c.closePath();
-    if (fill) c.fill();
-    if (stroke) c.stroke();
-} 
+  render(ctx) {
+    const time = Date.now() * 0.015;
+    ctx.save();
+
+    // Jen velmi jemné, pomalé vznášení celého těla
+    let bob = Math.sin(time * 0.4) * 5; 
+
+    ctx.translate(this.x, this.y + bob);
+    if (this.movingLeft) ctx.scale(-1, 1);
+    
+    // Zmenšení pro měřítko tvých věží
+    ctx.scale(0.65, 0.65); 
+
+    if (this.cachedCanvas) {
+        ctx.drawImage(this.cachedCanvas, -this.size * 2, -this.size * 4, this.size * 4, this.size * 5);
+    }
+    
+    ctx.restore();
+    this._drawHealthBar(ctx);
+  }
+}

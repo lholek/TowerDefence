@@ -504,6 +504,7 @@ export default class Map {
     if (fill) ctx.fill();
     if (stroke) ctx.stroke();
   }
+
   _seededRandom(seed) {
       const x = Math.sin(seed) * 10000;
       return x - Math.floor(x);
@@ -716,24 +717,24 @@ export default class Map {
   }
 
   _drawMagicPortal(ctx, x, y, performanceTime) {
-    // Zabezpečení času
     const time = (typeof performanceTime === 'number' && isFinite(performanceTime)) 
                  ? performanceTime 
                  : performance.now();
     
-    const purpleLight = "#d8b4fe";
-    const purpleMid = "#a855f7";
-    const purpleDark = "#6b21a8";
-    const voidBlack = "#1e1b4b";
+    // NOVÉ PEKELNÉ BARVY
+    const fireLight = "#fef08a";
+    const fireMid = "#ef4444";
+    const fireDark = "#7f1d1d";
+    const obsidianBlack = "#0a0a0a";
 
     ctx.save();
     ctx.translate(x, y);
 
-    // --- 1. VRSTVA: HLUBOKÁ RADIÁLNÍ ZÁŘE (Základna) ---
+    // --- 1. VRSTVA: ŽHNOUCÍ RADIÁLNÍ ZÁŘE ---
     const pulse = Math.sin(time / 400) * 10;
     const baseGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 + pulse);
-    baseGlow.addColorStop(0, "rgba(107, 33, 168, 0.4)");
-    baseGlow.addColorStop(0.7, "rgba(168, 85, 247, 0.1)");
+    baseGlow.addColorStop(0, "rgba(127, 29, 29, 0.5)"); // fireDark s opacitou
+    baseGlow.addColorStop(0.7, "rgba(239, 68, 68, 0.2)"); // fireMid s opacitou
     baseGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
     
     ctx.fillStyle = baseGlow;
@@ -741,7 +742,7 @@ export default class Map {
     ctx.arc(0, 0, 70 + pulse, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- 2. VRSTVA: ROTUJÍCÍ RUNOVÝ KRUH (Kameny) ---
+    // --- 2. VRSTVA: ROTUJÍCÍ OBSIDIÁNOVÉ KAMENY ---
     const stoneCount = 8;
     for (let i = 0; i < stoneCount; i++) {
         ctx.save();
@@ -749,32 +750,32 @@ export default class Map {
         const float = Math.sin((time / 600) + i) * 4;
         ctx.rotate(angle);
         
-        // Stín pod kamenem pro 3D efekt
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        // Stín
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.fillRect(38 + float, 2, 12, 12);
 
-        // Kámen
-        ctx.fillStyle = voidBlack;
+        // Kámen (Obsidián)
+        ctx.fillStyle = obsidianBlack;
         ctx.fillRect(35 + float, -5, 10, 10);
         
-        // Svítící symbol runy (pulzuje)
+        // Žhnoucí runa (Oheň)
         const runeOpacity = 0.5 + Math.sin((time / 200) + i) * 0.5;
         ctx.globalAlpha = runeOpacity;
         ctx.shadowBlur = 15;
-        ctx.shadowColor = purpleMid;
-        ctx.fillStyle = purpleLight;
+        ctx.shadowColor = fireMid;
+        ctx.fillStyle = fireLight;
         ctx.fillRect(38 + float, -2, 4, 4);
         ctx.restore();
     }
 
-    // --- 3. VRSTVA: ENERGETICKÝ VÍR (Vortex) ---
+    // --- 3. VRSTVA: OHNIVÝ VÍR ---
     ctx.save();
     ctx.rotate(-time / 800);
     for (let i = 0; i < 3; i++) {
         ctx.beginPath();
         ctx.rotate((Math.PI * 2) / 3);
         const grad = ctx.createLinearGradient(10, 0, 30, 0);
-        grad.addColorStop(0, purpleLight);
+        grad.addColorStop(0, fireLight);
         grad.addColorStop(1, "transparent");
         ctx.strokeStyle = grad;
         ctx.lineWidth = 4;
@@ -784,32 +785,32 @@ export default class Map {
     }
     ctx.restore();
 
-    // --- 4. VRSTVA: VERTIKÁLNÍ ČÁSTICE (Jiskry stoupající do prostoru) ---
-    // Tento efekt simuluje 3D prostor tím, že částice mění velikost
+    // --- 4. VRSTVA: ŽHAVÉ JISKRY ---
     for (let i = 0; i < 8; i++) {
         const seed = i * 1.5;
-        const pTime = (time * 0.05 + seed * 100) % 100; // 0 až 100
+        const pTime = (time * 0.05 + seed * 100) % 100;
         const opacity = 1 - (pTime / 100);
         const distance = (pTime / 100) * 50;
         const pAngle = seed + (time / 2000);
         
         const px = Math.cos(pAngle) * distance;
-        const py = Math.sin(pAngle) * distance - (pTime * 0.2); // Lehce stoupají "nahoru"
+        const py = Math.sin(pAngle) * distance - (pTime * 0.2);
 
         ctx.globalAlpha = opacity;
-        ctx.fillStyle = purpleLight;
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = purpleMid;
+        ctx.fillStyle = fireLight;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = fireMid;
         ctx.beginPath();
-        ctx.arc(px, py, 2 * opacity, 0, Math.PI * 2);
+        ctx.arc(px, py, 2.5 * opacity, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // --- 5. VRSTVA: JÁDRO (Event Horizon) ---
+    // --- 5. VRSTVA: JÁDRO (Brána do pekel) ---
     ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
     const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
-    coreGrad.addColorStop(0, "#000000"); // Černý střed
-    coreGrad.addColorStop(0.5, purpleDark);
+    coreGrad.addColorStop(0, "#000000"); 
+    coreGrad.addColorStop(0.6, fireDark);
     coreGrad.addColorStop(1, "rgba(0,0,0,0)");
     
     ctx.fillStyle = coreGrad;
@@ -818,5 +819,5 @@ export default class Map {
     ctx.fill();
 
     ctx.restore();
-  }
+}
 }
