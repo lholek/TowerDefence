@@ -49,6 +49,7 @@ export default class Map {
         }
     }
     this._generateGrassTiles();
+    this._generateRoadVariants();
   }
 
   // Normalize: expects layout already as array-of-arrays
@@ -194,7 +195,7 @@ export default class Map {
     }
   }
 
- _generateStonePath() {
+  _generateStonePath() {
     this.stonePath = document.createElement("canvas");
     this.stonePath.width = this.tileSize;
     this.stonePath.height = this.tileSize;
@@ -260,7 +261,7 @@ export default class Map {
         tctx.fillStyle = "rgba(255,255,255,0.03)";
         tctx.fillRect(Math.random() * this.tileSize, Math.random() * this.tileSize, 1, 1);
     }
-}
+  }
 
   // --- RENDER (keeps your original render but uses tokens) ---
   render(ctx) {
@@ -280,14 +281,40 @@ export default class Map {
                 const variantIndex = this.terrainIndices[r][c];
                 ctx.drawImage(this.grassVariants[variantIndex], x, y);
             } else if (tok === 'O') {
-                // RENDER STONE ROAD
-                if (!this.stonePath) this._generateStonePath();
-                ctx.drawImage(this.stonePath, x, y);
-                
-                // Add a very subtle "dirt edge" between road and grass
-                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, this.tileSize, this.tileSize);
+                // 1. Draw the pre-generated tile (The base road)
+                const roadIdx = this.terrainIndices[r][c] % this.roadVariants.length;
+                ctx.drawImage(this.roadVariants[roadIdx], x, y);
+
+                // 2. SEAMLESS OVERLAP LOGIC
+                // We check neighbors. If there's a road to the East or South, 
+                // we draw "Bridge Stones" that literally sit on the line between them.
+                const neighbors = [
+                    { dr: 0, dc: 1, side: 'E' }, // East
+                    { dr: 1, dc: 0, side: 'S' }  // South
+                ];
+              
+                neighbors.forEach((n, i) => {
+                    const nr = r + n.dr;
+                    const nc = c + n.dc;
+
+                    // If the neighbor is also a road
+                    if (nr < this.rows && nc < this.cols && this.grid[nr][nc] === 'O') {
+                        // Use a unique seed based on tile position so stones don't "blink"
+                        const seed = (r * 1000) + c + i;
+
+                        // Draw 3-4 stones directly on the boundary line
+                        for (let j = 0; j < 3; j++) {
+                            const sRand = this._seededRandom(seed + j);
+
+                            // Position stones exactly on the seam
+                            const bridgeX = (n.side === 'E') ? x + this.tileSize : x + (sRand * this.tileSize);
+                            const bridgeY = (n.side === 'S') ? y + this.tileSize : y + (sRand * this.tileSize);
+                        
+                            // Draw the stone (this will overlap both tiles)
+                            this._drawSingleStone(ctx, bridgeX, bridgeY, ["#71717a", "#52525b", "#a1a1aa"]);
+                        }
+                    }
+                });
             } else if (tok === '-') {
                 ctx.fillStyle = 'transparent';
                 ctx.fillRect(x, y, this.tileSize, this.tileSize);
@@ -454,5 +481,100 @@ export default class Map {
     ctx.closePath();
     if (fill) ctx.fill();
     if (stroke) ctx.stroke();
+  }
+
+  _generateRoadVariants() {
+    this.roadVariants = [];
+    // 1. Natural Grey Palette (Zinc, Slate, and Stone Greys)
+    const stoneColors = ["#71717a", "#52525b", "#a1a1aa", "#3f3f46", "#78716c", "#44403c"];
+
+    for (let i = 0; i < 8; i++) {
+        const canvas = document.createElement("canvas");
+        canvas.width = this.tileSize;
+        canvas.height = this.tileSize;
+        const tctx = canvas.getContext("2d");
+
+        // 2. Draw Grass Background
+        const grassRef = this.grassVariants[i % this.grassVariants.length];
+        tctx.drawImage(grassRef, 0, 0);
+
+        // 3. Subtle "Dirt Path" underlay
+        tctx.fillStyle = "rgba(68, 64, 60, 0.2)";
+        tctx.beginPath();
+        tctx.arc(this.tileSize/2, this.tileSize/2, this.tileSize/2.2, 0, Math.PI*2);
+        tctx.fill();
+
+        // 4. Higher Density Stone Scatter (Approx 30-40 attempts)
+        for (let j = 0; j < 40; j++) {
+            const x = Math.random() * this.tileSize;
+            const y = Math.random() * this.tileSize;
+
+            // NATURAL EDGE LOGIC: 
+            // Stones are very likely in the center, but rare at the corners.
+            const dx = x - this.tileSize / 2;
+            const dy = y - this.tileSize / 2;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const normalizedDist = dist / (this.tileSize / 2);
+            
+            // If we are near the edge (dist > 0.7), we have a high chance to skip drawing
+            if (normalizedDist > 0.8 && Math.random() > 0.1) continue;
+            if (normalizedDist > 0.6 && Math.random() > 0.4) continue;
+
+            this._drawSingleStone(tctx, x, y, stoneColors);
+        }
+        this.roadVariants.push(canvas);
+    }
+  }
+
+  _drawSingleStone(tctx, x, y, colors) {
+    // Use seeded random or math for size if calling from render to prevent blinking
+    // For now, we'll keep it simple:
+    const w = 8 + (Math.abs(Math.sin(x + y)) * 6); 
+    const h = 6 + (Math.abs(Math.cos(x * y)) * 6);
+    const col = colors[Math.floor(Math.abs(Math.sin(x)) * colors.length)];
+
+    tctx.save();
+    tctx.translate(x, y);
+
+    // 1. Soft Shadow (makes it look like it's on top of grass)
+    tctx.fillStyle = "rgba(0,0,0,0.25)";
+    tctx.beginPath();
+    tctx.roundRect(-w/2 + 1, -h/2 + 1, w + 1, h + 1, 3);
+    tctx.fill();
+
+    // 2. Stone Body
+    tctx.fillStyle = col;
+    tctx.beginPath();
+    tctx.roundRect(-w/2, -h/2, w, h, 3);
+    tctx.fill();
+
+    // 3. Simple highlight
+    tctx.strokeStyle = "rgba(255,255,255,0.1)";
+    tctx.lineWidth = 1;
+    tctx.strokeRect(-w/2, -h/2, w, h);
+
+    tctx.restore();
+  }
+
+  _drawRoadShape(ctx, x, y, w, h, n, s, w_edge, e_edge) {
+    const r = 20; // Road edge roundness
+    ctx.beginPath();
+    // Top-Left
+    if (!n && !w_edge) ctx.moveTo(x + r, y); else ctx.moveTo(x, y);
+    // Top-Right
+    if (!n && !e_edge) { ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); }
+    else ctx.lineTo(x + w, y);
+    // Bottom-Right
+    if (!s && !e_edge) { ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); }
+    else ctx.lineTo(x + w, y + h);
+    // Bottom-Left
+    if (!s && !w_edge) { ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); }
+    else ctx.lineTo(x, y + h);
+    ctx.closePath();
+  }
+
+  _seededRandom(seed) {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
   }
 }
