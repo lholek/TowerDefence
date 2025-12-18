@@ -178,35 +178,130 @@ export default class Map {
         canvas.height = this.tileSize;
         const tctx = canvas.getContext('2d');
 
+        // 1. Base Layer: Gradient for subtle lighting depth
         tctx.fillStyle = baseColors[i % baseColors.length];
         tctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
-        // Přidání lístků a jetele
-        for (let j = 0; j < 15; j++) {
+        // 2. Flora Layer: Natural distribution
+        // Reduced to 45 iterations to keep it "clean" but detailed
+        for (let j = 0; j < 3; j++) {
             const lx = Math.random() * this.tileSize;
             const ly = Math.random() * this.tileSize;
             tctx.save();
             tctx.translate(lx, ly);
             tctx.rotate(Math.random() * Math.PI);
             
-            if (Math.random() > 0.7) {
-                tctx.fillStyle = "#8a5a23"; // Suchý list
+            const roll = Math.random();
+
+            if (roll < 0.015) { 
+                // VERY RARE: Red flower
+                this._drawNaturalFlower(tctx, "#e11d48");
+            } 
+            else if (roll < 0.03) { 
+                // VERY RARE: Pink flower
+                this._drawNaturalFlower(tctx, "#f472b6");
+            } 
+            else if (roll < 0.045) { 
+                // VERY RARE: Blue flower
+                this._drawNaturalFlower(tctx, "#3b82f6");
+            } 
+            else if (roll < 0.10) { 
+                // RARE: Yellow flower
+                this._drawNaturalFlower(tctx, "#facc15");
+            } 
+            else if (roll < 0.25) { 
+                // UNCOMMON: Dry brown leaf
+                tctx.fillStyle = "#8a5a23";
                 tctx.beginPath();
                 tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
                 tctx.fill();
-            } else {
-                tctx.fillStyle = "#4ade80"; // Jetel
-                for(let k=0; k<3; k++) {
-                    tctx.rotate((Math.PI * 2) / 3);
-                    tctx.beginPath();
-                    tctx.arc(2, 0, 1.5, 0, Math.PI * 2);
-                    tctx.fill();
-                }
             }
+            else if (roll < 0.60) { 
+                // COMMON: Dark green leaf
+                tctx.fillStyle = "#14532d"; 
+                tctx.beginPath();
+                tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                tctx.fill();
+            } 
+            else { 
+                // COMMON: Light green leaf
+                tctx.fillStyle = "#1a9c4d";
+                tctx.beginPath();
+                tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                tctx.fill();
+            }
+            
             tctx.restore();
         }
         this.grassVariants.push(canvas);
     }
+  }
+
+  _drawNaturalFlower(ctx, color) {
+    // 1. Organic Ground Shadow (Soft and slightly offset)
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.beginPath();
+    ctx.ellipse(0.8, 0.8, 2.8, 2.2, Math.PI/4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Petal Layers
+    for(let k = 0; k < 5; k++) {
+        ctx.save();
+        ctx.rotate((Math.PI * 2) / 5 * k);
+        
+        // A. Petal Gradient (Darker at the base, brighter at the tip)
+        const pGrad = ctx.createRadialGradient(0, 0, 0, 2, 0, 3);
+        pGrad.addColorStop(0, this._adjustColor(color, -20)); // Deep center
+        pGrad.addColorStop(1, color); // Bright edge
+        
+        ctx.fillStyle = pGrad;
+        ctx.beginPath();
+        // Use an irregular ellipse for more natural look
+        ctx.ellipse(1.8, 0, 2.0, 1.4, 0.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // B. Subtle Petal Vein (Small highlight line)
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0.5, 0);
+        ctx.lineTo(2.5, 0);
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+
+    // 3. 3D Flower Center (Pollen Core)
+    // Dark base for depth
+    ctx.fillStyle = "#854d0e"; 
+    ctx.beginPath();
+    ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bright Pollen dots
+    ctx.fillStyle = "#fef08a"; 
+    ctx.beginPath();
+    ctx.arc(-0.3, -0.3, 1.1, 0, Math.PI * 2); // Slightly offset for light source
+    ctx.fill();
+    
+    // Tiny detail dots
+    ctx.fillStyle = "#ca8a04";
+    ctx.fillRect(0.2, 0.2, 0.6, 0.6);
+    ctx.fillRect(-0.5, 0.4, 0.5, 0.5);
+  }
+
+  // Helper to make petal bases darker automatically
+  _adjustColor(hex, amt) {
+      let usePound = false;
+      if (hex[0] == "#") { hex = hex.slice(1); usePound = true; }
+      let num = parseInt(hex, 16);
+      let r = (num >> 16) + amt;
+      let g = (num >> 8 & 0x00FF) + amt;
+      let b = (num & 0x0000FF) + amt;
+      r = Math.max(Math.min(255, r), 0);
+      g = Math.max(Math.min(255, g), 0);
+      b = Math.max(Math.min(255, b), 0);
+      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
   }
 
   // --- RENDER (keeps your original render but uses tokens) ---
@@ -245,13 +340,14 @@ export default class Map {
 
     // 5. PASS: MARKERY (Start/Cíl)
     for (let r = startRow; r < endRow; r++) {
-        for (let c = startCol; c < endCol; c++) {
-            const tok = String(this.grid[r][c] ?? '');
-            if (/^S|E/i.test(tok)) {
-                const bounds = this.getTileBounds(c, r);
-                this._drawMarker(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, /^S/i.test(tok) ? "#16a34a" : "#dc2626", tok);
-            }
+      for (let c = startCol; c < endCol; c++) {
+        const tok = String(this.grid[r][c] ?? '');
+        if (/^S/i.test(tok)) {
+            const bounds = this.getTileBounds(c, r);
+            // PŘIDEJTE performance.now() JAKO ČTVRTÝ PARAMETR:
+            this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
         }
+      }
     }
 
     ctx.restore(); // Konec transformace kamery
@@ -519,9 +615,6 @@ export default class Map {
                         this._drawAAAStone(ctx, x, y, size, rot, color, rand(seed + 5));
                     }
                 }
-
-                // 4. ADD EDGE OVERGROWTH (Grass covering the road edges)
-                this._drawGrassOvergrowth(ctx, r, c);
             }
         }
     }
@@ -597,63 +690,133 @@ export default class Map {
     }
   }
 
-  _drawGrassOvergrowth(ctx, r, c) {
-    const ts = this.tileSize;
-    const wx = c * ts;
-    const wy = r * ts;
-
-    const isNotRoad = (nr, nc) => {
-        if (nr < 0 || nr >= this.rows || nc < 0 || nc >= this.cols) return true;
-        const nt = String(this.grid[nr][nc] ?? '');
-        return !(nt === 'O' || /^S/i.test(nt) || /^E/i.test(nt));
-    };
-
-    ctx.fillStyle = "rgba(40, 70, 25, 0.5)"; // Deep grass color
-    
-    // Check neighbors: if North is grass, draw overgrowth on the top of this tile
-    const sides = [
-        { d: [-1, 0], x: wx, y: wy, w: ts, h: ts * 0.2 }, // North
-        { d: [1, 0], x: wx, y: wy + ts * 0.8, w: ts, h: ts * 0.2 }, // South
-        { d: [0, -1], x: wx, y: wy, w: ts * 0.2, h: ts }, // West
-        { d: [0, 1], x: wx + ts * 0.8, y: wy, w: ts * 0.2, h: ts } // East
-    ];
-
-    sides.forEach(s => {
-        if (isNotRoad(r + s.d[0], c + s.d[1])) {
-            // Draw a fuzzy edge of grass over the stones
-            for(let i=0; i<10; i++) {
-                const px = s.x + Math.random() * s.w;
-                const py = s.y + Math.random() * s.h;
-                ctx.beginPath();
-                ctx.arc(px, py, 4 + Math.random() * 6, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-    });
-  }
-
   _prerenderWater() {
     const ctx = this.waterLayer.getContext('2d');
     const ts = this.tileSize;
 
     for (let r = 0; r < this.rows; r++) {
-        for (let c = 0; c < this.cols; c++) {
-            if (this.grid[r][c] === 'W') {
-                const x = c * ts;
-                const y = r * ts;
+      for (let c = 0; c < this.cols; c++) {
+          if (this.grid[r][c] === 'W') {
+            const x = c * ts;
+            const y = r * ts;
 
-                // Hluboká voda
-                ctx.fillStyle = "#075985";
-                ctx.fillRect(x, y, ts, ts);
-
-                // Odlesky a hloubka
-                const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
-                grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-                grad.addColorStop(1, "rgba(0, 0, 0, 0.2)");
-                ctx.fillStyle = grad;
-                ctx.fillRect(x, y, ts, ts);
-            }
-        }
+            // Hluboká voda
+            ctx.fillStyle = "#075985";
+            ctx.fillRect(x, y, ts, ts);
+            
+            // Odlesky a hloubka
+            const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
+            grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+            grad.addColorStop(1, "rgba(0, 0, 0, 0.2)");
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, y, ts, ts);
+          }
+      }
     }
+  }
+
+  _drawMagicPortal(ctx, x, y, performanceTime) {
+    // Zabezpečení času
+    const time = (typeof performanceTime === 'number' && isFinite(performanceTime)) 
+                 ? performanceTime 
+                 : performance.now();
+    
+    const purpleLight = "#d8b4fe";
+    const purpleMid = "#a855f7";
+    const purpleDark = "#6b21a8";
+    const voidBlack = "#1e1b4b";
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    // --- 1. VRSTVA: HLUBOKÁ RADIÁLNÍ ZÁŘE (Základna) ---
+    const pulse = Math.sin(time / 400) * 10;
+    const baseGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 + pulse);
+    baseGlow.addColorStop(0, "rgba(107, 33, 168, 0.4)");
+    baseGlow.addColorStop(0.7, "rgba(168, 85, 247, 0.1)");
+    baseGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    
+    ctx.fillStyle = baseGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 70 + pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- 2. VRSTVA: ROTUJÍCÍ RUNOVÝ KRUH (Kameny) ---
+    const stoneCount = 8;
+    for (let i = 0; i < stoneCount; i++) {
+        ctx.save();
+        const angle = (time / 3000) + (i * (Math.PI * 2 / stoneCount));
+        const float = Math.sin((time / 600) + i) * 4;
+        ctx.rotate(angle);
+        
+        // Stín pod kamenem pro 3D efekt
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(38 + float, 2, 12, 12);
+
+        // Kámen
+        ctx.fillStyle = voidBlack;
+        ctx.fillRect(35 + float, -5, 10, 10);
+        
+        // Svítící symbol runy (pulzuje)
+        const runeOpacity = 0.5 + Math.sin((time / 200) + i) * 0.5;
+        ctx.globalAlpha = runeOpacity;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = purpleMid;
+        ctx.fillStyle = purpleLight;
+        ctx.fillRect(38 + float, -2, 4, 4);
+        ctx.restore();
+    }
+
+    // --- 3. VRSTVA: ENERGETICKÝ VÍR (Vortex) ---
+    ctx.save();
+    ctx.rotate(-time / 800);
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.rotate((Math.PI * 2) / 3);
+        const grad = ctx.createLinearGradient(10, 0, 30, 0);
+        grad.addColorStop(0, purpleLight);
+        grad.addColorStop(1, "transparent");
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 4;
+        ctx.lineCap = "round";
+        ctx.arc(0, 0, 18 + (i * 2), 0, Math.PI * 0.8);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    // --- 4. VRSTVA: VERTIKÁLNÍ ČÁSTICE (Jiskry stoupající do prostoru) ---
+    // Tento efekt simuluje 3D prostor tím, že částice mění velikost
+    for (let i = 0; i < 8; i++) {
+        const seed = i * 1.5;
+        const pTime = (time * 0.05 + seed * 100) % 100; // 0 až 100
+        const opacity = 1 - (pTime / 100);
+        const distance = (pTime / 100) * 50;
+        const pAngle = seed + (time / 2000);
+        
+        const px = Math.cos(pAngle) * distance;
+        const py = Math.sin(pAngle) * distance - (pTime * 0.2); // Lehce stoupají "nahoru"
+
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = purpleLight;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = purpleMid;
+        ctx.beginPath();
+        ctx.arc(px, py, 2 * opacity, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // --- 5. VRSTVA: JÁDRO (Event Horizon) ---
+    ctx.globalAlpha = 1.0;
+    const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
+    coreGrad.addColorStop(0, "#000000"); // Černý střed
+    coreGrad.addColorStop(0.5, purpleDark);
+    coreGrad.addColorStop(1, "rgba(0,0,0,0)");
+    
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   }
 }
