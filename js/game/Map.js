@@ -343,9 +343,14 @@ export default class Map {
       for (let c = startCol; c < endCol; c++) {
         const tok = String(this.grid[r][c] ?? '');
         if (/^S/i.test(tok)) {
-            const bounds = this.getTileBounds(c, r);
-            // PŘIDEJTE performance.now() JAKO ČTVRTÝ PARAMETR:
-            this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
+          const bounds = this.getTileBounds(c, r);
+          // PŘIDEJTE performance.now() JAKO ČTVRTÝ PARAMETR:
+          this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
+        }
+        if (/^E/i.test(tok)) {
+          const bounds = this.getTileBounds(c, r);
+          // Zatím posíláme 100% zdraví, později propojíme s logikou hry
+          this._drawLifeTree(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, 100);
         }
       }
     }
@@ -817,6 +822,137 @@ export default class Map {
     ctx.beginPath();
     ctx.arc(0, 0, 15, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.restore();
+  }
+
+  _drawLifeTree(ctx, x, y, currentLifes) {
+    const time = performance.now() * 0.001;
+    const ts = this.tileSize;
+    const isAlive = currentLifes > 0;
+    
+    const isHit = (performance.now() - this.lastHitTime) < 500;
+    const shakeX = isHit ? Math.sin(performance.now() * 0.1) * 8 : 0;
+
+    // Barvy: Bříza a Tyrkysová
+    const woodColor = isAlive ? "#ffffff" : "#2d2d30";
+    const barkDetail = isAlive ? "#334155" : "#18181b"; // Čárky na bříze
+    const turquoiseDeep = "#0d9488"; // Sytá tyrkysová
+    const turquoiseLight = "#2dd4bf"; // Zářivá tyrkysová (Cyan/Teal)
+
+    ctx.save();
+    ctx.translate(x + shakeX, y);
+
+    // 1. KRATŠÍ KOŘENY (Více zapuštěné)
+    ctx.strokeStyle = woodColor;
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    
+    for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, ts * 0.2);
+        const angle = (i * Math.PI * 2) / 5;
+        // Zkráceno z 45 na 25
+        ctx.quadraticCurveTo(
+            Math.cos(angle) * 15, ts * 0.22,
+            Math.cos(angle) * 25, ts * 0.28 
+        );
+        ctx.stroke();
+    }
+
+    // 2. TYRKYSOVÁ AURA
+    if (isAlive) {
+        const pulse = Math.sin(time * 2) * 8;
+        const grad = ctx.createRadialGradient(0, -ts*0.2, 0, 0, -ts*0.2, ts * 0.8 + pulse);
+        grad.addColorStop(0, "rgba(45, 212, 191, 0.3)"); 
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, -ts*0.2, ts, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 3. MASIVNÍ KMEN BŘÍZY
+    ctx.lineWidth = 16; 
+    ctx.beginPath();
+    ctx.moveTo(0, ts * 0.25);
+    ctx.lineTo(0, -ts * 0.2);
+    ctx.stroke();
+
+    // DETAIL KŮRY (Černé rýhy typické pro břízu)
+    if (isAlive) {
+        ctx.strokeStyle = barkDetail;
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 4; i++) {
+            const h = (ts * 0.15) - (i * ts * 0.1);
+            ctx.beginPath();
+            ctx.moveTo(-6, h);
+            ctx.lineTo(-2, h);
+            ctx.moveTo(3, h + 5);
+            ctx.lineTo(7, h + 5);
+            ctx.stroke();
+        }
+    }
+
+    // 4. VĚTVE A TYRKYSOVÉ LISTÍ
+    const branchPoints = [
+        { angle: -Math.PI / 3.5, len: ts * 0.5, drift: 0 },
+        { angle: -Math.PI / 2, len: ts * 0.6, drift: 0.5 },
+        { angle: -Math.PI / 1.4, len: ts * 0.5, drift: 1 },
+    ];
+
+    branchPoints.forEach((b) => {
+        const wind = Math.sin(time + b.drift) * 0.06;
+        const endX = Math.cos(b.angle + wind) * b.len;
+        const endY = Math.sin(b.angle + wind) * b.len - (ts * 0.15);
+
+        ctx.strokeStyle = woodColor;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, -ts * 0.15);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        if (isAlive) {
+            ctx.save();
+            ctx.translate(endX, endY);
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = turquoiseDeep;
+
+            // Hustší trsy tyrkysového listí
+            for (let j = 0; j < 4; j++) {
+                const lx = Math.sin(time * 1.5 + j) * 8;
+                const ly = Math.cos(time * 1.5 + j) * 6;
+                const size = 12 + j * 2;
+                
+                const lGrad = ctx.createRadialGradient(lx, ly, 0, lx, ly, size);
+                lGrad.addColorStop(0, turquoiseLight);
+                lGrad.addColorStop(1, turquoiseDeep);
+                ctx.fillStyle = lGrad;
+
+                ctx.beginPath();
+                ctx.arc(lx, ly, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+    });
+
+    // 5. STOUPAJÍCÍ MAGICKÉ LÍSTKY (Změna směru - nahoru)
+    if (isAlive) {
+        ctx.fillStyle = turquoiseLight;
+        ctx.shadowBlur = 5;
+        for (let i = 0; i < 4; i++) {
+            const pTime = (time * 0.4 + i / 4) % 1;
+            const px = Math.sin(i * 10 + time) * 45;
+            // Částice nyní stoupají od země nahoru k nebi
+            const py = (ts * 0.2) - (pTime * ts * 1.2); 
+            ctx.globalAlpha = (1 - pTime) * 0.7;
+            ctx.beginPath();
+            ctx.arc(px, py, 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
 
     ctx.restore();
 }

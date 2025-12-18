@@ -428,7 +428,7 @@ update(deltaTime) {
   
   updateUI() {
     this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
-    this.lifesText.textContent = `❤️ Lifes: ${this.playerLifes}`;
+    this.lifesText.textContent = `❤️ Tree Life: ${this.playerLifes}`;
     this.coinsText.textContent = `🪙 Coins: ${this.playerCoins}`;
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
@@ -601,7 +601,7 @@ update(deltaTime) {
         }
       
         // --- Update the button's displayed price ---
-        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
+        lifeButton.innerHTML = `💎 +1 Life (🪙 ${this.lifePrice})`;
       } else {
         this.logEvent('Not enough coins to buy Extra life!');
       }
@@ -615,6 +615,9 @@ update(deltaTime) {
 
       // Draw the map
       this.map.render(this.ctx);
+
+      // Update Tree of life
+      this.map.render(this.ctx, this.playerLifes);
 
       // --- Draw hovered tile (inside camera transform so it matches map) ---
       if (this.hoveredTile) {
