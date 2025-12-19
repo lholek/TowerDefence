@@ -93,8 +93,25 @@ export const abilityEditor = (() => {
                         <label>Icon 
                             <input type="text" data-key="ui.icon" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
                         </label>
-                        <label>Color <input type="color" data-key="color" value="${ability.color}"></label>
-                        
+                        <div class="ability-color-section" style="display: inline-block; vertical-align: top; min-width: 120px;">
+                            <label style="display: block; margin-bottom: 2px;">Color & Opacity</label>
+                            <div class="color-controls-stack" style="display: flex; flex-direction: column; gap: 4px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="color" class="ability-color-base" 
+                                           value="${extractHex(ability.color)}" 
+                                           style="width: 40px; height: 30px; padding: 2px; border: 1px solid #444; cursor: pointer;">
+                                    <span class="opacity-label" style="font-family: monospace; font-size: 12px; font-weight: bold;">
+                                        ${extractAlpha(ability.color).toFixed(2)}
+                                    </span>
+                                </div>
+                                <input type="range" class="ability-opacity-slider" 
+                                       min="0" max="1" step="0.01" 
+                                       value="${extractAlpha(ability.color)}" 
+                                       style="width: 100%; height: 12px; cursor: pointer;">
+
+                                <input type="hidden" data-key="color" value="${ability.color}">
+                            </div>
+                        </div>
                         <label>Damage <input type="number" data-key="damage" value="${ability.damage}" min="0"></label>
                         <label>Damage Freq (ms) <input type="number" data-key="damage_every" value="${ability.damage_every}" min="0"></label>
                         
@@ -137,35 +154,57 @@ export const abilityEditor = (() => {
             input.addEventListener('change', (e) => {
                 const card = e.target.closest('.ability-card');
                 const abilityIndex = parseInt(card.getAttribute('data-ability-index'), 10);
+
+                // --- DETEKCE BARVY NEBO OPACITY ---
+                if (e.target.classList.contains('ability-color-base') || e.target.classList.contains('ability-opacity-slider')) {
+                    const section = e.target.closest('.ability-color-section');
+                    const hex = section.querySelector('.ability-color-base').value;
+                    const alpha = section.querySelector('.ability-opacity-slider').value;
+
+                    section.querySelector('.opacity-label').textContent = parseFloat(alpha).toFixed(2);
                 
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    const rgbaValue = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                
+                    modifyJson((data) => {
+                        data.maps[0].abilities[abilityIndex].color = rgbaValue;
+                    }, `Ability ${abilityIndex} color updated to ${rgbaValue}`);
+                    return;
+                }
+
+                // --- STANDARDNÍ LOGIKA PRO OSTATNÍ POLE ---
                 const fullKey = e.target.getAttribute('data-key');
+                if (!fullKey) return;
+
                 const isNested = fullKey.includes('.');
                 const key = isNested ? fullKey.split('.') : fullKey;
+                let value = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
 
-                // Determine the correct value type
-                let value;
-                if (e.target.type === 'number') {
-                    value = parseFloat(e.target.value);
-                } else if (e.target.type === 'color' || e.target.type === 'text' || e.target.tagName === 'SELECT') {
-                    value = e.target.value;
-                } else {
-                    value = e.target.value;
-                }
-                
                 modifyJson((data) => {
                     const abilities = data.maps[0].abilities;
-
                     if (isNested) {
-                        // Handle nested keys like 'ui.icon'
                         abilities[abilityIndex][key[0]][key[1]] = value;
                     } else {
-                        // Handle top-level keys
                         abilities[abilityIndex][key] = value;
                     }
                 }, `Ability ${abilityIndex} (${fullKey}) updated.`);
             });
         });
     };
+
+    // Extracted save logic to avoid repetition
+    function saveValue(abilityIndex, key, value, isNested) {
+        modifyJson((data) => {
+            const abilities = data.maps[0].abilities;
+            if (isNested) {
+                abilities[abilityIndex][key[0]][key[1]] = value;
+            } else {
+                abilities[abilityIndex][key] = value;
+            }
+        }, `Ability ${abilityIndex} updated.`);
+    }
 
     // 2. Function to add a new ability
     const addAbility = () => {
@@ -218,3 +257,18 @@ export const abilityEditor = (() => {
         deleteAbility,
     };
 })();
+
+// Helper to extract #RRGGBB from rgba() or hex
+function extractHex(colorStr) {
+    if (!colorStr || !colorStr.startsWith('rgba')) return colorStr || "#ff5000";
+    const rgba = colorStr.match(/\d+/g);
+    const toHex = (n) => parseInt(n).toString(16).padStart(2, '0');
+    return `#${toHex(rgba[0])}${toHex(rgba[1])}${toHex(rgba[2])}`;
+}
+
+function extractAlpha(colorStr) {
+    if (!colorStr || !colorStr.startsWith('rgba')) return 1.0;
+    const rgba = colorStr.match(/[\d\.]+/g);
+    // rgba[3] je čtvrtá hodnota v rgba(r,g,b,a)
+    return rgba && rgba[3] ? parseFloat(rgba[3]) : 1.0;
+}
