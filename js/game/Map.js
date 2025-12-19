@@ -52,6 +52,12 @@ export default class Map {
     this.waterLayer.width = this.cols * this.tileSize;
     this.waterLayer.height = this.rows * this.tileSize;
     this._prerenderWater();
+
+    // 6c. Initialize Grass Layer
+    this.grassLayer = document.createElement('canvas');
+    this.grassLayer.width = this.cols * this.tileSize;
+    this.grassLayer.height = this.rows * this.tileSize;
+    this._prerenderGrass(); // Tuhle funkci vytvoříme níže
     
     // AAA Atmosphere settings
     this.sunDir = { x: 1, y: 1 }; 
@@ -67,6 +73,9 @@ export default class Map {
     this.canvas.addEventListener('mouseleave', e => this.stopDrag());
     this.canvas.addEventListener('wheel', e => this.handleZoom(e));
     this.canvas.style.cursor = 'grab';
+
+    // 8. PRE-RENDER TREE
+    this.cachedTree = this._preRenderTree(this.tileSize);
 
     this.clampCamera();
 }
@@ -323,14 +332,8 @@ export default class Map {
     const sourceW = (endCol - startCol) * this.tileSize;
     const sourceH = (endRow - startRow) * this.tileSize;
 
-    // 2. PASS: ZÁKLADNÍ TRÁVA (Vykreslovaná po dlaždicích)
-    for (let r = startRow; r < endRow; r++) {
-        for (let c = startCol; c < endCol; c++) {
-            if (this.grid[r][c] === '-') continue;
-            const bounds = this.getTileBounds(c, r);
-            ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], bounds.x, bounds.y);
-        }
-    }
+    // 2. PASS: TRÁVA (Nyní bleskově rychlá jako jedna vrstva)
+    ctx.drawImage(this.grassLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
 
     // 3. PASS: VODA (Prerenderovaná vrstva - nyní už sourceX existuje)
     ctx.drawImage(this.waterLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
@@ -347,11 +350,11 @@ export default class Map {
           // PŘIDEJTE performance.now() JAKO ČTVRTÝ PARAMETR:
           this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
         }
-        if (/^E/i.test(tok)) {
+        /*if (/^E/i.test(tok)) {
           const bounds = this.getTileBounds(c, r);
           // Zatím posíláme 100% zdraví, později propojíme s logikou hry
           this._drawLifeTree(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, 100);
-        }
+        }*/
       }
     }
 
@@ -721,6 +724,18 @@ export default class Map {
     }
   }
 
+  _prerenderGrass() {
+    const ctx = this.grassLayer.getContext('2d');
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === '-') continue;
+            const x = c * this.tileSize;
+            const y = r * this.tileSize;
+            ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+        }
+    }
+  }
+
   _drawMagicPortal(ctx, x, y, performanceTime) {
     const time = (typeof performanceTime === 'number' && isFinite(performanceTime)) 
                  ? performanceTime 
@@ -826,134 +841,85 @@ export default class Map {
     ctx.restore();
   }
 
-  _drawLifeTree(ctx, x, y, currentLifes) {
-    const time = performance.now() * 0.001;
-    const ts = this.tileSize;
-    const isAlive = currentLifes > 0;
-    
-    const isHit = (performance.now() - this.lastHitTime) < 500;
-    const shakeX = isHit ? Math.sin(performance.now() * 0.1) * 8 : 0;
+  _preRenderTree(tileSize) {
+    const ts = tileSize;
+    // Zvětšíme canvas na výšku, aby se tam vešel delší kmen
+    const canvasSize = Math.round(ts * 3); 
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = ts * 2.5;
+    offCanvas.height = canvasSize;
+    const ctx = offCanvas.getContext("2d");
 
-    // Barvy: Bříza a Tyrkysová
-    const woodColor = isAlive ? "#ffffff" : "#2d2d30";
-    const barkDetail = isAlive ? "#334155" : "#18181b"; // Čárky na bříze
-    const turquoiseDeep = "#0d9488"; // Sytá tyrkysová
-    const turquoiseLight = "#2dd4bf"; // Zářivá tyrkysová (Cyan/Teal)
+    const cx = offCanvas.width / 2;
+    const cy = canvasSize * 0.9; // Pata stromu je skoro u spodního okraje
 
-    ctx.save();
-    ctx.translate(x + shakeX, y);
-
-    // 1. KRATŠÍ KOŘENY (Více zapuštěné)
-    ctx.strokeStyle = woodColor;
-    ctx.lineWidth = 7;
-    ctx.lineCap = "round";
-    
-    for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, ts * 0.2);
-        const angle = (i * Math.PI * 2) / 5;
-        // Zkráceno z 45 na 25
-        ctx.quadraticCurveTo(
-            Math.cos(angle) * 15, ts * 0.22,
-            Math.cos(angle) * 25, ts * 0.28 
-        );
-        ctx.stroke();
-    }
-
-    // 2. TYRKYSOVÁ AURA
-    if (isAlive) {
-        const pulse = Math.sin(time * 2) * 8;
-        const grad = ctx.createRadialGradient(0, -ts*0.2, 0, 0, -ts*0.2, ts * 0.8 + pulse);
-        grad.addColorStop(0, "rgba(45, 212, 191, 0.3)"); 
-        grad.addColorStop(1, "transparent");
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(0, -ts*0.2, ts, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // 3. MASIVNÍ KMEN BŘÍZY
-    ctx.lineWidth = 16; 
+    // --- 1. PRODLOUŽENÝ KMEN (Štíhlý a vysoký) ---
+    ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.moveTo(0, ts * 0.25);
-    ctx.lineTo(0, -ts * 0.2);
-    ctx.stroke();
+    ctx.moveTo(cx - 15, cy); // Širší základna u země
+    
+    // Hlavní tah kmene směrem nahoru (delší vertikální část)
+    ctx.lineTo(cx - 8, cy - ts * 1.1); // Kmen jde výš než předtím
+    
+    // Větvení začíná až ve výšce 1.1 * tileSize
+    ctx.lineTo(cx - 30, cy - ts * 1.5); // Levá větev
+    ctx.lineTo(cx - 20, cy - ts * 1.55);
+    ctx.lineTo(cx, cy - ts * 1.2);    // Rozsocha (střed mezi větvemi)
+    ctx.lineTo(cx + 20, cy - ts * 1.55); // Pravá větev
+    ctx.lineTo(cx + 30, cy - ts * 1.5);
+    
+    ctx.lineTo(cx + 8, cy - ts * 1.1);
+    ctx.lineTo(cx + 15, cy);
+    ctx.fill();
 
-    // DETAIL KŮRY (Černé rýhy typické pro břízu)
-    if (isAlive) {
-        ctx.strokeStyle = barkDetail;
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 4; i++) {
-            const h = (ts * 0.15) - (i * ts * 0.1);
-            ctx.beginPath();
-            ctx.moveTo(-6, h);
-            ctx.lineTo(-2, h);
-            ctx.moveTo(3, h + 5);
-            ctx.lineTo(7, h + 5);
-            ctx.stroke();
-        }
+    // --- 2. TEXTURA (Březové rýhy) ---
+    ctx.fillStyle = "#1e293b";
+    // Více rýh, protože kmen je delší
+    for(let i = 0; i < 10; i++) {
+        const yPos = cy - (i * ts * 0.12) - 10;
+        const side = (i % 2 === 0) ? -1 : 0.4;
+        const w = 5 + Math.random() * 8;
+        ctx.fillRect(cx + (side * 6), yPos, w, 1.8);
     }
 
-    // 4. VĚTVE A TYRKYSOVÉ LISTÍ
-    const branchPoints = [
-        { angle: -Math.PI / 3.5, len: ts * 0.5, drift: 0 },
-        { angle: -Math.PI / 2, len: ts * 0.6, drift: 0.5 },
-        { angle: -Math.PI / 1.4, len: ts * 0.5, drift: 1 },
+    // --- 3. KORUNA (Posunutá výš) ---
+    // Středy shluků jsou teď vztaženy k cy - ts * 1.5 (kde končí kmen)
+    const clusters = [
+        { x: cx, y: cy - ts * 1.7, r: ts * 0.5 },      // Vrcholek
+        { x: cx - ts * 0.5, y: cy - ts * 1.45, r: ts * 0.38 }, // Levý bok
+        { x: cx + ts * 0.5, y: cy - ts * 1.45, r: ts * 0.38 }, // Pravý bok
+        { x: cx - ts * 0.25, y: cy - ts * 1.2, r: ts * 0.28 }, // Spodní převis vlevo
+        { x: cx + ts * 0.25, y: cy - ts * 1.2, r: ts * 0.28 }  // Spodní převis vpravo
     ];
 
-    branchPoints.forEach((b) => {
-        const wind = Math.sin(time + b.drift) * 0.06;
-        const endX = Math.cos(b.angle + wind) * b.len;
-        const endY = Math.sin(b.angle + wind) * b.len - (ts * 0.15);
-
-        ctx.strokeStyle = woodColor;
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.moveTo(0, -ts * 0.15);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        if (isAlive) {
-            ctx.save();
-            ctx.translate(endX, endY);
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = turquoiseDeep;
-
-            // Hustší trsy tyrkysového listí
-            for (let j = 0; j < 4; j++) {
-                const lx = Math.sin(time * 1.5 + j) * 8;
-                const ly = Math.cos(time * 1.5 + j) * 6;
-                const size = 12 + j * 2;
-                
-                const lGrad = ctx.createRadialGradient(lx, ly, 0, lx, ly, size);
-                lGrad.addColorStop(0, turquoiseLight);
-                lGrad.addColorStop(1, turquoiseDeep);
-                ctx.fillStyle = lGrad;
-
-                ctx.beginPath();
-                ctx.arc(lx, ly, size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
-        }
+    clusters.forEach(c => {
+        // Stín pod shlukem
+        ctx.fillStyle = "#ca8a04";
+        ctx.beginPath(); ctx.arc(c.x, c.y + 4, c.r, 0, Math.PI * 2); ctx.fill();
+        // Hlavní zlatá
+        ctx.fillStyle = "#eab308";
+        ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2); ctx.fill();
+        // Světelný odlesk
+        ctx.fillStyle = "#fde047";
+        ctx.beginPath(); ctx.arc(c.x - c.r*0.3, c.y - c.r*0.3, c.r * 0.4, 0, Math.PI * 2); ctx.fill();
     });
 
-    // 5. STOUPAJÍCÍ MAGICKÉ LÍSTKY (Změna směru - nahoru)
-    if (isAlive) {
-        ctx.fillStyle = turquoiseLight;
-        ctx.shadowBlur = 5;
-        for (let i = 0; i < 4; i++) {
-            const pTime = (time * 0.4 + i / 4) % 1;
-            const px = Math.sin(i * 10 + time) * 45;
-            // Částice nyní stoupají od země nahoru k nebi
-            const py = (ts * 0.2) - (pTime * ts * 1.2); 
-            ctx.globalAlpha = (1 - pTime) * 0.7;
-            ctx.beginPath();
-            ctx.arc(px, py, 2, 0, Math.PI * 2);
-            ctx.fill();
-        }
+    return offCanvas;
+  }
+
+  _drawLifeTree(ctx, x, y, currentLifes) {
+    if (!this.cachedTree) return;
+    if (currentLifes <= 0) {
+        ctx.fillStyle = "#1a1a1a";
+        ctx.fillRect(x - 5, y - this.tileSize * 0.4, 10, this.tileSize * 0.5);
+        return;
     }
 
-    ctx.restore();
-}
+    // Vykreslení na střed (x) a patu stromu (y)
+    // Upravili jsme koeficient 0.9, protože pata stromu je v cache na 90% výšky
+    const drawX = ~~(x - this.cachedTree.width / 2);
+    const drawY = ~~(y - this.cachedTree.height * 0.9);
+
+    ctx.drawImage(this.cachedTree, drawX, drawY);
+  }
 }

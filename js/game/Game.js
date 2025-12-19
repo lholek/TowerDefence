@@ -683,6 +683,17 @@ update(deltaTime) {
       // Assumes abilityManager.render also draws in world-space
       this.abilityManager.render(this.ctx);
 
+      
+      // Tree of life at the TOP
+      for (const key in this.map.ends) {
+        const end = this.map.ends[key];
+        const worldPos = this.map.tileToWorld(end.col, end.row);
+        
+        // Zavoláme metodu z Map.js, ale až teď
+        // '100' je aktuální život stromu (napoj na svou proměnnou)
+        this.map._drawLifeTree(this.ctx, worldPos.x, worldPos.y, 100);
+      }
+      
       // 3. Reset transform ONCE
       this.map.resetTransform(this.ctx);
 
