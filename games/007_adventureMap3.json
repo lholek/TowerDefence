@@ -63,7 +63,7 @@
           "damage_every": 200,
           "cooldown": 20000,
           "effectDuration": 4000,
-          "color": "rgba(59,186,91,0.7)",
+          "color": "rgba(21, 77, 21, 0.85)",
           "ui": {
             "icon": "🔥"
           }

@@ -170,19 +170,125 @@ _getCenteredPathTiles(centerTile, count) {
   render(ctx) {
     if (this.activeInstances.length === 0 && !this.isPlacing && this.pendingSelections.length === 0) return;
 
-    ctx.fillStyle = this.color || 'rgba(255,80,0,0.4)';
-    for (const inst of this.activeInstances) {
-      const center = this.game.map.tileToWorld(inst.tile.col, inst.tile.row);
-      ctx.fillRect(center.x - this.game.map.tileSize/2, center.y - this.game.map.tileSize/2, this.game.map.tileSize, this.game.map.tileSize);
-    }
+    const time = performance.now() * 0.001;
+    const ts = this.game.map.tileSize;
 
-    if (this.isPlacing && this.pendingSelections.length) {
-      ctx.fillStyle = (this.color || 'rgba(255,80,0,0.25)');
-      for (const t of this.pendingSelections) {
-        const center = this.game.map.tileToWorld(t.col, t.row);
-        ctx.fillRect(center.x - this.game.map.tileSize/2, center.y - this.game.map.tileSize/2, this.game.map.tileSize, this.game.map.tileSize);
+    const drawLavaTile = (col, row, isPending = false) => {
+      const center = this.game.map.tileToWorld(col, row);
+      const x = center.x - ts / 2;
+      const y = center.y - ts / 2;
+
+      // --- 1. BARVY ---
+      const baseColor = this.color || '#ff5000';
+      const colorObj = this._parseToRGB(baseColor);
+      
+      // Tmavě žlutá pro hloubku (okrová/zlatavá)
+      const darkYellow = { r: 180, g: 130, b: 0 }; 
+      
+      const formatRGBA = (rgb, a) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
+
+      ctx.save();
+      
+      // Větší transparentnost pro "skleněný/tekutý" vzhled
+      ctx.globalAlpha = isPending ? 0.3 : 0.65;
+
+      // --- 2. PROPOJENÍ (Mírný přesah pro slití políček) ---
+      // Kreslíme trochu větší obdélník s velmi malým zaoblením (ne ovál)
+      ctx.fillStyle = formatRGBA(this._adjustRGB(colorObj, -40), 0.8);
+      ctx.beginPath();
+      ctx.roundRect(x - 2, y - 2, ts + 4, ts + 4, 4); 
+      ctx.fill();
+
+      // --- 3. BUBALJÍCÍ VRSTVA (Přelévání tmavě žluté a hlavní barvy) ---
+      const flow = Math.sin(time * 0.5 + col * 0.2 + row * 0.3);
+      const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
+      grad.addColorStop(0, formatRGBA(darkYellow, 0.4));
+      grad.addColorStop(0.5 + flow * 0.2, formatRGBA(colorObj, 0.2));
+      grad.addColorStop(1, formatRGBA(darkYellow, 0.4));
+      
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, y, ts, ts);
+
+      // --- 4. SKUTEČNÉ BUBLINY ---
+      // Každé políčko má své vlastní bubliny, které se nafukují
+      for (let i = 0; i < 3; i++) {
+        const seed = (col * 13 + row * 7 + i);
+        // Rychlost a velikost bubliny
+        const bTime = (time + seed) % 4; 
+        if (bTime < 2) { // Bublina existuje jen polovinu cyklu
+          const progress = bTime / 2; // 0 až 1
+          const bx = x + ts * 0.2 + ((seed * 557) % (ts * 0.6));
+          const by = y + ts * 0.2 + ((seed * 821) % (ts * 0.6));
+          const radius = Math.sin(progress * Math.PI) * (ts * 0.15);
+
+          // Stínování bubliny (tmavě žlutý okraj, světlý střed)
+          const bGrad = ctx.createRadialGradient(bx - radius*0.3, by - radius*0.3, 0, bx, by, radius);
+          bGrad.addColorStop(0, "rgba(255, 255, 200, 0.8)"); // Odlesk
+          bGrad.addColorStop(0.4, formatRGBA(colorObj, 0.6));
+          bGrad.addColorStop(1, formatRGBA(darkYellow, 0.9)); // Tmavě žlutý stín bubliny
+
+          ctx.beginPath();
+          ctx.arc(bx, by, radius, 0, Math.PI * 2);
+          ctx.fillStyle = bGrad;
+          ctx.fill();
+          
+          // Jemný odlesk na povrchu bubliny
+          ctx.strokeStyle = "rgba(255,255,255,0.2)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
       }
+
+      // --- 5. ŽHAVÉ RÝHY (Propojení) ---
+      ctx.globalCompositeOperation = 'screen';
+      ctx.strokeStyle = formatRGBA(this._adjustRGB(colorObj, 20), 0.3);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      // Náhodná čára přes políčko simulující proudění
+      ctx.moveTo(x, y + ts * 0.5 + Math.sin(time + col) * 10);
+      ctx.lineTo(x + ts, y + ts * 0.5 + Math.cos(time + row) * 10);
+      ctx.stroke();
+
+      ctx.restore();
+    };
+
+    // Vykreslení instancí
+    for (const inst of this.activeInstances) drawLavaTile(inst.tile.col, inst.tile.row);
+    if (this.isPlacing && this.pendingSelections.length) {
+      for (const t of this.pendingSelections) drawLavaTile(t.col, t.row, true);
     }
+  }
+
+  // Nezapomeň mít ve třídě tyto pomocné metody z předchozího kroku:
+  _parseToRGB(color) {
+    if (color.startsWith('rgb')) {
+      const vals = color.match(/\d+/g);
+      return { r: parseInt(vals[0]), g: parseInt(vals[1]), b: parseInt(vals[2]) };
+    }
+    let hex = color.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(s => s + s).join('');
+    return {
+      r: parseInt(hex.substring(0, 2), 16) || 0,
+      g: parseInt(hex.substring(2, 4), 16) || 0,
+      b: parseInt(hex.substring(4, 6), 16) || 0
+    };
+  }
+
+  _adjustRGB(rgb, percent) {
+    const adj = (val) => Math.max(0, Math.min(255, Math.round(val + (val * (percent / 100)))));
+    return { r: adj(rgb.r), g: adj(rgb.g), b: adj(rgb.b) };
+  }
+
+  // Funkce pro výpočet odstínů (nechat ve třídě)
+  _adjustBrightness(hex, percent) {
+    let color = String(hex || '#ff5000').replace(/^\#/, '');
+    if (color.length === 3) color = color.split('').map(c => c + c).join('');
+    let r = parseInt(color.substring(0, 2), 16) || 0;
+    let g = parseInt(color.substring(2, 4), 16) || 0;
+    let b = parseInt(color.substring(4, 6), 16) || 0;
+    const adj = (v) => Math.max(0, Math.min(255, Math.round(v + (v * (percent / 100)))));
+    const toHex = (v) => v.toString(16).padStart(2, '0');
+    return `#${toHex(adj(r))}${toHex(adj(g))}${toHex(adj(b))}`;
   }
 
   // Preview: square area around target tile. radius can be set in config.radius (default 1 -> 3x3)
