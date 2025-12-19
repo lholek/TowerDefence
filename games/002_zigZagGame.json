@@ -6,10 +6,10 @@
       "startingLifes": 10,
       "description": [
         {
-          "descriptionText": "Middle map, medium difficulty, less towers",
+          "descriptionText": "Middle map, easy difficulty, less towers",
           "level count": 4,
           "map_size": "11x7",
-          "difficulty": "⭐⭐",
+          "difficulty": "⭐",
           "tower types": 2
         }
       ],

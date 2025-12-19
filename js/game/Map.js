@@ -588,24 +588,41 @@ export default class Map {
     for (let r = 0; r < this.rows; r++) {
         for (let c = 0; c < this.cols; c++) {
             const tok = String(this.grid[r][c] ?? '');
-            if (tok === 'O' || /^S/i.test(tok) || /^E/i.test(tok)) {
-                const worldX = c * ts;
-                const worldY = r * ts;
+            const worldX = c * ts;
+            const worldY = r * ts;
 
-                // 1. DRAW GRASS UNDERLAY
-                // This ensures grass is the "mortar" between stones
+            // --- STROM (E) ---
+            if (/^E/i.test(tok)) {
+                // Pod stromem vykreslíme jen trávu (bez cesty)
+                const grassIdx = this.terrainIndices[r][c];
+                ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
+                
+                // Přidáme bílé náběhy kořenů přímo do roadLayer, aby byly pod stromem
+                this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
+                continue; // Přeskočíme kreslení kamenů
+            }
+
+            // --- PORTÁL (S) ---
+            if (/^S/i.test(tok)) {
+                // Pod portálem vykreslíme spálenou zem
+                this._drawBurnedGround(ctx, worldX, worldY);
+                continue; // Přeskočíme kreslení kamenů
+            }
+
+            // --- KLASICKÁ CESTA (O) ---
+            if (tok === 'O') {
                 const grassIdx = this.terrainIndices[r][c];
                 ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
 
-                // 2. SUBTLE DIRT BLEND (The "a little bit of brown" you asked for)
-                // A soft radial glow of dirt color so it doesn't look like floating stones
+                // Dirt blend
                 const grad = ctx.createRadialGradient(worldX+ts/2, worldY+ts/2, 0, worldX+ts/2, worldY+ts/2, ts/1.2);
-                grad.addColorStop(0, "rgba(69, 53, 39, 0.4)"); // Center dirt
-                grad.addColorStop(1, "rgba(69, 53, 39, 0)");   // Fade to grass
+                grad.addColorStop(0, "rgba(69, 53, 39, 0.4)");
+                grad.addColorStop(1, "rgba(69, 53, 39, 0)");
                 ctx.fillStyle = grad;
                 ctx.fillRect(worldX, worldY, ts, ts);
 
-                // 3. DRAW SEAMLESS STONES
+                // Kameny (tvůj stávající kód pro kameny...)
+                                // 3. DRAW SEAMLESS STONES
                 const density = 4;
                 const step = ts / density;
                 for (let i = 0; i < density; i++) {
@@ -843,66 +860,86 @@ export default class Map {
 
   _preRenderTree(tileSize) {
     const ts = tileSize;
-    // Zvětšíme canvas na výšku, aby se tam vešel delší kmen
-    const canvasSize = Math.round(ts * 3); 
+    // Mírně zmenšený canvas pro lepší proporce
+    const canvasSize = Math.round(ts * 2.8); 
     const offCanvas = document.createElement("canvas");
     offCanvas.width = ts * 2.5;
     offCanvas.height = canvasSize;
     const ctx = offCanvas.getContext("2d");
 
     const cx = offCanvas.width / 2;
-    const cy = canvasSize * 0.9; // Pata stromu je skoro u spodního okraje
+    const cy = canvasSize * 0.85; // Pata stromu
 
-    // --- 1. PRODLOUŽENÝ KMEN (Štíhlý a vysoký) ---
-    ctx.fillStyle = "#ffffff";
+    // --- 1. KOŘENY A STÍN ---
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
     ctx.beginPath();
-    ctx.moveTo(cx - 15, cy); // Širší základna u země
-    
-    // Hlavní tah kmene směrem nahoru (delší vertikální část)
-    ctx.lineTo(cx - 8, cy - ts * 1.1); // Kmen jde výš než předtím
-    
-    // Větvení začíná až ve výšce 1.1 * tileSize
-    ctx.lineTo(cx - 30, cy - ts * 1.5); // Levá větev
-    ctx.lineTo(cx - 20, cy - ts * 1.55);
-    ctx.lineTo(cx, cy - ts * 1.2);    // Rozsocha (střed mezi větvemi)
-    ctx.lineTo(cx + 20, cy - ts * 1.55); // Pravá větev
-    ctx.lineTo(cx + 30, cy - ts * 1.5);
-    
-    ctx.lineTo(cx + 8, cy - ts * 1.1);
-    ctx.lineTo(cx + 15, cy);
+    ctx.ellipse(cx, cy, ts * 0.35, ts * 0.1, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- 2. TEXTURA (Březové rýhy) ---
-    ctx.fillStyle = "#1e293b";
-    // Více rýh, protože kmen je delší
-    for(let i = 0; i < 10; i++) {
-        const yPos = cy - (i * ts * 0.12) - 10;
-        const side = (i % 2 === 0) ? -1 : 0.4;
-        const w = 5 + Math.random() * 8;
-        ctx.fillRect(cx + (side * 6), yPos, w, 1.8);
+    // --- 2. ŠTÍHLÝ A ČLENITÝ KMEN ---
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(cx - 12, cy);
+    // Hlavní kmen s mírným prohnutím
+    ctx.quadraticCurveTo(cx - 5, cy - ts * 0.8, cx - 8, cy - ts * 1.1);
+    
+    // Větvení (tenčí větve pro přirozenější vzhled)
+    ctx.lineTo(cx - 25, cy - ts * 1.4); 
+    ctx.lineTo(cx - 20, cy - ts * 1.45);
+    ctx.quadraticCurveTo(cx, cy - ts * 1.1, cx + 20, cy - ts * 1.45);
+    ctx.lineTo(cx + 25, cy - ts * 1.4);
+    
+    ctx.quadraticCurveTo(cx + 5, cy - ts * 0.8, cx + 12, cy);
+    ctx.fill();
+
+    // Textura kůry (tmavé březové jizvy)
+    ctx.fillStyle = "#334155";
+    for(let i = 0; i < 12; i++) {
+        const yPos = cy - (i * ts * 0.12) - 8;
+        const xOff = Math.sin(i * 2) * 6;
+        ctx.fillRect(cx + xOff - 4, yPos, 8, 1.5);
     }
 
-    // --- 3. KORUNA (Posunutá výš) ---
-    // Středy shluků jsou teď vztaženy k cy - ts * 1.5 (kde končí kmen)
-    const clusters = [
-        { x: cx, y: cy - ts * 1.7, r: ts * 0.5 },      // Vrcholek
-        { x: cx - ts * 0.5, y: cy - ts * 1.45, r: ts * 0.38 }, // Levý bok
-        { x: cx + ts * 0.5, y: cy - ts * 1.45, r: ts * 0.38 }, // Pravý bok
-        { x: cx - ts * 0.25, y: cy - ts * 1.2, r: ts * 0.28 }, // Spodní převis vlevo
-        { x: cx + ts * 0.25, y: cy - ts * 1.2, r: ts * 0.28 }  // Spodní převis vpravo
+    // --- 3. ORGANICKÉ LISTÍ (Místo koulí kreslíme shluky) ---
+    const leafClusters = [
+        { x: cx, y: cy - ts * 1.5, r: ts * 0.45 },
+        { x: cx - ts * 0.4, y: cy - ts * 1.25, r: ts * 0.35 },
+        { x: cx + ts * 0.4, y: cy - ts * 1.25, r: ts * 0.35 },
+        { x: cx - ts * 0.15, y: cy - ts * 0.95, r: ts * 0.25 },
+        { x: cx + ts * 0.15, y: cy - ts * 0.95, r: ts * 0.25 }
     ];
 
-    clusters.forEach(c => {
-        // Stín pod shlukem
-        ctx.fillStyle = "#ca8a04";
-        ctx.beginPath(); ctx.arc(c.x, c.y + 4, c.r, 0, Math.PI * 2); ctx.fill();
-        // Hlavní zlatá
-        ctx.fillStyle = "#eab308";
-        ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2); ctx.fill();
-        // Světelný odlesk
-        ctx.fillStyle = "#fde047";
-        ctx.beginPath(); ctx.arc(c.x - c.r*0.3, c.y - c.r*0.3, c.r * 0.4, 0, Math.PI * 2); ctx.fill();
+    leafClusters.forEach(cluster => {
+        // Každý "shluk" se skládá z mnoha malých teček pro efekt lístků
+        for (let i = 0; i < 40; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * cluster.r;
+            const lx = cluster.x + Math.cos(angle) * dist;
+            const ly = cluster.y + Math.sin(angle) * dist;
+            const leafSize = 2 + Math.random() * 4;
+
+            // Barevná variace lístků (zlatá bříza)
+            const colors = ["#eab308", "#ca8a04", "#facc15", "#854d0e"];
+            ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+            
+            ctx.beginPath();
+            // Lístky jako malé elipsy místo kruhů
+            ctx.ellipse(lx, ly, leafSize, leafSize * 0.7, Math.random() * Math.PI, 0, Math.PI * 2);
+            ctx.fill();
+        }
     });
+
+    // --- 4. DETAILY (Visící větvičky) ---
+    ctx.strokeStyle = "rgba(133, 77, 14, 0.3)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 10; i++) {
+        const vx = cx + (Math.random() - 0.5) * ts * 1.2;
+        const vy = cy - ts * 1.0;
+        ctx.beginPath();
+        ctx.moveTo(vx, vy);
+        ctx.lineTo(vx + (Math.random() - 0.5) * 15, vy + 25);
+        ctx.stroke();
+    }
 
     return offCanvas;
   }
@@ -910,16 +947,61 @@ export default class Map {
   _drawLifeTree(ctx, x, y, currentLifes) {
     if (!this.cachedTree) return;
     if (currentLifes <= 0) {
-        ctx.fillStyle = "#1a1a1a";
-        ctx.fillRect(x - 5, y - this.tileSize * 0.4, 10, this.tileSize * 0.5);
+        ctx.fillStyle = "#1a1a1a"; // Mrtvý kmen
+        ctx.fillRect(x - 6, y - this.tileSize * 0.5, 12, this.tileSize * 0.6);
         return;
     }
 
-    // Vykreslení na střed (x) a patu stromu (y)
-    // Upravili jsme koeficient 0.9, protože pata stromu je v cache na 90% výšky
+    // Centrování na patu stromu
     const drawX = ~~(x - this.cachedTree.width / 2);
-    const drawY = ~~(y - this.cachedTree.height * 0.9);
+    const drawY = ~~(y - this.cachedTree.height * 0.85);
 
     ctx.drawImage(this.cachedTree, drawX, drawY);
+  }
+
+  _drawRootBase(ctx, cx, cy) {
+    const ts = this.tileSize;
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = "rgba(0,0,0,0.3)";
+
+    // Vykreslíme 4-5 náběhů kořenů do hvězdice
+    for (let i = 0; i < 5; i++) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate((Math.PI * 2 / 5) * i + 0.5);
+        
+        ctx.beginPath();
+        ctx.moveTo(-5, 0);
+        ctx.quadraticCurveTo(0, ts * 0.4, 15, ts * 0.45); // Kořen se rozlézá do dálky
+        ctx.lineTo(5, ts * 0.45);
+        ctx.quadraticCurveTo(0, ts * 0.2, 5, 0);
+        ctx.fill();
+        ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  _drawBurnedGround(ctx, x, y) {
+    const ts = this.tileSize;
+    // Základní tmavý flek
+    const grad = ctx.createRadialGradient(x + ts/2, y + ts/2, ts * 0.1, x + ts/2, y + ts/2, ts * 0.6);
+    grad.addColorStop(0, "#1a1a1a"); // Skoro černá uprostřed
+    grad.addColorStop(0.6, "#422006"); // Tmavě hnědá
+    grad.addColorStop(1, "rgba(20, 83, 45, 0)"); // Ztrácí se v trávě
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, ts, ts);
+
+    // Detaily popela a sazí (náhodné tečky)
+    ctx.fillStyle = "#000000";
+    for (let i = 0; i < 20; i++) {
+        const px = x + Math.random() * ts;
+        const py = y + Math.random() * ts;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.random() * 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
   }
 }
