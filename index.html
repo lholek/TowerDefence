@@ -25,7 +25,7 @@
       <button class="editorButton btn btn-menu">Level Editor</button>
 
       <!-- Settings Button -->
-      <button id="openSettingsBtn" class="btn btn-menu">Game settings</button>
+      <button id="openSettingsBtn" class="btn btn-menu">Game settings & Controls</button>
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
@@ -69,12 +69,23 @@
       <!-- ⚙️ Settings Popup -->
       <div id="settingsPopup" class="settings-popup hidden">
         <div class="settings-content">
-          <h2 class="cl-primary">Game Settings</h2>
-        
-
-      
-          <div class="settings-section mt-4">
-            <h3 class="">Graphics</h3>
+          <h2 class="cl-primary">Game Settings & Controls</h2>
+          <!-- 🕹️ Controls -->
+          <div class="settings-section text-center">
+            <h3>Controls & Game Info</h3>
+            <div class="mt-05"><span class="cl-primary strong">P</span> - Pause game</div>
+            <div class="mt-05"><span class="cl-primary strong">Wheel (Press)</span> - Move around the map</div>
+            <div class="mt-05"><span class="cl-primary strong">Wheel</span> - Zoom in / Zoom out</div>
+            <div class="mt-05"><span class="cl-primary strong">Left click</span> - Build Tower</div>
+            <div class="mt-05"><span class="cl-primary strong">Right click</span> - Sell Tower</div>
+            <div class="mt-05">Select the towers or abilites from cards</div>
+            <div class="mt-05">Built them on proper blocks</div>
+            <div class="mt-05 cl-primary strong">Enjoy the Game!</div>
+          </div>
+          <!-- 🕹️ Controls -->
+          <!-- 🎨 UI & Close -->
+          <div class="settings-section">
+            <h3 class="cl-primary">Graphics</h3>
             <label>
               <label for="backgroundSelect">Show FPS</label>
               <input type="checkbox" id="showFpsCheckbox">
@@ -87,7 +98,7 @@
               </select>
             </div>
           </div>
-        
+          <!-- 🎨 UI & Close -->
           <div class="fps-setting d-none">
             <label for="fpsRange">Target FPS:</label>
             <input type="range" id="fpsRange" min="30" max="144" step="1">
@@ -95,8 +106,9 @@
           </div>
 
           <div class="settings-buttons mt-4">
-            <button id="saveSettingsBtn" class="btn">Save</button>
-            <button id="closeSettingsBtn" class="btn">Close</button>
+              <button id="closeSettingsBtn" class="btn">Close</button>
+              <button id="saveSettingsBtn" class="btn">Save</button>
+          </div>
           </div>
         </div>
       </div>
@@ -111,18 +123,6 @@
     <!-- Info section -->
     <div id="eventsBox">
         <h3 class="subtitle"></h3>
-        <div id="infoBox" class="box">
-          <h3>Controls</h3>
-          <div><strong>P</strong> - Pause game</div>
-          <div><strong>Wheel (Press)</strong> - Move around the map</div>
-          <div><strong>Wheel</strong> - Zoom in / Zoom out</div>
-          <div><strong>Left click</strong> - Build Tower</div>
-          <div><strong>Right click</strong> - Sell Tower</div>
-          <div>Select the towers or abilites from cards</div>
-          <div>Built them on proper blocks</div>
-          <div>Enjoy the Game!</div>
-        </div>
-
         <!-- Music Player -->
         <div id="musicBox" class="box">
           <h3>Music Player</h3>

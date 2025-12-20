@@ -3,7 +3,19 @@
 }
 
 .cl-primary{
- color: gold;
+ color: #f0c674;
+}
+
+.strong{
+    font-weight: 600;
+}
+
+.mt-05{
+    margin-top: 5px;
+}
+
+.mt-1{
+    margin-top: 10px;
 }
 
 .d-none{

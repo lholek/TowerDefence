@@ -87,25 +87,6 @@ h3 {
     scrollbar-color: var(--main-items-color) var(--items-bg-color);
 }
 
-/* info box */
-/* info box (stack items vertically) */
-#infoBox {
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  display: flex;            /* stack children vertically */
-  flex-direction: column;
-  gap: 8px;                 /* space between lines */
-  align-items: center;
-}
-
-/* small info lines */
-#infoBox > div {
-  color: #ccc;
-  font-size: 13px;
-  line-height: 1.2;
-}
-
 /* Version button: make it a full-width block under the info */
 .btn {
     background-color: #8B4513; /* wood brown */

@@ -12,6 +12,14 @@
   display: none;
 }
 
+.settings-section {
+  margin-top: 2rem;
+}
+
+.settings-section h3{
+  font-size: 22px;
+}
+
 .settings-content {
   background: var(--main-bg-color);
   color: #fff;
