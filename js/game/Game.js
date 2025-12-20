@@ -601,7 +601,7 @@ update(deltaTime) {
         }
       
         // --- Update the button's displayed price ---
-        lifeButton.innerHTML = `💎 +1 Life (🪙 ${this.lifePrice})`;
+        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
       } else {
         this.logEvent('Not enough coins to buy Extra life!');
       }
