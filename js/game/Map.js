@@ -321,53 +321,48 @@ export default class Map {
     ctx.translate(this.camera.x, this.camera.y);
     ctx.scale(this.camera.zoom, this.camera.zoom);
 
-    // 1. VÝPOČET VIDITELNÉ OBLASTI A SOURADNIC (Musí být nahoře!)
+    // Výpočet viditelné oblasti
     const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
     const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
     const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
     const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
 
-    const sourceX = startCol * this.tileSize;
-    const sourceY = startRow * this.tileSize;
-    const sourceW = (endCol - startCol) * this.tileSize;
-    const sourceH = (endRow - startRow) * this.tileSize;
+    const sX = startCol * this.tileSize;
+    const sY = startRow * this.tileSize;
+    const sW = (endCol - startCol) * this.tileSize;
+    const sH = (endRow - startRow) * this.tileSize;
 
-    // 2. PASS: TRÁVA (Nyní bleskově rychlá jako jedna vrstva)
-    ctx.drawImage(this.grassLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
+    // 1. PASS: TRÁVA
+    ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
-    // 3. PASS: VODA (Prerenderovaná vrstva - nyní už sourceX existuje)
-    ctx.drawImage(this.waterLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
+    // 2. PASS: OCEÁN (Základ + Maskovaný Shader)
+    if (this.waterLayer) {
+        ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
+        this.drawWaterOverlay(ctx, startRow, endRow, startCol, endCol);
+    }
 
-    // 4. PASS: CESTA (Prerenderovaná vrstva)
-    ctx.drawImage(this.roadLayer, sourceX, sourceY, sourceW, sourceH, sourceX, sourceY, sourceW, sourceH);
+    // 3. PASS: CESTA
+    ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
-    // 5. PASS: MARKERY (Start/Cíl)
+    // 4. PASS: OBJEKTY
     for (let r = startRow; r < endRow; r++) {
       for (let c = startCol; c < endCol; c++) {
-        const tok = String(this.grid[r][c] ?? '');
-        if (/^S/i.test(tok)) {
+        if (String(this.grid[r][c]).startsWith('S')) {
           const bounds = this.getTileBounds(c, r);
-          // PŘIDEJTE performance.now() JAKO ČTVRTÝ PARAMETR:
           this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
         }
-        /*if (/^E/i.test(tok)) {
-          const bounds = this.getTileBounds(c, r);
-          // Zatím posíláme 100% zdraví, později propojíme s logikou hry
-          this._drawLifeTree(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, 100);
-        }*/
       }
     }
 
-    ctx.restore(); // Konec transformace kamery
+    ctx.restore();
 
-    // 6. PASS: AAA Cinematic Vignette (Screen-space efekt)
-    const vGrad = ctx.createRadialGradient(this.canvas.width/2, this.canvas.height/2, this.canvas.width/4, this.canvas.width/2, this.canvas.height/2, this.canvas.width);
-    vGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    vGrad.addColorStop(1, 'rgba(0,0,0,0.2)');
+    // 5. PASS: AAA CINEMATIC VIGNETTE
+    const vGrad = ctx.createRadialGradient(this.canvas.width/2, this.canvas.height/2, this.canvas.width/3, this.canvas.width/2, this.canvas.height/2, this.canvas.width * 0.9);
+    vGrad.addColorStop(0, 'transparent');
+    vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
     ctx.fillStyle = vGrad;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  }
-
+}
   // --- TILE / COORD conversions ---
   tileToWorld(col, row) {
     return {
@@ -720,26 +715,170 @@ export default class Map {
     const ctx = this.waterLayer.getContext('2d');
     const ts = this.tileSize;
 
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-          if (this.grid[r][c] === 'W') {
-            const x = c * ts;
-            const y = r * ts;
+    ctx.clearRect(0, 0, this.waterLayer.width, this.waterLayer.height);
 
-            // Hluboká voda
-            ctx.fillStyle = "#075985";
-            ctx.fillRect(x, y, ts, ts);
-            
-            // Odlesky a hloubka
-            const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
-            grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-            grad.addColorStop(1, "rgba(0, 0, 0, 0.2)");
-            ctx.fillStyle = grad;
-            ctx.fillRect(x, y, ts, ts);
-          }
-      }
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === 'W') {
+                const x = c * ts;
+                const y = r * ts;
+
+                // 1. ZÁKLAD: Temný, hluboký oceán
+                ctx.fillStyle = "#0b3a5e"; 
+                ctx.fillRect(x, y, ts, ts);
+
+                // 2. ŠANCE 10% NA ZÁŘI (To, co jsi chtěl)
+                if (Math.random() < 0.1) {
+                    const grad = ctx.createRadialGradient(x+ts/2, y+ts/2, 2, x+ts/2, y+ts/2, ts*0.8);
+                    grad.addColorStop(0, "rgba(14, 165, 233, 0.15)");
+                    grad.addColorStop(1, "transparent");
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(x, y, ts, ts);
+                }
+
+                // 3. STÍNY BŘEHU (Zakončení trávy - aby voda nelezla pod ni)
+                const isLand = (row, col) => {
+                    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return false;
+                    return this.grid[row][col] !== 'W';
+                };
+
+                ctx.fillStyle = "#4A8C46"; // Silnější stín pro hloubku
+                if (isLand(r-1, c)) ctx.fillRect(x, y, ts, 8);      // Horní břeh
+                if (isLand(r+1, c)) ctx.fillRect(x, y+ts-8, ts, 8); // Dolní břeh
+                if (isLand(r, c-1)) ctx.fillRect(x, y, 8, ts);      // Levý břeh
+                if (isLand(r, c+1)) ctx.fillRect(x+ts-8, y, 8, ts); // Pravý břeh
+            }
+        }
     }
+}
+
+  drawWaterOverlay(ctx, startRow, endRow, startCol, endCol) {
+    const ts = this.tileSize;
+    const time = performance.now() * 0.0004; // Majestátní pomalý pohyb
+    
+    ctx.save();
+    
+    // MASKA: Odlesky se vykreslí JEN ve vodě, nikdy na trávě
+    ctx.beginPath();
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
+            if (this.grid[r][c] === 'W') {
+                ctx.rect(c * ts, r * ts, ts, ts);
+            }
+        }
+    }
+    ctx.clip();
+
+    // ODLESKY SLUNCE (Caustics)
+    ctx.globalCompositeOperation = 'screen';
+    ctx.lineWidth = 2;
+
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
+            if (this.grid[r][c] === 'W') {
+                this._drawOceanGlimmer(ctx, c * ts, r * ts, ts, time, r, c);
+            }
+        }
+    }
+    ctx.restore();
+}
+
+_drawOceanGlimmer(ctx, x, y, ts, time, r, c) {
+    // Matematika pro propojené vlnění přes více bloků
+    const noise = Math.sin(time + r * 0.5 + c * 0.3) * 10;
+    const noise2 = Math.cos(time * 0.8 + c * 0.5 - r * 0.2) * 8;
+
+    ctx.strokeStyle = "rgba(180, 240, 255, 0.07)"; // Velmi jemné, luxusní odlesky
+    
+    ctx.beginPath();
+    // Kreslíme jemnou "síť" světla
+    ctx.moveTo(x - 20 + noise, y + ts/2 + noise2);
+    ctx.bezierCurveTo(
+        x + ts/2, y + noise,
+        x + ts/2, y + ts + noise2,
+        x + ts + 20 + noise, y + ts/2 - noise
+    );
+    ctx.stroke();
+}
+
+_drawCausticWeb(ctx, x, y, ts, time, seed, alpha) {
+    // Globální posun založený na X a Y souřadnicích dlaždice
+    // Tím zajistíme, že vzor přechází plynule z jednoho čtverce do druhého
+    const globalX = x / ts;
+    const globalY = y / ts;
+
+    const shiftX = Math.sin(time + globalX * 0.5) * 15;
+    const shiftY = Math.cos(time * 0.8 + globalY * 0.5) * 12;
+
+    ctx.strokeStyle = `rgba(180, 245, 255, ${alpha})`;
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+    // Vytváříme "tekutou" síť, která nerespektuje hranice dlaždic
+    ctx.moveTo(x - 20 + shiftX, y + ts/2 + shiftY);
+    ctx.bezierCurveTo(
+        x + ts/2 + shiftX, y - 30 + shiftY,
+        x + ts/2 - shiftX, y + ts + 30 + shiftY,
+        x + ts + 20 + shiftX, y + ts/2 - shiftY
+    );
+    ctx.stroke();
+}
+_drawCausticNode(ctx, x, y, ts, time, seed) {
+    const driftX = Math.sin(time + seed) * 15;
+    const driftY = Math.cos(time * 0.7 + seed) * 10;
+
+    ctx.strokeStyle = "rgba(180, 240, 255, 0.08)";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    // Interaktivní sítě světla (působí jako tekutý krystal)
+    for (let i = 0; i < 3; i++) {
+        const angle = (Math.PI * 2 / 3) * i + time;
+        const px = x + ts/2 + Math.cos(angle) * (ts/3) + driftX;
+        const py = y + ts/2 + Math.sin(angle) * (ts/3) + driftY;
+        
+        ctx.moveTo(px, py);
+        ctx.lineTo(x + ts/2 + driftX, y + ts/2 + driftY);
+    }
+    ctx.stroke();
+}
+
+  _drawCausticWave(ctx, x, y, ts, time, seed, alpha, scale) {
+      const offX = Math.sin(time + seed) * 10;
+      const offY = Math.cos(time * 0.5 + seed) * 10;
+
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(186, 242, 255, ${alpha})`;
+      ctx.lineWidth = 3 * scale;
+
+      // Organická křivka simulující lom světla na dně
+      ctx.moveTo(x + offX, y + ts/2 + offY);
+      ctx.bezierCurveTo(
+          x + ts/2, y + offY,
+          x + ts/2, y + ts + offY,
+          x + ts + offX, y + ts/2 + offY
+      );
+      ctx.stroke();
   }
+
+_drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
+    const s = Math.sin(time + offset) * 8;
+    const c = Math.cos(time * 0.7 + offset) * 5;
+
+    ctx.beginPath();
+    ctx.lineWidth = 1.5 * scale;
+    ctx.strokeStyle = `rgba(186, 242, 255, ${alpha})`;
+    
+    // Tvar "nekonečné" vlny (Caustics)
+    ctx.moveTo(x + 5 + s, y + ts * 0.5 + c);
+    ctx.bezierCurveTo(
+        x + ts * 0.3 + s, y + ts * 0.2 - c,
+        x + ts * 0.7 - s, y + ts * 0.8 + c,
+        x + ts - 5 - s, y + ts * 0.5 - c
+    );
+    ctx.stroke();
+}
+
 
   _prerenderGrass() {
     const ctx = this.grassLayer.getContext('2d');
