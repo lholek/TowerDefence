@@ -309,7 +309,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             tile.classList.add('path');
           } else if (tileIdentifier === '-') {
             tile.classList.add('sky');
-          } else {
+          } else if (tileIdentifier === 'W') {
+            tile.classList.add('water');
+          }  else {
             // Default for 'X' or any other unknown/unhandled identifier
             tile.classList.add('block');
           }
