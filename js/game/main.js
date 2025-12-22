@@ -168,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Skrýt start overlay
         document.getElementById('startOverlay').style.display = 'none';
+        document.getElementById('subtitle').style.display = 'none';
         
         // Vytvořit instanci hry
         game = new Game(canvas);

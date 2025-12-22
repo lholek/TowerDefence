@@ -761,6 +761,10 @@ update(deltaTime) {
     if (startOverlay) {
       startOverlay.style.display = 'flex';
     }
+    const subtitle = document.getElementById('subtitle');
+    if (subtitle) {
+      subtitle.style.display = 'flex';
+    }
 
     // restore dynamic defaults (if JSON provided)
     this.playerCoins = this.levelData?.startingCoins ?? 10;
