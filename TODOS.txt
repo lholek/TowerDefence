@@ -20,9 +20,3 @@ alpha 0.1.1:
   "?TODO: Add mountins(maybe next verision ?) and Lakes to the map so player can not shoot trough ceritan objects on map"
 
 + https://vercel.com/ - kouknout se na to můžu to tam nahrát 
-
-alpha 0.1.1:
-
-- better rodas
-- see indead of sky
-- Player can have set graphics in the settings 
