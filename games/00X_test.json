@@ -55,6 +55,56 @@
           "color": "#468bb0",
           "sellPrice": 1,
           "speed": 2
+        },
+        "002": {
+          "name": "New Tower 002",
+          "price": 1,
+          "damage": 2,
+          "fireRate": 200,
+          "range": 2000,
+          "color": "#ffffff",
+          "sellPrice": 2,
+          "speed": 2
+        },
+        "003": {
+          "name": "New Tower 003",
+          "price": 2,
+          "damage": 2,
+          "fireRate": 2,
+          "range": 2,
+          "color": "#ffffff",
+          "sellPrice": 2,
+          "speed": 2
+        },
+        "004": {
+          "name": "New Tower 004",
+          "price": 2,
+          "damage": 2,
+          "fireRate": 2,
+          "range": 2,
+          "color": "#ffffff",
+          "sellPrice": 2,
+          "speed": 2
+        },
+        "005": {
+          "name": "New Tower 005",
+          "price": 2,
+          "damage": 2,
+          "fireRate": 2,
+          "range": 2,
+          "color": "#ffffff",
+          "sellPrice": 2,
+          "speed": 2
+        },
+        "006": {
+          "name": "New Tower 006",
+          "price": 2,
+          "damage": 2,
+          "fireRate": 2,
+          "range": 2,
+          "color": "#ffffff",
+          "sellPrice": 2,
+          "speed": 2
         }
       },
       "levels": [
