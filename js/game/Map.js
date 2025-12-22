@@ -38,8 +38,14 @@ export default class Map {
     // 5. PATHS & CAMERA
     this.paths = this.generatePaths();
     this.camera = {
-        x: 0, y: 0, zoom: 1, dragging: false, lastX: 0, lastY: 0,
-        minZoom: 0.3, maxZoom: 1
+        x: (this.canvas.width - (this.cols * this.tileSize)) / 2, // Center horizontally
+        y: (this.canvas.height - (this.rows * this.tileSize)) / 2, // Center vertically
+        zoom: 1, 
+        dragging: false, 
+        lastX: 0, 
+        lastY: 0,
+        minZoom: 0.3, 
+        maxZoom: 1
     };
 
     // 6. INITIALIZE AAA ROAD SYSTEM (Prerendering)
@@ -357,7 +363,14 @@ export default class Map {
     ctx.restore();
 
     // 5. PASS: AAA CINEMATIC VIGNETTE
-    const vGrad = ctx.createRadialGradient(this.canvas.width/2, this.canvas.height/2, this.canvas.width/3, this.canvas.width/2, this.canvas.height/2, this.canvas.width * 0.9);
+    const vGrad = ctx.createRadialGradient(
+        this.canvas.width / 2,  // Center X (now 615px)
+        this.canvas.height / 2, // Center Y (300px)
+        this.canvas.width / 3, 
+        this.canvas.width / 2, 
+        this.canvas.height / 2, 
+        this.canvas.width * 0.9
+    );
     vGrad.addColorStop(0, 'transparent');
     vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
     ctx.fillStyle = vGrad;

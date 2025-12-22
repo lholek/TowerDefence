@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Inicializace ---
     const musicManager = new MusicManager();
     const canvas = document.getElementById('gameCanvas');
-    canvas.style.width = '1000px';
+    canvas.style.width = '1230px';
     canvas.style.height = '600px';
+
+    canvas.width = 1230;  // Internal drawing width
+    canvas.height = 600;  // Internal drawing height
 
     // --- Elementy pro startovací obrazovku ---
     const mapSelect = document.getElementById('mapSelect');
