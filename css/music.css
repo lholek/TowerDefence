@@ -62,6 +62,8 @@
 #eventsList {
   max-height: 370px; /* reduce a bit to make space */
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(240, 198, 116) transparent;
 }
 
 #musicVolume {
