@@ -92,16 +92,6 @@
     padding: 10px 0;
 }
 
-/* Game Log Button specific tweak if needed */
-#gameLogBtn {
-    margin-right: 10px;
-    background-color: #5c2e0e; /* Slightly different shade to differentiate from Return */
-}
-#gameLogBtn:hover {
-    background-color: #703811;
-}
-/* Log Popup Specifics */
-
 /* Abilites */
 .build-mode-switcher {
   display: flex;
