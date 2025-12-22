@@ -74,7 +74,6 @@ async loadGameData(mapSource) {
     // 1. ROZHODNUTÍ O ZDROJI DAT
     if (typeof mapSource === 'string') {
         // ZDROJ JE URL (pro přednastavené mapy)
-        console.log(`Načítání mapy z URL: ${mapSource}`);
         const res = await fetch(mapSource);
         if (!res.ok) {
             throw new Error(`Failed to load JSON: ${res.status} ${res.statusText}`);

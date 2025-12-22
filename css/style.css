@@ -118,14 +118,19 @@ h3 {
 margin: 0.25rem;
 }
 
-/* scroll only inside event list */
+/* UPDATED eventsList - now inside popup */
 #eventsList {
-    flex: 1; /* fills remaining height */
+    width: 100%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    max-height: 600px;
+    max-height: 400px; /* Fixed height for the popup scroll */
+    text-align: left;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 /* game area */

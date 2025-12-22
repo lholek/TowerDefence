@@ -64,7 +64,6 @@ export default class Ability {
     const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
     if (timerEl) {
       const timeLeft = this.remainingCooldown;
-      console.log(timeLeft);
       if (timeLeft <= 0) {
         timerEl.textContent = 'Ready';
       } else {

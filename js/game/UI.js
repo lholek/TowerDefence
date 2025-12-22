@@ -84,6 +84,30 @@ function updateFPS() {
   requestAnimationFrame(updateFPS);
 }
 
+// === GAME LOG POPUP LOGIC ===
+const gameLogBtn = document.getElementById('gameLogBtn');
+const logPopup = document.getElementById('logPopup');
+const closeLogBtn = document.getElementById('closeLogBtn');
+
+if (gameLogBtn && logPopup && closeLogBtn) {
+    gameLogBtn.addEventListener('click', () => {
+        logPopup.style.display = 'flex';
+        // Pause game if it is running
+        if (window.game && window.game.gameStarted && !window.game.paused) {
+            window.game.togglePause();
+        }
+    });
+
+    closeLogBtn.addEventListener('click', () => {
+        logPopup.style.display = 'none';
+        // Unpause game if it was paused (optional: keep it paused if you prefer)
+        // Here we toggle it back to running if it was running before
+        if (window.game && window.game.gameStarted && window.game.paused) {
+            window.game.togglePause();
+        }
+    });
+}
+
 // --- Init settings ---
 document.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("settingsPopup");

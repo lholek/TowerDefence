@@ -140,7 +140,6 @@ export const abilityEditor = (() => {
                 // e.currentTarget is guaranteed to be the button the listener is attached to,
                 // which ensures the 'data-ability-index' is correctly retrieved.
                 const index = parseInt(e.currentTarget.getAttribute('data-ability-index'), 10);
-                console.log(index);
                 await deleteAbility(index); 
             });
         });

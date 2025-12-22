@@ -148,11 +148,6 @@
             <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5">
           </div>
         </div>
-        <!-- Game Log -->
-        <div class="box">
-          <h3>Game Log</h3>
-          <div id="eventsList"></div>
-        </div>
     </div>
     
     <!-- Right: Game area -->
@@ -167,6 +162,7 @@
           <span id="gameTimeLabel">Game Time - </span>
           <span id="gameTimeDisplay">00:00</span>
         </div>
+        <button id="gameLogBtn" class="btn">Game Log 📋</button>
         <button id="returnButton" class="btn">Return to Main Menu</button>
       </div>
 
@@ -178,6 +174,19 @@
           <div class="return-buttons">
             <button id="confirmReturn" class="btn">Yes, return</button>
             <button id="cancelReturn" class="btn">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Logp popup -->
+      <div id="logPopup" class="return-popup">
+        <div class="return-content log-popup-content">
+          <h3>Game Log</h3>
+          <div id="eventsListWrapper">
+             <div id="eventsList"></div>
+          </div>
+          <div class="return-buttons">
+            <button id="closeLogBtn" class="btn">Close</button>
           </div>
         </div>
       </div>
