@@ -1,40 +1,28 @@
 {
   "maps": [
     {
-      "name": "Map Editor test",
-      "startingCoins": 25,
-      "startingLifes": 1000000,
+      "name": "EDIT TITLE",
+      "startingCoins": 100,
+      "startingLifes": 100,
       "description": [
         {
           "descriptionText": "Edit description",
-          "level count": 3,
-          "difficulty": "⭐⭐",
-          "map_size": "20x20",
+          "level count": 1,
+          "difficulty": "⭐",
+          "map_size": "11x8",
           "abilites": "Lava Floor🌋"
         }
       ],
       "tileSize": 60,
       "layout": [
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","X","X","X","X","X","X","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","X","X","W","X","X","X","X","W","W","E4","W","W","W","W"],
-              ["W","W","W","W","X","X","X","W","W","X","X","O","O","O","O","O","W","W","W","W"],
-              ["W","W","W","X","X","X","X","X","X","X","X","O","X","X","X","W","W","W","W","W"],
-              ["W","W","X","X","X","X","X","O","O","O","O","O","X","X","X","E1","W","W","W","W"],
-              ["W","W","X","X","X","X","O","O","X","X","X","O","O","O","O","O","W","W","W","W"],
-              ["W","W","X","W","W","X","O","X","X","W","X","X","X","O","X","E2","W","W","W","W"],
-              ["W","W","X","W","W","X","O","X","W","W","X","X","W","O","W","W","W","W","W","W"],
-              ["W","W","X","X","X","X","O","X","X","X","X","X","X","O","O","E3","W","W","W","W"],
-              ["W","W","X","X","X","O","O","O","O","O","O","O","X","X","X","W","W","W","W","W"],
-              ["W","W","W","X","X","O","X","O","X","O","X","O","X","X","X","W","W","W","W","W"],
-              ["W","W","W","W","X","O","X","O","X","O","X","O","X","X","X","W","W","W","W","W"],
-              ["W","W","W","W","W","S1","X","S2","X","S3","X","S4","X","X","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","X","X","X","X","X","X","X","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","X","X","X","X","W","W","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+              ["-","-","X","X","W","W","W","W","X","X","X"],
+              ["S1","O","O","O","O","O","O","O","O","X","X"],
+              ["-","O","O","O","O","O","O","O","O","E1","X"],
+              ["-","O","O","O","O","O","O","O","O","X","X"],
+              ["S2","O","O","O","O","O","O","O","O","E2","X"],
+              ["-","O","O","O","O","O","O","O","O","X","X"],
+              ["S3","O","O","O","O","O","O","O","O","E3","X"],
+              ["W","W","W","W","W","W","W","W","W","W","W"]
           ],
       "abilities": [
         {
@@ -44,13 +32,13 @@
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 13,
+          "selectionCount": 70,
           "__comment": "250dmg / 0.25s ",
           "damage": 250,
-          "damage_every": 75,
+          "damage_every": 250,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
-          "effectDuration": 2500,
+          "effectDuration": 500000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
@@ -60,23 +48,13 @@
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
-          "price": 25,
+          "price": 1,
           "damage": 50,
           "fireRate": 400,
-          "range": 2000,
+          "range": 2500,
           "color": "#468bb0",
-          "sellPrice": 100,
+          "sellPrice": 1,
           "speed": 2
-        },
-        "002": {
-          "name": "New Tower 002",
-          "price": 50,
-          "damage": 100,
-          "fireRate": 250,
-          "range": 3000,
-          "color": "#ffffff",
-          "sellPrice": 100,
-          "speed": 5
         }
       },
       "levels": [
@@ -85,93 +63,16 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
+              "count": 500,
               "health": 100,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S3E1",
               "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 10
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S3E3",
-              "interval": 500,
-              "firstDelay": 0,
-              "coinReward": 10
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S4E4",
-              "interval": 1000,
-              "firstDelay": 3000,
-              "coinReward": 10
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
-              "path": "S2E2",
-              "interval": 500,
-              "firstDelay": 8000,
-              "coinReward": 10
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "enemies": [
-            {
-              "type": "tank",
-              "count": 10,
-              "health": 200,
-              "speed": 1,
-              "path": "S1E1",
-              "interval": 750,
-              "firstDelay": 0,
-              "coinReward": 2
-            },
-            {
-              "type": "tank",
-              "count": 7,
-              "health": 500,
-              "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 1
-            }
-          ]
-        },
-        {
-          "level": 3,
-          "enemies": [
-            {
-              "type": "boss",
-              "count": 100000,
-              "health": 10000,
-              "speed": 0.45,
-              "path": "S2E1",
-              "interval": 750,
-              "firstDelay": 0,
-              "coinReward": 2
+              "coinReward": 1,
+              "firstDelay": "0"
             }
           ]
         }
-      ],
-      "enemyTypes": [
-        "basic",
-        "tank",
-        "fast",
-        "boss",
-        "test"
       ]
     }
   ]
