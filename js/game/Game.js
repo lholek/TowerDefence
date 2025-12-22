@@ -427,8 +427,8 @@ update(deltaTime) {
   
   updateUI() {
     this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
-    this.lifesText.textContent = `❤️ Tree Life: ${this.playerLifes}`;
-    this.coinsText.textContent = `🪙 Coins: ${this.playerCoins}`;
+    this.lifesText.textContent = `❤️ ${this.playerLifes}`;
+    this.coinsText.textContent = `🪙 ${this.playerCoins}`;
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
   }
