@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.title = `The CZSrna's Tower Defence – ${currentVersion}`;
 
         // Update events box subtitle
-        const eventsBoxSubtitle = document.querySelector('#eventsBox .subtitle');
+        const eventsBoxSubtitle = document.querySelector('.subtitle');
         if (eventsBoxSubtitle) {
             eventsBoxSubtitle.textContent = currentVersion;
         }

@@ -50,10 +50,10 @@ h3 {
 }
 .subtitle {
     text-align: center;
-    margin: 3rem;
-    margin-top: -17px;
-    margin-bottom: 17px;
-    position: relative;
+    left: 50%;
+    transform: translateX(-50%); /* This shifts it back by half its own width */
+    margin-top: -50px;
+    position: absolute;
     z-index: 1;
     background: #5c2e0e;
     border: none;
@@ -71,6 +71,10 @@ h3 {
     gap: 12px;
     justify-content: center;
     margin-top: 12px;
+    width: 98%;           /* Use most of the screen */
+    max-width: 1200px;
+    margin: 20px auto;
+    position: relative;
 }
 
 /* events log left column */
@@ -151,6 +155,7 @@ margin: 0.25rem;
   font-family: 'Orbitron', sans-serif;
   color: var(--ui-text);
   border-radius: 6px;
+  width: 1200px;
 }
 .top-ui div {
   margin: 0 8px;
