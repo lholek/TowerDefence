@@ -237,3 +237,25 @@
   font-size: 13px;
 }
 /* Abilites */
+/* Music */
+/* Container for the music button */
+.dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* The small pop-under styling */
+.pop-under-menu {
+    position: absolute;
+    top: 100%; /* Directly below the button */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    background: var(--main-bg-color);
+    border: 2px solid #8B4513;
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 1001; /* Above the canvas */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+/* Music */

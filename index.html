@@ -123,31 +123,7 @@
     <!-- Info section -->
     <div id="eventsBox">
         <h3 class="subtitle"></h3>
-        <!-- Music Player -->
-        <div id="musicBox" class="box">
-          <h3>Music Player</h3>
-                
-          <!-- Track controls -->
-          <div class="music-controls">
-            <button id="musicPrev" class="btn btn-music">&lt;&lt;</button>
-            <span id="musicTitle" class="music-title">No track loaded</span>
-            <button id="musicNext" class="btn btn-music">&gt;&gt;</button>
-          </div>
         
-          <!-- Progress bar -->
-          <div class="music-progress">
-            <div id="musicProgressBarContainer" class="progress-container">
-              <div id="musicProgressBar" class="progress-bar"></div>
-            </div>
-            <div id="musicTime">00:00 / 00:00</div>
-          </div>
-        
-          <!-- Volume & toggle -->
-          <div class="music-volume">
-            <button id="musicToggle" class="btn">Music: OFF</button>
-            <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5">
-          </div>
-        </div>
     </div>
     
     <!-- Right: Game area -->
@@ -162,6 +138,31 @@
           <span id="gameTimeLabel">Game Time - </span>
           <span id="gameTimeDisplay">00:00</span>
         </div>
+        <!-- Music dropdown -->
+        <div class="dropdown-wrapper">
+            <button id="musicBtn" class="btn">Music 🎵</button>
+            <div id="musicDropdown" class="pop-under-menu" style="display: none;">
+                <div id="musicBox" class="box">
+                    <h3>Music Player</h3>
+                    <div class="music-controls">
+                        <button id="musicPrev" class="btn btn-music">&lt;&lt;</button>
+                        <span id="musicTitle" class="music-title">No track loaded</span>
+                        <button id="musicNext" class="btn btn-music">&gt;&gt;</button>
+                    </div>
+                    <div class="music-progress">
+                        <div id="musicProgressBarContainer" class="progress-container">
+                            <div id="musicProgressBar" class="progress-bar"></div>
+                        </div>
+                        <div id="musicTime">00:00 / 00:00</div>
+                    </div>
+                    <div class="music-volume">
+                        <button id="musicToggle" class="btn">Music: OFF</button>
+                        <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.5">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Music dropdown -->
         <button id="gameLogBtn" class="btn">Game Log 📋</button>
         <button id="returnButton" class="btn">Return to Main Menu</button>
       </div>

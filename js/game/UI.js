@@ -84,6 +84,27 @@ function updateFPS() {
   requestAnimationFrame(updateFPS);
 }
 
+// === MUSIC DROPDOWN LOGIC ===
+const musicBtn = document.getElementById('musicBtn');
+const musicDropdown = document.getElementById('musicDropdown');
+
+if (musicBtn && musicDropdown) {
+  musicBtn.addEventListener('click', (e) => {
+      // Prevent clicking the button from immediately triggering the "click outside" closer
+      e.stopPropagation();
+
+      const isVisible = musicDropdown.style.display === 'block';
+      musicDropdown.style.display = isVisible ? 'none' : 'block';
+  });
+
+  // Close the music player if you click anywhere else on the screen
+  document.addEventListener('click', (e) => {
+      if (musicDropdown.style.display === 'block' && !musicDropdown.contains(e.target)) {
+          musicDropdown.style.display = 'none';
+      }
+  });
+}
+
 // === GAME LOG POPUP LOGIC ===
 const gameLogBtn = document.getElementById('gameLogBtn');
 const logPopup = document.getElementById('logPopup');
