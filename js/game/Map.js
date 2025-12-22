@@ -344,7 +344,7 @@ export default class Map {
     // 2. PASS: OCEÁN (Základ + Maskovaný Shader)
     if (this.waterLayer) {
         ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
-        this.drawWaterOverlay(ctx, startRow, endRow, startCol, endCol);
+        //this.drawWaterOverlay(ctx, startRow, endRow, startCol, endCol);
     }
 
     // 3. PASS: CESTA
@@ -765,6 +765,7 @@ export default class Map {
     }
 }
 
+  // Unused
   drawWaterOverlay(ctx, startRow, endRow, startCol, endCol) {
     const ts = this.tileSize;
     const time = performance.now() * 0.0004; // Majestátní pomalý pohyb
@@ -794,7 +795,7 @@ export default class Map {
         }
     }
     ctx.restore();
-}
+  }
 
 _drawOceanGlimmer(ctx, x, y, ts, time, r, c) {
     // Matematika pro propojené vlnění přes více bloků

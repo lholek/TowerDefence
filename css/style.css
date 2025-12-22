@@ -51,18 +51,20 @@ h3 {
 .subtitle {
     text-align: center;
     left: 50%;
-    transform: translateX(-50%); /* This shifts it back by half its own width */
-    margin-top: -55px;
+    transform: translateX(-50%);
+    margin-top: -155px;
     position: absolute;
     z-index: 1;
-    background: #5c2e0e;
+    background: #8B4513;
+    color: #f0c674;
     border: none;
     border-radius: 6px;
-    padding: 0.25rem;
-    color: #f3e5ab;
+    padding: 0.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s
+    transition: background 0.2s;
 }
 
 /* main container flex */

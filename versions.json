@@ -5,6 +5,8 @@
       "relase": "tbc",
       "changes": [
         "Improved - Gameplay - Added Water to the Game",
+        "Improved - Graphics - Removed left column and items from it were distributed to another sections",
+        "Improved - Graphics - Increased map size",
         "Improved - Graphics - Added 'Map Styles' to Game Settings",
         "Improved - Graphics - New 'Map Style' - Midnight Sky",
         "Improved - Graphics - Improved Grass, Path, Spawning Portals, Final Trees of life",
