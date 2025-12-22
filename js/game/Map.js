@@ -57,7 +57,7 @@ export default class Map {
     this.grassLayer = document.createElement('canvas');
     this.grassLayer.width = this.cols * this.tileSize;
     this.grassLayer.height = this.rows * this.tileSize;
-    this._prerenderGrass(); // Tuhle funkci vytvoříme níže
+    this._prerenderGrass();
     
     // AAA Atmosphere settings
     this.sunDir = { x: 1, y: 1 }; 
