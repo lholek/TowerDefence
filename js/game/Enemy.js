@@ -19,7 +19,14 @@ export default class Enemy {
     this.movingLeft = false;
 
     // 50/50 šance na typ nepřítele
-    this.type = Math.random() > 0.5 ? 'REVENANT' : 'WRAITH';
+    const rand = Math.random();
+    if (rand < 0.33) {
+        this.type = 'GOLEM';
+    } else if (rand < 0.66) {
+        this.type = 'EYE';
+    } else {
+        this.type = 'FIRE_SPIDER';
+    }
     
     // Generování grafiky do cache
     this.cachedCanvas = this._preRenderEnemy(this.size);
@@ -67,8 +74,9 @@ export default class Enemy {
   }
 
   _preRenderEnemy(size) {
-    if (this.type === 'REVENANT') return this._drawInfernalGolemCanvas(size);
-    return this._drawInfernalEye(size);
+    if (this.type === 'GOLEM') return this._drawInfernalGolemCanvas(size);
+    if (this.type === 'EYE') return this._drawInfernalEye(size);
+    if (this.type === 'FIRE_SPIDER') return this._drawFireSpider(size); // New
   }
 
   _drawInfernalGolemCanvas(tileSize) {
@@ -193,6 +201,76 @@ export default class Enemy {
     return canvas;
   }
   
+  _drawFireSpider(tileSize) {
+    const size = tileSize * 0.8;
+    const canvas = document.createElement("canvas");
+    canvas.width = tileSize * 4;
+    canvas.height = tileSize * 4;
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    const cy = canvas.height * 0.7;
+
+    const charcoal = '#1a1a1a';
+    const lavaOrange = '#7f1d1d';
+    const lavaYellow = '#fbbf24';
+
+    // Glow Effect
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = lavaOrange;
+
+    // --- LEGS (8 legs) ---
+    ctx.strokeStyle = charcoal;
+    ctx.lineWidth = 3;
+    for (let i = 0; i < 8; i++) {
+        const angle = (Math.PI / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        // Jointed leg look
+        const midX = cx + Math.cos(angle) * size;
+        const midY = cy + Math.sin(angle) * size - 10;
+        const endX = cx + Math.cos(angle) * (size * 1.5);
+        const endY = cy + Math.sin(angle) * (size * 1.5);
+        
+        ctx.lineTo(midX, midY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Hot tips on legs
+        ctx.fillStyle = lavaOrange;
+        ctx.fillRect(endX - 2, endY - 2, 4, 4);
+    }
+
+    // --- BODY (Abdomen) ---
+    ctx.fillStyle = charcoal;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, size * 0.7, size * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = lavaOrange;
+    ctx.stroke();
+
+    // --- LAVA VEINS ON BACK ---
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = lavaYellow;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.3, cy);
+    ctx.lineTo(cx + size * 0.3, cy);
+    ctx.moveTo(cx, cy - size * 0.2);
+    ctx.lineTo(cx, cy + size * 0.2);
+    ctx.stroke();
+
+    // --- EYES (Multiple small glowing dots) ---
+    ctx.fillStyle = lavaYellow;
+    const eyeOffsets = [[-5, -8], [5, -8], [-10, -4], [10, -4]];
+    eyeOffsets.forEach(([ox, oy]) => {
+        ctx.beginPath();
+        ctx.arc(cx + ox, cy + oy, 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    return canvas;
+  }
+
   _drawHealthBar(ctx) {
     const hbW = this.size;
     const pct = Math.max(0, this.health / this.maxHealth);
