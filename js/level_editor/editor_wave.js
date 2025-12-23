@@ -140,6 +140,7 @@ export const waveEditor = (() => {
      * Renders the HTML structure for a single enemy spawn group within a wave.
      */
         const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
+            console.log(enemy);
         return `
             <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
             <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>

@@ -84,7 +84,7 @@ const defaultLevelJson = {
                 {
                     "level": 1,
                     "enemies": [
-                        {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E1", "interval": 1000, "coinReward": 1}
+                        {"type": "basic", "count": 5, "health": 100, "speed": 1, "path": "S1E1", "interval": 1000, "coinReward": 1, "firstDelay": 0}
                     ]
                 }
             ]
