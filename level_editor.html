@@ -38,9 +38,21 @@
                 <div id="mapCanvasContainer" class="map-canvas-container">
                     <canvas id="mapCanvas"></canvas>
                     <div id="cloudsLayer" class="cloudsLayer"></div>
+                </div>       
+                
+                <div id="tileDrawingPanel" class="tileDrawingPanel">
+                    <div id="tileKey" class="tile-key-container editor-key-container"></div>
+                    <div class="control-group brush-key-container editor-key-container mt-0">
+                        <label for="brush-toolbar">Brush Shape</label>
+                        <div class="brush-toolbar brush-options">
+                            <button class="btn-brush active" onclick="window.app.mapEditor.setBrush('sq1')">■ 1x1</button>
+                            <button class="btn-brush" onclick="window.app.mapEditor.setBrush('sq3')">■ 3x3</button>
+                            <button class="btn-brush" onclick="window.app.mapEditor.setBrush('sq5')">■ 5x5</button>
+                            <button class="btn-brush" onclick="window.app.mapEditor.setBrush('st3')">✦ 3x3</button>
+                            <button class="btn-brush" onclick="window.app.mapEditor.setBrush('st5')">✦ 5x5</button>
+                        </div>
+                    </div>    
                 </div>
-
-                <div id="tileKey" class="tile-key-container"></div>
             </div>
 
             <div id="basicInfoEditorPanel" class="editor-panel editor-description">

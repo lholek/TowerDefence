@@ -22,6 +22,52 @@ let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
 
+// 1 = Paint, 0 = Ignore
+const BRUSH_SHAPES = {
+    'sq1': {
+        matrix: [[1]],
+        offset: 0 
+    },
+    'sq3': {
+        matrix: [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ],
+        offset: 1 // The center is index 1
+    },
+    'sq5': {
+        matrix: [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+        offset: 2
+    },
+    'st3': {
+        matrix: [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ],
+        offset: 1
+    },
+    'st5': {
+        matrix: [
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 1, 0],
+            [1, 1, 1, 1, 1],
+            [0, 1, 1, 1, 0],
+            [0, 0, 1, 0, 0]
+        ],
+        offset: 2
+    }
+};
+
+let currentBrushKey = 'sq1'; // Default
+
 // Placeholder for external module references
 export function setModuleReferences(refs) {
     canvas = refs.canvas;
@@ -171,31 +217,40 @@ function handleZoom(e) {
 // --- Drawing Logic Helpers ---
 
 /**
- * Applies the given tile type to the current mouse position in the map.
- * Updates the currentLevelData directly for performance during drawing.
+ * Applies the given tile type using the CURRENT BRUSH shape.
  */
 function applyTileToCurrentPosition(screenX, screenY, tileType) {
     const layout = currentLevelData.maps[0].layout;
-    
-    // Guard clause
-    if (!layout || layout.length === 0 || layout[0].length === 0) return false; 
+    if (!layout || layout.length === 0) return false; 
 
+    // 1. Get the "Center" tile coordinates
     const { row, col } = getTileFromScreen(screenX, screenY, layout.length, layout[0].length);
     
-    // Check if within bounds
-    if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
-        // Optimization: Only update and re-render if the tile actually changes
-        if (layout[row][col] !== tileType) {
-            // DIRECTLY MODIFY currentLevelData for drag-painting performance
-            currentLevelData.maps[0].layout[row][col] = tileType;
-            hasDrawn = true;
-            renderMap(layout); // Re-render the map immediately for visual feedback
-            return true;
+    // 2. Get ALL tiles affected by the brush (Square, Star, etc.)
+    const tilesToPaint = getBrushAffectedTiles(row, col);
+
+    let changed = false;
+
+    // 3. Loop through every affected tile
+    tilesToPaint.forEach(tile => {
+        // Double check bounds (getBrushAffectedTiles handles it, but safety first)
+        if (tile.r >= 0 && tile.r < layout.length && tile.c >= 0 && tile.c < layout[0].length) {
+            
+            // Only update if the tile is actually different
+            if (layout[tile.r][tile.c] !== tileType) {
+                currentLevelData.maps[0].layout[tile.r][tile.c] = tileType;
+                changed = true;
+            }
         }
+    });
+
+    if (changed) {
+        hasDrawn = true;
+        renderMap(layout); // Re-render immediately
+        return true;
     }
     return false;
 }
-
 // --- Interaction Handlers (Drawing/Erasing) ---
 
 function handleMapDrawStart(e) {
@@ -378,14 +433,31 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
             // Draw tile text
             ctx.fillStyle = 'white';
             ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
-            
-            // Draw hover effect
-            if (r === hoveredTile.r && c === hoveredTile.c) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-                ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-            }
         }
     }
+
+    if (hoveredTile.r !== -1 && hoveredTile.c !== -1) {
+        const ghostTiles = getBrushAffectedTiles(hoveredTile.r, hoveredTile.c);
+        
+        // Choose color: Red for Erasing (Right Click), White for Painting
+        if (isDrawingRight) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Redish for erasing
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+        } else {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; // Whiteish for painting
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        }
+
+        ctx.lineWidth = 2;
+
+        ghostTiles.forEach(tile => {
+            const gx = tile.c * TILE_SIZE;
+            const gy = tile.r * TILE_SIZE;
+            
+            ctx.fillRect(gx, gy, TILE_SIZE, TILE_SIZE);
+            ctx.strokeRect(gx, gy, TILE_SIZE, TILE_SIZE);
+        });
+    }    
     
     // 5. Restore Canvas State (undo transform)
     ctx.restore();
@@ -664,4 +736,55 @@ function updateMapSizeDescription() {
 // New public function that can be called externally (e.g., from main.js or json_functions.js)
 export function updateMapInfo() {
     updateMapSizeDescription();
+}
+
+// Brush sizes
+/**
+ * Returns an array of {r, c} objects representing all tiles affected by the brush
+ * centered at (centerR, centerC).
+ */
+function getBrushAffectedTiles(centerR, centerC) {
+    const mapData = getCurrentMap();
+    const rows = mapData.layout.length;
+    const cols = mapData.layout[0].length;
+    
+    const shape = BRUSH_SHAPES[currentBrushKey];
+    const matrix = shape.matrix;
+    const offset = shape.offset;
+
+    let tiles = [];
+
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            // If the matrix has a 1 at this position
+            if (matrix[i][j] === 1) {
+                // Calculate actual map coordinates
+                // i, j are matrix indices. We subtract offset to center them.
+                const targetR = centerR + (i - offset);
+                const targetC = centerC + (j - offset);
+
+                // Boundary Check: Ensure we don't paint outside the map
+                if (targetR >= 0 && targetR < rows && targetC >= 0 && targetC < cols) {
+                    tiles.push({ r: targetR, c: targetC });
+                }
+            }
+        }
+    }
+    return tiles;
+}
+
+export function setBrush(brushKey) {
+    if (BRUSH_SHAPES[brushKey]) {
+        currentBrushKey = brushKey;
+        
+        // Update UI Button Visuals
+        document.querySelectorAll('.btn-brush').forEach(btn => {
+            btn.classList.remove('active');
+            // Check if button onclick text contains the key (simple hack) 
+            // OR ideally pass 'this' from HTML, but this works:
+            if (btn.getAttribute('onclick').includes(brushKey)) {
+                btn.classList.add('active');
+            }
+        });
+    }
 }

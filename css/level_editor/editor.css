@@ -288,6 +288,7 @@ h2, h3 {
 
 .map-size-controls {
     display: flex;
+    justify-content: center;
     gap: 15px;
     align-items: center;
     margin-bottom: 15px;
@@ -327,12 +328,10 @@ h2, h3 {
     cursor: grabbing;
 }
 
-.tile-key-container {
+.editor-key-container {
     margin-top: 15px;
     padding: 10px;
-    border: 1px solid #967456;
     border-radius: 6px;
-    background-color: #967456;
     color: #ccc;
 }
 
@@ -468,4 +467,42 @@ h2, h3 {
 /* Hide utility (used in HTML to toggle visibility) */
 .d-none {
     display: none !important;
+}
+
+.brush-toolbar {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.btn-brush {
+    padding: 5px 10px;
+    background: #444;
+    border: 1px solid #666;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.btn-brush:hover {
+    background: #555;
+}
+
+.btn-brush.active {
+    background: #3F7D3C; /* Green or your theme color */
+    font-weight: bold;
+    scale: 1.1;
+}
+
+.brush-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mt-0{
+    margin-top: 0 !important;
 }
