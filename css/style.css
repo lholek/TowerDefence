@@ -178,7 +178,8 @@ margin: 0.25rem;
 #progressBar {
     width: 0%; /* dynamic */
     height: 100%;
-    background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+    background: #c9b63a;
+    background: linear-gradient(90deg,rgba(201, 182, 58, 1) 0%, rgba(199, 147, 42, 1) 100%);
     border-radius: 6px;
     position: absolute;
     top: 0;
@@ -187,12 +188,17 @@ margin: 0.25rem;
 }
 
 /* level text centered inside progress bar */
-#levelText {
+.levelText {
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    text-shadow: 0 0 3px #fff;
+    margin-top: 5px;
+    z-index: 99;
+    position: absolute;
+    color: white;
+    text-align: center;
+    width: 100%;
 }
 
 /* canvas */
