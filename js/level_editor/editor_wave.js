@@ -198,7 +198,7 @@ export const waveEditor = (() => {
                         <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
                             <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="${totalCoins} coins">
                         </label>
-                        <h4>Enemies (Total Coins: ${totalCoins})</h4>
+                        <h4>Enemies (Total Coins: 🪙 ${totalCoins})</h4>
                         <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
                     </div>
                     

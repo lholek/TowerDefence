@@ -390,6 +390,11 @@ h2, h3 {
     display: flex;
     gap: 10px;
     justify-content: center; /* Center the buttons */
+    position: fixed;
+    right: 30px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column
 }
 
 .active-tab {
