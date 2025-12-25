@@ -236,7 +236,7 @@ async loadGameData(mapSource) {
     requestAnimationFrame(this.loop.bind(this));
   }
 
-update(deltaTime) {
+  update(deltaTime) {
     // 1. Safety Checks and Timer Update
     if (!this.levelData) return;
     
@@ -314,47 +314,97 @@ update(deltaTime) {
     // 4. REMOVE DEAD/ESCAPED ENEMIES & CHECK GAME OVER
     // ----------------------------------------------------------------
     this.enemies = this.enemies.filter(e => {
-        // Case A: Enemy Killed
         if (e.health <= 0) {
             this.playerCoins += e.coinReward || 1;
             this.enemiesKilled++;
             this.updateUI();
             return false; 
         }
-
-        // Case B: Enemy Reached End
+      
         if (e.currentIndex >= e.path.length - 1) {
             this.playerLifes--;
             this.updateUI();
-
+        
             if (this.playerLifes <= 0) {
                 this.gameStarted = false;
-                this.showOverlayMessage(`You lost. You survived for ${this.currentLevelIndex + 1} waves. Returning to Main menu...`);
-                setTimeout(() => this.resetGameToMenu(), 5000);
+                // CHANGE: Remove setTimeout, add a button-based overlay
+                this.showFinalScoreOverlay(`L`);
             }
             return false; 
         }
-
         return true; 
     });
-
+    
     // ----------------------------------------------------------------
     // 5. LEVEL COMPLETION CHECK
     // ----------------------------------------------------------------
-    // The level is complete when ALL enemy groups have finished spawning AND 
-    // ALL spawned enemies currently on the map have been defeated or escaped.
     if (this.playerLifes > 0 && allWavesComplete && this.enemies.length === 0) {
         this.currentLevelIndex++;
         
         if (this.currentLevelIndex >= this.levelData.levels.length) {
-            this.showOverlayMessage(`You won! You survived for ${this.currentLevelIndex} waves. Returning to Main menu...`);
-            setTimeout(() => this.resetGameToMenu(), 5000);
             this.gameStarted = false;
+            // CHANGE: Remove setTimeout, add a button-based overlay
+            this.showFinalScoreOverlay('V');
         } else {
             this.setLevel(this.currentLevelIndex);
         }
     }
-}
+  }
+
+  showFinalScoreOverlay(status) {
+    // 1. Declare variables OUTSIDE the if/else so they are accessible later
+    let mainText = "";
+    let titleClass = "";
+    let subText = `You survived ${this.currentLevelIndex} waves and defeated ${this.enemiesKilled} enemies.`;
+
+    if (status === 'V') {
+        mainText = "VICTORY !";
+        titleClass= "victory-text";
+    } else {
+        mainText = "DEFEAT !";
+        titleClass= "defeat-text";
+
+    }
+
+    // 2. Find or create an overlay element
+    let overlay = document.getElementById('gameEndOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'gameEndOverlay';
+        overlay.className = 'full-screen-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    // 3. Set content (Notice we use the variables defined above)
+    overlay.innerHTML = `
+        <div class="overlay-content final-status" style="border-color: ${status === 'V' ? '#1e7d32' : '#8b0000'}">
+            <h2 class="${titleClass}">${mainText}</h2>
+            <p>${subText}</p>
+            <div class="stats-grid final-status-grid">
+                <div>🪙: ${this.playerCoins}</div>
+                <div>❤️: ${this.playerLifes}</div>
+            </div>
+            <div class="final-status-button-grid">
+                <button id="btnContinueToMenu" class="btn btn-primary">Main Menu</button>
+            </div>
+        </div>
+    `;
+
+    overlay.classList.remove('d-none');
+
+    // 4. Button Logic
+    // Main Menu
+    document.getElementById('btnContinueToMenu').onclick = () => {
+        overlay.classList.add('d-none');
+        this.resetGameToMenu(); 
+    };
+
+    // Restart Level (Optional but highly recommended)
+    /*document.getElementById('btnRestart').onclick = () => {
+        overlay.classList.add('d-none');
+        this.resetGame(); // Or however you restart the current map
+    };*/
+  }
 
   // Helper method to spawn a single enemy based on config
   spawnEnemy(config) {

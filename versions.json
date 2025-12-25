@@ -21,11 +21,12 @@
         "Improved - Editor - Choosing differt editor tabs is now sicked to left side",
         "Improved - Editor - Fixed - In empty Map firstDelay is no longer undefined in empty enemy",
         "Improved - UI - Level moved to the middle of progress Bar",
-        "Improved - UI -  Added Controls to the Settings in Mainmenu",
+        "Improved - UI - Added Controls to the Settings in Mainmenu",
         "Improved - UI - Game time moved to the top-ui",
         "Improved - UI - Added water to minimap",
         "Improved - UI - Game log hidden under the collapse button next to the Return TO MAIN MENU",
         "Improved - UI - Music Player is now in top-ui",
+        "Improved - UI - Improved texts for victory and defeat",
         "TODO: Improve - Add even more music",
         "TODO: Improve - Add LORE",
         "TODO - UPDATES ???"
