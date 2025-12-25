@@ -356,7 +356,7 @@ async loadGameData(mapSource) {
     let mainText = "";
     let titleClass = "";
     let color = "";
-    let subText = `You survived ${this.currentLevelIndex} waves and defeated ${this.enemiesKilled} enemies.`;
+    let subText = `You survived ${this.currentLevelIndex} waves!`;
 
     if (status === 'V') {
         mainText = "VICTORY !";
