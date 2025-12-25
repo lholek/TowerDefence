@@ -355,15 +355,17 @@ async loadGameData(mapSource) {
     // 1. Declare variables OUTSIDE the if/else so they are accessible later
     let mainText = "";
     let titleClass = "";
+    let color = "";
     let subText = `You survived ${this.currentLevelIndex} waves and defeated ${this.enemiesKilled} enemies.`;
 
     if (status === 'V') {
         mainText = "VICTORY !";
         titleClass= "victory-text";
+        color = "#1e7d32";
     } else {
         mainText = "DEFEAT !";
         titleClass= "defeat-text";
-
+        color = "#b51414";
     }
 
     // 2. Find or create an overlay element
@@ -377,7 +379,7 @@ async loadGameData(mapSource) {
 
     // 3. Set content (Notice we use the variables defined above)
     overlay.innerHTML = `
-        <div class="overlay-content final-status" style="border-color: ${status === 'V' ? '#1e7d32' : '#8b0000'}">
+        <div class="overlay-content final-status" style="border-color: ${color}">
             <h2 class="${titleClass}">${mainText}</h2>
             <p>${subText}</p>
             <div class="stats-grid final-status-grid">
