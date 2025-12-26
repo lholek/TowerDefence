@@ -77,10 +77,14 @@ export default class Bullet {
 
         let realSpeed = this.speed * (deltaTime / (1000/144))
         if (dist < realSpeed) {
-            this.target.health -= this.damage;
             if (this.game && this.game.stats) {
-                this.game.stats.damageDealt += this.damage;
+                if (this.target.health < this.damage){
+                    this.game.stats.damageDealt += this.target.health;
+                } else {
+                    this.game.stats.damageDealt += this.damage;
+                }
             }
+            this.target.health -= this.damage;
             this.active = false;
             return;
         }

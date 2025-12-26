@@ -331,7 +331,7 @@ async loadGameData(mapSource) {
     // ----------------------------------------------------------------
     this.enemies = this.enemies.filter(e => {
         if (e.health <= 0) {
-            this.playerCoins += e.coinReward || 1;
+            this.playerCoins += e.coinReward;
             this.stats.goldEarned += e.coinReward;
             this.stats.enemiesKilled++; // Sync with main counter
             this.enemiesKilled++;
@@ -417,17 +417,17 @@ async loadGameData(mapSource) {
               <div>🪙: <span>${fmt(this.playerCoins)}</span></div>
               <div>❤️: <span>${fmt(this.playerLifes)}</span></div>
               
-              <div style="color: #ef4444;">⚔️ Damage: <span style="float:right; color:#fff">${fmt(this.stats.damageDealt)}</span></div>
-              <div style="color: #eab308;">🪙 Earned: <span style="float:right; color:#fff">${fmt(this.stats.goldEarned)}</span></div>
+              <div style="color: #ef4444;">⚔️ Damage <span style="float:right; color:#fff">${fmt(this.stats.damageDealt)}</span></div>
+              <div style="color: #eab308;">🪙 Earned <span style="float:right; color:#fff">${fmt(this.stats.goldEarned)}</span></div>
               
-              <div style="color: #fca5a5;">☠️ Kills: <span style="float:right; color:#fff">${fmt(this.stats.enemiesKilled)}</span></div>
-              <div style="color: #fbbf24;">💸 Spent: <span style="float:right; color:#fff">${fmt(this.stats.goldSpent)}</span></div>
+              <div style="color: #fca5a5;">☠️ Kills <span style="float:right; color:#fff">${fmt(this.stats.enemiesKilled)}</span></div>
+              <div style="color: #fbbf24;">💸 Spent <span style="float:right; color:#fff">${fmt(this.stats.goldSpent)}</span></div>
               
-              <div style="color: #60a5fa;">🏗️ Built: <span style="float:right; color:#fff">${fmt(this.stats.towersBuilt)}</span></div>
-              <div style="color: #94a3b8;">🏚️ Sold: <span style="float:right; color:#fff">${fmt(this.stats.towersSold)}</span></div>
+              <div style="color: #60a5fa;">🏗️ Built <span style="float:right; color:#fff">${fmt(this.stats.towersBuilt)}</span></div>
+              <div style="color: #94a3b8;">🏚️ Sold <span style="float:right; color:#fff">${fmt(this.stats.towersSold)}</span></div>
               
-              <div style="color: #a855f7;">✨ Abilities: <span style="float:right; color:#fff">${fmt(this.stats.abilitiesUsed)}</span></div>
-              <div style="color: #f87171;">🚫 Leaks: <span style="float:right; color:#fff">${fmt(this.stats.leaks)}</span></div>
+              <div style="color: #a855f7;">✨ Abilities <span style="float:right; color:#fff">${fmt(this.stats.abilitiesUsed)}</span></div>
+              <div style="color: #f87171;">💔 Life lost <span style="float:right; color:#fff">${fmt(this.stats.leaks)}</span></div>
               
               <div style="grid-column: span 2; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; padding-top: 5px; color: #fff;">
                   ⏱️ Time Elapsed: ${timeString}

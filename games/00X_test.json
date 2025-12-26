@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "Edit description",
-          "level count": 1,
+          "level count": 3,
           "difficulty": "⭐",
           "map_size": "15x15",
           "abilites": "Lava Floor🌋"
@@ -41,11 +41,11 @@
           "type": "targeted",
           "selectionCount": 70,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
-          "damage_every": 250,
+          "damage": 2000000,
+          "damage_every": 1000,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
-          "effectDuration": 500000,
+          "effectDuration": 3000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
@@ -56,12 +56,12 @@
         "001": {
           "name": "Basic Tower",
           "price": 1,
-          "damage": 50,
-          "fireRate": 400,
+          "damage": 1000,
+          "fireRate": 1000,
           "range": 2500,
           "color": "#468bb0",
           "sellPrice": 1,
-          "speed": 2
+          "speed": 10
         },
         "002": {
           "name": "New Tower 002",
@@ -76,9 +76,9 @@
         "003": {
           "name": "New Tower 003",
           "price": 2,
-          "damage": 2,
-          "fireRate": 2,
-          "range": 2,
+          "damage": 20000,
+          "fireRate": 200,
+          "range": 2000,
           "color": "#ffffff",
           "sellPrice": 2,
           "speed": 2
@@ -120,33 +120,63 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 3,
-              "health": 100000,
-              "speed": 0.75,
+              "count": 5,
+              "health": 5,
+              "speed": 5,
               "path": "S1E3",
               "interval": 1000,
-              "coinReward": 1,
+              "coinReward": 5,
               "firstDelay": "0"
             },
             {
               "type": "basic",
-              "count": 3,
-              "health": 100000,
-              "speed": 0.75,
-              "path": "S2E1",
+              "count": 5,
+              "health": 5,
+              "speed": 5,
+              "path": "S1E3",
               "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 1
+              "coinReward": 5,
+              "firstDelay": "0"
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 5,
+              "firstDelay": "0"
             },
             {
               "type": "basic",
-              "count": 3,
-              "health": 100000,
-              "speed": 0.75,
-              "path": "S3E2",
+              "count": 5,
+              "health": 1,
+              "speed": 1,
+              "path": "S1E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 1
+              "coinReward": 5
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 2,
+              "firstDelay": "0"
             }
           ]
         }
