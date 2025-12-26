@@ -40,11 +40,12 @@ export default class Bullet {
     }
 
     // --------- SUPPORTS BULLET POOL ----------
-    init(x, y, target, speed = 3) {
+    init(x, y, target, speed = 3, game) {
         this.x = x;
         this.y = y;
         this.target = target;
         this.speed = speed;
+        this.game = game;
         this.damage = 1;
         this.active = true;
 
@@ -77,6 +78,9 @@ export default class Bullet {
         let realSpeed = this.speed * (deltaTime / (1000/144))
         if (dist < realSpeed) {
             this.target.health -= this.damage;
+            if (this.game && this.game.stats) {
+                this.game.stats.damageDealt += this.damage;
+            }
             this.active = false;
             return;
         }

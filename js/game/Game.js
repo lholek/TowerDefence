@@ -62,6 +62,19 @@ export default class Game {
     // Game time
     this.elapsedTime = 0; // Total time the game has been running (in ms)
     this.timeDisplay = document.getElementById('gameTimeDisplay');
+
+    // Stats
+    this.stats = {
+        enemiesKilled: 0,
+        damageDealt: 0,
+        goldEarned: 0,
+        goldSpent: 0,
+        towersBuilt: 0,
+        towersSold: 0,
+        leaks: 0,
+        abilitiesUsed: 0,
+        extraLifeBought: 0
+    };
   }
 
 /**
@@ -198,6 +211,8 @@ async loadGameData(mapSource) {
       tower.typeKey = this.selectedTowerType;
       this.towers.push(tower);
       this.playerCoins -= type.price;
+      this.stats.towersBuilt++;
+      this.stats.goldSpent += type.price;
       this.updateUI();
       this.logEvent(`Player built <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
     } else {
@@ -221,6 +236,7 @@ async loadGameData(mapSource) {
           const type = this.towerTypes[tower.typeKey];
           this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
           this.towers = this.towers.filter(t => t !== tower);
+          this.stats.towersSold++;
           this.updateUI();
           this.logEvent(`Player sold <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
       }
@@ -316,6 +332,8 @@ async loadGameData(mapSource) {
     this.enemies = this.enemies.filter(e => {
         if (e.health <= 0) {
             this.playerCoins += e.coinReward || 1;
+            this.stats.goldEarned += e.coinReward;
+            this.stats.enemiesKilled++; // Sync with main counter
             this.enemiesKilled++;
             this.updateUI();
             return false; 
@@ -323,6 +341,7 @@ async loadGameData(mapSource) {
       
         if (e.currentIndex >= e.path.length - 1) {
             this.playerLifes--;
+            this.stats.leaks++;
             this.updateUI();
         
             if (this.playerLifes <= 0) {
@@ -352,6 +371,12 @@ async loadGameData(mapSource) {
   }
 
   showFinalScoreOverlay(status) {
+
+    const fmt = (num) => {
+        const value = Math.round(num || 0);
+        return value.toLocaleString('fr-FR'); 
+    };
+
     // 1. Declare variables OUTSIDE the if/else so they are accessible later
     let mainText = "";
     let titleClass = "";
@@ -377,18 +402,38 @@ async loadGameData(mapSource) {
         document.body.appendChild(overlay);
     }
 
+    // 2.5 Show total time in stats
+    const totalSeconds = Math.floor(this.elapsedTime / 1000);
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const s = (totalSeconds % 60).toString().padStart(2, '0');
+    const timeString = `${m}:${s}`;
+
     // 3. Set content (Notice we use the variables defined above)
     overlay.innerHTML = `
         <div class="overlay-content final-status" style="border-color: ${color}">
             <h2 class="${titleClass}">${mainText}</h2>
             <p>${subText}</p>
-            <div class="stats-grid final-status-grid">
-                <div>🪙: ${this.playerCoins}</div>
-                <div>❤️: ${this.playerLifes}</div>
+            <div class="stats-grid final-status-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>🪙: <span>${fmt(this.playerCoins)}</span></div>
+              <div>❤️: <span>${fmt(this.playerLifes)}</span></div>
+              
+              <div style="color: #ef4444;">⚔️ Damage: <span style="float:right; color:#fff">${fmt(this.stats.damageDealt)}</span></div>
+              <div style="color: #eab308;">🪙 Earned: <span style="float:right; color:#fff">${fmt(this.stats.goldEarned)}</span></div>
+              
+              <div style="color: #fca5a5;">☠️ Kills: <span style="float:right; color:#fff">${fmt(this.stats.enemiesKilled)}</span></div>
+              <div style="color: #fbbf24;">💸 Spent: <span style="float:right; color:#fff">${fmt(this.stats.goldSpent)}</span></div>
+              
+              <div style="color: #60a5fa;">🏗️ Built: <span style="float:right; color:#fff">${fmt(this.stats.towersBuilt)}</span></div>
+              <div style="color: #94a3b8;">🏚️ Sold: <span style="float:right; color:#fff">${fmt(this.stats.towersSold)}</span></div>
+              
+              <div style="color: #a855f7;">✨ Abilities: <span style="float:right; color:#fff">${fmt(this.stats.abilitiesUsed)}</span></div>
+              <div style="color: #f87171;">🚫 Leaks: <span style="float:right; color:#fff">${fmt(this.stats.leaks)}</span></div>
+              
+              <div style="grid-column: span 2; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; padding-top: 5px; color: #fff;">
+                  ⏱️ Time Elapsed: ${timeString}
+              </div>
             </div>
-            <div class="final-status-button-grid">
                 <button id="btnContinueToMenu" class="btn btn-primary">Main Menu</button>
-            </div>
         </div>
     `;
 
@@ -638,6 +683,8 @@ async loadGameData(mapSource) {
       if (this.playerCoins >= this.lifePrice) {
         this.playerCoins -= this.lifePrice;
         this.playerLifes += 1;
+        this.stats.extraLifeBought += 1;
+        this.stats.goldSpent += this.lifePrice;
         this.updateUI();
         this.logEvent(`Player bought 1 life ❤️ for ${this.lifePrice} 🪙`);
       
@@ -804,6 +851,18 @@ async loadGameData(mapSource) {
     this.currentLevelIndex = 0;
     this.enemiesKilled = 0;
     this.spawnTimer = 0;
+    this.elapsedTime = 0; // Reset time
+
+    this.stats = {
+        enemiesKilled: 0,
+        damageDealt: 0,
+        goldEarned: 0,
+        goldSpent: 0,
+        towersBuilt: 0,
+        towersSold: 0,
+        leaks: 0,
+        abilitiesUsed: 0
+    };
 
     // hide in-game overlay if visible
     if (this.gameOverlay) this.gameOverlay.style.display = 'none';

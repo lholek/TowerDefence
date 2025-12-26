@@ -296,12 +296,37 @@
   justify-content: space-around;
   margin: 20px 0;
   color: #bbb;
+  flex-direction: column;
+  text-align: left;
+  gap: 0.5rem;
 }
 
 .final-status-button-grid{
   display: flex;
   gap: 10px;
   justify-content: center;
+}
+
+/* Custom class for the 2-column stats layout */
+.stats-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 10px 30px;                /* Vertical and Horizontal spacing */
+    width: 100%;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.4); /* Darker background to make text pop */
+    border-radius: 8px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 14px;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+/* Optional: styling for the individual spans to keep numbers aligned */
+.stats-grid-container span {
+    float: right;
+    color: #ffffff;
 }
 
 /* --- Victory Styles --- */

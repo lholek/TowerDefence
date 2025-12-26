@@ -124,36 +124,45 @@ _getCenteredPathTiles(centerTile, count) {
   activate(tileList) {
     this.lastUsedAt = performance.now();
     const now = performance.now();
-
     this.remainingCooldown = this.cooldown;
+
     for (const t of tileList) {
-      const inst = {
-        tile: t,
-        remainingTime: this.effectDuration,
-        lastTick: now,
-        onTick: (time) => {
-          for (const enemy of this.game.enemies) {
+        const inst = {
+            tile: t,
+            remainingTime: this.effectDuration,
+            lastTick: now,
+            onTick: (time) => {
+                for (const enemy of this.game.enemies) {
+                    const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
+                    if (et.col === t.col && et.row === t.row && enemy.health > 0) {
+                        // Calculate actual damage (don't count overkill)
+                        const actualDmg = Math.min(enemy.health, this.damage);
+                        enemy.health -= actualDmg;
+                        
+                        // Track the stat
+                        if (this.game.stats) this.game.stats.damageDealt += actualDmg;
+                    }
+                }
+                inst.lastTick = time;
+            },
+            onEnd: () => {}
+        };
+
+        // immediate damage on placement
+        for (const enemy of this.game.enemies) {
             const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
-            if (et.col === t.col && et.row === t.row) {
-              enemy.health -= this.damage;
+            if (et.col === t.col && et.row === t.row && enemy.health > 0) {
+                const actualDmg = Math.min(enemy.health, this.damage);
+                enemy.health -= actualDmg;
+                
+                // --- ADD THIS HERE TOO ---
+                if (this.game.stats) this.game.stats.damageDealt += actualDmg;
             }
-          }
-          inst.lastTick = time;
-        },
-        onEnd: () => {}
-      };
-
-      // immediate damage on placement
-      for (const enemy of this.game.enemies) {
-        const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
-        if (et.col === t.col && et.row === t.row) {
-          enemy.health -= this.damage;
         }
-      }
 
-      this.activeInstances.push(inst);
+        this.activeInstances.push(inst);
     }
-  }
+}
 
   update(deltaTime) {
     this.remainingCooldown -= deltaTime;

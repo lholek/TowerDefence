@@ -245,7 +245,7 @@ export default class Tower {
         // --- 4) Shoot ---
         if (best) {
             const bullet = this.game.getBullet(); // Get from pool
-            bullet.init(tx, ty, best, this.bulletSpeed); // Re-initialize it
+            bullet.init(tx, ty, best, this.bulletSpeed, this.game); // Re-initialize it
             bullet.damage = this.damage;
             this.bullets.push(bullet);
 

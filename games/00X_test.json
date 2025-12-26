@@ -3,7 +3,7 @@
     {
       "name": "EDIT TITLE",
       "startingCoins": 100,
-      "startingLifes": 1,
+      "startingLifes": 5,
       "description": [
         {
           "descriptionText": "Edit description",
@@ -121,32 +121,32 @@
             {
               "type": "basic",
               "count": 3,
-              "health": 100,
-              "speed": 6,
+              "health": 100000,
+              "speed": 0.75,
               "path": "S1E3",
               "interval": 1000,
-              "coinReward": 40,
+              "coinReward": 1,
               "firstDelay": "0"
             },
             {
               "type": "basic",
               "count": 3,
-              "health": 100,
-              "speed": 1,
+              "health": 100000,
+              "speed": 0.75,
               "path": "S2E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 40
+              "coinReward": 1
             },
             {
               "type": "basic",
               "count": 3,
-              "health": 100,
-              "speed": 1,
+              "health": 100000,
+              "speed": 0.75,
               "path": "S3E2",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 40
+              "coinReward": 1
             }
           ]
         }

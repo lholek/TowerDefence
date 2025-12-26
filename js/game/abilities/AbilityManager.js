@@ -87,6 +87,9 @@ export default class AbilityManager {
   // This ensures cooldown visuals only start when the player used the ability.
   notifyAbilityUsed(ability) {
     if (!ability) return;
+    if (this.game && this.game.stats) {
+        this.game.stats.abilitiesUsed++;
+    }
     ability._lastUsed = performance.now();
     const card = document.getElementById(ability.id);
     if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
