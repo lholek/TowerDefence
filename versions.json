@@ -149,6 +149,13 @@
         "Added info",
         "Added second map"
       ]
+    },
+    {
+      "version": "First Alpha",
+      "relase": "2025-10-26",
+      "changes": [
+        "Game first Alpha version realesed"
+      ] 
     }
   ]
 }
