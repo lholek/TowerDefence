@@ -11,7 +11,7 @@ TODOS:
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
 ++ LONG TODO: Sending ways, playing from toher side
 
-alpha 0.1.1:
+alpha 0.1.2:
   "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
   "TODO: ? New Ability - 'Swamp', Simmiar to Lava Floor - but it will reduce the speed of enemis in the Area",
   " + bulding time" , " + zvuky stavění"
