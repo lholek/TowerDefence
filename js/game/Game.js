@@ -429,7 +429,7 @@ async loadGameData(mapSource) {
               <div style="color: #a855f7;">✨ Abilities <span style="float:right; color:#fff">${fmt(this.stats.abilitiesUsed)}</span></div>
               <div style="color: #f87171;">💔 Life lost <span style="float:right; color:#fff">${fmt(this.stats.leaks)}</span></div>
               
-              <div style="grid-column: span 2; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; padding-top: 5px; color: #fff;">
+              <div class="final-status-time">
                   ⏱️ Time Elapsed: ${timeString}
               </div>
             </div>

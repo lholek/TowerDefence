@@ -299,6 +299,16 @@
   flex-direction: column;
   text-align: left;
   gap: 0.5rem;
+  line-height: 1rem;
+}
+
+.final-status-time {
+  grid-column: span 2;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 5px;
+  padding-top: 10px;
+  color: #fff;
 }
 
 .final-status-button-grid{
@@ -367,4 +377,9 @@
     60% { transform: translateX(-5px) skewX(-1deg); }
     80% { transform: translateX(5px) skewX(1deg); }
     100% { transform: translateX(0) skewX(0deg); }
+}
+
+.stats-grid div span{
+  margin-left: 10px;
+  float: right;
 }

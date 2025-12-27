@@ -76,7 +76,7 @@
         "003": {
           "name": "New Tower 003",
           "price": 2,
-          "damage": 20000,
+          "damage": 20000000,
           "fireRate": 200,
           "range": 2000,
           "color": "#ffffff",
@@ -121,61 +121,21 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 5,
-              "speed": 5,
-              "path": "S1E3",
-              "interval": 1000,
-              "coinReward": 5,
-              "firstDelay": "0"
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 5,
-              "speed": 5,
-              "path": "S1E3",
-              "interval": 1000,
-              "coinReward": 5,
-              "firstDelay": "0"
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "enemies": [
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 200,
-              "speed": 1.5,
-              "path": "S1E1",
-              "interval": 750,
-              "coinReward": 5,
-              "firstDelay": "0"
-            },
-            {
-              "type": "basic",
-              "count": 5,
-              "health": 1,
+              "health": 4896504,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S1E3",
               "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 5
-            }
-          ]
-        },
-        {
-          "level": 3,
-          "enemies": [
+              "coinReward": 5,
+              "firstDelay": "0"
+            },
             {
               "type": "basic",
-              "count": 10,
-              "health": 200,
-              "speed": 1.5,
-              "path": "S1E1",
-              "interval": 750,
-              "coinReward": 2,
+              "count": 5,
+              "health": 4646005,
+              "speed": 1,
+              "path": "S2E3",
+              "interval": 1000,
+              "coinReward": 5,
               "firstDelay": "0"
             }
           ]
