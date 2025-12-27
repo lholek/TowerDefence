@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${v.version}
               </h3>
               <div class="version-content" style="display: ${isFirstVersion ? 'block' : 'none'}">
+                <div class="text-center cl-primary ml-n15">(${v.relase})</div>
                 <ul>${v.changes.map(c => `<li>${c}</li>`).join('')}</ul>
               </div>
             `;

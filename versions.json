@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Alpha 0.1.1",
-      "relase": "tbc",
+      "relase": "2025-12-27",
       "changes": [
         "Improved - Gameplay - Added water to the game",
         "Improved - Gameplay - Added statistics to the end screen (Enemies killed, damage dealt, gold earned, gold spent, towers built, towers sold, time elapsed, enemy leaks, ability uses)",
@@ -27,10 +27,7 @@
         "Improved - UI - Added water to the minimap",
         "Improved - UI - Game log now collapsible next to 'Return to Main Menu'",
         "Improved - UI - Music Player moved to the top-ui",
-        "Improved - UI - Improved text for Victory and Defeat screens",
-        "TODO: Add even more music",
-        "TODO: Add LORE",
-        "TODO - UPDATES ???"
+        "Improved - UI - Improved text for Victory and Defeat screens"
       ]
     },
     {
