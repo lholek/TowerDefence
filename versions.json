@@ -5,7 +5,7 @@
       "relase": "TBC (late January 2026 ?)",
       "changes": [
         "Improved - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
-        "Improve -TODO - reduce the deails on evering to increase the performenace on low graphics settings",
+        "Improve - TODO - reduce the deails on evering to increase the performenace on low graphics settings",
         "Improve - TODO: Implement the reducing graphics to certain parts (enemies, roads, towers, eviroment) are now less detailed",
         "Improve - TODO: Add music option to main menu so you can turn of music from the menu",
         "Improve - TODO: New graphical layout for game info",
@@ -41,7 +41,8 @@
         "Improved - UI - Added water to the minimap",
         "Improved - UI - Game log now collapsible next to 'Return to Main Menu'",
         "Improved - UI - Music Player moved to the top-ui",
-        "Improved - UI - Improved text for Victory and Defeat screens"
+        "Improved - UI - Improved text for Victory and Defeat screens",
+        "Improved - UI - Improved added date to version log"
       ]
     },
     {
