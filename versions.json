@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Alpha 0.1.2",
-      "relase": "TBC",
+      "relase": "TBC (late January 2026 ?)",
       "changes": [
         "Improve - Add option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
         "Improve - Add music option to main menu so you can turn of music from the menu",

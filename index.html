@@ -87,18 +87,34 @@
           <!-- 🕹️ Controls -->
           <!-- 🎨 UI & Close -->
           <div class="settings-section">
+
             <h3 class="cl-primary">Graphics</h3>
+
             <label>
               <label for="backgroundSelect">Show FPS</label>
               <input type="checkbox" id="showFpsCheckbox">
             </label>
-            <div class="input-group">
-              <label for="backgroundSelect w-50">Map style</label>
-              <select id="backgroundSelect" class="styled-select">
-                <option value="sky">Sky (Default)</option>
-                <option value="sea">Midnight Sky</option>
-              </select>
+
+            <div class="settings-grid">
+              <div class="input-group">
+                <label for="backgroundSelect" class="settings-label">Map style</label>
+                <select id="backgroundSelect" class="settings-styled-select">
+                  <option value="sky">Sky (Default)</option>
+                  <option value="sea">Midnight Sky</option>
+                </select>
+              </div>
             </div>
+
+            <div class="settings-grid">
+              <div class="input-group">
+                <label for="graphicsSelect" class="settings-label">Graphics</label>
+                <select id="graphicsSelect" class="settings-styled-select">
+                  <option value="high">High</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+
           </div>
           <!-- 🎨 UI & Close -->
           <div class="fps-setting d-none">

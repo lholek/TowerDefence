@@ -387,3 +387,35 @@
 .ml-n15{
   margin-left: -1.5rem;
 }
+
+.settings-grid {
+  display: flex;
+  gap: 20px;       /* Space between columns */
+  margin-top: 15px;
+}
+
+.settings-grid .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.settings-styled-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: #967456;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 180px;
+    transition: 0.2s;
+    min-width: 400px;
+    max-width: 400px;
+}
+
+.settings-label{
+    display: flex;
+    align-items: center;
+}

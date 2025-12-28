@@ -294,3 +294,30 @@ saveSettingsBtn.addEventListener('click', () => {
     applyBackground(selectedBg);
     localStorage.setItem('game_background', selectedBg); // Save preference
 });
+
+// -- Graphics Local Storage
+const graphicsSelect = document.getElementById('graphicsSelect');
+const savedGraphics = localStorage.getItem('graphicsSetting') || 'high';
+graphicsSelect.value = savedGraphics;
+
+saveSettingsBtn.addEventListener('click', () => {
+    const selectedBg = bgSelect.value;
+    const selectedGraphics = graphicsSelect.value; // Add this line
+
+    applyBackground(selectedBg);
+
+    localStorage.setItem('game_background', selectedBg);
+    localStorage.setItem('graphicsSetting', selectedGraphics); // Add this line
+});
+/*
+// Example: Inside your rendering or object creation logic
+const quality = localStorage.getItem('graphicsSetting') || 'high';
+
+if (quality === 'low') {
+    // Spawn fewer particles
+    // Disable expensive shadows
+    // Use lower resolution textures
+} else {
+    // Run at full beauty
+}
+*/
