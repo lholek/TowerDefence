@@ -3,7 +3,7 @@
     {
       "name": "EDIT TITLE",
       "startingCoins": 100,
-      "startingLifes": 5,
+      "startingLifes": 500,
       "description": [
         {
           "descriptionText": "Edit description",
@@ -80,7 +80,7 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
+              "count": 500,
               "health": 1000,
               "speed": 1,
               "path": "S1E3",
@@ -90,7 +90,7 @@
             },
             {
               "type": "basic",
-              "count": 5,
+              "count": 500,
               "health": 1000,
               "speed": 1,
               "path": "S2E3",

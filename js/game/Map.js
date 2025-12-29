@@ -45,7 +45,7 @@ export default class Map {
         lastX: 0, 
         lastY: 0,
         minZoom: 0.3, 
-        maxZoom: 1
+        maxZoom: 2
     };
 
     // 6. INITIALIZE AAA ROAD SYSTEM (Prerendering)

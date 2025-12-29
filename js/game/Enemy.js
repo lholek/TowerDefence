@@ -26,6 +26,9 @@ export default class Enemy {
         this.type = 'EYE';
     } 
 
+    // Getting quailty from local storage
+    this.quality = localStorage.getItem('graphicsSetting') || 'low';
+
     // Generování grafiky do cache
     this.cachedCanvas = this._preRenderEnemy(this.size);
   }
@@ -72,132 +75,319 @@ export default class Enemy {
   }
 
   _preRenderEnemy(size) {
-    if (this.type === 'GOLEM') return this._drawInfernalGolemCanvas(size);
-    if (this.type === 'EYE') return this._drawInfernalEye(size);
+    const isLow = this.quality === 'low';
+    if (this.type === 'GOLEM') {
+        return isLow ? this._drawInfernalGolemLow(size) : this._drawInfernalGolemHigh(size);
+    }
+
+    if (this.type === 'EYE') {
+        return isLow ? this._drawInfernalEyeLow(size) : this._drawInfernalEyeHigh(size);
+    }
   }
 
-  _drawInfernalGolemCanvas(tileSize) {
-    const size = tileSize * 1.3;
+  _drawInfernalGolemHigh(tileSize) {
+    const size = tileSize * 2.5;
     const canvas = document.createElement("canvas");
-    canvas.width = tileSize * 6;
-    canvas.height = tileSize * 7;
+    canvas.width = tileSize * 16; 
+    canvas.height = tileSize * 16;
     const ctx = canvas.getContext("2d");
     const cx = canvas.width / 2;
-    // Posunuto níž - cy je teď blíž spodku
-    const cy = canvas.height * 0.8; 
+    const cy = canvas.height * 0.85; 
 
     const obsidian = '#0a0a0a'; 
     const lavaRed = '#dc2626';  
     const lavaYellow = '#fbbf24';
 
-    // Pomocná funkce pro balvanovitý tvar
-    const drawBoulder = (x, y, w, h, glow = false) => {
-        if (glow) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = lavaRed;
-        }
+    const drawOrganicBoulder = (x, y, w, h, hasHeart = false) => {
+        ctx.save();
+        // 1. Create a jagged, non-blocky path
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.2, y); 
+        ctx.lineTo(x + w * 0.85, y + h * 0.1);
+        ctx.lineTo(x + w, y + h * 0.5);
+        ctx.lineTo(x + w * 0.9, y + h * 0.9);
+        ctx.lineTo(x + w * 0.5, y + h);
+        ctx.lineTo(x + w * 0.1, y + h * 0.8);
+        ctx.lineTo(x - w * 0.05, y + h * 0.3);
+        ctx.closePath();
+
+        // 2. Material Depth
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'black';
         ctx.fillStyle = obsidian;
+        ctx.fill();
+
+        // 3. Rim Lighting (The AAA Polish)
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 4. Jagged Cracks
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = lavaRed;
         ctx.strokeStyle = lavaRed;
         ctx.lineWidth = 2;
-        
-        // Nepravidelný osmiúhelník (balvan)
         ctx.beginPath();
-        ctx.moveTo(x + w*0.2, y);
-        ctx.lineTo(x + w*0.8, y);
-        ctx.lineTo(x + w, y + h*0.3);
-        ctx.lineTo(x + w*0.9, y + h*0.9);
-        ctx.lineTo(x + w*0.5, y + h);
-        ctx.lineTo(x + w*0.1, y + h*0.9);
-        ctx.lineTo(x, y + h*0.3);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        ctx.shadowBlur = 0;
 
-        // Vnitřní žluté žilky (detail)
-        ctx.strokeStyle = lavaYellow;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x + w*0.3, y + h*0.3);
-        ctx.lineTo(x + w*0.5, y + h*0.5);
+        // Custom X-Crack logic for chest or random for limbs
+        if (hasHeart) {
+            ctx.moveTo(x + w*0.2, y + h*0.2); ctx.lineTo(x + w*0.8, y + h*0.8);
+            ctx.moveTo(x + w*0.8, y + h*0.2); ctx.lineTo(x + w*0.2, y + h*0.8);
+        } else {
+            ctx.moveTo(x + w*0.2, y + h*0.3); ctx.lineTo(x + w*0.5, y + h*0.5); ctx.lineTo(x + w*0.3, y + h*0.8);
+        }
         ctx.stroke();
+
+        // 5. Centered Lava Core
+        if (hasHeart) {
+            ctx.globalCompositeOperation = 'lighter';
+            const heartX = x + w/2;
+            const heartY = y + h/2;
+            
+            // 1. INCREASED GLOW RADIUS (w/5.5 -> w/3.5)
+            // This spreads the light further across the X-cracks
+            const glow = ctx.createRadialGradient(heartX, heartY, 1, heartX, heartY, w/8);
+            glow.addColorStop(0, '#fff');
+            glow.addColorStop(0.4, lavaYellow); // Sharper transition for a bigger feel
+            glow.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            // 2. INCREASED FILL ARC
+            ctx.arc(heartX, heartY, w/3.5, 0, Math.PI*2);
+            ctx.fill();
+            
+            // 3. ENLARGED DIAMOND CORE (10 -> 16 height)
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(heartX, heartY - 9); // Top
+            ctx.lineTo(heartX + 10, heartY); // Right
+            ctx.lineTo(heartX, heartY + 16); // Bottom
+            ctx.lineTo(heartX - 10, heartY); // Left
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.globalCompositeOperation = 'source-over';
+        }
+        ctx.restore();
     };
 
-    // --- NOHY (Masivní podpěry) ---
-    drawBoulder(cx - size * 0.7, cy - size * 0.5, size * 0.5, size * 0.6); // Levá
-    drawBoulder(cx + size * 0.2, cy - size * 0.5, size * 0.5, size * 0.6); // Pravá
+    // Render Order
+    drawOrganicBoulder(cx - size * 0.6, cy - size * 0.3, size * 0.5, size * 0.4); // Legs
+    drawOrganicBoulder(cx + size * 0.1, cy - size * 0.3, size * 0.5, size * 0.4);
+    drawOrganicBoulder(cx - size * 1.3, cy - size * 1.8, size * 2.6, size * 1.6, true); // Torso (Heart + X Cracks)
+    drawOrganicBoulder(cx - size * 0.45, cy - size * 2.4, size * 0.9, size * 0.7); // Head
 
-    // --- TRUP (Velký centrální balvan) ---
-    drawBoulder(cx - size * 0.8, cy - size * 1.6, size * 1.6, size * 1.3, true);
-
-    // --- RAMENA ---
-    drawBoulder(cx - size * 1.4, cy - size * 1.7, size * 0.7, size * 0.7);
-    drawBoulder(cx + size * 0.7, cy - size * 1.7, size * 0.7, size * 0.7);
-
-    // --- HLAVA (Malý, zapuštěný balvan) ---
-    drawBoulder(cx - size * 0.3, cy - size * 2.1, size * 0.6, size * 0.5);
-    ctx.fillStyle = lavaYellow;
-    ctx.fillRect(cx - size * 0.2, cy - size * 1.9, size * 0.4, 3); // Oko
-
-    // --- RUCE ---
-    drawBoulder(cx + size * 0.9, cy - size * 1.1, size * 0.6, size * 0.9); // Pěst
-    // Čepel (Levá)
-    ctx.fillStyle = obsidian;
+    // Fiery Eyes
+    ctx.shadowBlur = 20; ctx.shadowColor = lavaYellow;
+    ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.moveTo(cx - size * 1.1, cy - size * 1.0);
-    ctx.lineTo(cx - size * 1.5, cy + size * 0.2);
-    ctx.lineTo(cx - size * 0.7, cy - size * 0.2);
+    ctx.ellipse(cx - size * 0.2, cy - size * 2.1, 8, 4, 0.2, 0, Math.PI*2);
+    ctx.ellipse(cx + size * 0.2, cy - size * 2.1, 8, 4, -0.2, 0, Math.PI*2);
     ctx.fill();
-    ctx.strokeStyle = lavaRed;
-    ctx.stroke();
+
+    // Hands
+    drawOrganicBoulder(cx - size * 1.7, cy - size * 1.2, size * 0.8, size * 0.9);
+    const hX = cx + size * 0.6, hY = cy - size * 1.2;
+    drawOrganicBoulder(hX, hY, size * 0.9, size * 1.0); // Right Grip
+
+    // Fire Sword (Wide & Leaning)
+    ctx.save();
+    ctx.translate(hX + size * 0.45, hY + size * 0.45);
+    ctx.rotate(0.4);
+    const sGrad = ctx.createLinearGradient(0, 0, 0, -size * 2.8);
+    sGrad.addColorStop(0, lavaYellow); sGrad.addColorStop(0.4, lavaRed); sGrad.addColorStop(1, 'transparent');
+    ctx.shadowBlur = 35; ctx.shadowColor = lavaRed;
+    ctx.fillStyle = sGrad;
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.35, 0); 
+    ctx.bezierCurveTo(-size * 0.35, -size * 1.5, -size * 0.1, -size * 2.8, 0, -size * 3.0);
+    ctx.bezierCurveTo(size * 0.1, -size * 2.8, size * 0.35, -size * 1.5, size * 0.35, 0);
+    ctx.fill();
+    ctx.restore();
 
     return canvas;
   }
 
-  _drawInfernalEye(tileSize) {
+  _drawInfernalGolemLow(tileSize) {
+    const size = tileSize * 1.8; // Increased size (+20% from 1.5)
+    const canvas = document.createElement("canvas");
+    canvas.width = tileSize * 10;
+    canvas.height = tileSize * 10;
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    const cy = canvas.height * 0.85;
+
+    const black = '#0a0a0a'; 
+    const fireYellow = '#fbbf24'; // Unified Yellow theme
+
+    // Helper for legs with rounded bottoms
+    const drawHeavyLeg = (x, y, w, h) => {
+        ctx.fillStyle = black;
+        ctx.beginPath();
+        ctx.moveTo(x, y); // Flat top connector to body
+        ctx.lineTo(x + w, y);
+        ctx.lineTo(x + w, y + h - 10);
+        ctx.arcTo(x + w, y + h, x, y + h, 15); // Rounded bottom corner
+        ctx.arcTo(x, y + h, x, y + h - 10, 15); // Rounded bottom corner
+        ctx.lineTo(x, y);
+        ctx.fill();
+    };
+
+    // 1. BIGGER LEGS (Heavy stance, rounded bottoms)
+    drawHeavyLeg(cx - size * 0.7, cy - size * 0.4, size * 0.5, size * 0.45); 
+    drawHeavyLeg(cx + size * 0.2, cy - size * 0.4, size * 0.5, size * 0.45);
+
+    // 2. MASSIVE BODY
+    ctx.fillStyle = black;
+    ctx.beginPath();
+    ctx.roundRect(cx - size * 0.9, cy - size * 1.6, size * 1.8, size * 1.3, 10);
+    ctx.fill();
+
+    // 3. X-CRACK + YELLOW HEARTH
+    ctx.strokeStyle = fireYellow;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.5, cy - size * 1.3); ctx.lineTo(cx + size * 0.5, cy - size * 0.6);
+    ctx.moveTo(cx + size * 0.5, cy - size * 1.3); ctx.lineTo(cx - size * 0.5, cy - size * 0.6);
+    ctx.stroke();
+
+    // Yellow Core
+    ctx.fillStyle = '#fff';
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = fireYellow;
+    ctx.beginPath();
+    ctx.arc(cx, cy - size * 0.95, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // 4. HEAD & YELLOW EYES
+    ctx.fillStyle = black;
+    ctx.beginPath();
+    ctx.roundRect(cx - size * 0.45, cy - size * 2.1, size * 0.9, size * 0.6, 8);
+    ctx.fill();
+    
+    ctx.fillStyle = fireYellow;
+    ctx.fillRect(cx - size * 0.25, cy - size * 1.9, 5, 4);
+    ctx.fillRect(cx + size * 0.1, cy - size * 1.9, 5, 4);
+
+    // 5. SMALLER, WIDE YELLOW SWORD
+    const handX = cx + size * 0.8;
+    const handY = cy - size * 1.2;
+    
+    ctx.fillStyle = black; // Hand
+    ctx.fillRect(handX, handY, size * 0.35, size * 0.35);
+
+    ctx.save();
+    ctx.translate(handX + 5, handY + 10);
+    ctx.rotate(0.25);
+
+    ctx.fillStyle = fireYellow;
+    // Wide Crossguard
+    ctx.fillRect(-size * 0.4, 0, size * 0.8, size * 0.2);
+    // Short, Fat Blade
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.3, 0);
+    ctx.lineTo(0, -size * 1.8); // Much shorter than before
+    ctx.lineTo(size * 0.3, 0);
+    ctx.fill();
+    ctx.restore();
+
+    return canvas;
+  }
+
+  _drawInfernalEyeHigh(tileSize) {
     const size = tileSize * 0.6;
     const canvas = document.createElement("canvas");
     canvas.width = tileSize * 3;
-    canvas.height = tileSize * 4; // Vyšší, abychom ho mohli dát níž
+    canvas.height = tileSize * 4;
     const ctx = canvas.getContext("2d");
     const cx = canvas.width / 2;
-    const cy = canvas.height * 0.7; // Posunuto níž na plátně
+    const cy = canvas.height * 0.7;
 
     const deepRed = '#7f1d1d';
     const brightRed = '#ef4444';
     const intenseYellow = '#fbbf24';
 
-    // Žhnoucí aura
-    ctx.shadowBlur = 20;
+    // 1. Exterior Glow (Expensive)
+    ctx.shadowBlur = 25;
     ctx.shadowColor = brightRed;
 
-    // Dokonale kulaté bělmo (přechod)
+    // 2. Multi-stop Gradient for iris
     const eyeGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, size);
-    eyeGrad.addColorStop(0, intenseYellow);
-    eyeGrad.addColorStop(0.5, brightRed);
+    eyeGrad.addColorStop(0, '#ffffff'); // White core
+    eyeGrad.addColorStop(0.2, intenseYellow);
+    eyeGrad.addColorStop(0.6, brightRed);
     eyeGrad.addColorStop(1, deepRed);
 
     ctx.fillStyle = eyeGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, size, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0; // Turn off shadow for details
 
-    // Zornice
-    ctx.shadowBlur = 0;
+    // 3. Add Veins (New Detail)
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(angle) * (size * 0.5), cy + Math.sin(angle) * (size * 0.5));
+        ctx.lineTo(cx + Math.cos(angle) * size, cy + Math.sin(angle) * size);
+        ctx.stroke();
+    }
+
+    // 4. Slit Pupil
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, size * 0.15, size * 0.7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Inner Pupil Glow
+    ctx.fillStyle = intenseYellow;
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, size * 0.05, size * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+
+    // 6. Highlights
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(cx - size * 0.3, cy - size * 0.4, size * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+
+    return canvas;
+  }
+
+  _drawInfernalEyeLow(tileSize) {
+    const size = tileSize * 0.6;
+    const canvas = document.createElement("canvas");
+    canvas.width = tileSize * 3;
+    canvas.height = tileSize * 4;
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    const cy = canvas.height * 0.7;
+
+    // 1. Simple Flat Circle (No Shadow, No Gradient)
+    ctx.fillStyle = '#ef4444'; // Bright Red
+    ctx.beginPath();
+    ctx.arc(cx, cy, size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Simple Border instead of glow
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 3. Simple Pupil
     ctx.fillStyle = '#000';
     ctx.beginPath();
     ctx.ellipse(cx, cy, size * 0.2, size * 0.6, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Odlesk
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.beginPath();
-    ctx.arc(cx - size * 0.3, cy - size * 0.3, size * 0.1, 0, Math.PI * 2);
-    ctx.fill();
-
     return canvas;
   }
-  
 
   _drawHealthBar(ctx) {
     const hbW = this.size;
