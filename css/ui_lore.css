@@ -1,0 +1,146 @@
+/* Overlay Background */
+.lore-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.94);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* The main container */
+.scroll-container {
+  animation: unroll 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  transform-origin: top;
+  position: relative;
+  width: 90%;
+  max-width: 550px;
+  filter: drop-shadow(0 40px 60px rgba(0,0,0,1));
+}
+
+@keyframes unroll {
+    from { transform: scaleY(0); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+}
+
+/* realistic Dark Ancient Wood with Deep Grooves */
+.scroll-roll {
+  height: 54px;
+  width: 108%; 
+  margin-left: -4%;
+  /* Layer 1: Deep shadow groove
+     Layer 2: Irregular wood grain stripes (varying opacities)
+     Layer 3: Realistic dark wood base
+  */
+  background: 
+    linear-gradient(to bottom, transparent 48%, rgba(0,0,0,0.7) 50%, transparent 52%),
+    repeating-linear-gradient(90deg, 
+      rgba(0,0,0,0) 0px, 
+      rgba(0,0,0,0.1) 20px, 
+      rgba(0,0,0,0.4) 21px, 
+      rgba(0,0,0,0) 22px,
+      rgba(0,0,0,0.2) 35px,
+      rgba(0,0,0,0.5) 36px,
+      rgba(0,0,0,0) 37px
+    ),
+    linear-gradient(to bottom, 
+      #0a0502 0%, 
+      #26140a 15%, 
+      #3d1f0e 45%, 
+      #4a2511 50%, 
+      #3d1f0e 55%, 
+      #1a0d06 85%, 
+      #0a0502 100%);
+  border: 2px solid #000;
+  border-radius: 4px / 25px;
+  position: relative;
+  z-index: 3;
+  box-shadow: 
+    0 10px 25px rgba(0,0,0,0.9), 
+    inset 0 1px 2px rgba(255,255,255,0.05);
+}
+
+/* Wood End Caps with Deep Growth Circles */
+.scroll-roll::before, .scroll-roll::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 24px;
+  height: calc(100% + 8px);
+  background: 
+    repeating-radial-gradient(circle at center, #2b1506 0, #2b1506 3px, #0a0502 4px, #0a0502 6px);
+  border: 3px solid #000;
+  border-radius: 50%;
+  box-shadow: inset 0 0 15px #000;
+}
+.scroll-roll::before { left: -12px; }
+.scroll-roll::after { right: -12px; }
+
+.top-roll { margin-bottom: -32px; }
+.bottom-roll { margin-top: -32px; }
+
+/* The "Excelent" Parchment Body */
+.parchment-body {
+  background-color: #9e7f53;
+  background-image: 
+    radial-gradient(at 15% 25%, rgba(43, 21, 6, 0.25) 0%, transparent 50%),
+    radial-gradient(at 85% 75%, rgba(61, 31, 10, 0.2) 0%, transparent 60%),
+    linear-gradient(to right, 
+        #5c4a33 0%, 
+        #9e7f53 12%, 
+        #b89a6d 50%, 
+        #9e7f53 88%, 
+        #5c4a33 100%);
+  padding: 60px 45px;
+  max-height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 
+    inset 0 0 100px rgba(0, 0, 0, 0.65),
+    inset 0 0 30px rgba(43, 21, 6, 0.5);
+  border-left: 2px solid #361908;
+  border-right: 2px solid #361908;
+  position: relative;
+}
+
+/* Clean UI Logic */
+.parchment-body::-webkit-scrollbar { width: 5px; }
+.parchment-body::-webkit-scrollbar-track { background: transparent; }
+.parchment-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.4); 
+  border-radius: 10px;
+}
+
+.parchment-content {
+  color: #120900;
+  font-family: 'Cinzel', serif;
+  line-height: 1.8;
+}
+
+.lore-header {
+  text-align: center;
+  color: #2b1506;
+  border-bottom: 1px solid rgba(43, 21, 6, 0.3);
+  margin-bottom: 25px;
+  font-size: 1.9rem;
+  letter-spacing: 2px;
+}
+
+/* Lowered Close Button */
+.close-parchment {
+  position: absolute;
+  top: 40px; /* Moved down significantly */
+  right: 25px;
+  font-size: 32px;
+  color: #1a0d04;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.close-parchment:hover {
+  opacity: 1;
+}

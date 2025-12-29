@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/music.css" />
   <link rel="stylesheet" href="css/helpers.css" />
   <link rel="stylesheet" href="css/ui.css" />
+  <link rel="stylesheet" href="css/ui_lore.css" />
   <link rel="stylesheet" href="css/settings.css" />
 </head>
 <body id="gameContainer">
@@ -20,6 +21,9 @@
 
       <button id="startButton" class="btn btn-menu">Start Game</button>
     
+      <!--  Lore button -->
+      <button id="openLoreBtn" class="btn btn-menu">Lore</button>
+
       <!--  Level Editor button -->
       <button class="editorButton btn btn-menu">Level Editor</button>
 
@@ -152,6 +156,41 @@
               <button id="saveSettingsBtn" class="btn">Save</button>
           </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 🎨 LorePopup -->
+      <div id="lorePopup" class="lore-overlay">
+        <div class="scroll-container">
+          <div class="scroll-roll top-roll"></div>
+              
+              
+          <div class="parchment-body">
+            <span id="closeLore" class="close-parchment">&times;</span>
+            
+            <div class="parchment-content">
+              <h2 class="lore-header">The Last Stand</h2>
+              <p class="lore-text"><em>To the Chosen Commander,</em></p>
+              <p class="lore-text">
+                  Hearken well, for <strong>fate has cast its die upon these sacred lands</strong>. I speak to you now because <strong>we are in dire need of assistance</strong>. The ancient seals have cracked, and <strong>the roots of existence tremble beneath the demon march</strong>.
+              </p>
+              <p class="lore-text">
+                  From the sulfurous rifts of the Brimstone Dimension, a tide of ash and fire consumes all in its path. <strong>The realm stands upon the precipice of ruin</strong>, and the light of our Trees of Life begins to dim.
+              </p>
+              <p class="lore-text">
+                  There is no one else. You must <strong>take up the mantle of Guardian</strong>. You must <strong>fortify the paths lest we be overrun</strong> by this encroaching blight. Let your towers be the shield that breaks their iron will.
+              </p>
+              <p class="lore-text">
+                  Stand fast, for if the Heart-Tree falls, the world falls with it.
+              </p>
+              <p class="lore-text signature">
+                  Written in the fading light,<br>
+                  <strong>— The High Elven Council</strong>
+              </p>
+          </div>
+          </div>
+        
+          <div class="scroll-roll bottom-roll"></div>
         </div>
       </div>
 
@@ -291,5 +330,6 @@
   <script type="module" src="js/game/main.js"></script>
   <script type="module" src="js/versions.js"></script>
   <script type="module" src="js/game/UI.js"></script>
+  <script type="module" src="js/game/UI_lore.js"></script>
 </body>
 </html>
