@@ -388,10 +388,26 @@
   margin-left: -1.5rem;
 }
 
+/* The container holding both input groups */
+.settings-grid-container {
+  display: flex;         /* Enables flexbox */
+  flex-direction: column;
+  flex-wrap: wrap;       /* Allows wrapping on small screens */
+  gap: 20px;             /* Adds space between the columns */
+  width: 100%;
+}
+
+/* Each individual input group */
 .settings-grid {
-  display: flex;
-  gap: 20px;       /* Space between columns */
-  margin-top: 15px;
+  flex: 1 1 calc(50% - 10px); /* Grows to 50% minus half the gap */
+  box-sizing: border-box;     /* Ensures padding doesn't break the width */
+}
+
+/* Optional: Stack them on mobile devices */
+@media (max-width: 600px) {
+  .settings-grid {
+    flex: 1 1 100%;
+  }
 }
 
 .settings-grid .input-group {

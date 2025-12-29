@@ -58,3 +58,50 @@
   cursor: pointer;
   font-size: 18px;
 }
+
+/* Controls */
+/* Container for the controls */
+.controls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  align-items: center;
+}
+
+/* Individual Row */
+.control-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 350px; /* Keeps it centered and tidy */
+  border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+  padding-bottom: 8px;
+}
+
+/* The Key/Mouse Badge */
+.key-cap {
+  background: #8b4513; /* Your gold color */
+  color: #f3e5ab;      /* Dark brown text */
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  border: 1px solid #5c2e0e;
+  box-shadow: 0 3px 0 #5c2e0e; /* Depth effect */
+  min-width: 100px;
+  text-align: center;
+}
+
+/* The Description Text */
+.control-desc {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: #f3e5ab;
+  text-align: right;
+  flex: 1;
+  margin-left: 15px;
+}

@@ -74,12 +74,33 @@
           <h2 class="cl-primary">Settings</h2>
           <!-- 🕹️ Controls -->
           <div class="settings-section text-center">
-            <h3>Game Info</h3>
-            <div class="mt-05"><span class="cl-primary strong">Wheel (Press)</span> - Move around the map</div>
-            <div class="mt-05"><span class="cl-primary strong">Wheel</span> - Zoom in / Zoom out</div>
-            <div class="mt-05"><span class="cl-primary strong">Left click</span> - Build Tower</div>
-            <div class="mt-05"><span class="cl-primary strong">Right click</span> - Sell Tower</div>
-            <div class="mt-05"><span class="cl-primary strong">P</span> - Pause game</div>
+            <h3>Game Controls</h3>
+            <div class="controls-list">
+              <div class="control-item">
+                <span class="key-cap">M-Wheel Press</span>
+                <span class="control-desc">Pan & Move Camera</span>
+              </div>
+            
+              <div class="control-item">
+                <span class="key-cap">M-Wheel Scroll</span>
+                <span class="control-desc">Zoom In / Out</span>
+              </div>
+            
+              <div class="control-item">
+                <span class="key-cap">Left Click</span>
+                <span class="control-desc">Construct Tower</span>
+              </div>
+            
+              <div class="control-item">
+                <span class="key-cap">Right Click</span>
+                <span class="control-desc">Dismantle / Sell Tower</span>
+              </div>
+            
+              <div class="control-item">
+                <span class="key-cap">P</span>
+                <span class="control-desc">Toggle Pause</span>
+              </div>
+            </div>
             <div class="mt-05">Select the towers or abilites from cards</div>
             <div class="mt-05">Built them on proper blocks</div>
             <div class="mt-05 cl-primary strong">Enjoy the Game!</div>
@@ -89,32 +110,35 @@
           <div class="settings-section">
 
             <h3 class="cl-primary">Graphics</h3>
-
-            <label>
-              <label for="backgroundSelect">Show FPS</label>
-              <input type="checkbox" id="showFpsCheckbox">
-            </label>
-
-            <div class="settings-grid">
-              <div class="input-group">
-                <label for="backgroundSelect" class="settings-label">Background</label>
-                <select id="backgroundSelect" class="settings-styled-select">
-                  <option value="sky">Sky (Default)</option>
-                  <option value="sea">Midnight Sky</option>
-                </select>
+            
+            <div class="settings-grid-container">
+              <div class="settings-grid">
+                <label>
+                  <label for="backgroundSelect">Show FPS</label>
+                  <input type="checkbox" id="showFpsCheckbox">
+                </label>
               </div>
-            </div>
-
-            <div class="settings-grid">
-              <div class="input-group">
-                <label for="graphicsSelect" class="settings-label">Graphics</label>
-                <select id="graphicsSelect" class="settings-styled-select">
-                  <option value="high">High</option>
-                  <option value="low">Low</option>
-                </select>
+              <div class="settings-grid">
+                <div class="input-group">
+                  <label for="backgroundSelect" class="settings-label">Background</label>
+                  <select id="backgroundSelect" class="settings-styled-select">
+                    <option value="sky">Sky (Default)</option>
+                    <option value="sea">Midnight Sky</option>
+                  </select>
+                </div>
               </div>
+              
+              <div class="settings-grid">
+                <div class="input-group">
+                  <label for="graphicsSelect" class="settings-label">Graphics</label>
+                  <select id="graphicsSelect" class="settings-styled-select">
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+              </div>
+              
             </div>
-
           </div>
           <!-- 🎨 UI & Close -->
           <div class="fps-setting d-none">

@@ -445,12 +445,6 @@ async loadGameData(mapSource) {
         overlay.classList.add('d-none');
         this.resetGameToMenu(); 
     };
-
-    // Restart Level (Optional but highly recommended)
-    /*document.getElementById('btnRestart').onclick = () => {
-        overlay.classList.add('d-none');
-        this.resetGame(); // Or however you restart the current map
-    };*/
   }
 
   // Helper method to spawn a single enemy based on config
@@ -809,35 +803,6 @@ async loadGameData(mapSource) {
     this.eventsList.scrollTop = this.eventsList.scrollHeight;
   }
 
-  resetGame() {
-    this.gameStarted = false;
-    this.paused = false;
-
-    this.enemies = [];
-    this.towers = [];
-
-    // Use dynamic defaults from current map if defined
-    this.playerCoins = this.levelData?.startingCoins ?? 10;
-    this.playerLifes = this.levelData?.startingLifes ?? 10;
-
-    this.currentLevelIndex = 0;
-    this.enemiesKilled = 0;
-    this.spawnTimer = 0;
-
-    this.gameOverlay.style.display = 'none';
-    this.updateUI();
-
-    // Show main menu overlay
-    this.showOverlayMessage("Main Menu");
-    this.overlayContent.innerHTML = `<br><button id="startButton" class="btn">Start Game</button>`;
-
-    document.getElementById('startButton').addEventListener('click', () => {
-      this.overlayContent.innerHTML = '';
-      this.gameOverlay.style.display = 'none';
-      this.setLevel(0);
-      this.start();
-    });
-  }
 
   resetGameToMenu() {
     // stop game loop and clear runtime objects
