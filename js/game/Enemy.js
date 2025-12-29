@@ -86,7 +86,7 @@ export default class Enemy {
   }
 
   _drawInfernalGolemHigh(tileSize) {
-    const size = tileSize * 2.5;
+    const size = tileSize * 3;
     const canvas = document.createElement("canvas");
     canvas.width = tileSize * 16; 
     canvas.height = tileSize * 16;
