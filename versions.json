@@ -4,6 +4,7 @@
       "version": "Alpha 0.1.2",
       "relase": "TBC (late January 2026 ?)",
       "changes": [
+        "Improved - Story - Added lore later behaind the game",
         "Improved - UI - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
         "Improved - UI - Updated texts in menu",
         "Improved - UI - Improved Portals, Trees of Life AND Enemies on High settings",
