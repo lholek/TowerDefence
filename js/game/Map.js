@@ -362,28 +362,28 @@ export default class Map {
 
     // 4. PASS: OBJEKTY
     for (let r = startRow; r < endRow; r++) {
-  for (let c = startCol; c < endCol; c++) {
-    if (String(this.grid[r][c]).startsWith('S')) {
-      const bounds = this.getTileBounds(c, r);
-      const portalX = bounds.x + this.tileSize / 2;
-      const portalY = bounds.y + this.tileSize / 2;
+      for (let c = startCol; c < endCol; c++) {
+        if (String(this.grid[r][c]).startsWith('S')) {
+          const bounds = this.getTileBounds(c, r);
+          const portalX = bounds.x + this.tileSize / 2;
+          const portalY = bounds.y + this.tileSize / 2;
 
-      // 1. Calculate distance to screen center (or player)
-      const screenCenterX = this.camera.x + (this.canvas.width / 2);
-      const screenCenterY = this.camera.y + (this.canvas.height / 2);
-      const dist = Math.hypot(portalX - screenCenterX, portalY - screenCenterY);
+          // 1. Calculate distance to screen center (or player)
+          const screenCenterX = this.camera.x + (this.canvas.width / 2);
+          const screenCenterY = this.camera.y + (this.canvas.height / 2);
+          const dist = Math.hypot(portalX - screenCenterX, portalY - screenCenterY);
 
-      // 2. High Quality if close, Low Quality if far
-      // Adjust '500' based on your screen size
-      const isLow = this.quality === 'low';
-      if (isLow ) {
-        this._drawMagicPortalLow(ctx, portalX, portalY, performance.now());
-      } else {
-        this._drawMagicPortalHigh(ctx, portalX, portalY, performance.now());
+          // 2. High Quality if close, Low Quality if far
+          // Adjust '500' based on your screen size
+          const isLow = this.quality === 'low';
+          if (isLow ) {
+            this._drawMagicPortalLow(ctx, portalX, portalY, performance.now());
+          } else {
+            this._drawMagicPortalHigh(ctx, portalX, portalY, performance.now());
+          }
+        }
       }
     }
-  }
-}
 
     ctx.restore();
 
