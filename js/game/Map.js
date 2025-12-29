@@ -80,8 +80,15 @@ export default class Map {
     this.canvas.addEventListener('wheel', e => this.handleZoom(e));
     this.canvas.style.cursor = 'grab';
 
+    // Getting quailty from local storage
+    this.quality = localStorage.getItem('graphicsSetting') || 'low';
+
     // 8. PRE-RENDER TREE
-    this.cachedTree = this._preRenderTree(this.tileSize);
+    if(this.quality == "low"){
+      this.cachedTree = this._preRenderTreeLow(this.tileSize);
+    } else {
+      this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+    }
 
     this.clampCamera();
 
@@ -624,7 +631,7 @@ export default class Map {
                 ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
                 
                 // Přidáme bílé náběhy kořenů přímo do roadLayer, aby byly pod stromem
-                this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
+               // this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
                 continue; // Přeskočíme kreslení kamenů
             }
 
@@ -1185,9 +1192,8 @@ _drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
     ctx.restore();
   }
 
-  _preRenderTree(tileSize) {
+  _preRenderTreeLow(tileSize) {
     const ts = tileSize;
-    // Mírně zmenšený canvas pro lepší proporce
     const canvasSize = Math.round(ts * 2.8); 
     const offCanvas = document.createElement("canvas");
     offCanvas.width = ts * 2.5;
@@ -1195,81 +1201,156 @@ _drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
     const ctx = offCanvas.getContext("2d");
 
     const cx = offCanvas.width / 2;
-    const cy = canvasSize * 0.85; // Pata stromu
+    const cy = canvasSize * 0.85;
 
-    // --- 1. KOŘENY A STÍN ---
-    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    // 1. SIMPLE SHADOW
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
     ctx.beginPath();
-    ctx.ellipse(cx, cy, ts * 0.35, ts * 0.1, 0, 0, Math.PI * 2);
+    ctx.arc(cx, cy, ts * 0.3, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- 2. ŠTÍHLÝ A ČLENITÝ KMEN ---
+    // 2. SIMPLE TRUNK (Straight lines)
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.moveTo(cx - 12, cy);
-    // Hlavní kmen s mírným prohnutím
-    ctx.quadraticCurveTo(cx - 5, cy - ts * 0.8, cx - 8, cy - ts * 1.1);
-    
-    // Větvení (tenčí větve pro přirozenější vzhled)
-    ctx.lineTo(cx - 25, cy - ts * 1.4); 
-    ctx.lineTo(cx - 20, cy - ts * 1.45);
-    ctx.quadraticCurveTo(cx, cy - ts * 1.1, cx + 20, cy - ts * 1.45);
-    ctx.lineTo(cx + 25, cy - ts * 1.4);
-    
-    ctx.quadraticCurveTo(cx + 5, cy - ts * 0.8, cx + 12, cy);
+    ctx.moveTo(cx - 8, cy);
+    ctx.lineTo(cx - 5, cy - ts * 1.2);
+    ctx.lineTo(cx + 5, cy - ts * 1.2);
+    ctx.lineTo(cx + 8, cy);
     ctx.fill();
 
-    // Textura kůry (tmavé březové jizvy)
-    ctx.fillStyle = "#334155";
-    for(let i = 0; i < 12; i++) {
-        const yPos = cy - (i * ts * 0.12) - 8;
-        const xOff = Math.sin(i * 2) * 6;
-        ctx.fillRect(cx + xOff - 4, yPos, 8, 1.5);
-    }
-
-    // --- 3. ORGANICKÉ LISTÍ (Místo koulí kreslíme shluky) ---
+    // 3. SOLID LEAF CLUSTERS (No random loops)
+    const colors = ["#eab308", "#ca8a04"];
     const leafClusters = [
-        { x: cx, y: cy - ts * 1.5, r: ts * 0.45 },
-        { x: cx - ts * 0.4, y: cy - ts * 1.25, r: ts * 0.35 },
-        { x: cx + ts * 0.4, y: cy - ts * 1.25, r: ts * 0.35 },
-        { x: cx - ts * 0.15, y: cy - ts * 0.95, r: ts * 0.25 },
-        { x: cx + ts * 0.15, y: cy - ts * 0.95, r: ts * 0.25 }
+        { x: cx, y: cy - ts * 1.4, r: ts * 0.5 },
+        { x: cx - ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 },
+        { x: cx + ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 }
     ];
 
-    leafClusters.forEach(cluster => {
-        // Každý "shluk" se skládá z mnoha malých teček pro efekt lístků
-        for (let i = 0; i < 40; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const dist = Math.random() * cluster.r;
-            const lx = cluster.x + Math.cos(angle) * dist;
-            const ly = cluster.y + Math.sin(angle) * dist;
-            const leafSize = 2 + Math.random() * 4;
-
-            // Barevná variace lístků (zlatá bříza)
-            const colors = ["#eab308", "#ca8a04", "#facc15", "#854d0e"];
-            ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-            
-            ctx.beginPath();
-            // Lístky jako malé elipsy místo kruhů
-            ctx.ellipse(lx, ly, leafSize, leafSize * 0.7, Math.random() * Math.PI, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    });
-
-    // --- 4. DETAILY (Visící větvičky) ---
-    ctx.strokeStyle = "rgba(133, 77, 14, 0.3)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 10; i++) {
-        const vx = cx + (Math.random() - 0.5) * ts * 1.2;
-        const vy = cy - ts * 1.0;
+    leafClusters.forEach((cluster, i) => {
+        ctx.fillStyle = colors[i % colors.length];
         ctx.beginPath();
-        ctx.moveTo(vx, vy);
-        ctx.lineTo(vx + (Math.random() - 0.5) * 15, vy + 25);
-        ctx.stroke();
-    }
+        ctx.arc(cluster.x, cluster.y, cluster.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
 
     return offCanvas;
   }
+
+  _preRenderTreeHigh(tileSize) {
+    const ts = tileSize;
+    const canvasSize = Math.round(ts * 3.0); 
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = ts * 2.5;
+    offCanvas.height = canvasSize;
+    const ctx = offCanvas.getContext("2d");
+
+    const cx = offCanvas.width / 2;
+    const cy = canvasSize * 0.88;
+
+    // --- 1. DEEP GROUND SHADOW ---
+    const shadowGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, ts * 0.8);
+    shadowGrad.addColorStop(0, "rgba(0,0,0,0.45)");
+    shadowGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = shadowGrad;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, ts * 0.8, ts * 0.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- 2. MAIN TRUNK BODY ---
+    const trunkGrad = ctx.createLinearGradient(cx - 20, 0, cx + 20, 0);
+    trunkGrad.addColorStop(0, "#cbd5e1");
+    trunkGrad.addColorStop(0.3, "#ffffff");
+    trunkGrad.addColorStop(1, "#94a3b8");
+    ctx.fillStyle = trunkGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(cx - 10, cy); 
+    // Left side & Mid Branch
+    ctx.quadraticCurveTo(cx - 5, cy - ts * 0.5, cx - 8, cy - ts * 0.7);
+    ctx.lineTo(cx - 22, cy - ts * 0.8); 
+    ctx.lineTo(cx - 18, cy - ts * 0.85);
+    ctx.quadraticCurveTo(cx - 8, cy - ts * 0.75, cx - 8, cy - ts * 1.1);
+    // Top Branching
+    ctx.lineTo(cx - 28, cy - ts * 1.45); 
+    ctx.lineTo(cx - 22, cy - ts * 1.55);
+    ctx.quadraticCurveTo(cx, cy - ts * 1.2, cx + 22, cy - ts * 1.55);
+    ctx.lineTo(cx + 28, cy - ts * 1.45);
+    // Right side back down
+    ctx.quadraticCurveTo(cx + 5, cy - ts * 0.8, cx + 10, cy);
+    ctx.fill();
+
+    // --- 3. IMPRESSIVE GNARLED ROOTS (3D Overlay) ---
+    const drawGnarledRoot = (xOff, yOff, targetX, targetY, thick) => {
+        ctx.save();
+        const rGrad = ctx.createLinearGradient(cx + xOff, 0, targetX, 0);
+        rGrad.addColorStop(0, "#ffffff");
+        rGrad.addColorStop(1, "#64748b");
+        ctx.fillStyle = rGrad;
+        
+        ctx.beginPath();
+        ctx.moveTo(cx + xOff - thick, cy + yOff);
+        // Create an organic "S" curve for the root
+        ctx.bezierCurveTo(
+            cx + xOff + (targetX - cx) * 0.5, cy + yOff + 10, 
+            targetX - (targetX - cx) * 0.2, cy + targetY - 5, 
+            targetX, cy + targetY
+        );
+        ctx.lineTo(targetX + thick * 0.5, cy + targetY);
+        ctx.bezierCurveTo(
+            targetX - (targetX - cx) * 0.2, cy + targetY, 
+            cx + xOff + (targetX - cx) * 0.5 + thick, cy + yOff + 10, 
+            cx + xOff + thick, cy + yOff
+        );
+        ctx.fill();
+        ctx.restore();
+    };
+
+    // Draw roots that look like they wrap around and pull the tree down
+    drawGnarledRoot(-8, -15, cx - 35, 8, 7);  // Heavy Left Root
+    drawGnarledRoot(6, -12, cx + 32, 10, 6);  // Heavy Right Root
+    drawGnarledRoot(-2, -8, cx - 5, 12, 8);   // Front Center Root
+    drawGnarledRoot(3, -20, cx + 15, 6, 4);   // Smaller Side Root
+
+    // Bark Texture (birch knots)
+    ctx.fillStyle = "#1e293b";
+    for(let i = 0; i < 22; i++) {
+        const yPos = cy - (i * ts * 0.08) - 5;
+        const xOff = Math.sin(i * 2.5) * 4;
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(cx + xOff - 5, yPos, 9, 1.3);
+    }
+    ctx.globalAlpha = 1.0;
+
+    // --- 4. DENSE LEAF CLUSTERS ---
+    const leafClusters = [
+        { x: cx, y: cy - ts * 1.5, r: ts * 0.5 },
+        { x: cx - ts * 0.45, y: cy - ts * 1.35, r: ts * 0.4 },
+        { x: cx + ts * 0.45, y: cy - ts * 1.35, r: ts * 0.4 },
+        { x: cx - ts * 0.5, y: cy - ts * 0.85, r: ts * 0.3 },
+        { x: cx + ts * 0.2, y: cy - ts * 1.05, r: ts * 0.3 }
+    ];
+
+    leafClusters.forEach(cluster => {
+        for (let i = 0; i < 90; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.pow(Math.random(), 0.6) * cluster.r;
+            const lx = cluster.x + Math.cos(angle) * dist;
+            const ly = cluster.y + Math.sin(angle) * dist;
+            const leafSize = 2.5 + Math.random() * 4.5;
+            const colors = ["#fbbf24", "#f59e0b", "#d97706", "#78350f", "#fef08a"];
+            ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+            ctx.save();
+            ctx.translate(lx, ly);
+            ctx.rotate(Math.random() * Math.PI);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, leafSize, leafSize * 0.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    });
+
+    return offCanvas;
+}
 
   _drawLifeTree(ctx, x, y, currentLifes) {
     if (!this.cachedTree) return;

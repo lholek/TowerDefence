@@ -6,10 +6,8 @@
       "changes": [
         "Improved - UI - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
         "Improved - UI - Updated texts in menu",
-        "Improved - UI - Improved Portals on High settings",
-        "Improved - UI - Diminished Portals on Low settings",
-        "Improve - TODO - reduce the deails on evering to increase the performenace on low graphics settings",
-        "Improve - TODO: Implement the reducing graphics to certain parts (enemies, roads, towers, eviroment) are now less detailed",
+        "Improved - UI - Improved Portals, Trees of Life AND Enemies on High settings",
+        "Improved - UI - Diminished Portals, Trees of Life AND Enemies on Low settings",
         "Improve - TODO: Add music option to main menu so you can turn of music from the menu",
         "Improve - TODO: New graphical layout for game info",
         "Improve - TODO: Nicer buttons",
