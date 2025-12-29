@@ -84,6 +84,9 @@ export default class Map {
     this.cachedTree = this._preRenderTree(this.tileSize);
 
     this.clampCamera();
+
+    // 9. GAME QUALITY
+    this.quality = localStorage.getItem('graphicsSetting') || 'low';
 }
 
   // Normalize: expects layout already as array-of-arrays
@@ -352,13 +355,28 @@ export default class Map {
 
     // 4. PASS: OBJEKTY
     for (let r = startRow; r < endRow; r++) {
-      for (let c = startCol; c < endCol; c++) {
-        if (String(this.grid[r][c]).startsWith('S')) {
-          const bounds = this.getTileBounds(c, r);
-          this._drawMagicPortal(ctx, bounds.x + this.tileSize/2, bounds.y + this.tileSize/2, performance.now());
-        }
+  for (let c = startCol; c < endCol; c++) {
+    if (String(this.grid[r][c]).startsWith('S')) {
+      const bounds = this.getTileBounds(c, r);
+      const portalX = bounds.x + this.tileSize / 2;
+      const portalY = bounds.y + this.tileSize / 2;
+
+      // 1. Calculate distance to screen center (or player)
+      const screenCenterX = this.camera.x + (this.canvas.width / 2);
+      const screenCenterY = this.camera.y + (this.canvas.height / 2);
+      const dist = Math.hypot(portalX - screenCenterX, portalY - screenCenterY);
+
+      // 2. High Quality if close, Low Quality if far
+      // Adjust '500' based on your screen size
+      const isLow = this.quality === 'low';
+      if (isLow ) {
+        this._drawMagicPortalLow(ctx, portalX, portalY, performance.now());
+      } else {
+        this._drawMagicPortalHigh(ctx, portalX, portalY, performance.now());
       }
     }
+  }
+}
 
     ctx.restore();
 
@@ -1007,6 +1025,162 @@ _drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
     ctx.beginPath();
     ctx.arc(0, 0, 15, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.restore();
+  }
+
+  _drawMagicPortalHigh(ctx, x, y, time) {
+    const fireLight = "#fffce0", fireYellow = "#fbbf24", fireMid = "#ef4444", obsidian = "#0a0a0a";
+    ctx.save();
+    ctx.translate(x, y);
+
+    const corePulse = (Math.sin(time / 500) + 1) / 2;
+    const floatY = Math.sin(time / 800) * 3; 
+
+    // --- 1. THE VORTEX RINGS ---
+    ctx.save();
+    ctx.rotate(time / 1000); 
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) {
+        ctx.save();
+        ctx.rotate((Math.PI * 2 / 4) * i);
+        const arcGrad = ctx.createLinearGradient(45, -15, 45, 15);
+        arcGrad.addColorStop(0, "transparent");
+        arcGrad.addColorStop(0.5, fireYellow);
+        arcGrad.addColorStop(1, "transparent");
+        ctx.strokeStyle = arcGrad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 50, 0, Math.PI * 0.4); 
+        ctx.stroke();
+        ctx.restore();
+    }
+    ctx.restore();
+
+    // --- 2. ASYMMETRIC RUNE PEBBLES (Further out & Less Symmetrical) ---
+    const stoneCount = 10;
+    for (let i = 0; i < stoneCount; i++) {
+        ctx.save();
+        const angle = (-time / 3500) + (i * (Math.PI * 2 / stoneCount));
+        ctx.rotate(angle);
+        
+        // Organic offset: stones drift in/out and left/right slightly
+        const drift = Math.sin(time / 600 + i) * 4;
+        const orbitRadius = 60 + drift; 
+        const stoneSize = 7 + (i % 3); 
+
+        ctx.fillStyle = obsidian;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = "black";
+        ctx.beginPath();
+        // More irregular rounded shapes
+        ctx.ellipse(orbitRadius, drift, stoneSize, stoneSize * 0.8, i, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Rune Spark
+        ctx.fillStyle = fireYellow;
+        ctx.globalAlpha = 0.5 + (Math.sin(time/400 + i) * 0.5);
+        ctx.beginPath();
+        ctx.arc(orbitRadius, drift, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // --- 3. THE SPHERICAL PORTAL CORE ---
+    ctx.save();
+    ctx.translate(0, floatY);
+    
+    // 1. SET YOUR BOUNDARIES HERE
+    const minPortalSize = 30; // Smallest the portal gets
+    const maxPortalSize = 40; // Largest the portal gets
+    
+    // 2. CALCULATE DYNAMIC SIZE
+    // This value now controls both the light AND the circle path
+    const dynamicSize = minPortalSize + (corePulse * (maxPortalSize - minPortalSize));
+    
+    // 3a. Inner Portal Body
+    const portalGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, dynamicSize);
+    
+    portalGrad.addColorStop(0, "#ffe066"); 
+    portalGrad.addColorStop(0.2, fireYellow); 
+    portalGrad.addColorStop(0.5, fireMid); 
+    portalGrad.addColorStop(0.9, "#1a0505"); 
+    portalGrad.addColorStop(1, "transparent");
+
+    ctx.shadowBlur = 30 + (corePulse * 20); 
+    ctx.shadowColor = fireMid;
+    
+    ctx.fillStyle = portalGrad;
+    ctx.beginPath();
+    
+    // CHANGE THIS: Use dynamicSize instead of 58
+    ctx.arc(0, 0, dynamicSize, 0, Math.PI * 2); 
+    
+    ctx.fill();
+
+    // 3b. Dynamic "Event Horizon" Shine
+    // This adds a glass-like curved highlight to make it look 3D/Spherical
+    ctx.globalCompositeOperation = "lighter";
+    const shineGrad = ctx.createLinearGradient(0, -25, 0, 10);
+    shineGrad.addColorStop(0, `rgba(223, 235, 117, ${0.2 + corePulse * 0.2})`);
+    shineGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = shineGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, -10, 20, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 3c. Core Heartbeat
+    const heart = ctx.createRadialGradient(0, 0, 0, 0, 0, 15 + corePulse * 5);
+    heart.addColorStop(0, "white");
+    heart.addColorStop(1, "transparent");
+    ctx.globalAlpha = 0.3 * corePulse;
+    ctx.beginPath();
+    ctx.arc(0, 0, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // --- 4. SWIRLING PARTICLES ---
+    for (let i = 0; i < 15; i++) {
+        const pTime = (time * 0.05 + i * 120) % 100 / 100;
+        const pAngle = i * 0.7 + (time / 1500);
+        const dist = 32 + pTime * 50;
+        ctx.globalAlpha = (1 - pTime);
+        ctx.fillStyle = fireYellow;
+        ctx.beginPath();
+        ctx.arc(Math.cos(pAngle) * dist, Math.sin(pAngle) * dist, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+  // LOW LEVEL: Brighter and simplified
+  _drawMagicPortalLow(ctx, x, y, time) {
+    const fireLight = "#fef08a", fireMid = "#ef4444", obsidian = "#0a0a0a";
+    ctx.save();
+    ctx.translate(x, y);
+
+    // 1. Simple Pulse
+    const pulse = Math.sin(time / 400) * 5;
+    ctx.fillStyle = "rgba(239, 68, 68, 0.25)";
+    ctx.beginPath(); ctx.arc(0, 0, 45 + pulse, 0, Math.PI * 2); ctx.fill();
+
+    // 2. Simplified Stones (Only 4, no shadowBlur)
+    for (let i = 0; i < 4; i++) {
+        ctx.save();
+        ctx.rotate((time / 3000) + (i * Math.PI / 2));
+        ctx.fillStyle = obsidian;
+        ctx.fillRect(35, -5, 10, 10);
+        ctx.fillStyle = fireLight;
+        ctx.fillRect(38, -2, 4, 4); // Static rune
+        ctx.restore();
+    }
+
+    // 3. Bright Core
+    ctx.fillStyle = fireMid;
+    ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = fireLight;
+    ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
 
     ctx.restore();
   }
