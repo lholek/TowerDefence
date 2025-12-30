@@ -9,6 +9,7 @@ TODOS:
 + ability leveling
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
++ Camping
 ++ LONG TODO: Sending ways, playing from toher side
 
 + reduce grapahic option for low cost PC 
