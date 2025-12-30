@@ -1,13 +1,18 @@
 export class MusicManager {
-    constructor(containerSelector) {
-        // Elements
-        this.titleEl = document.getElementById('musicTitle');
-        this.toggleBtn = document.getElementById('musicToggle');
-        this.prevBtn = document.getElementById('musicPrev');
-        this.nextBtn = document.getElementById('musicNext');
-        this.progressBar = document.getElementById('musicProgressBar');
-        this.timeEl = document.getElementById('musicTime');
-        this.volumeRange = document.getElementById('musicVolume');
+    constructor() {
+        // Define the prefixes for both sets of UI
+        const prefixes = ['menuMusic', 'music'];
+
+        // Helper to find elements for both sets (filters out nulls if one UI isn't loaded)
+        const getEls = (suffix) => prefixes.map(p => document.getElementById(p + suffix)).filter(el => el);
+
+        this.titleEls = getEls('Title');
+        this.toggleBtns = getEls('Toggle');
+        this.prevBtns = getEls('Prev');
+        this.nextBtns = getEls('Next');
+        this.progressBars = getEls('ProgressBar');
+        this.timeEls = getEls('Time');
+        this.volumeRanges = getEls('Volume');
 
         // Tracks
         this.tracks = [
@@ -31,107 +36,120 @@ export class MusicManager {
             'The Minstrels Return (012)'
         ];
 
-        // Load settings
+        // Settings
         this.currentIndex = parseInt(localStorage.getItem('musicIndex')) || 0;
         this.volume = parseFloat(localStorage.getItem('musicVolume')) || 0.5;
 
-        // Audio
+        // Audio Setup
         this.audio = new Audio();
         this.audio.src = this.tracks[this.currentIndex];
-        this.audio.loop = false; // loop current track
         this.audio.volume = this.volume;
 
-        this.updateTitle();
-        this.updateToggleButton();
+        // Initialize UI
+        this.syncUI();
+        
+        // --- Event Listeners (Applied to all found buttons) ---
+        this.toggleBtns.forEach(btn => btn.addEventListener('click', () => this.toggleMusic()));
+        this.prevBtns.forEach(btn => btn.addEventListener('click', () => this.prevTrack()));
+        this.nextBtns.forEach(btn => btn.addEventListener('click', () => this.nextTrack()));
+        this.volumeRanges.forEach(range => {
+            range.value = this.volume;
+            range.addEventListener('input', (e) => this.changeVolume(e.target.value));
+        });
 
-        // Event listeners
-        this.toggleBtn.addEventListener('click', () => this.toggleMusic());
-        this.prevBtn.addEventListener('click', () => this.prevTrack());
-        this.nextBtn.addEventListener('click', () => this.nextTrack());
-        this.volumeRange.addEventListener('input', () => this.changeVolume());
         this.audio.addEventListener('timeupdate', () => this.updateProgress());
-
-        // allow clicking the progress bar to seek
-        const progressContainer = this.progressBar.parentElement;
-        progressContainer.addEventListener('click', (e) => this.seekMusic(e));
-
-        // automaticly play next song in row
         this.audio.addEventListener('ended', () => this.nextTrack());
+
+        // Seek functionality for both progress containers
+        this.progressBars.forEach(bar => {
+            if (bar.parentElement) {
+                bar.parentElement.addEventListener('click', (e) => this.seekMusic(e));
+            }
+        });
     }
 
-    playRandomTrack() {
-        this.currentIndex = Math.floor(Math.random() * this.tracks.length);
-        this.audio.src = this.tracks[this.currentIndex];
-        this.audio.currentTime = 0;
-        this.audio.play();
-        this.updateTitle();
-        this.updateToggleButton();
-        localStorage.setItem('musicIndex', this.currentIndex);
+    syncUI() {
+        const state = this.audio.paused ? 'Paused' : 'On';
+        const name = this.trackNames[this.currentIndex];
+        this.toggleBtns.forEach(btn => btn.textContent = `Music: ${state}`);
+        this.titleEls.forEach(el => el.textContent = name);
     }
 
     toggleMusic() {
         if (this.audio.paused) this.audio.play();
         else this.audio.pause();
-        this.updateToggleButton();
-    }
-
-    updateToggleButton() {
-        const state = this.audio.paused ? 'Paused' : 'On';
-        this.toggleBtn.textContent = `Music: ${state}`;
+        this.syncUI();
     }
 
     prevTrack() {
         this.currentIndex = (this.currentIndex - 1 + this.tracks.length) % this.tracks.length;
-        this.audio.src = this.tracks[this.currentIndex];
-        this.audio.currentTime = 0;
-        this.audio.play();
-        this.updateTitle();
-        this.updateToggleButton();
-        localStorage.setItem('musicIndex', this.currentIndex);
+        this.playCurrent();
     }
 
     nextTrack() {
         this.currentIndex = (this.currentIndex + 1) % this.tracks.length;
+        this.playCurrent();
+    }
+
+    playCurrent() {
         this.audio.src = this.tracks[this.currentIndex];
         this.audio.currentTime = 0;
         this.audio.play();
-        this.updateTitle();
-        this.updateToggleButton();
+        this.syncUI();
         localStorage.setItem('musicIndex', this.currentIndex);
     }
 
-    changeVolume() {
-        this.audio.volume = this.volumeRange.value;
-        localStorage.setItem('musicVolume', this.audio.volume);
-    }
-
-    updateTitle() {
-        this.titleEl.textContent = this.trackNames[this.currentIndex];
+    changeVolume(val) {
+        this.audio.volume = val;
+        this.volumeRanges.forEach(range => range.value = val);
+        localStorage.setItem('musicVolume', val);
     }
 
     updateProgress() {
         if (!this.audio.duration) return;
         const percent = (this.audio.currentTime / this.audio.duration) * 100;
-        this.progressBar.style.width = `${percent}%`;
+        this.progressBars.forEach(bar => bar.style.width = `${percent}%`);
 
         const formatTime = (s) => {
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sec = Math.floor(s % 60).toString().padStart(2, '0');
             return `${m}:${sec}`;
         };
-        this.timeEl.textContent = `${formatTime(this.audio.currentTime)} / ${formatTime(this.audio.duration)}`;
+        const timeStr = `${formatTime(this.audio.currentTime)} / ${formatTime(this.audio.duration)}`;
+        this.timeEls.forEach(el => el.textContent = timeStr);
     }
 
     seekMusic(e) {
         if (!this.audio.duration) return;
-
-        const container = e.currentTarget;
-        const rect = container.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const width = rect.width;
-
-        const percent = clickX / width;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
         this.audio.currentTime = percent * this.audio.duration;
-        this.updateProgress();
     }
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Start ONE manager to rule them all
+    const musicManager = new MusicManager();
+
+    // Elements for Menu Dropdown
+    const menuMusicBtn = document.getElementById('menuMusicBtn');
+    const menuMusicDropdown = document.getElementById('menuMusicDropdown');
+
+    // Toggle logic for the Menu
+    menuMusicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = menuMusicDropdown.style.display === 'none' || menuMusicDropdown.style.display === '';
+        menuMusicDropdown.style.display = isHidden ? 'block' : 'none';
+    });
+
+    // Close when clicking outside
+    window.addEventListener('click', () => {
+        menuMusicDropdown.style.display = 'none';
+        // Add gameMusicDropdown here too if you have it
+    });
+
+    // Prevent closing when clicking inside the dropdown
+    menuMusicDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+});
