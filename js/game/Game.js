@@ -168,7 +168,7 @@ async loadGameData(mapSource) {
       if (!this.gameStarted) return; // only if game started
       this.paused = !this.paused;
       if (this.paused) {
-          this.showOverlayMessage('PAUSED - Press "P" to continue');
+          this.showOverlayMessageHtml('<b class="cl-primary">PAUSED</b> - Press <b class="cl-primary">"P"</b> to continue');
       } else {
           this.gameOverlay.style.display = 'none';
       }
@@ -176,6 +176,11 @@ async loadGameData(mapSource) {
 
   showOverlayMessage(text) {
     this.overlayMessage.textContent = text;
+    this.gameOverlay.style.display = 'flex';
+  }
+
+  showOverlayMessageHtml(html) {
+    this.overlayMessage.innerHTML = html;
     this.gameOverlay.style.display = 'flex';
   }
 
