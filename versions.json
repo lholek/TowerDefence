@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Alpha 0.1.2",
-      "relase": "TBC (late January 2026 ?)",
+      "relase": "TBC (mid January 2026 ?)",
       "changes": [
         "Improved - Story - Added lore later behaind the game",
         "Improved - UI - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
@@ -12,6 +12,7 @@
         "Improved - UI - Slighly updated buttons",
         "Improved - UI - New graphical layout for game info",
         "Improved - UI - Nicer buttons",
+        "Improved - UI - Title (same as Subtitle in Alpha 0.1.1) is now hidden during the game",
         "Improve - TODO: Add music option also to main menu so you can turn of music from the menu",
         "Improve - TODO: updates updates updates updates updates updates updates",
         "Improve - TODO: updates updates updates updates updates updates updates"

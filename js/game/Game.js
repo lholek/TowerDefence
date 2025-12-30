@@ -837,6 +837,10 @@ async loadGameData(mapSource) {
     if (startOverlay) {
       startOverlay.style.display = 'flex';
     }
+    const title = document.getElementById('title');
+    if (title) {
+      title.style.display = 'block';
+    }
     const subtitle = document.getElementById('subtitle');
     if (subtitle) {
       subtitle.style.display = 'flex';
