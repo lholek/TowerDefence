@@ -139,7 +139,12 @@ h3 {
 }
 
 .btn-menu{
-  width: 250px;
+    width: 250px;
+}
+
+.btn-menu-full{
+    width: 100%;
+    max-width: 505px;
 }
 
 /* setting btn*/

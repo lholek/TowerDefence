@@ -17,46 +17,46 @@
 
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
-    <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+    <div class="menu-container">
 
-      <button id="startButton" class="btn btn-menu">Start Game</button>
-    
-      <!--  Lore button -->
-      <button id="openLoreBtn" class="btn btn-menu">Lore</button>
+      <button id="startButton" class="btn btn-menu btn-menu-full">Start Game</button>
+        <button class="editorButton btn btn-menu-full">Level Editor</button>
 
-      <!--  Level Editor button -->
-      <button class="editorButton btn btn-menu">Level Editor</button>
+        
+        <div class="menu-row">
+        <button id="openLoreBtn" class="btn btn-menu btn-full">Lore</button>
+        <button class="versionButton btn btn-menu">Version History</button>
 
-      <!--  Music menu box -->
-      <div class="dropdown-wrapper">
-          <button id="menuMusicBtn" class="btn btn-menu">Music 🎵</button>
-          <div id="menuMusicDropdown" class="pop-under-menu" style="display: none;">
-              <div id="menuMusicBox" class="box">
-                  <h3 class="cl-primary pb-1">Music Player</h3>
-                  <div class="music-controls">
-                      <button id="menuMusicPrev" class="btn btn-music">«</button>
-                      <div id="menuMusicTitle" class="music-title">Loading...</div>
-                      <button id="menuMusicNext" class="btn btn-music">»</button>
-                  </div>
-                  <div class="music-progress">
-                      <div class="menu-music-progress-container">
-                          <div id="menuMusicProgressBar" class="menu-music-progress-bar"></div>
-                      </div>
-                      <div id="menuMusicTime" class="musicTime">00:00 / 00:00</div>
-                  </div>
-                  <div class="music-volume">
-                    <button id="menuMusicToggle" class="menu-music-button btn w-100 mt-1">Music: Paused</button>
-                    <input type="range" id="menuMusicVolume" class="musicVolume" min="0" max="1" step="0.01">
-                  </div>
-              </div>
-          </div>
       </div>
 
-      <!-- Settings Button -->
-      <button id="openSettingsBtn" class="btn btn-menu">Settings</button>
-
-      <!--  Version button -->
-      <button class="versionButton btn btn-menu">Version History</button>
+      <!--  Music menu box -->
+      <div class="menu-row">
+        <div class="dropdown-wrapper">
+          <button id="menuMusicBtn" class="btn btn-menu">Music</button>
+          <div id="menuMusicDropdown" class="pop-under-menu" style="display: none;">
+            <div id="menuMusicBox" class="box">
+              <h3 class="cl-primary pb-1">Music Player</h3>
+              <div class="music-controls">
+                <button id="menuMusicPrev" class="btn btn-music">«</button>
+                <div id="menuMusicTitle" class="music-title">Loading...</div>
+                <button id="menuMusicNext" class="btn btn-music">»</button>
+              </div>
+              <div class="music-progress">
+                <div class="menu-music-progress-container">
+                  <div id="menuMusicProgressBar" class="menu-music-progress-bar"></div>
+                </div>
+                <div id="menuMusicTime" class="musicTime">00:00 / 00:00</div>
+              </div>
+              <div class="music-volume">
+                <button id="menuMusicToggle" class="menu-music-button btn w-100 mt-1">Music: Paused</button>
+                <input type="range" id="menuMusicVolume" class="musicVolume" min="0" max="1" step="0.01">
+              </div>
+            </div>
+          </div>
+        </div>   
+        
+        <button id="openSettingsBtn" class="btn btn-menu">Settings</button>
+      </div>
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
