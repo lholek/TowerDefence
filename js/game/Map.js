@@ -1149,7 +1149,7 @@ _drawMagicPortalHigh(ctx, x, y, time) {
         const rockIndex = Math.floor(rockPseudoRand * stoneCount);
 
         const rockAngle = (-time / 2500) + (rockIndex * (Math.PI * 2 / stoneCount));
-        const rockOrbit = 40 + (Math.sin(time / 800 + rockIndex) * 4);
+        const rockOrbit = 60 + (Math.sin(time / 800 + rockIndex) * 4);
         
         const targetX = Math.cos(rockAngle) * rockOrbit;
         const targetY = Math.sin(rockAngle) * rockOrbit;
@@ -1170,6 +1170,13 @@ _drawMagicPortalHigh(ctx, x, y, time) {
         
         ctx.globalAlpha = Math.random() > 0.2 ? 1.0 : 0.4; 
         ctx.stroke();
+        // Add impact glow at the rock position
+        ctx.fillStyle = lightningYellow;
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, 2, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
     }
 
