@@ -1036,126 +1036,164 @@ _drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
     ctx.restore();
   }
 
-  _drawMagicPortalHigh(ctx, x, y, time) {
-    const fireLight = "#fffce0", fireYellow = "#fbbf24", fireMid = "#ef4444", obsidian = "#0a0a0a";
+/**
+ * Draws a Dark Abyssal Portal
+ * Layers: Dark Singularity -> 3 Floating Orange Segments -> Whipping Red Fire -> White Sparks
+ * Features: Rare Yellow Lightning & Dense Obsidian Shard Orbit
+ */
+_drawMagicPortalHigh(ctx, x, y, time) {
+    const obsidian = "#050505",
+          bloodRed = "#7a0000",
+          brightRed = "#ff0000",
+          fireOrange = "#f97316",
+          lightningYellow = "#fef08a",
+          sparkWhite = "#ffffff";
+
+    // --- NEW: UNIQUE SEED PER PORTAL ---
+    // We use the X and Y coordinates to create a unique number for THIS portal
+    const portalSeed = Math.abs(Math.sin(x * 12.9898 + y * 78.233));
+    
     ctx.save();
     ctx.translate(x, y);
 
-    const corePulse = (Math.sin(time / 500) + 1) / 2;
-    const floatY = Math.sin(time / 800) * 3; 
-
-    // --- 1. THE VORTEX RINGS ---
+    // Use the seed to offset the pulse so they don't all "breathe" at the same time
+    const pulse = Math.sin((time / 250) + (portalSeed * 10));
+    
+    // --- 1. THE DARK SINGULARITY (Core) ---
     ctx.save();
-    ctx.rotate(time / 1000); 
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 4; i++) {
+    const coreSize = 22 + (pulse * 2);
+    const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, coreSize);
+    coreGrad.addColorStop(0, "#63130a");
+    coreGrad.addColorStop(0.7, obsidian);
+    coreGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, coreSize + 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // --- 2. FLOATING ORANGE SEGMENTS (3 Parts) ---
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.strokeStyle = fireOrange;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = fireOrange;
+    // Rotate slightly different per portal
+    const segmentRotation = (time / 1000) + (portalSeed * Math.PI); 
+    for (let i = 0; i < 3; i++) {
         ctx.save();
-        ctx.rotate((Math.PI * 2 / 4) * i);
-        const arcGrad = ctx.createLinearGradient(45, -15, 45, 15);
-        arcGrad.addColorStop(0, "transparent");
-        arcGrad.addColorStop(0.5, fireYellow);
-        arcGrad.addColorStop(1, "transparent");
-        ctx.strokeStyle = arcGrad;
-        ctx.lineWidth = 2;
+        ctx.rotate(segmentRotation + (i * Math.PI * 2 / 3));
         ctx.beginPath();
-        ctx.arc(0, 0, 50, 0, Math.PI * 0.4); 
+        ctx.arc(0, 0, 28, 0, Math.PI * 0.33);
         ctx.stroke();
         ctx.restore();
     }
     ctx.restore();
 
-    // --- 2. ASYMMETRIC RUNE PEBBLES (Further out & Less Symmetrical) ---
-    const stoneCount = 10;
-    for (let i = 0; i < stoneCount; i++) {
+    // --- 3. THE MID VORTEX (Whipping Red Fire) ---
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (let i = 0; i < 6; i++) {
         ctx.save();
-        const angle = (-time / 3500) + (i * (Math.PI * 2 / stoneCount));
-        ctx.rotate(angle);
+        ctx.rotate(((time / 150) * (1 + i * 0.1)) + portalSeed);
+        const radius = 32 + (i * 3.5);
+        const fireGrad = ctx.createLinearGradient(radius, -15, radius, 15);
+        fireGrad.addColorStop(0, "transparent");
+        fireGrad.addColorStop(0.5, i > 3 ? brightRed : bloodRed);
+        fireGrad.addColorStop(1, "transparent");
+        ctx.strokeStyle = fireGrad;
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 0.5);
+        ctx.stroke();
+        ctx.restore();
+    }
+    ctx.restore();
+
+    // --- 4. THE OUTER CIRCLE (White Sparks & Runes) ---
+    ctx.save();
+    for (let i = 0; i < 15; i++) {
+        const angle = (i * Math.PI * 2) / 15 + (time * 0.0008) + portalSeed;
+        const r = 48 + (Math.sin(time / 400 + i) * 3);
+        ctx.globalAlpha = 0.4 + (Math.sin(time / 300 + i) * 0.4);
+        ctx.fillStyle = sparkWhite;
+        ctx.beginPath();
+        ctx.arc(Math.cos(angle) * r, Math.sin(angle) * r, 0.8, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // --- 5. YELLOW LIGHTNING (Unsynced via X/Y) ---
+    const strikeInterval = 1500; 
+    const strikeDuration = 200;  
+    const stoneCount = 10;
+
+    // Use portalSeed to offset the strike timing
+    const localPortalTime = time + (portalSeed * 5000);
+    
+    if (localPortalTime % strikeInterval < strikeDuration) {
+        ctx.save();
+        ctx.strokeStyle = lightningYellow;
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = fireOrange;
+        ctx.globalCompositeOperation = "lighter";
         
-        // Organic offset: stones drift in/out and left/right slightly
-        const drift = Math.sin(time / 600 + i) * 4;
-        const orbitRadius = 60 + drift; 
-        const stoneSize = 7 + (i % 3); 
+        // Strike cycle ID
+        const strikeID = Math.floor(localPortalTime / strikeInterval);
+        
+        // Pick a rock index based on the Strike ID AND the Portal Seed
+        const rockPseudoRand = Math.abs(Math.sin(strikeID + portalSeed * 100));
+        const rockIndex = Math.floor(rockPseudoRand * stoneCount);
 
-        ctx.fillStyle = obsidian;
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = "black";
-        ctx.beginPath();
-        // More irregular rounded shapes
-        ctx.ellipse(orbitRadius, drift, stoneSize, stoneSize * 0.8, i, 0, Math.PI * 2);
-        ctx.fill();
+        const rockAngle = (-time / 2500) + (rockIndex * (Math.PI * 2 / stoneCount));
+        const rockOrbit = 40 + (Math.sin(time / 800 + rockIndex) * 4);
+        
+        const targetX = Math.cos(rockAngle) * rockOrbit;
+        const targetY = Math.sin(rockAngle) * rockOrbit;
 
-        // Rune Spark
-        ctx.fillStyle = fireYellow;
-        ctx.globalAlpha = 0.5 + (Math.sin(time/400 + i) * 0.5);
         ctx.beginPath();
-        ctx.arc(orbitRadius, drift, 1.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(0, 0);
+
+        const segments = 2;
+        for (let s = 1; s <= segments; s++) {
+            let nextX = (targetX / segments) * s;
+            let nextY = (targetY / segments) * s;
+            if (s < segments) {
+                nextX += (Math.random() - 0.5) * 15;
+                nextY += (Math.random() - 0.5) * 15;
+            }
+            ctx.lineTo(nextX, nextY);
+        }
+        
+        ctx.globalAlpha = Math.random() > 0.2 ? 1.0 : 0.4; 
+        ctx.stroke();
         ctx.restore();
     }
 
-    // --- 3. THE SPHERICAL PORTAL CORE ---
-    ctx.save();
-    ctx.translate(0, floatY);
-    
-    // 1. SET YOUR BOUNDARIES HERE
-    const minPortalSize = 30; // Smallest the portal gets
-    const maxPortalSize = 40; // Largest the portal gets
-    
-    // 2. CALCULATE DYNAMIC SIZE
-    // This value now controls both the light AND the circle path
-    const dynamicSize = minPortalSize + (corePulse * (maxPortalSize - minPortalSize));
-    
-    // 3a. Inner Portal Body
-    const portalGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, dynamicSize);
-    
-    portalGrad.addColorStop(0, "#ffe066"); 
-    portalGrad.addColorStop(0.2, fireYellow); 
-    portalGrad.addColorStop(0.5, fireMid); 
-    portalGrad.addColorStop(0.9, "#1a0505"); 
-    portalGrad.addColorStop(1, "transparent");
-
-    ctx.shadowBlur = 30 + (corePulse * 20); 
-    ctx.shadowColor = fireMid;
-    
-    ctx.fillStyle = portalGrad;
-    ctx.beginPath();
-    
-    // CHANGE THIS: Use dynamicSize instead of 58
-    ctx.arc(0, 0, dynamicSize, 0, Math.PI * 2); 
-    
-    ctx.fill();
-
-    // 3b. Dynamic "Event Horizon" Shine
-    // This adds a glass-like curved highlight to make it look 3D/Spherical
-    ctx.globalCompositeOperation = "lighter";
-    const shineGrad = ctx.createLinearGradient(0, -25, 0, 10);
-    shineGrad.addColorStop(0, `rgba(223, 235, 117, ${0.2 + corePulse * 0.2})`);
-    shineGrad.addColorStop(1, "transparent");
-    ctx.fillStyle = shineGrad;
-    ctx.beginPath();
-    ctx.ellipse(0, -10, 20, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 3c. Core Heartbeat
-    const heart = ctx.createRadialGradient(0, 0, 0, 0, 0, 15 + corePulse * 5);
-    heart.addColorStop(0, "white");
-    heart.addColorStop(1, "transparent");
-    ctx.globalAlpha = 0.3 * corePulse;
-    ctx.beginPath();
-    ctx.arc(0, 0, 20, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // --- 4. SWIRLING PARTICLES ---
-    for (let i = 0; i < 15; i++) {
-        const pTime = (time * 0.05 + i * 120) % 100 / 100;
-        const pAngle = i * 0.7 + (time / 1500);
-        const dist = 32 + pTime * 50;
-        ctx.globalAlpha = (1 - pTime);
-        ctx.fillStyle = fireYellow;
+    // --- 6. OBSIDIAN ROCKS ---
+    for (let i = 0; i < stoneCount; i++) {
+        ctx.save();
+        const angle = (-time / 2500) + (i * (Math.PI * 2 / stoneCount));
+        const orbit = 60 + (Math.sin(time / 800 + i) * 4);
+        ctx.translate(Math.cos(angle) * orbit, Math.sin(angle) * orbit);
+        ctx.rotate(angle + time / 600);
+        ctx.fillStyle = obsidian;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = "#000";
         ctx.beginPath();
-        ctx.arc(Math.cos(pAngle) * dist, Math.sin(pAngle) * dist, 1.2, 0, Math.PI * 2);
+        ctx.moveTo(-4, -2);
+        ctx.lineTo(1, -7);
+        ctx.lineTo(6, 1);
+        ctx.lineTo(-1, 5);
+        ctx.closePath();
         ctx.fill();
+        ctx.strokeStyle = bloodRed;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+        ctx.restore();
     }
 
     ctx.restore();
