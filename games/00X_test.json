@@ -45,13 +45,13 @@
       "towerTypes": {
         "001": {
           "name": "1 Block",
-          "price": 1454424,
+          "price": 1,
           "damage": 645642345,
           "fireRate": 100,
           "range": 2500000,
           "color": "#468bb0",
           "sellPrice": 1000000,
-          "speed": 100000000
+          "speed": 4
         },
         "002": {
           "name": "2 Block",

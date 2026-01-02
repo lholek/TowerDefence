@@ -535,6 +535,7 @@ async loadGameData(mapSource) {
 
     for (const [key, tower] of Object.entries(this.towerTypes)) {
       const div = document.createElement('div');
+      let rangeInBlocks = (tower.range / this.map.tileSize).toFixed(1);
       div.className = 'shop-item';
       div.innerHTML = `
         <div class="name">${tower.name}</div>
@@ -542,7 +543,7 @@ async loadGameData(mapSource) {
         <div>⚔️ Damage: ${tower.damage}</div>
         <div>🕐 Fire Rate: ${tower.fireRate} ms</div>
         <div>💥 DPS: ${(tower.damage * 1000 / tower.fireRate).toFixed(2)}</div>
-        <div>🎯 Range: ${tower.range}</div>
+        <div>🎯 Range: ${rangeInBlocks} tile</div>
         <div>🗲 Speed: ${tower.speed}</div>
         <div>💰 Sell Price: ${tower.sellPrice}</div>
       `;
