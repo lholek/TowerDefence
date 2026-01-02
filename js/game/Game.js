@@ -535,30 +535,40 @@ async loadGameData(mapSource) {
 
     for (const [key, tower] of Object.entries(this.towerTypes)) {
       const div = document.createElement('div');
+      let rangeInBlocks = (tower.range / this.map.tileSize).toFixed(1);
       div.className = 'shop-item';
       div.innerHTML = `
-        <div class="name">${tower.name}</div>
-        <div>🪙 Price: ${tower.price}</div>
-        <div>⚔️ Damage: ${tower.damage}</div>
-        <div>🕐 Fire Rate: ${tower.fireRate} ms</div>
-        <div>💥 DPS: ${(tower.damage * 1000 / tower.fireRate).toFixed(2)}</div>
-        <div>🎯 Range: ${tower.range}</div>
-        <div>🗲 Speed: ${tower.speed}</div>
-        <div>💰 Sell Price: ${tower.sellPrice}</div>
+        <div class="name text-center">${tower.name}</div>
+        <div class="text-center">💥 DPS: ${this.formatNum((tower.damage * 1000 / tower.fireRate).toFixed(2))}</div>
+
+        <div class="text-left">🪙 Buy for: ${this.formatNum(tower.price)}</div>
+        <div class="text-left">💰 Sell for: ${this.formatNum(tower.sellPrice)}</div>
+
+        <div class="text-left">⚔️ Dmg: ${this.formatNum(tower.damage)}</div>
+        <div class="text-left">🕐 Rate: ${this.formatNum(tower.fireRate)}ms</div>
+
+        <div class="text-left">🎯 Range: ${this.formatNum(rangeInBlocks)}</div>
+        <div class="text-left">🗲 Speed: ${this.formatNum(tower.speed)}</div>
       `;
       shopDiv.appendChild(div);
 
       div.addEventListener('click', () => {
         if (this.selectedTowerType === key) {
           this.selectedTowerType = null;
-          div.style.border = 'none';
+          div.style.border = '5px solid transparent';
         } else {
           this.selectedTowerType = key;
-          shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = 'none');
+          shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = '5px solid transparent');
           div.style.border = `5px solid ${tower.color}`;
         }
       });
     }
+  }
+
+  formatNum(num) {
+    if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'bil.';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'mil.';
+    return num;
   }
 
   createAbilityBar() {

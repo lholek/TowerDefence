@@ -272,19 +272,31 @@ canvas {
 
 /* individual shop cards */
 .shop-item {
-    min-width: 250px;        /* width of each item */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    min-width: 270px;
+    max-width: 270px;
     flex: 0 0 auto;
-    padding: 6px;
+    padding: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
     box-sizing: border-box;
     border-radius: 8px;
     transition: transform 0.2s, background 0.2s;
     color: #fff;
-    line-height: 18px;
+    line-height: 1.4;
     cursor: pointer;
     background: var(--main-bg-color);
+    border: 5px solid transparent;
 }
 
-/* hover & active states */
+.shop-item div:nth-child(1), 
+.shop-item div:nth-child(2) {
+    grid-column: span 2;
+}
+
+/* Hover & Active States */
 .shop-item:hover {
   background-color: rgb(157, 80, 41);
   transform: scale(1.03);
@@ -297,6 +309,18 @@ canvas {
 .shop-item.active {
   box-shadow: 0 0 12px var(--tower-color, #fff);
   border-color: var(--tower-color, #fff);
+}
+
+/* Internal Card Formatting */
+.shop-item .name {
+    grid-column: 1;           /* Name stays on left */
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Every second item (DPS, Sell Price, F.Rate, Speed) aligns right */
+.shop-item div:nth-child(even) {
+    text-align: right;
 }
 
 /* hide any buttons inside shop-item */
