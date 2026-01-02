@@ -436,6 +436,13 @@
     align-items: center;
 }
 
+.settings-checkbox{
+  margin-left: 24px;
+  accent-color: #f0c674;
+  height: 15px;
+  width: 15px;
+}
+
 .menu-container{
   display:flex; flex-direction:column; gap:12px; align-items:center;
 }

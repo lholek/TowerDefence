@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Switch back to towers
             document.getElementById('towerModeBtn')?.click();            
             game.start();
+            game.logEvent("New game <b class='cl-primary'>"+game.levelData.name+"</b> started");
         } catch (err) {
             console.error("Failed to load game data:", err);
             alert("Nepodařilo se načíst vybranou mapu. Zkontrolujte konzoli.");

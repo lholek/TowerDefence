@@ -2,9 +2,10 @@
   "versions": [
     {
       "version": "Alpha 0.1.2",
-      "relase": "TBC (mid January 2026 ?)",
+      "relase": "2026-01-02",
       "changes": [
         "Improved - Story - Added lore later behaind the game (In the menu)",
+        "Improved - Gameplay - Slightly improved game log",
         "Improved - Graphics - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
         "Improved - Graphics - Improved Portals, Trees of Life AND Enemies on High settings",
         "Improved - Graphics - Diminished Portals, Trees of Life AND Enemies on Low settings",
@@ -14,8 +15,7 @@
         "Improved - UI - Added music to main menu. Now you can turn off music from the menu",
         "Improved - UI - New graphical layout for game info",
         "Improved - UI - Slightly updated buttons",
-        "Improved - UI - Slightly updated pause",
-        "Improve - TODO: updates updates updates updates updates updates updates"
+        "Improved - UI - Slightly updated pause"
       ]
     },
     {
