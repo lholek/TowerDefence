@@ -123,13 +123,9 @@ export function modifyJson(modifyFn, successMessage) {
     const width = layout.length > 0 ? layout[0].length : 0;
     const height = layout.length;
     currentLevelData.maps[0].description[0].map_size = `${width}x${height}`;
-    console.log(currentLevelData.maps[0]);
     currentLevelData.maps[0].description[0]["level count"] = currentLevelData.maps[0].levels.length;
     currentLevelData.maps[0].description[0]["tower types"] = currentLevelData.maps[0].towerTypes.length;
     currentLevelData.maps[0].description[0]["abilites"] = currentLevelData.maps[0].abilities.map(x=>x.name+x.ui.icon).join(", ");
-    console.log(currentLevelData.maps[0]);
-
-    console.log(currentLevelData);
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
     const formattedJson = formatCompactLayout(currentLevelData);
@@ -213,20 +209,12 @@ export function updateMapFromEditor() {
         }
 
         // E. Map information
-        console.log(mapData);
-        console.log(mapData.description);
         let mapTitle = mapData.name;
         let mapStartingCoins = mapData.startingCoins;
         let mapstartingLifes = mapData.startingLifes;
         let mapDescription = mapData.description[0].descriptionText;
         let mapTileSize = mapData.tileSize;
         let mapDifficulty = mapData.description[0].difficulty;
-        console.log(mapTitle);
-        console.log(mapStartingCoins);
-        console.log(mapstartingLifes);
-        console.log(mapDescription);
-        console.log(mapTileSize);
-        console.log(mapDifficulty);
 
         document.querySelector("#mapNameInput").value = mapTitle;
         document.querySelector("#startingCoinsInput").value = mapStartingCoins;
@@ -402,7 +390,6 @@ export function updateDescription(key, value) {
 export function updateBasicInfoUI() {
     // 1. Get the current data
     const map = currentLevelData.maps[0];
-    console.log(map);
     const desc = (map.description && map.description[0]) ? map.description[0] : {};
 
     // 2. Helper to safely set input values by ID
