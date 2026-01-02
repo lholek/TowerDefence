@@ -7,6 +7,13 @@ const closeVersionPopup = document.getElementById('closeVersionPopup');
 // Track if we paused the game
 let wasGamePausedByUs = false;
 
+function formatVersionDate(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr; // Return original if format is unexpected
+    return `${parts[2]}. ${parts[1]}. ${parts[0]}`;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Fetch current version from versions.json
     try {
@@ -44,13 +51,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             vDiv.className = 'version-item';
             const isFirstVersion = index === 0;
             
+            const displayDate = formatVersionDate(v.relase);
             vDiv.innerHTML = `
               <h3 class="version-title ${isFirstVersion ? 'first-version' : ''}">
                 ${isFirstVersion ? '' : '<span class="expand-icon">▶</span>'}
                 ${v.version}
               </h3>
               <div class="version-content" style="display: ${isFirstVersion ? 'block' : 'none'}">
-                <div class="text-center cl-primary ml-n15">(${v.relase})</div>
+                <div class="text-center cl-primary ml-n15">(${displayDate})</div>
                 <ul>${v.changes.map(c => `<li>${c}</li>`).join('')}</ul>
               </div>
             `;
