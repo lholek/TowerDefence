@@ -36,7 +36,7 @@
           "name": "Towers Fury",
           "description_text": "All towers: +100% Demage, +200% Bullet Speed, 25% reaload",
           "type": "global",
-          "cooldown": 1,
+          "cooldown": 20000,
           "effectDuration": 15000,
           "color": "#ff4500",
           "ui": {
