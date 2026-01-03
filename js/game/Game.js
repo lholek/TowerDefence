@@ -587,16 +587,21 @@ async loadGameData(mapSource) {
       card.style.position = 'relative'; // ensure overlays position correctly
       // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `
-       <div class="cooldown-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); pointer-events:none;"></div>
-       <div class="cooldown-timer" style="position:absolute; right:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none;"></div>
+        <div class="cooldown-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); pointer-events:none;"></div>
+        <div class="cooldown-timer" style="position:absolute; right:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none;"></div>
         <div class="ability-icon">${a.ui?.icon || ''}</div>
         <div class="ability-info">
           <div class="ability-name">${a.name}</div>
           <div class="ability-meta">
-            <span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>
+            
+            ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>` : ''}
+            
             <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
-            <div class="ability-dmg">⚔️${a.description || ''}</div>
-            <div class="ability-desc">${a.description_text || ''}</div>
+            
+            ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
+            
+            ${a.description_text ? `<div class="ability-desc">${a.description_text}</div>` : ''}
+            
             <div class="ability-timer" data-ability="${a.id}"></div>
           </div>
         </div>

@@ -34,7 +34,7 @@
           "id": "towers_fury",
           "config_id": "towers_fury",
           "name": "Towers Fury",
-          "description_text": "Boosts all towers: +25% Damage, Speed, and Reload for 10s.",
+          "description_text": "All towers: +100% Demage, +200% Bullet Speed, 25% reaload",
           "type": "global",
           "cooldown": 1,
           "effectDuration": 15000,
@@ -44,43 +44,8 @@
           },
           "modifiers": {
             "damage_mul": 2,
-            "speed_mul": 4,
-            "fireRate_mul": 0.9
-          }
-        },
-        {
-          "id": "towers_fury",
-          "config_id": "towers_fury_2",
-          "name": "Towers Fury II",
-          "description_text": "Boosts all towers: +25% Damage, Speed, and Reload for 10s.",
-          "type": "global",
-          "cooldown": 1,
-          "effectDuration": 15000,
-          "color": "#ff4500",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 2,
-            "speed_mul": 4,
-            "fireRate_mul": 0.9
-          }
-        },
-        {
-          "id": "towers_fury",
-          "name": "Towers Fury",
-          "description_text": "Boosts all towers: +25% Damage, Speed, and Reload for 10s.",
-          "type": "global",
-          "cooldown": 1,
-          "effectDuration": 15000,
-          "color": "#ff4500",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 2,
-            "speed_mul": 4,
-            "fireRate_mul": 0.9
+            "speed_mul": 3,
+            "fireRate_mul": 0.75
           }
         },
         {
@@ -105,21 +70,21 @@
       ],
       "towerTypes": {
         "001": {
-          "name": "1 Block",
+          "name": "A",
           "price": 1,
-          "damage": 10,
+          "damage": 35,
           "fireRate": 1000,
-          "range": 500,
+          "range": 1000,
           "color": "#468bb0",
           "sellPrice": 1,
           "speed": 1
         },
         "002": {
-          "name": "2 Block",
+          "name": "B",
           "price": 1,
-          "damage": 25,
+          "damage": 45,
           "fireRate": 500,
-          "range": 500,
+          "range": 1000,
           "color": "#ffffff",
           "sellPrice": 1,
           "speed": 1
@@ -131,9 +96,9 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 500,
-              "health": 500,
-              "speed": 1,
+              "count": 1,
+              "health": 100000,
+              "speed": 0.45,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,

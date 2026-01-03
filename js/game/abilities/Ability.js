@@ -68,7 +68,7 @@ export default class Ability {
     }
     // ----------------------------
 
-    const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
+    /*const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
     if (timerEl) {
       const timeLeft = this.remainingCooldown;
       if (timeLeft <= 0) {
@@ -76,7 +76,7 @@ export default class Ability {
       } else {
         timerEl.textContent = `CD: ${Math.ceil(timeLeft/1000)}s`;
       }
-    }
+    }*/
 
     this.activeInstances = this.activeInstances.filter(inst => {
       if (inst.expiresAt <= now) {
@@ -87,7 +87,7 @@ export default class Ability {
       return true;
     });
   }
-  
+
   // draw UI overlays (tile highlights, timers...) - override if want
   render(ctx) {
     // default: highlight pending selections
