@@ -14,21 +14,17 @@ export default class TowersFury extends Ability {
     }
 
     activate() {
-        const now = performance.now();
-        this.lastUsedAt = now;
         this.remainingCooldown = this.cooldown;
-
-        // Add the active instance so isActive() returns true
+        
         this.activeInstances.push({
-            expiresAt: now + this.effectDuration,
+            // Change 'expiresAt' to 'durationLeft'
+            durationLeft: this.effectDuration, 
             onEnd: () => { console.log("Fury Ended"); }
         });
-
-        // IMPORTANT: Tell the AbilityManager to start the visual UI cooldown
+    
         if (this.game.abilityManager) {
             this.game.abilityManager.startAbilityCooldownTimer(this, null);
         }
-
         return true;
     }
 

@@ -57,36 +57,27 @@ export default class Ability {
   }
 
   // update active effects (called every frame)
-  update(deltaTime) {
-    const now = performance.now();
-
-    // --- FIX: ADD THIS SECTION ---
-    // Reduce cooldown timer
+  update(now, deltaTime) {
+    // 1. Cooldowns
     if (this.remainingCooldown > 0) {
-      this.remainingCooldown -= deltaTime;
-      if (this.remainingCooldown < 0) this.remainingCooldown = 0;
+        this.remainingCooldown -= deltaTime;
     }
-    // ----------------------------
 
-    /*const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
-    if (timerEl) {
-      const timeLeft = this.remainingCooldown;
-      if (timeLeft <= 0) {
-        timerEl.textContent = 'Ready';
-      } else {
-        timerEl.textContent = `CD: ${Math.ceil(timeLeft/1000)}s`;
-      }
-    }*/
-
+    // 2. Duration (Pauses when game pauses)
     this.activeInstances = this.activeInstances.filter(inst => {
-      if (inst.expiresAt <= now) {
-        if (typeof inst.onEnd === 'function') inst.onEnd();
-        return false;
-      }
-      if (typeof inst.onTick === 'function') inst.onTick(now);
-      return true;
+        // Subtract deltaTime (which is 0 if the game is paused)
+        inst.durationLeft -= deltaTime;
+
+        if (inst.durationLeft <= 0) {
+            if (typeof inst.onEnd === 'function') inst.onEnd();
+            return false; // Remove from active list
+        }
+        
+        // Handle periodic damage (like Lava Floor)
+        if (typeof inst.onTick === 'function') inst.onTick(deltaTime);
+        return true;
     });
-  }
+}
 
   // draw UI overlays (tile highlights, timers...) - override if want
   render(ctx) {

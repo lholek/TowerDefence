@@ -105,63 +105,38 @@ _getCenteredPathTiles(centerTile, count) {
 }
 
   // override to handle placement click (we expect tile coords)
-  handleCanvasClick(worldX, worldY) {
-    // compute tile clicked (world coords -> tile)
-    const tile = this.game.map.getTileFromCoords(worldX, worldY);
+  handleCanvasClick(x, y) {
+    const tile = this.game.map.getTileFromCoords(x, y);
+    if (!tile) return false;
 
-    // require path tile
-    const tiles = this._getCenteredPathTiles(tile, this.selectionCount);
-    if (!tiles || tiles.length === 0) {
-      this.game.logEvent('Ability must be placed on the path (select a path tile).');
-      return;
-    }
-
-    // activate ability with the computed tile list
-    this.activate(tiles);
-    this.isPlacing = false;
+    // This is where tilesToEffect is created
+    const tilesToEffect = this._getCenteredPathTiles(tile, this.selectionCount);
+    
+    // PASS the tiles into activate()
+    return this.activate(tilesToEffect); 
   }
 
-  activate(tileList) {
-    this.lastUsedAt = performance.now();
-    const now = performance.now();
+  activate(tilesToEffect) {
+    if (!tilesToEffect || tilesToEffect.length === 0) return false;
+
     this.remainingCooldown = this.cooldown;
 
-    for (const t of tileList) {
-        const inst = {
-            tile: t,
-            remainingTime: this.effectDuration,
-            lastTick: now,
-            onTick: (time) => {
-                for (const enemy of this.game.enemies) {
-                    const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
-                    if (et.col === t.col && et.row === t.row && enemy.health > 0) {
-                        // Calculate actual damage (don't count overkill)
-                        const actualDmg = Math.min(enemy.health, this.damage);
-                        enemy.health -= actualDmg;
-                        
-                        // Track the stat
-                        if (this.game.stats) this.game.stats.damageDealt += actualDmg;
-                    }
-                }
-                inst.lastTick = time;
-            },
-            onEnd: () => {}
-        };
-
-        // immediate damage on placement
-        for (const enemy of this.game.enemies) {
-            const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
-            if (et.col === t.col && et.row === t.row && enemy.health > 0) {
-                const actualDmg = Math.min(enemy.health, this.damage);
-                enemy.health -= actualDmg;
-                
-                // --- ADD THIS HERE TOO ---
-                if (this.game.stats) this.game.stats.damageDealt += actualDmg;
-            }
+    this.activeInstances.push({
+        tiles: tilesToEffect,
+        durationLeft: this.effectDuration, // Changed from expiresAt
+        lastTick: 0,
+        // We add a custom update for this instance
+        onTick: (deltaTime) => {
+            // Logic for periodic damage can go here if needed
         }
+    });
 
-        this.activeInstances.push(inst);
+    if (this.game.abilityManager) {
+        this.game.abilityManager.startAbilityCooldownTimer(this, null);
     }
+
+    this.isPlacing = false;
+    return true;
 }
 
   update(deltaTime) {
