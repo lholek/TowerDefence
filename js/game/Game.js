@@ -601,8 +601,8 @@ async loadGameData(mapSource) {
           <div class="ability-info">
             <div class="ability-name">${a.name}</div>
             <div class="ability-meta">
-              ${a.effectDuration ? `<span class="ability-duration">🕒 Dur: ${a.effectDuration}ms</span>` : ''}
-              <span class="ability-cooldown">⏳ Cool: ${a.cooldown}ms</span>
+              ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>` : ''}
+              <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
               ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
               ${a.description_text ? `<div class="ability-desc">${a.description_text}</div>` : ''}
             </div>
@@ -612,6 +612,9 @@ async loadGameData(mapSource) {
       // save ref
       this.abilityCards[a.id] = { card, ability: a };
 
+      // placing Abilites
+      let placingAbilitesIds = ["lava_floor"];
+
       // click toggles placing mode
       card.addEventListener('click', () => {
         if (this.abilityManager.activeAbility === a && a.isPlacing) {
@@ -620,7 +623,9 @@ async loadGameData(mapSource) {
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
             document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
-            card.classList.add('placing');
+            if(placingAbilitesIds.includes(a.id)){
+              card.classList.add('placing');
+            }
           } else {
             this.logEvent(`${a.name} not ready`);
           }

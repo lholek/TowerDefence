@@ -95,8 +95,8 @@ export default class AbilityManager {
       this.notifyAbilityUsed(used, card); // Pass card
 
       this.previewTiles = [];
-      const towerModeBtn = document.getElementById('towerModeBtn');
-      if (towerModeBtn) towerModeBtn.click();
+      /*const towerModeBtn = document.getElementById('towerModeBtn');
+      if (towerModeBtn) towerModeBtn.click();*/
       this.activeAbility = null;
     }
     return true;

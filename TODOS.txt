@@ -13,8 +13,7 @@ TODOS:
 ++ LONG TODO: Sending ways, playing from toher side
 + 2x speed
   " + bulding time" , " + zvuky stavění"
++ New Ability - 'Lightining strikes, strikes directly enemies'
 
 alpha 0.1.3:
-  "TODO: ? New Ability - 'Towers Fury', Towers will deal {X}% bigger demage and arrows will be {X}% faster - set by ability attributes",
-  "TODO: ? New Ability - 'Lightining strikes, strikes directly enemies'",
-  "?TODO: Add mountins(maybe next verision ?) and Lakes to the map so player can not shoot trough ceritan objects on map"
+  "?TODO: Add mountins(maybe next verision ?) and to the map"

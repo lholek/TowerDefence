@@ -34,7 +34,7 @@
           "id": "towers_fury",
           "config_id": "towers_fury",
           "name": "Towers Fury",
-          "description_text": "All towers: +300% Damage, +300% Bullet Speed, 30% Fire Rate",
+          "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 5000,
@@ -43,8 +43,8 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 3,
-            "speed_mul": 3,
+            "damage_mul": 3.2,
+            "speed_mul": 3.2,
             "fireRate_mul": 0.70
           }
         },
