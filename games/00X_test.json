@@ -34,7 +34,7 @@
           "id": "towers_fury",
           "config_id": "towers_fury",
           "name": "Towers Fury",
-          "description_text": "All towers: +100% Demage, +200% Bullet Speed, 25% reaload",
+          "description_text": "All towers: +300% Damage, +300% Bullet Speed, 30% Fire Rate",
           "type": "global",
           "cooldown": 20000,
           "effectDuration": 15000,
@@ -43,9 +43,9 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 2,
+            "damage_mul": 3,
             "speed_mul": 3,
-            "fireRate_mul": 0.75
+            "fireRate_mul": 0.70
           }
         },
         {
@@ -72,7 +72,7 @@
         "001": {
           "name": "A",
           "price": 1,
-          "damage": 35,
+          "damage": 100,
           "fireRate": 1000,
           "range": 1000,
           "color": "#468bb0",
@@ -82,7 +82,7 @@
         "002": {
           "name": "B",
           "price": 1,
-          "damage": 45,
+          "damage": 120,
           "fireRate": 500,
           "range": 1000,
           "color": "#ffffff",
@@ -97,12 +97,12 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 100000,
+              "health": 750000,
               "speed": 0.45,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
-              "firstDelay": "0"
+              "firstDelay": "8000"
             }
           ]
         }

@@ -32,29 +32,21 @@ export default class AbilityManager {
   // called from UI when player selects an ability to place
   selectAbilityById(id) {
     const inst = this.abilities.find(a => a.id === id);
-    if (!inst) return false;
-    if (!inst.available()) {
-      this.game.logEvent(`${inst.name} is on cooldown`);
-      return false;
-    }
+    if (!inst || !inst.available()) return false;
 
-    // Call startPlacing (which calls activate() for TowersFury)
+    const card = document.getElementById(inst.id);
+
     if (inst.startPlacing()) {
-       // --- FIX: Add logic for Instant/Global abilities ---
-       if (!inst.isPlacing) {
-           // If it's not in placing mode, it's already finished activating
-           this.notifyAbilityUsed(inst);
-           this.activeAbility = null;
-           
-           // Optional: switch UI back to tower mode automatically
-           const towerModeBtn = document.getElementById('towerModeBtn');
-           if (towerModeBtn) towerModeBtn.click();
-       } else {
-           // It's a targeted ability (like LavaFloor)
-           this.activeAbility = inst;
-           const card = document.getElementById(inst.id);
-           if (card) card.classList.add("placing");
-       }
+        // If it's NOT a placing ability (like Towers Fury), it activates immediately
+        if (!inst.isPlacing) {
+            // FIX: Manually trigger the cooldown UI for global abilities
+            this.notifyAbilityUsed(inst, card); 
+            this.activeAbility = null;
+        } else {
+            // Targeted ability (Lava Floor) - wait for canvas click
+            this.activeAbility = inst;
+            if (card) card.classList.add("placing");
+        }
     }
     return true;
   }
@@ -66,51 +58,47 @@ export default class AbilityManager {
     }
   }
 
-  // handle canvas clicks (Game should forward canvas clicks to manager when placing)
-  handleCanvasClick(screenX, screenY) {
-    if (!this.activeAbility || !this.activeAbility.isPlacing) return false;
-
-    // convert to world coords using map helper
-    const world = this.game.map.screenToWorld(screenX, screenY);
-
-    // allow subclass to validate placement (e.g. lava requires path). Let subclass handle tile checks.
-    // call ability's own handler (it will convert to tiles etc.)
-    this.activeAbility.handleCanvasClick(world.x, world.y);
-
-    // if ability finished placing, null it
-    if (!this.activeAbility.isPlacing) {
-
-      // notify manager that ability was used -> starts cooldown visuals
-      const used = this.activeAbility;
-      let abilityCard = document.getElementById(used.id);
-      if (abilityCard) abilityCard.classList.remove("placing");
-      this.notifyAbilityUsed(used);
-
-      // clear preview after placemnet
-      this.previewTiles = [];
-
-      // Switch back to towers
-      const towerModeBtn = document.getElementById('towerModeBtn');
-      towerModeBtn.click();
-      
-      this.activeAbility = null;
-    }
-    return true;
-  }
-
   // Call this when an ability actually activates (placement finished or instant ability effect runs).
   // This ensures cooldown visuals only start when the player used the ability.
-  notifyAbilityUsed(ability) {
+  // Add 'card' as a parameter
+  notifyAbilityUsed(ability, card = null) {
     if (!ability) return;
+    
+    // If card wasn't passed, try to find it
+    if (!card) card = document.getElementById(ability.id);
+
     if (this.game && this.game.stats) {
         this.game.stats.abilitiesUsed++;
     }
+    
     ability._lastUsed = performance.now();
-    const card = document.getElementById(ability.id);
+    
     if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
-      this.game.logEvent(`Player used ability <span style="font-weight:600;">${ability.name}</span>`);
+      this.game.logEvent(`Player used ability <b>${ability.name}</b>`);
       this.startAbilityCooldownTimer(ability, card);
     }
+}
+
+  // In handleCanvasClick: ensure card is found for targeted abilities
+  handleCanvasClick(screenX, screenY) {
+    if (!this.activeAbility || !this.activeAbility.isPlacing) return false;
+
+    const world = this.game.map.screenToWorld(screenX, screenY);
+    this.activeAbility.handleCanvasClick(world.x, world.y);
+
+    if (!this.activeAbility.isPlacing) {
+      const used = this.activeAbility;
+      const card = document.getElementById(used.id); // Find card
+      if (card) card.classList.remove("placing");
+      
+      this.notifyAbilityUsed(used, card); // Pass card
+
+      this.previewTiles = [];
+      const towerModeBtn = document.getElementById('towerModeBtn');
+      if (towerModeBtn) towerModeBtn.click();
+      this.activeAbility = null;
+    }
+    return true;
   }
 
   update(deltaTime) {

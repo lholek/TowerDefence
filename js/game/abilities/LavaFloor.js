@@ -105,50 +105,62 @@ _getCenteredPathTiles(centerTile, count) {
 }
 
   // override to handle placement click (we expect tile coords)
-  handleCanvasClick(x, y) {
-    const tile = this.game.map.getTileFromCoords(x, y);
-    if (!tile) return false;
+  handleCanvasClick(worldX, worldY) {
+      const tile = this.game.map.getTileFromCoords(worldX, worldY);
+      const tiles = this._getCenteredPathTiles(tile, this.selectionCount);
 
-    // This is where tilesToEffect is created
-    const tilesToEffect = this._getCenteredPathTiles(tile, this.selectionCount);
-    
-    // PASS the tiles into activate()
-    return this.activate(tilesToEffect); 
+      if (!tiles || tiles.length === 0) {
+          this.game.logEvent('Ability must be placed on the path.');
+          return false;
+      }
+
+      this.activate(tiles); 
+      this.isPlacing = false;
+      return true;
   }
 
-  activate(tilesToEffect) {
-    if (!tilesToEffect || tilesToEffect.length === 0) return false;
-
+  activate(tileList) {
     this.remainingCooldown = this.cooldown;
+    const now = performance.now();
 
-    this.activeInstances.push({
-        tiles: tilesToEffect,
-        durationLeft: this.effectDuration, // Changed from expiresAt
-        lastTick: 0,
-        // We add a custom update for this instance
-        onTick: (deltaTime) => {
-            // Logic for periodic damage can go here if needed
-        }
-    });
-
-    if (this.game.abilityManager) {
-        this.game.abilityManager.startAbilityCooldownTimer(this, null);
+    for (const t of tileList) {
+        const inst = {
+            tile: t,
+            durationLeft: this.effectDuration, // Use 'durationLeft' to match Ability.js
+            lastTick: now,
+            onTick: (currentTime) => {
+                // Damage logic
+                for (const enemy of this.game.enemies) {
+                    const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
+                    if (et.col === t.col && et.row === t.row && enemy.health > 0) {
+                        const actualDmg = Math.min(enemy.health, this.damage);
+                        enemy.health -= actualDmg;
+                        if (this.game.stats) this.game.stats.damageDealt += actualDmg;
+                    }
+                }
+                inst.lastTick = currentTime;
+            }
+        };
+        this.activeInstances.push(inst);
     }
 
-    this.isPlacing = false;
-    return true;
-}
+    // Trigger UI cooldown
+    if (this.game.abilityManager) {
+        const card = document.getElementById(this.id);
+        this.game.abilityManager.notifyAbilityUsed(this, card);
+    }
+  }
 
   update(deltaTime) {
-    this.remainingCooldown -= deltaTime;
-    const now = performance.now();
-    for (const inst of this.activeInstances) {
-      inst.remainingTime -= deltaTime;
-      if ((now - inst.lastTick) >= this.damageEvery) {
-        if (typeof inst.onTick === 'function') inst.onTick(now);
+      super.update(deltaTime); // Let Ability.js handle the cooldown reduction
+
+      const now = performance.now();
+      for (const inst of this.activeInstances) {
+          // Only trigger tick if enough time passed (damageEvery)
+          if (now - inst.lastTick >= this.damageEvery) {
+              inst.onTick(now);
+          }
       }
-    }
-    this.activeInstances = this.activeInstances.filter(i => i.remainingTime > 0);
   }
 
   render(ctx) {
