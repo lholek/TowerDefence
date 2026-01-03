@@ -194,16 +194,31 @@
   color: #ccc;
 }
 
+/* Duration Overlay - Green bar at the top or subtle glow */
+.duration-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 30%;
+    background: rgba(34, 197, 94, 0.6); /* Green */
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold; font-size: 0.8rem;
+    z-index: 5;
+}
+
+/* Cooldown Overlay - Darker background with a progress wipe */
 .cooldown-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  border-radius: 10px;
-  transition: height linear;
-  pointer-events: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold;
+    z-index: 10;
+}
+
+.cooldown-progress {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: height 0.1s linear;
 }
 
 .ability-card.placing {

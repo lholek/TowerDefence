@@ -73,9 +73,10 @@ export default class AbilityManager {
     
     ability._lastUsed = performance.now();
     
-    if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
+   // if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
+    if (this.game) {
       this.game.logEvent(`Player used ability <b>${ability.name}</b>`);
-      this.startAbilityCooldownTimer(ability, card);
+      //this.startAbilityCooldownTimer(ability, card);
     }
 }
 
@@ -102,9 +103,48 @@ export default class AbilityManager {
   }
 
   update(deltaTime) {
-    for (const a of this.abilities) a.update(deltaTime);
+    for (const a of this.abilities) {
+        a.update(deltaTime); // Correctly uses game deltaTime
+        //this.updateAbilityUI(a);
+    }
   }
 
+  updateAbilityUI(ability) {
+    const card = document.getElementById(ability.id);
+    if (!card) return; // Exit if the card element doesn't exist
+
+    // Select elements and verify they exist before accessing .style
+    const durationOverlay = card.querySelector('.duration-overlay');
+    const durationTimer = card.querySelector('.duration-timer');
+    const cooldownOverlay = card.querySelector('.cooldown-overlay');
+    const cooldownTimer = card.querySelector('.cooldown-timer');
+
+    // --- Handle Duration Overlay ---
+    if (durationOverlay) {
+        if (ability.activeInstances && ability.activeInstances.length > 0) {
+            durationOverlay.style.display = 'flex';
+            const maxDur = Math.max(...ability.activeInstances.map(i => i.durationLeft));
+            if (durationTimer) {
+                durationTimer.textContent = (maxDur / 1000).toFixed(1) + "s";
+            }
+        } else {
+            durationOverlay.style.display = 'none';
+        }
+    }
+
+    // --- Handle Cooldown Overlay ---
+    if (cooldownOverlay) {
+        if (ability.remainingCooldown > 0) {
+            cooldownOverlay.style.display = 'flex';
+            if (cooldownTimer) {
+                cooldownTimer.textContent = (ability.remainingCooldown / 1000).toFixed(1) + "s";
+            }
+        } else {
+            cooldownOverlay.style.display = 'none';
+        }
+    }
+  }
+  
   render(ctx) {
     for (const a of this.abilities) a.render(ctx);
   }

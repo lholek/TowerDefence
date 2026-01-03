@@ -57,27 +57,23 @@ export default class Ability {
   }
 
   // update active effects (called every frame)
-  update(now, deltaTime) {
-    // 1. Cooldowns
+  update(deltaTime) {
+    // 1. Handle Cooldown
     if (this.remainingCooldown > 0) {
         this.remainingCooldown -= deltaTime;
     }
 
-    // 2. Duration (Pauses when game pauses)
+    // 2. Handle Active Instances (Duration/Lava Floor ticks)
     this.activeInstances = this.activeInstances.filter(inst => {
-        // Subtract deltaTime (which is 0 if the game is paused)
         inst.durationLeft -= deltaTime;
-
         if (inst.durationLeft <= 0) {
             if (typeof inst.onEnd === 'function') inst.onEnd();
-            return false; // Remove from active list
+            return false;
         }
-        
-        // Handle periodic damage (like Lava Floor)
         if (typeof inst.onTick === 'function') inst.onTick(deltaTime);
         return true;
     });
-}
+  }
 
   // draw UI overlays (tile highlights, timers...) - override if want
   render(ctx) {

@@ -36,8 +36,8 @@
           "name": "Towers Fury",
           "description_text": "All towers: +300% Damage, +300% Bullet Speed, 30% Fire Rate",
           "type": "global",
-          "cooldown": 20000,
-          "effectDuration": 15000,
+          "cooldown": 8000,
+          "effectDuration": 3000,
           "color": "#ff4500",
           "ui": {
             "icon": "🏹"
@@ -60,8 +60,8 @@
           "damage": 250, 
           "damage_every": 250, 
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 30000,
-          "effectDuration": 6000,
+          "cooldown": 8000,
+          "effectDuration": 3000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
@@ -97,8 +97,8 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 750000,
-              "speed": 0.45,
+              "health": 1000000,
+              "speed": 0.25,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,

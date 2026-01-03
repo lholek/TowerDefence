@@ -329,7 +329,11 @@ async loadGameData(mapSource) {
     // ----------------------------------------------------------------
     this.enemies.forEach(e => e.update(deltaTime));
     this.towers.forEach(t => t.update(deltaTime, this.enemies));
-    this.abilityManager.update(deltaTime);
+    this.abilityManager.abilities.forEach(ability => {
+        ability.update(deltaTime);
+        // This call ensures the UI (text/progress bars) reflects the new times
+        this.abilityManager.updateAbilityUI(ability); 
+    });
 
     // ----------------------------------------------------------------
     // 4. REMOVE DEAD/ESCAPED ENEMIES & CHECK GAME OVER
@@ -587,24 +591,22 @@ async loadGameData(mapSource) {
       card.style.position = 'relative'; // ensure overlays position correctly
       // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `
-        <div class="cooldown-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); pointer-events:none;"></div>
-        <div class="cooldown-timer" style="position:absolute; right:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none;"></div>
-        <div class="ability-icon">${a.ui?.icon || ''}</div>
-        <div class="ability-info">
-          <div class="ability-name">${a.name}</div>
-          <div class="ability-meta">
-            
-            ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>` : ''}
-            
-            <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
-            
-            ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
-            
-            ${a.description_text ? `<div class="ability-desc">${a.description_text}</div>` : ''}
-            
-            <div class="ability-timer" data-ability="${a.id}"></div>
+          <div class="cooldown-overlay" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); pointer-events:none; z-index:5;"></div>
+    
+          <div class="cooldown-timer" style="position:absolute; left:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none; z-index:10; font-size:12px;"></div>
+    
+          <div class="duration-timer" style="position:absolute; right:6px; top:6px; color:#4ade80; font-weight:bold; pointer-events:none; z-index:10; font-size:12px; text-shadow: 1px 1px 2px #000;"></div>
+          
+          <div class="ability-icon">${a.ui?.icon || ''}</div>
+          <div class="ability-info">
+            <div class="ability-name">${a.name}</div>
+            <div class="ability-meta">
+              ${a.effectDuration ? `<span class="ability-duration">🕒 Dur: ${a.effectDuration}ms</span>` : ''}
+              <span class="ability-cooldown">⏳ Cool: ${a.cooldown}ms</span>
+              ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
+              ${a.description_text ? `<div class="ability-desc">${a.description_text}</div>` : ''}
+            </div>
           </div>
-        </div>
       `;
 
       // save ref
@@ -630,40 +632,49 @@ async loadGameData(mapSource) {
 
     // start periodic updater to refresh timers (reads ability._lastUsed timestamps)
     this.abilityTimerInterval = setInterval(() => {
-      for (const { card, ability } of Object.values(this.abilityCards)) {
-        const overlay = card.querySelector('.cooldown-overlay');
-        const timer = card.querySelector('.cooldown-timer');
-        // no cooldown defined -> hide visuals
-        if (!ability.cooldown) {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
-          continue;
-        }
-        // only treat abilities with an explicit numeric _lastUsed > 0 as "used"
-        const last = ability._lastUsed;
-        if (typeof last !== 'number' || last <= 0) {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
-          continue;
-        }
-        const remaining = ability.remainingCooldown;
+    // If game is paused, we don't update the UI numbers to avoid jumping
+    if (this.paused) return; 
+
+    for (const { card, ability } of Object.values(this.abilityCards)) {
+        const cooldownOverlay = card.querySelector('.cooldown-overlay');
+        const cooldownTimer = card.querySelector('.cooldown-timer');
+        const durationTimer = card.querySelector('.duration-timer');
+
+        // --- 1. RELOAD LOGIC (Left Corner) ---
+        const remaining = ability.remainingCooldown || 0;
         if (remaining > 0) {
-          if (overlay) {
-            overlay.style.display = 'block';
-            const pct = (remaining / ability.cooldown) * 100;
-            overlay.style.height = pct + '%';
-            overlay.style.transition = 'height 250ms linear';
-          }
-          if (timer) {
-            const sec = Math.ceil(remaining / 1000);
-            timer.textContent = sec < 60 ? `00:${String(sec).padStart(2,'0')}` : `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
-          }
+            if (cooldownOverlay) {
+                cooldownOverlay.style.display = 'block';
+                // Height shrinks as cooldown finishes
+                const pct = (remaining / ability.cooldown) * 100;
+                cooldownOverlay.style.height = pct + '%';
+            }
+            if (cooldownTimer) {
+                cooldownTimer.textContent = (remaining / 1000).toFixed(1) + "s";
+            }
         } else {
-          if (overlay) overlay.style.display = 'none';
-          if (timer) timer.textContent = '';
+            if (cooldownOverlay) cooldownOverlay.style.display = 'none';
+            if (cooldownTimer) cooldownTimer.textContent = '';
         }
-      }
-    }, 250);
+
+        // --- 2. DURATION LOGIC (Right Corner) ---
+        if (ability.activeInstances && ability.activeInstances.length > 0) {
+            // Find the instance with the most time remaining
+            const maxDur = Math.max(0, ...ability.activeInstances.map(i => i.durationLeft || 0));
+            
+            if (maxDur > 0 && durationTimer) {
+                durationTimer.textContent = (maxDur / 1000).toFixed(1) + "s";
+                card.style.boxShadow = "inset 0 0 10px #4ade80"; // Visual active glow
+            } else if (durationTimer) {
+                durationTimer.textContent = '';
+                card.style.boxShadow = "";
+            }
+        } else if (durationTimer) {
+            durationTimer.textContent = '';
+            card.style.boxShadow = "";
+        }
+        }
+    }, 100);
   }
 
   createLifePurchaseButton() {
