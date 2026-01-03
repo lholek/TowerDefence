@@ -1,6 +1,7 @@
 // abilities/AbilityManager.js
 import Ability from './Ability.js';
 import LavaFloor from './LavaFloor.js';
+import TowersFury from './TowersFury.js';
 
 export default class AbilityManager {
   constructor(game) {
@@ -8,7 +9,7 @@ export default class AbilityManager {
     this.abilityRegistry = {
       // id -> class
       'lava_floor': LavaFloor,
-      'lava_floor_alt': LavaFloor // optional alias
+      'towers_fury': TowersFury
     };
     this.abilities = []; // instantiated ability objects (one per config)
     this.activeAbility = null; // currently selected ability instance for placing
@@ -33,14 +34,28 @@ export default class AbilityManager {
     const inst = this.abilities.find(a => a.id === id);
     if (!inst) return false;
     if (!inst.available()) {
-      // optionally show message to user: cooldown not ready
       this.game.logEvent(`${inst.name} is on cooldown`);
       return false;
     }
-    // start placing mode
-    inst.startPlacing();
-    this.activeAbility = inst;
 
+    // Call startPlacing (which calls activate() for TowersFury)
+    if (inst.startPlacing()) {
+       // --- FIX: Add logic for Instant/Global abilities ---
+       if (!inst.isPlacing) {
+           // If it's not in placing mode, it's already finished activating
+           this.notifyAbilityUsed(inst);
+           this.activeAbility = null;
+           
+           // Optional: switch UI back to tower mode automatically
+           const towerModeBtn = document.getElementById('towerModeBtn');
+           if (towerModeBtn) towerModeBtn.click();
+       } else {
+           // It's a targeted ability (like LavaFloor)
+           this.activeAbility = inst;
+           const card = document.getElementById(inst.id);
+           if (card) card.classList.add("placing");
+       }
+    }
     return true;
   }
 

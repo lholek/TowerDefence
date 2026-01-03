@@ -58,8 +58,15 @@ export default class Ability {
 
   // update active effects (called every frame)
   update(deltaTime) {
-    // default: tick stored active instances and remove expired
     const now = performance.now();
+
+    // --- FIX: ADD THIS SECTION ---
+    // Reduce cooldown timer
+    if (this.remainingCooldown > 0) {
+      this.remainingCooldown -= deltaTime;
+      if (this.remainingCooldown < 0) this.remainingCooldown = 0;
+    }
+    // ----------------------------
 
     const timerEl = document.querySelector(`.ability-timer[data-ability="${this.id}"]`);
     if (timerEl) {
@@ -80,7 +87,7 @@ export default class Ability {
       return true;
     });
   }
-
+  
   // draw UI overlays (tile highlights, timers...) - override if want
   render(ctx) {
     // default: highlight pending selections

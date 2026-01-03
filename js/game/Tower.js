@@ -199,39 +199,38 @@ export default class Tower {
     }
     
     update(deltaTime, enemies) {
-
-        // --- 1) DO NOT recompute world pos every frame ---
-        // Towers are static. Compute once in constructor.
-        // (Remove your existing tileToWorld call here completely)
-
         this.lastShot += deltaTime;
 
-        // --- 2) Only check targets when tower CAN shoot ---
-        if (this.lastShot < this.fireRate) {
-            // Still update bullets
-            for (let i = this.bullets.length - 1; i >= 0; i--) {
-                const b = this.bullets[i];
-                b.update(deltaTime);
-                if (!b.active) {
-                    this.game.returnBullet(b); // Return to pool
-                    this.bullets.splice(i, 1);
-                }
+        // --- 1) CHECK FOR TOWERS FURY BUFF ---
+        const fury = this.game.abilityManager.abilities.find(a => a.id === 'towers_fury');
+        const isFurious = fury && fury.isActive();
+
+        // Calculate dynamic stats based on buff status
+        const currentFireRate = isFurious ? this.fireRate * (fury.modifiers.fireRate_mul || 0.75) : this.fireRate;
+        const currentBulletSpeed = isFurious ? this.bulletSpeed * (fury.modifiers.speed_mul || 1.25) : this.bulletSpeed;
+        const currentDamage = isFurious ? this.damage * (fury.modifiers.damage_mul || 1.25) : this.damage;
+
+        // Update existing bullets
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.update(deltaTime);
+            if (!b.active) {
+                this.game.returnBullet(b);
+                this.bullets.splice(i, 1);
             }
-            return;
         }
 
-        // --- 3) SHOOTING: pick closest enemy using squared distance ---
+        // --- 2) Only shoot if cooldown (adjusted by buff) is ready ---
+        if (this.lastShot < currentFireRate) return;
+
+        // Target picking
         let best = null;
         let bestDistSq = this.range * this.range;
-
-        // Fast loop, NO sqrt.
         const tx = this.x;
         const ty = this.y;
 
         for (const enemy of enemies) {
-            // Skip dead enemies fast
             if (enemy.health <= 0) continue;
-
             const dx = enemy.x - tx;
             const dy = enemy.y - ty;
             const d2 = dx * dx + dy * dy;
@@ -242,24 +241,15 @@ export default class Tower {
             }
         }
 
-        // --- 4) Shoot ---
+        // --- 3) Shoot with Buffed Stats ---
         if (best) {
-            const bullet = this.game.getBullet(); // Get from pool
-            bullet.init(tx, ty, best, this.bulletSpeed, this.game); // Re-initialize it
-            bullet.damage = this.damage;
+            const bullet = this.game.getBullet();
+            // Use currentBulletSpeed and currentDamage calculated above
+            bullet.init(tx, ty, best, currentBulletSpeed, this.game); 
+            bullet.damage = currentDamage; 
+            
             this.bullets.push(bullet);
-
-            this.lastShot = 0; // reset cooldown
-        }
-
-        // --- 5) Update bullets ---
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            const b = this.bullets[i];
-            b.update(deltaTime);
-
-            if (!b.active) {
-                this.bullets.splice(i, 1);
-            }
+            this.lastShot = 0;
         }
     }
 
@@ -273,6 +263,29 @@ export default class Tower {
         const drawY = this.y - drawSize / 2;
 
         ctx.drawImage(this.preRenderedImage, drawX, drawY);
+
+        // --- 1.5 TOWERS FURY VISUALS (Wind/Haste Effect) ---
+        // --- 1.5 TOWERS FURY VISUALS (Wind/Haste Effect) ---
+        const fury = this.game.abilityManager.abilities.find(a => a.id === 'towers_fury');
+        if (fury && fury.isActive()) {
+            ctx.save();
+            ctx.translate(this.x, this.y + 10); // Center on tower base
+            
+            const time = Date.now() * 0.004; 
+            
+            // 1. Upward Speed Particles
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 3; i++) {
+                const ox = Math.sin(time + i) * 20;
+                const oy = ((time * 60 + i * 30) % 50) - 25;
+                ctx.beginPath();
+                ctx.moveTo(ox, -oy);
+                ctx.lineTo(ox, -oy - 8);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
 
         // --- 2. Draw DYNAMIC parts (selection range, health) ---
         // (We copy this from your old render method)
