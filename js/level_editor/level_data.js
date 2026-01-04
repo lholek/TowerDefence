@@ -53,6 +53,7 @@ const defaultLevelJson = {
                 {
                     "_comment": "cooldown - 30000",
                     "id": "lava_floor",
+                    "configId": "lava_floor",
                     "name": "Lava Floor",
                     "description": "Demage - 250dmg / 0.25s",
                     "description_text": "3 tile before and after selected tile",

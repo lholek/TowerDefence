@@ -242,6 +242,18 @@ h2, h3 {
     border: none;
 }
 
+.cl-green{
+    background-color: #3F7D3C !important; 
+    box-shadow: none;
+    border: none;
+}
+
+.cl-green:hover{
+    background-color: #3F7D3C !important; 
+    box-shadow: none;
+    border: none;
+}
+
 .btn-right {
     margin-left: auto;
 }

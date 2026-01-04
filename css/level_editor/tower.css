@@ -65,6 +65,11 @@
     color: #ccc;
 }
 
+.card-body textarea {
+    background-color: #967456;
+    color: white;
+}
+
 .btn-add{
     max-height: 50px;
 }

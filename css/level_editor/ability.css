@@ -15,6 +15,14 @@
     border-radius: 4px;
 }
 
+.ability-card input:read-only{
+    background-color: #1a1a1a;
+    opacity: 0.7;
+    cursor: default;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .ability-card input::placeholder {
   color: white; /* Change this to your desired color */
   opacity: 1; /* Ensure full opacity if needed, as some browsers default to lower opacity */

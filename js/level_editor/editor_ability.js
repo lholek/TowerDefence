@@ -147,7 +147,7 @@ export const abilityEditor = (() => {
                         ` : ''}
                         
                         <label style="grid-column: span 2;">Usage Text 
-                            <textarea data-key="description_text" rows="3" style="width: 100%;">${ability.description_text || ''}</textarea>
+                            <textarea data-key="description_text" rows="2" style="width: 100%;">${ability.description_text || ''}</textarea>
                         </label>
                     </div>
                 </div>
