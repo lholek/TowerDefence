@@ -6,21 +6,37 @@ import { modifyJson, customConfirm } from './json_functions.js'; // Import utili
 let contentContainer = null; 
 
 // --- New Ability Default Structure ---
-const newAbilityStructure = {
-    "id": "lava_floor",
-    "configId": "new_ability_id",
-    "name": "New Ability",
-    "description": "Short description of the ability.",
-    "description_text": "Detailed usage description.",
-    "type": "targeted",
-    "selectionCount": 1, 
-    "damage": 0,
-    "damage_every": 0,
-    "cooldown": 15000, 
-    "effectDuration": 5000, 
-    "color": "rgba(100, 100, 255, 0.6)",
-    "ui": {
-        "icon": "✨"
+const abilityTemplates = {
+    lava_floor: {
+        "id": "lava_floor",
+        "configId": "lava_floor_new",
+        "name": "New Lava Floor",
+        "description": "Damage - 250dmg / 0.25s",
+        "description_text": "3 tile before and after selected tile",
+        "type": "targeted",
+        "selectionCount": 7,
+        "damage": 500,
+        "damage_every": 500,
+        "cooldown": 7000,
+        "effectDuration": 8000,
+        "color": "rgba(245, 164, 66, 0.6)",
+        "ui": { "icon": "🌋" }
+    },
+    towers_fury: {
+        "id": "towers_fury",
+        "configId": "towers_fury_new",
+        "name": "New Towers Fury",
+        "description_text": "All towers: +320% Damage",
+        "type": "global",
+        "cooldown": 10000,
+        "effectDuration": 25000,
+        "color": "#ff4500",
+        "ui": { "icon": "🏹" },
+        "modifiers": {
+            "damage_mul": 1,
+            "speed_mul": 3,
+            "fireRate_mul": 0.85
+        }
     }
 };
 
@@ -112,13 +128,20 @@ export const abilityEditor = (() => {
                                 <input type="hidden" data-key="color" value="${ability.color}">
                             </div>
                         </div>
-                        <label>Damage <input type="number" data-key="damage" value="${ability.damage}" min="0"></label>
-                        <label>Damage Freq (ms) <input type="number" data-key="damage_every" value="${ability.damage_every}" min="0"></label>
-                        
                         <label>Cooldown (ms) <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000"></label>
                         <label>Effect Duration (ms) <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0"></label>
-                        <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount}" min="1"></label>
 
+                        ${ability.id === 'towers_fury' ? `
+                            <div style="grid-column: span 2; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px;">
+                                <label>Damage Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
+                                <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
+                                <label>Fire Rate <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}"></label>
+                            </div>
+                        ` : `
+                            <label>Damage <input type="number" data-key="damage" value="${ability.damage || 0}"></label>
+                            <label>Damage Freq <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
+                            <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}"></label>
+                        `}
                         <label>Short Description <input type="text" data-key="description" value="${ability.description}"></label>
                         <label>Usage Text <input type="text" data-key="description_text" value="${ability.description_text}"></label>
                     </div>
@@ -177,16 +200,17 @@ export const abilityEditor = (() => {
                 const fullKey = e.target.getAttribute('data-key');
                 if (!fullKey) return;
 
-                const isNested = fullKey.includes('.');
-                const key = isNested ? fullKey.split('.') : fullKey;
+                const parts = fullKey.split('.');
                 let value = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
 
                 modifyJson((data) => {
-                    const abilities = data.maps[0].abilities;
-                    if (isNested) {
-                        abilities[abilityIndex][key[0]][key[1]] = value;
+                    const ability = data.maps[0].abilities[abilityIndex];
+                    if (parts.length === 2) {
+                        // Ensure the sub-object (like modifiers or ui) exists before setting
+                        if (!ability[parts[0]]) ability[parts[0]] = {}; 
+                        ability[parts[0]][parts[1]] = value;
                     } else {
-                        abilities[abilityIndex][key] = value;
+                        ability[fullKey] = value;
                     }
                 }, `Ability ${abilityIndex} (${fullKey}) updated.`);
             });
@@ -207,22 +231,20 @@ export const abilityEditor = (() => {
 
     // 2. Function to add a new ability
     const addAbility = () => {
+        // Looks for a <select id="ability-type-selector"> in your HTML
+        const selector = document.getElementById('ability-type-selector');
+        const selectedType = selector ? selector.value : 'lava_floor';
+        
         modifyJson((data) => {
             const abilities = data.maps[0].abilities;
-            const newAbility = JSON.parse(JSON.stringify(newAbilityStructure));
+            const newAbility = JSON.parse(JSON.stringify(abilityTemplates[selectedType]));
             
-            // 1. Update generated properties
-            newAbility.name = `New Ability ${abilities.length + 1}`;
-            
-            // 2. Make the unique configId unique by appending the current count
-            newAbility.configId = `new_ability_id_${abilities.length + 1}`;
-
+            newAbility.name = `New ${selectedType} ${abilities.length + 1}`;
+            newAbility.configId = `${selectedType}_${Date.now()}`;
+        
             abilities.push(newAbility);
-
-            // Re-render
             renderAbilityRepeater(abilities);
-
-        }, `<b>New ability added. Remember to change the **Config ID** for a unique identifier!</b>`); // Updated warning
+        }, `Added new ${selectedType} ability.`);
     };
 
     // 3. Function to delete an ability

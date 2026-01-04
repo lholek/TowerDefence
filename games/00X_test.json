@@ -10,7 +10,7 @@
           "level count": 1,
           "difficulty": "⭐",
           "map_size": "13x13",
-          "abilites": "Towers Fury🏹"
+          "abilites": "Towers Fury🏹, Towers Fury Hung🏹🏹, Lava Floor🌋, Lava Floor Hung🌋🌋, New towers_fury 5🏹🏹🏹"
         }
       ],
       "tileSize": 60,
@@ -73,11 +73,11 @@
           "name": "Lava Floor",
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
-          "type": "targeted", 
-          "selectionCount": 7, 
+          "type": "targeted",
+          "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 500, 
-          "damage_every": 500, 
+          "damage": 500,
+          "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 7000,
           "effectDuration": 8000,
@@ -93,17 +93,35 @@
           "name": "Lava Floor Hung",
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
-          "type": "targeted", 
-          "selectionCount": 7, 
+          "type": "targeted",
+          "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 2000, 
-          "damage_every": 500, 
+          "damage": 2000,
+          "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 3000,
           "effectDuration": 4000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋🌋"
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1767544911937",
+          "name": "New towers_fury 5",
+          "description_text": "All towers: +320% Damage",
+          "type": "global",
+          "cooldown": 10000,
+          "effectDuration": 25000,
+          "color": "rgba(249, 246, 245, 0.44)",
+          "ui": {
+            "icon": "🏹🏹🏹"
+          },
+          "modifiers": {
+            "damage_mul": 1,
+            "speed_mul": 3,
+            "fireRate_mul": 0.85
           }
         }
       ],
@@ -137,7 +155,7 @@
               "type": "basic",
               "count": 1,
               "health": 1000,
-              "speed": 0.10,
+              "speed": 0.1,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
