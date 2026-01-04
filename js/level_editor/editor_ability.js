@@ -11,8 +11,8 @@ const abilityTemplates = {
         "id": "lava_floor",
         "configId": "lava_floor_new",
         "name": "New Lava Floor",
-        "description": "Damage - 250dmg / 0.25s",
-        "description_text": "3 tile before and after selected tile",
+        "description": "Short description",
+        "description_text": "Detailed usage description",
         "type": "targeted",
         "selectionCount": 7,
         "damage": 500,
@@ -30,7 +30,7 @@ const abilityTemplates = {
         "type": "global",
         "cooldown": 10000,
         "effectDuration": 25000,
-        "color": "#ff4500",
+        "color": "#rgba(255, 255, 255, 0.75)",
         "ui": { "icon": "🏹" },
         "modifiers": {
             "damage_mul": 1,
@@ -89,26 +89,25 @@ export const abilityEditor = (() => {
         let html = '';
 
         abilities.forEach((ability, index) => {
+            // Replace the internal part of abilities.forEach starting at line ~82:
+            const isFury = ability.id === 'towers_fury';
+
             html += `
                 <div class="ability-card box" data-ability-index="${index}">
                     <div class="card-header">
-                        <label>Class ID <input type="text" size="50" class="input-ability-id input-medium" value="${ability.id}" placeholder="Class ID" data-key="id"></label> 
-                        <label>Config ID <input type="text" class="input-ability-id input-medium" value="${ability.configId || ''}" placeholder="Unique Config ID" data-key="configId"></label>
-                        <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
+                        <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
+                        <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
+                        <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
                         <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
                     </div>
-                    
+
                     <div class="card-body">
-                        <label>Type 
-                            <select data-key="type">
-                                <option value="targeted" ${ability.type === 'targeted' ? 'selected' : ''}>Targeted</option>
-                                <option value="global" ${ability.type === 'global' ? 'selected' : ''}>Global</option>
-                                <option value="passive" ${ability.type === 'passive' ? 'selected' : ''}>Passive</option>
-                            </select>
-                        </label>
+                        <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
+
                         <label>Icon 
                             <input type="text" data-key="ui.icon" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
                         </label>
+
                         <div class="ability-color-section" style="display: inline-block; vertical-align: top; min-width: 120px;">
                             <label style="display: block; margin-bottom: 2px;">Color & Opacity</label>
                             <div class="color-controls-stack" style="display: flex; flex-direction: column; gap: 4px;">
@@ -120,20 +119,18 @@ export const abilityEditor = (() => {
                                         ${extractAlpha(ability.color).toFixed(2)}
                                     </span>
                                 </div>
-                                <input type="range" class="ability-opacity-slider" 
-                                       min="0" max="1" step="0.01" 
-                                       value="${extractAlpha(ability.color)}" 
-                                       style="width: 100%; height: 12px; cursor: pointer;">
-
+                                <input type="range" class="ability-opacity-slider" min="0" max="1" step="0.01" value="${extractAlpha(ability.color)}">
                                 <input type="hidden" data-key="color" value="${ability.color}">
                             </div>
                         </div>
-                        <label>Cooldown (ms) <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000"></label>
-                        <label>Effect Duration (ms) <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0"></label>
 
-                        ${ability.id === 'towers_fury' ? `
-                            <div style="grid-column: span 2; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px;">
-                                <label>Damage Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
+                        <label>Cooldown (ms) <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000"></label>
+                        <label>Duration (ms) <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0"></label>
+
+                        ${isFury ? `
+                            <div style="grid-column: span 2; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px;">
+                                <p style="margin:0 0 5px 0; font-weight:bold; font-size:12px;">MODIFIERS</p>
+                                <label>Dmg Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
                                 <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
                                 <label>Fire Rate <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}"></label>
                             </div>
@@ -142,8 +139,16 @@ export const abilityEditor = (() => {
                             <label>Damage Freq <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
                             <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}"></label>
                         `}
-                        <label>Short Description <input type="text" data-key="description" value="${ability.description}"></label>
-                        <label>Usage Text <input type="text" data-key="description_text" value="${ability.description_text}"></label>
+                        
+                        ${!isFury ? `
+                            <label style="grid-column: span 2;">Short Description 
+                                <textarea data-key="description" rows="2" style="width: 100%;">${ability.description || ''}</textarea>
+                            </label>
+                        ` : ''}
+                        
+                        <label style="grid-column: span 2;">Usage Text 
+                            <textarea data-key="description_text" rows="3" style="width: 100%;">${ability.description_text || ''}</textarea>
+                        </label>
                     </div>
                 </div>
             `;
@@ -172,7 +177,7 @@ export const abilityEditor = (() => {
     const attachChangeListeners = () => {
         if (!contentContainer) return; 
 
-        contentContainer.querySelectorAll('input, select').forEach(input => {
+        contentContainer.querySelectorAll('input, select, textarea').forEach(input => {
             input.addEventListener('change', (e) => {
                 const card = e.target.closest('.ability-card');
                 const abilityIndex = parseInt(card.getAttribute('data-ability-index'), 10);
@@ -234,14 +239,14 @@ export const abilityEditor = (() => {
         // Looks for a <select id="ability-type-selector"> in your HTML
         const selector = document.getElementById('ability-type-selector');
         const selectedType = selector ? selector.value : 'lava_floor';
-        
+
         modifyJson((data) => {
             const abilities = data.maps[0].abilities;
             const newAbility = JSON.parse(JSON.stringify(abilityTemplates[selectedType]));
-            
+
             newAbility.name = `New ${selectedType} ${abilities.length + 1}`;
             newAbility.configId = `${selectedType}_${Date.now()}`;
-        
+
             abilities.push(newAbility);
             renderAbilityRepeater(abilities);
         }, `Added new ${selectedType} ability.`);
