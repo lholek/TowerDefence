@@ -49,6 +49,24 @@
           }
         },
         {
+          "id": "towers_fury",
+          "config_id": "towers_fury_2",
+          "name": "Towers Fury II",
+          "description_text": "All towers: +400% Damage, +170% Bullet Speed, 25% Fire Rate",
+          "type": "global",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "#ff4500",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 4,
+            "speed_mul": 1.7,
+            "fireRate_mul": 0.75
+          }
+        },
+        {
           "_comment": "cooldown - 30000",
           "id": "lava_floor",
           "name": "Lava Floor",
