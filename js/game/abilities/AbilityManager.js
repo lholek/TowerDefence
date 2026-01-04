@@ -29,21 +29,23 @@ export default class AbilityManager {
     return this.abilities;
   }
 
-  // called from UI when player selects an ability to place
   selectAbilityById(id) {
+    // 1. Find the specific instance by its unique ID (e.g., 'towers_fury_1')
     const inst = this.abilities.find(a => a.id === id);
     if (!inst || !inst.available()) return false;
 
+    // 2. Find the HTML element for this specific ability
     const card = document.getElementById(inst.id);
 
+    // 3. Start the logic
     if (inst.startPlacing()) {
-        // If it's NOT a placing ability (like Towers Fury), it activates immediately
         if (!inst.isPlacing) {
-            // FIX: Manually trigger the cooldown UI for global abilities
+            // This is for Global abilities (Towers Fury)
+            // It triggers the cooldown on the card immediately
             this.notifyAbilityUsed(inst, card); 
             this.activeAbility = null;
         } else {
-            // Targeted ability (Lava Floor) - wait for canvas click
+            // This is for Targeted abilities (Lava Floor)
             this.activeAbility = inst;
             if (card) card.classList.add("placing");
         }

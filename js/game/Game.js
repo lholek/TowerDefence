@@ -587,7 +587,7 @@ async loadGameData(mapSource) {
     for (const a of this.abilityManager.getAvailable()) {
       const card = document.createElement('div');
       card.className = 'ability-card';
-      card.id = a.id;
+      card.id = a.config_id || a.configId || a.id;
       card.style.position = 'relative'; // ensure overlays position correctly
       // inner structure: icon, name, cooldown, duration, description
       card.innerHTML = `

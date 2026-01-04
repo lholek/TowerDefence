@@ -1,15 +1,23 @@
+// TowersFury.js
 import Ability from './Ability.js';
 
 export default class TowersFury extends Ability {
     constructor(game, config = {}) {
         super(game, config);
+        
+        // FIX: Look for 'config_id' from your JSON and assign it to this.id
+        // This ensures Fury 1 and Fury 2 are recognized as different objects.
+        if (config.config_id) {
+            this.id = config.config_id;
+        }
+
         this.type = 'global';
-        // Ensure we use the config from JSON or defaults
         this.modifiers = config.modifiers || { damage_mul: 1.25, speed_mul: 1.25, fireRate_mul: 0.75 };
     }
 
     startPlacing() {
         if (!this.available()) return false;
+        // Global abilities don't need tile selection, they activate immediately
         return this.activate(); 
     }
 
@@ -17,18 +25,15 @@ export default class TowersFury extends Ability {
         this.remainingCooldown = this.cooldown;
         
         this.activeInstances.push({
-            // Change 'expiresAt' to 'durationLeft'
             durationLeft: this.effectDuration, 
-            onEnd: () => { console.log("Fury Ended"); }
+            onEnd: () => { console.log(`${this.name} (${this.id}) Ended`); }
         });
-    
-        if (this.game.abilityManager) {
-            this.game.abilityManager.startAbilityCooldownTimer(this, null);
-        }
+
+        // IMPORTANT: We let AbilityManager handle the UI cooldown timer 
+        // through its notifyAbilityUsed call.
         return true;
     }
 
-    // This stays the same
     isActive() {
         return this.activeInstances.length > 0;
     }

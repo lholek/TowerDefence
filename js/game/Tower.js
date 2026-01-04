@@ -5,7 +5,7 @@ const TOWER_SIZE = 0.5;
 
 export default class Tower {
     constructor(game, map, col, row, type = {}) {
-        this.game = game; // <-- ADD THIS
+        this.game = game;
         this.map = map;
         this.col = col;
         this.row = row;
@@ -30,7 +30,6 @@ export default class Tower {
         this.preRenderedImage = this._preRenderTower(this.map.tileSize);
     }
 
-    // --- NEW: clone method ---
     clone(col, row) {
         return new Tower(this.game, this.map, col, row, {
             range: this.range,
@@ -42,7 +41,6 @@ export default class Tower {
         });
     }
 
-    // NEW METHOD
     _preRenderTower(tileSize) {
         const size = Math.round(tileSize * TOWER_SIZE);
 
@@ -108,7 +106,6 @@ export default class Tower {
             }
         }
 
-        // --- NEW: VERTICAL "CARPET" BANNER ---
         // This hangs from the top and uses the tower's color
         const bannerW = bodyW * 0.25;
         const bannerH = bodyH * 0.45;
@@ -199,86 +196,106 @@ export default class Tower {
     }
     
     update(deltaTime, enemies) {
-        this.lastShot += deltaTime;
+    this.lastShot += deltaTime;
 
-        // --- 1) CHECK FOR TOWERS FURY BUFF ---
-        const fury = this.game.abilityManager.abilities.find(a => a.id === 'towers_fury');
-        const isFurious = fury && fury.isActive();
+    // --- 1) CALCULATE STACKING BUFFS FROM ALL ACTIVE FURIES ---
+    let damageMul = 1;
+    let speedMul = 1;
+    let fireRateMul = 1;
 
-        // Calculate dynamic stats based on buff status
-        const currentFireRate = isFurious ? this.fireRate * (fury.modifiers.fireRate_mul || 0.75) : this.fireRate;
-        const currentBulletSpeed = isFurious ? this.bulletSpeed * (fury.modifiers.speed_mul || 1.25) : this.bulletSpeed;
-        const currentDamage = isFurious ? this.damage * (fury.modifiers.damage_mul || 1.25) : this.damage;
-
-        // Update existing bullets
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            const b = this.bullets[i];
-            b.update(deltaTime);
-            if (!b.active) {
-                this.game.returnBullet(b);
-                this.bullets.splice(i, 1);
-            }
+    // We loop through all abilities to see which "towers_fury" are active
+    this.game.abilityManager.abilities.forEach(ability => {
+        // We use .includes so it catches 'towers_fury_1', 'towers_fury_2', etc.
+        if (ability.id.includes('towers_fury') && ability.isActive()) {
+            damageMul *= (ability.modifiers.damage_mul || 1.25);
+            speedMul *= (ability.modifiers.speed_mul || 1.25);
+            fireRateMul *= (ability.modifiers.fireRate_mul || 0.75);
         }
+    });
 
-        // --- 2) Only shoot if cooldown (adjusted by buff) is ready ---
-        if (this.lastShot < currentFireRate) return;
+    // Calculate dynamic stats based on all active multipliers
+    const currentFireRate = this.fireRate * fireRateMul;
+    const currentBulletSpeed = this.bulletSpeed * speedMul;
+    const currentDamage = this.damage * damageMul;
 
-        // Target picking
-        let best = null;
-        let bestDistSq = this.range * this.range;
-        const tx = this.x;
-        const ty = this.y;
-
-        for (const enemy of enemies) {
-            if (enemy.health <= 0) continue;
-            const dx = enemy.x - tx;
-            const dy = enemy.y - ty;
-            const d2 = dx * dx + dy * dy;
-
-            if (d2 < bestDistSq) {
-                bestDistSq = d2;
-                best = enemy;
-            }
-        }
-
-        // --- 3) Shoot with Buffed Stats ---
-        if (best) {
-            const bullet = this.game.getBullet();
-            // Use currentBulletSpeed and currentDamage calculated above
-            bullet.init(tx, ty, best, currentBulletSpeed, this.game); 
-            bullet.damage = currentDamage; 
-            
-            this.bullets.push(bullet);
-            this.lastShot = 0;
+    // Update existing bullets owned by this tower
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+        const b = this.bullets[i];
+        b.update(deltaTime);
+        if (!b.active) {
+            this.game.returnBullet(b);
+            this.bullets.splice(i, 1);
         }
     }
 
+    // --- 2) Check cooldown (adjusted by stacked buffs) ---
+    if (this.lastShot < currentFireRate) return;
+
+    // Target picking
+    let best = null;
+    let bestDistSq = this.range * this.range;
+    const tx = this.x;
+    const ty = this.y;
+
+    for (const enemy of enemies) {
+        if (enemy.health <= 0) continue;
+        const dx = enemy.x - tx;
+        const dy = enemy.y - ty;
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 < bestDistSq) {
+            bestDistSq = d2;
+            best = enemy;
+        }
+    }
+
+    // --- 3) Create Bullet with Buffed Stats ---
+    if (best) {
+        const bullet = this.game.getBullet();
+        // Initialize the bullet with the calculated boosted speed
+        bullet.init(tx, ty, best, currentBulletSpeed, this.game); 
+        // Assign the calculated boosted damage
+        bullet.damage = currentDamage; 
+        
+        this.bullets.push(bullet);
+        this.lastShot = 0;
+    }
+}
+
     render(ctx, map) {
-        const gameMap = map || this.map;
-        if (!gameMap) return;
+    const gameMap = map || this.map;
+    if (!gameMap) return;
 
-        // --- 1. Draw the pre-rendered tower image ---
-        const drawSize = this.map.tileSize * 2; // Matches the off-canvas size
-        const drawX = this.x - drawSize / 2;
-        const drawY = this.y - drawSize / 2;
+    // --- 1. Draw the pre-rendered tower image ---
+    const drawSize = this.map.tileSize * 2; 
+    const drawX = this.x - drawSize / 2;
+    const drawY = this.y - drawSize / 2;
 
-        ctx.drawImage(this.preRenderedImage, drawX, drawY);
+    ctx.drawImage(this.preRenderedImage, drawX, drawY);
 
-        // --- 1.5 TOWERS FURY VISUALS (Wind/Haste Effect) ---
-        // --- 1.5 TOWERS FURY VISUALS (Wind/Haste Effect) ---
-        const fury = this.game.abilityManager.abilities.find(a => a.id === 'towers_fury');
-        if (fury && fury.isActive()) {
+    // --- 1.5 TOWERS FURY VISUALS (Stacked Effect) ---
+    // Count how many furies are active to adjust visual intensity
+    let activeFuryCount = 0;
+    
+    this.game.abilityManager.abilities.forEach((ability, index) => {
+        if (ability.id.includes('towers_fury') && ability.isActive()) {
+            activeFuryCount++;
+            
             ctx.save();
-            ctx.translate(this.x, this.y + 10); // Center on tower base
+            // Slightly offset each fury's particles so they don't perfectly overlap
+            ctx.translate(this.x, this.y + 10); 
             
             const time = Date.now() * 0.004; 
             
-            // 1. Upward Speed Particles
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            // Visuals: Upward Speed Particles
+            // Change color slightly if it's the second active fury
+            ctx.strokeStyle = activeFuryCount > 1 ? 'rgba(255, 100, 100, 0.6)' : 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 1;
+            
             for (let i = 0; i < 3; i++) {
-                const ox = Math.sin(time + i) * 20;
-                const oy = ((time * 60 + i * 30) % 50) - 25;
+                // index * 10 ensures different furies have different particle paths
+                const ox = Math.sin(time + i + index * 10) * 20;
+                const oy = ((time * 60 + i * 30 + index * 20) % 50) - 25;
                 ctx.beginPath();
                 ctx.moveTo(ox, -oy);
                 ctx.lineTo(ox, -oy - 8);
@@ -286,42 +303,46 @@ export default class Tower {
             }
             ctx.restore();
         }
+    });
 
-        // --- 2. Draw DYNAMIC parts (selection range, health) ---
-        // (We copy this from your old render method)
-        const size = Math.round(gameMap.tileSize * TOWER_SIZE);
-        const half = size / 2;
-        const cx = this.x; // Use the tower's actual world position
-        const cy = this.y + 14;
+    // --- 2. Draw DYNAMIC parts (selection range, health) ---
+    const size = Math.round(gameMap.tileSize * TOWER_SIZE);
+    const half = size / 2;
+    const cx = this.x; 
+    const cy = this.y + 14;
 
-        // selection range
-        if (this.isSelected) {
-            ctx.globalAlpha = 0.14;
-            ctx.fillStyle = '#ffd27a';
-            ctx.beginPath();
-            ctx.arc(cx, cy, this.range || Math.round(size * 1.2), 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            ctx.strokeStyle = 'rgba(255,200,120,0.9)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(cx, cy, half + 8, 0, Math.PI * 2);
-            ctx.stroke();
-        }
+    // Selection range
+    if (this.isSelected) {
+        ctx.globalAlpha = 0.14;
+        ctx.fillStyle = '#ffd27a';
+        ctx.beginPath();
+        ctx.arc(cx, cy, this.range || Math.round(size * 1.2), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = 'rgba(255,200,120,0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, half + 8, 0, Math.PI * 2);
+        ctx.stroke();
+    }
 
-        // health bar
-        if (this.health != null) {
-            const bw = size * 1.0;
-            const bh = 5;
-            const bx = cx - bw / 2;
-            const by = cy + half + 6;
-            ctx.fillStyle = '#222';
-            roundRect(ctx, bx, by, bw, bh, 2, true, false); // Uses global roundRect
+    // Health bar
+    if (this.health != null) {
+        const bw = size * 1.0;
+        const bh = 5;
+        const bx = cx - bw / 2;
+        const by = cy + half + 6;
+        ctx.fillStyle = '#222';
+        if (typeof roundRect === 'function') {
+            roundRect(ctx, bx, by, bw, bh, 2, true, false);
             const pct = Math.max(0, Math.min(1, this.health / (this.maxHealth || 100)));
             ctx.fillStyle = `hsl(${pct * 120}, 70%, 45%)`;
-            roundRect(ctx, bx + 1, by + 1, (bw - 2) * pct, bh - 2, 2, true, false); // Uses global roundRect
+            roundRect(ctx, bx + 1, by + 1, (bw - 2) * pct, bh - 2, 2, true, false);
+        } else {
+            ctx.fillRect(bx, by, bw, bh);
         }
     }
+}
 }
 
 function roundRect(c, x, y, w, h, r, fill, stroke) {

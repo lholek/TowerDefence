@@ -32,7 +32,7 @@
       "abilities": [
         {
           "id": "towers_fury",
-          "config_id": "towers_fury",
+          "config_id": "towers_fury_1",
           "name": "Towers Fury",
           "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
@@ -43,16 +43,16 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 3.2,
-            "speed_mul": 3.2,
-            "fireRate_mul": 0.70
+            "damage_mul": 2,
+            "speed_mul": 1,
+            "fireRate_mul": 1
           }
         },
         {
           "id": "towers_fury",
           "config_id": "towers_fury_2",
-          "name": "Towers Fury II",
-          "description_text": "All towers: +400% Damage, +170% Bullet Speed, 25% Fire Rate",
+          "name": "Towers Fury",
+          "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 5000,
@@ -61,13 +61,34 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 4,
-            "speed_mul": 1.7,
-            "fireRate_mul": 0.75
+            "damage_mul": 2,
+            "speed_mul": 1,
+            "fireRate_mul": 1
           }
         },
         {
           "_comment": "cooldown - 30000",
+          "configId": "lava_floor_1",
+          "id": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Demage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted", 
+          "selectionCount": 7, 
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250, 
+          "damage_every": 250, 
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "_comment": "cooldown - 30000",
+          "configId": "lava_floor_2",
           "id": "lava_floor",
           "name": "Lava Floor",
           "description": "Demage - 250dmg / 0.25s",
@@ -90,7 +111,7 @@
         "001": {
           "name": "A",
           "price": 1,
-          "damage": 100,
+          "damage": 5,
           "fireRate": 1000,
           "range": 1000,
           "color": "#468bb0",
@@ -100,7 +121,7 @@
         "002": {
           "name": "B",
           "price": 1,
-          "damage": 120,
+          "damage": 1,
           "fireRate": 500,
           "range": 1000,
           "color": "#ffffff",
@@ -115,12 +136,12 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 10000000,
+              "health": 1000,
               "speed": 0.10,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
-              "firstDelay": "8000"
+              "firstDelay": "3000"
             }
           ]
         }
