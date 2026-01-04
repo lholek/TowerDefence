@@ -37,33 +37,33 @@
           "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
           "cooldown": 10000,
-          "effectDuration": 5000,
+          "effectDuration": 25000,
           "color": "#ff4500",
           "ui": {
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 2,
-            "speed_mul": 1,
-            "fireRate_mul": 1
+            "damage_mul": 1,
+            "speed_mul": 3,
+            "fireRate_mul": 0.85
           }
         },
         {
           "id": "towers_fury",
           "config_id": "towers_fury_2",
-          "name": "Towers Fury",
+          "name": "Towers Fury Hung",
           "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
           "cooldown": 10000,
-          "effectDuration": 5000,
+          "effectDuration": 15000,
           "color": "#ff4500",
           "ui": {
-            "icon": "🏹"
+            "icon": "🏹🏹"
           },
           "modifiers": {
-            "damage_mul": 2,
-            "speed_mul": 1,
-            "fireRate_mul": 1
+            "damage_mul": 4,
+            "speed_mul": 0.3,
+            "fireRate_mul": 0.85
           }
         },
         {
@@ -76,11 +76,11 @@
           "type": "targeted", 
           "selectionCount": 7, 
           "__comment": "250dmg / 0.25s ",
-          "damage": 250, 
-          "damage_every": 250, 
+          "damage": 500, 
+          "damage_every": 500, 
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
-          "effectDuration": 5000,
+          "cooldown": 7000,
+          "effectDuration": 8000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
@@ -90,20 +90,20 @@
           "_comment": "cooldown - 30000",
           "configId": "lava_floor_2",
           "id": "lava_floor",
-          "name": "Lava Floor",
+          "name": "Lava Floor Hung",
           "description": "Demage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted", 
           "selectionCount": 7, 
           "__comment": "250dmg / 0.25s ",
-          "damage": 250, 
-          "damage_every": 250, 
+          "damage": 2000, 
+          "damage_every": 500, 
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
-          "effectDuration": 5000,
+          "cooldown": 3000,
+          "effectDuration": 4000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
-            "icon": "🌋"
+            "icon": "🌋🌋"
           }
         }
       ],
