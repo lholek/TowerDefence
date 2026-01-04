@@ -32,7 +32,7 @@
       "abilities": [
         {
           "id": "towers_fury",
-          "config_id": "towers_fury_1",
+          "configId": "towers_fury_1",
           "name": "Towers Fury",
           "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
@@ -50,7 +50,7 @@
         },
         {
           "id": "towers_fury",
-          "config_id": "towers_fury_2",
+          "configId": "towers_fury_2",
           "name": "Towers Fury Hung",
           "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
           "type": "global",
@@ -258,8 +258,8 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 1000,
-              "speed": 0.1,
+              "health": 10000000,
+              "speed": 0.065,
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
