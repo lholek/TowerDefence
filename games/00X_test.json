@@ -34,7 +34,7 @@
           "id": "towers_fury",
           "configId": "towers_fury_1",
           "name": "Towers Fury",
-          "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
+          "description_text": "All towers: +0% Damage, +300% Bullet Speed, 15% Fire Rate",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 25000,
@@ -45,14 +45,14 @@
           "modifiers": {
             "damage_mul": 1,
             "speed_mul": 3,
-            "fireRate_mul": 0.85
+            "fireRate_mul": 1.15
           }
         },
         {
           "id": "towers_fury",
           "configId": "towers_fury_2",
           "name": "Towers Fury Hung",
-          "description_text": "All towers: +320% Damage, +320% Bullet Speed, 30% Fire Rate",
+          "description_text": "All towers: +400% Damage, +0% Bullet Speed, 15% Fire Rate",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 15000,
@@ -62,8 +62,8 @@
           },
           "modifiers": {
             "damage_mul": 4,
-            "speed_mul": 0.3,
-            "fireRate_mul": 0.85
+            "speed_mul": 1,
+            "fireRate_mul": 1.15
           }
         },
         {
