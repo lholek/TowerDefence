@@ -243,6 +243,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: false });
     }
 
+    // --- Scroll shop kolečkem myši (horizontal scroll) ---
+    if (abilityBar) {
+        abilityBar.addEventListener('wheel', (e) => {
+            // Check if the game is paused or any other condition you might need
+            if (game?.paused) return; 
+
+            // Prevent the default vertical scroll behavior
+            e.preventDefault(); 
+
+            // Update the horizontal scroll position (scrollLeft)
+            // The amount of scroll is determined by e.deltaY (the vertical scroll change)
+            abilityBar.scrollLeft += e.deltaY * 2.45;
+        }, { passive: false });
+    }
+
+
     // --- Link na Level Editor ---
     const editorButton = document.querySelector(".editorButton");
     if (editorButton) {
