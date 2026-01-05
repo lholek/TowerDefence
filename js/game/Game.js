@@ -604,11 +604,13 @@ async loadGameData(mapSource) {
               ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>` : ''}
               <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
               ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
-              ${a.description_text ? `<div class="ability-desc">${a.description_text}</div>` : ''}
+              ${a.constructor.name === 'LavaFloor' 
+                  ? `<div class="ability-dmg">⚔️ Targets: ${a.selectionCount} tiles</div>` 
+                  : `<div class="ability-desc">${a.description_text || ''}</div>`
+              }
             </div>
           </div>
       `;
-
       // save ref
       this.abilityCards[a.id] = { card, ability: a };
 

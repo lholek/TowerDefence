@@ -135,28 +135,59 @@
   border-color: gold;
 }
 
+/* Container for the ability cards */
 #abilityBar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 10px;
+  gap: 15px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  width: 100%;
+  scrollbar-color: rgb(240, 198, 116) transparent;
+  scroll-behavior: smooth;
+  padding: 10px;
+}
+
+/* Custom scrollbar for Chrome/Safari/Edge */
+#abilityBar::-webkit-scrollbar {
+    height: 8px;
+}
+
+#abilityBar::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+
+#abilityBar::-webkit-scrollbar-thumb {
+    background: #444; 
+    border-radius: 10px;
+}
+
+#abilityBar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
 }
 
 .ability-card {
-  position: relative;
-  background-color: rgb(157, 80, 41);
-  display: flex;
-  flex-direction: column;
-  gap: 0px;
-  border-radius: 6px;
-  padding: 10px;
-  width: 200px;
-  color: white;
-  text-align: center;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-  overflow: hidden;
-  cursor: pointer;
+    position: relative;
+    background-color: rgb(157, 80, 41);
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    border-radius: 6px;
+    padding: 10px;
+    width: 200px;
+    height: 135px;
+    color: white;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+    flex: 0 0 auto;
+    z-index: 101;
 }
 
 .ability-card:hover {
@@ -224,11 +255,38 @@
 .ability-card.placing {
   border-color: #f5aa42; /* highlight color when placing */
 }
-.ability-icon { font-size: 20px; width:32px; text-align:center; }
-.ability-info { font-size: 12px; text-align: left; }
-.ability-meta { font-size: 11px; opacity: 0.8; display:flex; gap:8px; flex-direction: column; }
-.ability-timer { font-size:11px; color:#f55; margin-top:4px; }
-.ability-bar {display: flex; justify-content: space-around;}
+.ability-icon { 
+  font-size: 20px;
+  width:32px;
+  text-align:center;
+}
+
+.ability-info { 
+  font-size: 12px;
+  text-align: left;
+}
+
+.ability-meta { 
+  font-size: 11px;
+  opacity: 0.8;
+  display:flex;
+  gap:8px;
+  flex-direction: column;
+}
+
+.ability-timer {
+  font-size:11px;
+  color:#f55;
+  margin-top:4px;
+}
+
+.ability-bar {
+  display: flex;
+  justify-content: space-around;
+  max-width: 1220px;
+  width: calc(4 * 294px + 3 * 12px);
+}
+
 .shopAndAbilitiesWrap{
   margin-top: -10px;
   z-index: 1;
@@ -238,8 +296,9 @@
   display: none; /* hidden by default */
 }
 
-.ability-desc{
+.ability-desc {
   font-size: 13px;
+  text-wrap: auto;
 }
 /* Abilites */
 /* Music */
