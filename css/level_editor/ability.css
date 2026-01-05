@@ -96,3 +96,54 @@
     border-radius: 50%;
     border: 1px solid #5C441B;
 }
+
+.ability-color-section{
+    display: inline-block;
+    vertical-align: top;
+    min-width: 120px;
+}
+
+.ability-label{
+    display: block;
+    margin-bottom: 2px;
+}
+
+.color-controls-stack{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.color-controls-picker{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ability-color-base{
+    width: 40px;
+    height: 30px;
+    padding: 2px;
+    border: 1px solid #444;
+    cursor: pointer;
+}
+
+.opacity-label{
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ability-fury-modifiers{
+  grid-column: span 2;
+  background: rgba(0,0,0,0.1);
+  padding: 10px;
+  border-radius: 4px;  
+}
+
+.ability-fury-modifiers p {
+    margin:0 0 5px 0;
+    font-weight:bold;
+    font-size:12px;
+}
+

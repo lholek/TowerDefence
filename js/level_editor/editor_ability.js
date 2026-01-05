@@ -108,14 +108,13 @@ export const abilityEditor = (() => {
                             <input type="text" data-key="ui.icon" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
                         </label>
 
-                        <div class="ability-color-section" style="display: inline-block; vertical-align: top; min-width: 120px;">
-                            <label style="display: block; margin-bottom: 2px;">Color & Opacity</label>
-                            <div class="color-controls-stack" style="display: flex; flex-direction: column; gap: 4px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="ability-color-section">
+                            <label class="ability-label">Color & Opacity</label>
+                            <div class="color-controls-stack">
+                                <div class="color-controls-picker">
                                     <input type="color" class="ability-color-base" 
-                                           value="${extractHex(ability.color)}" 
-                                           style="width: 40px; height: 30px; padding: 2px; border: 1px solid #444; cursor: pointer;">
-                                    <span class="opacity-label" style="font-family: monospace; font-size: 12px; font-weight: bold;">
+                                           value="${extractHex(ability.color)}">
+                                    <span class="opacity-label">
                                         ${extractAlpha(ability.color).toFixed(2)}
                                     </span>
                                 </div>
@@ -128,8 +127,8 @@ export const abilityEditor = (() => {
                         <label>Duration (ms) <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0"></label>
 
                         ${isFury ? `
-                            <div style="grid-column: span 2; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px;">
-                                <p style="margin:0 0 5px 0; font-weight:bold; font-size:12px;">MODIFIERS</p>
+                            <div class="ability-fury-modifiers">
+                                <p>MODIFIERS</p>
                                 <label>Dmg Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
                                 <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
                                 <label>Fire Rate <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}"></label>
@@ -141,13 +140,13 @@ export const abilityEditor = (() => {
                         `}
                         
                         ${!isFury ? `
-                            <label style="grid-column: span 2;">Short Description 
-                                <textarea data-key="description" rows="2" style="width: 100%;">${ability.description || ''}</textarea>
+                            <label class="g-cl-2">Short Description 
+                                <textarea data-key="description" rows="2" class="w-100">${ability.description || ''}</textarea>
                             </label>
                         ` : ''}
                         
-                        <label style="grid-column: span 2;">Usage Text 
-                            <textarea data-key="description_text" rows="2" style="width: 100%;">${ability.description_text || ''}</textarea>
+                        <label class="g-cl-2">Usage Text 
+                            <textarea data-key="description_text" rows="2" class="w-100">${ability.description_text || ''}</textarea>
                         </label>
                     </div>
                 </div>

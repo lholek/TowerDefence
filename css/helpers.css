@@ -32,3 +32,11 @@
 .pb-1{
     padding-bottom: 10px;
 }
+
+.w-100{
+    width: 100%  !important;
+}
+
+.g-cl-2 {
+    grid-column: span 2;
+}
