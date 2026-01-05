@@ -116,7 +116,7 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 10000000,
+              "health": 1,
               "speed": 0.065,
               "path": "S1E1",
               "interval": "2000",

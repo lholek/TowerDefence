@@ -307,7 +307,9 @@
 }
 
 .final-status-grid{
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   justify-content: space-around;
   margin: 20px 0;
   color: #bbb;

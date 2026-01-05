@@ -78,6 +78,7 @@ h3 {
     max-width: 1200px;
     margin: 20px auto;
     position: relative;
+    align-items:flex-start;
 }
 
 /* events log left column */
@@ -504,3 +505,8 @@ max-width: 400px;
     color: #f0c674;
 }
 /* Game time */
+
+.stats-detail{
+    float:right;
+    color:#fff
+}
