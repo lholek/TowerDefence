@@ -145,7 +145,7 @@ export const abilityEditor = (() => {
                             </label>
                         ` : ''}
                         
-                        <label class="g-cl-2">Usage Text 
+                        <label class="g-cl-2 ${isFury ? `mt-n-45` : ''}">Usage Text 
                             <textarea data-key="description_text" rows="2" class="w-100">${ability.description_text || ''}</textarea>
                         </label>
                     </div>
