@@ -149,6 +149,7 @@
   scrollbar-color: rgb(240, 198, 116) transparent;
   scroll-behavior: smooth;
   padding: 10px;
+  padding-left: 0px;
 }
 
 /* Custom scrollbar for Chrome/Safari/Edge */
