@@ -601,13 +601,16 @@ async loadGameData(mapSource) {
           <div class="ability-info">
             <div class="ability-name">${a.name}</div>
             <div class="ability-meta">
-              ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration} ms</span>` : ''}
-              <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown} ms</span>
-              ${a.description ? `<div class="ability-dmg">⚔️ ${a.description}</div>` : ''}
-              ${a.constructor.name === 'LavaFloor' 
-                  ? `<div class="ability-dmg">⚔️ Targets: ${a.selectionCount} tiles</div>` 
-                  : `<div class="ability-desc">${a.description_text || ''}</div>`
-              }
+              ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration/1000} s</span>` : ''}
+              <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown/1000} s</span>
+
+              <div class="ability-dmg">${a.dynamicDescription}</div>
+
+              <div class="ability-desc">
+                ${a.constructor.name === 'LavaFloor' 
+                  ? `Target: ${a.selectionCount} tiles` 
+                  : ``}
+              </div>
             </div>
           </div>
       `;

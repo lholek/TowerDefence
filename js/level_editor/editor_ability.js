@@ -11,8 +11,6 @@ const abilityTemplates = {
         "id": "lava_floor",
         "configId": "lava_floor_new",
         "name": "New Lava Floor",
-        "description": "Short description",
-        "description_text": "Detailed usage description",
         "type": "targeted",
         "selectionCount": 7,
         "damage": 500,
@@ -26,7 +24,6 @@ const abilityTemplates = {
         "id": "towers_fury",
         "configId": "towers_fury_new",
         "name": "New Towers Fury",
-        "description_text": "All towers: +320% Damage",
         "type": "global",
         "cooldown": 10000,
         "effectDuration": 25000,
@@ -138,16 +135,6 @@ export const abilityEditor = (() => {
                             <label>Damage Freq <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
                             <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}"></label>
                         `}
-                        
-                        ${!isFury ? `
-                            <label class="g-cl-2">Short Description 
-                                <textarea data-key="description" rows="2" class="w-100">${ability.description || ''}</textarea>
-                            </label>
-                        ` : ''}
-                        
-                        <label class="g-cl-2 ${isFury ? `mt-n-45` : ''}">Usage Text 
-                            <textarea data-key="description_text" rows="2" class="w-100">${ability.description_text || ''}</textarea>
-                        </label>
                     </div>
                 </div>
             `;

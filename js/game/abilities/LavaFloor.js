@@ -9,6 +9,11 @@ export default class LavaFloor extends Ability {
     this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
   }
 
+  /* Getter dynamicDescription */
+  get dynamicDescription() {
+    return `Damage - ${this.damage}dmg / ${this.damageEvery}ms`;
+  }
+
 /**
  * Finds the 'count' closest path-block tiles ('O' tiles) to the centerTile on the map grid.
  * NOTE: This implementation ignores map path sequences and uses Manhattan distance 

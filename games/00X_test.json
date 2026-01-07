@@ -10,7 +10,7 @@
           "level count": 1,
           "difficulty": "⭐",
           "map_size": "13x13",
-          "abilites": "Towers Fury A🏹, Lava Floor B🌋, New lava_floor 3🌋, New towers_fury 4🏹, New towers_fury 5🏹, New towers_fury 6🏹, New lava_floor 7🌋, New lava_floor 8🌋, New towers_fury 9🏹, New towers_fury 10🏹"
+          "abilites": "Towers Fury A🏹, Lava Floor B🌋, New towers_fury 3🏹, New towers_fury 4🏹"
         }
       ],
       "tileSize": 60,
@@ -43,9 +43,9 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 5,
-            "speed_mul": 3,
-            "fireRate_mul": 1.15
+            "damage_mul": 1,
+            "speed_mul": 5,
+            "fireRate_mul": 3
           }
         },
         {
@@ -69,27 +69,9 @@
           }
         },
         {
-          "id": "lava_floor",
-          "configId": "lava_floor_1767802441958",
-          "name": "New lava_floor 3",
-          "description": "Short description",
-          "description_text": "Detailed usage description",
-          "type": "targeted",
-          "selectionCount": 7,
-          "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
-          "ui": {
-            "icon": "🌋"
-          }
-        },
-        {
           "id": "towers_fury",
-          "configId": "towers_fury_1767802444292",
-          "name": "New towers_fury 4",
-          "description_text": "All towers: +320% Damage",
+          "configId": "towers_fury_1767817941911",
+          "name": "New towers_fury 3",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 25000,
@@ -99,114 +81,8 @@
           },
           "modifiers": {
             "damage_mul": 1,
-            "speed_mul": 3,
-            "fireRate_mul": 0.85
-          }
-        },
-        {
-          "id": "towers_fury",
-          "configId": "towers_fury_1767802444975",
-          "name": "New towers_fury 5",
-          "description_text": "All towers: +320% Damage",
-          "type": "global",
-          "cooldown": 10000,
-          "effectDuration": 25000,
-          "color": "#rgba(255, 255, 255, 0.75)",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 1,
-            "speed_mul": 3,
-            "fireRate_mul": 0.85
-          }
-        },
-        {
-          "id": "towers_fury",
-          "configId": "towers_fury_1767802446978",
-          "name": "New towers_fury 6",
-          "description_text": "All towers: +320% Damage",
-          "type": "global",
-          "cooldown": 10000,
-          "effectDuration": 25000,
-          "color": "#rgba(255, 255, 255, 0.75)",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 1,
-            "speed_mul": 3,
-            "fireRate_mul": 0.85
-          }
-        },
-        {
-          "id": "lava_floor",
-          "configId": "lava_floor_1767802449852",
-          "name": "New lava_floor 7",
-          "description": "Short description",
-          "description_text": "Detailed usage description",
-          "type": "targeted",
-          "selectionCount": 7,
-          "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
-          "ui": {
-            "icon": "🌋"
-          }
-        },
-        {
-          "id": "lava_floor",
-          "configId": "lava_floor_1767802452132",
-          "name": "New lava_floor 8",
-          "description": "Short description",
-          "description_text": "Detailed usage description",
-          "type": "targeted",
-          "selectionCount": 7,
-          "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
-          "ui": {
-            "icon": "🌋"
-          }
-        },
-        {
-          "id": "towers_fury",
-          "configId": "towers_fury_1767802453540",
-          "name": "New towers_fury 9",
-          "description_text": "All towers: +320% Damage",
-          "type": "global",
-          "cooldown": 10000,
-          "effectDuration": 25000,
-          "color": "#rgba(255, 255, 255, 0.75)",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 1,
-            "speed_mul": 3,
-            "fireRate_mul": 0.85
-          }
-        },
-        {
-          "id": "towers_fury",
-          "configId": "towers_fury_1767802456770",
-          "name": "New towers_fury 10",
-          "description_text": "All towers: +320% Damage",
-          "type": "global",
-          "cooldown": 10000,
-          "effectDuration": 25000,
-          "color": "#rgba(255, 255, 255, 0.75)",
-          "ui": {
-            "icon": "🏹"
-          },
-          "modifiers": {
-            "damage_mul": 1,
-            "speed_mul": 3,
-            "fireRate_mul": 0.85
+            "speed_mul": 1,
+            "fireRate_mul": 1
           }
         }
       ],
@@ -214,92 +90,12 @@
         "001": {
           "name": "A",
           "price": 1,
-          "damage": 5,
+          "damage": 1000,
           "fireRate": 1000,
           "range": 1000,
           "color": "#468bb0",
           "sellPrice": 1,
           "speed": 1
-        },
-        "002": {
-          "name": "B",
-          "price": 1,
-          "damage": 1,
-          "fireRate": 500,
-          "range": 1000,
-          "color": "#ffffff",
-          "sellPrice": 1,
-          "speed": 1
-        },
-        "003": {
-          "name": "New Tower 003",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "004": {
-          "name": "New Tower 004",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "005": {
-          "name": "New Tower 005",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "006": {
-          "name": "New Tower 006",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "007": {
-          "name": "New Tower 007",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "008": {
-          "name": "New Tower 008",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
-        },
-        "009": {
-          "name": "New Tower 009",
-          "price": 0,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
-          "color": "#ffffff",
-          "sellPrice": 0,
-          "speed": 0
         }
       },
       "levels": [
@@ -309,7 +105,7 @@
             {
               "type": "basic",
               "count": 1,
-              "health": 1000,
+              "health": 5000,
               "speed": 0.065,
               "path": "S1E1",
               "interval": "2000",

@@ -227,6 +227,31 @@
   color: #ccc;
 }
 
+/* The container */
+.ability-dmg {
+  line-height: 1.5;
+}
+
+/* The numbers (+500%) */
+.stat-value {
+  font-weight: bold;
+}
+
+.stat-pos { color: #4ade80; } /* Green */
+.stat-neg { color: #f87171; } /* Red */
+
+/* The text (Damage) */
+.stat-label {
+  color: #cbd5e1; /* A softer grey/white */
+  font-size: 0.9em;
+}
+
+/* Optional: add a tiny dot before each line */
+.stat-line::before {
+  content: "• ";
+  color: #64748b;
+}
+
 /* Duration Overlay - Green bar at the top or subtle glow */
 .duration-overlay {
     position: absolute;
@@ -269,10 +294,10 @@
 }
 
 .ability-meta { 
-  font-size: 11px;
-  opacity: 0.8;
-  display:flex;
-  gap:8px;
+  font-size: 13px;
+  display: flex;
+  text-align: center;
+  gap: 2px;
   flex-direction: column;
 }
 

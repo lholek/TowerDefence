@@ -207,9 +207,9 @@ export default class Tower {
     this.game.abilityManager.abilities.forEach(ability => {
         // We use .includes so it catches 'towers_fury_1', 'towers_fury_2', etc.
         if (ability.id.includes('towers_fury') && ability.isActive()) {
-            damageMul *= (ability.modifiers.damage_mul || 1.25);
-            speedMul *= (ability.modifiers.speed_mul || 1.25);
-            fireRateMul *= (ability.modifiers.fireRate_mul || 0.75);
+            damageMul *= (ability.modifiers.damage_mul || 1);
+            speedMul *= (ability.modifiers.speed_mul || 1);
+            fireRateMul *= (ability.modifiers.fireRate_mul || 1);
         }
     });
 

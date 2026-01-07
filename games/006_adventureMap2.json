@@ -43,14 +43,10 @@
           ],
       "abilities": [
         {
-          "_comment": "cooldown - 25000",
           "id": "lava_floor",
           "name": "Lava Floor",
-          "description": "Demage - 400dmg / 0.5s",
-          "description_text": "5 tile before and after selected tile",
           "type": "targeted",
           "selectionCount": 11,
-          "__comment": "400dmg / 0.5s ",
           "damage": 400,
           "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
