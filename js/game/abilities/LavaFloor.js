@@ -126,28 +126,28 @@ _getCenteredPathTiles(centerTile, count) {
     for (const t of tileList) {
         const inst = {
             tile: t,
-            durationLeft: this.effectDuration, // Use 'durationLeft' to match Ability.js
-            lastTick: now,
-            onTick: (currentTime) => {
-                // Damage logic
-                for (const enemy of this.game.enemies) {
-                    const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
-                    if (et.col === t.col && et.row === t.row && enemy.health > 0) {
-                        const actualDmg = Math.min(enemy.health, this.damage);
-                        enemy.health -= actualDmg;
-                        if (this.game.stats) this.game.stats.damageDealt += actualDmg;
+            durationLeft: this.effectDuration,
+            lastDamageTime: 0, // Track when we last dealt damage
+            onTick: (deltaTime) => {
+                // Update our internal timer for this specific lava tile
+                inst.lastDamageTime += deltaTime;
+
+                // Only deal damage if the accumulated time exceeds your 'damageEvery' (1000ms)
+                if (inst.lastDamageTime >= this.damageEvery) {
+                    for (const enemy of this.game.enemies) {
+                        const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
+                        if (et.col === t.col && et.row === t.row && enemy.health > 0) {
+                            const actualDmg = Math.min(enemy.health, this.damage);
+                            enemy.health -= actualDmg;
+                            if (this.game.stats) this.game.stats.damageDealt += actualDmg;
+                        }
                     }
+                    // Reset the timer after dealing damage
+                    inst.lastDamageTime = 0;
                 }
-                inst.lastTick = currentTime;
             }
         };
         this.activeInstances.push(inst);
-    }
-
-    // Trigger UI cooldown
-    if (this.game.abilityManager) {
-        const card = document.getElementById(this.id);
-        this.game.abilityManager.notifyAbilityUsed(this, card);
     }
   }
 

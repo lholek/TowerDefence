@@ -33,8 +33,8 @@
         {
           "id": "towers_fury",
           "configId": "towers_fury_1",
-          "name": "Towers Fury",
-          "description_text": "All towers: +0% Damage, +300% Bullet Speed, 15% Fire Rate",
+          "name": "Towers Fury A",
+          "description_text": "All towers: +500% Damage, +300% Bullet Speed, 15% Fire Rate",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 25000,
@@ -43,7 +43,7 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 1,
+            "damage_mul": 5,
             "speed_mul": 3,
             "fireRate_mul": 1.15
           }
@@ -52,16 +52,16 @@
           "_comment": "cooldown - 30000",
           "configId": "lava_floor_1",
           "id": "lava_floor",
-          "name": "Lava Floor",
-          "description": "Demage - 250dmg / 1",
+          "name": "Lava Floor B",
+          "description": "Demage - 250dmg / 1000",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
           "selectionCount": 1,
           "__comment": "1 / 1s ",
-          "damage": 1,
+          "damage": 250,
           "damage_every": 1000,
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 1,
+          "cooldown": 1000,
           "effectDuration": 10000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
