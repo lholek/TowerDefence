@@ -4,13 +4,14 @@
       "version": "Alpha 0.1.3",
       "relase": "TBC",
       "changes": [
-        "Improved - Gameplay - New ABILITY 'Towers Fury 🏹'",
-        "Improved - Editor - Added ABILITY 'Towers Fury 🏹'",
+        "Improved - Gameplay - New ABILITY 'Tower's Fury 🏹'",
+        "Improved - Editor - Added ABILITY 'Tower's Fury 🏹'",
         "Improved - UI - Added real-time visual timers for both Ability Cooldowns and Active Durations",
         "Improved - UX - Ability selection no longer auto-switches back to the Tower menu",
         "Improved - UI - Towers now show how many tiles they shoot rather then in number",
         "Improved - UI - Ability bar now supports horizontal scrolling (slider) for maps with multiple abilities",
         "TODO: Improve - UX - Editor of Lava Floor (Ability) no longer have Short Description and Usage Text (this items are now generated)",
+        "TODO: Improve - UX - Redesing Lava Floor and Tower's Fury cards",
         "TODO: Improve - Towers Fury (Ability) should not have Short Description and Usage Text in editor this should be generated",
         "TODO: Improve - 4th Adventure Map"
       ]
