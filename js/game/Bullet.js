@@ -49,7 +49,7 @@ export default class Bullet {
         this.damage = 1;
         this.active = true;
 
-        this.maxLifetime = 2500; // 2.5s
+        this.maxLifetime = 4000; // 4s
         this.lived = 0;
 
         this.angle = 0;
