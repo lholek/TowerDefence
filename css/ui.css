@@ -189,6 +189,7 @@
     cursor: pointer;
     flex: 0 0 auto;
     z-index: 101;
+    margin-left: 5px;
 }
 
 .ability-card:hover {
