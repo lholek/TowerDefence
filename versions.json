@@ -16,7 +16,7 @@
         "Improved - Editor - Map - Brush Shape can be set to ■ or ✦ while size is set by number ( min - 1, max 20 )",
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
-        "TODO: Improve - Gameplay - Game - Player can Increse Game speed (x1, x1.5, x2, x3, x5) [Change Delta Time - in loop in Game.js - this.update(deltaTime) * X;]",
+        "TODO: Improve - Gameplay - Game - Player can Increse Game speed (x1, x1.5, x2, x3, x5) [Change Delta Time - in loop in Game.js - this.update(deltaTime) * X;] {Maybe Select ?}",
         "TODO: Improve - 4th Adventure Map"
       ]
     },
