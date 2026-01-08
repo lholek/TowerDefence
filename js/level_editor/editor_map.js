@@ -352,26 +352,22 @@ function handleMapHover(e) {
 
     if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
         
-        // --- 1. Instant Visual Update ---
+        // --- 1. Instant Visual Update (Brush/Ghost Tiles) ---
         if (hoveredTile.r !== row || hoveredTile.c !== col) {
             hoveredTile = { r: row, c: col };
-            renderMap(layout);
+            renderMap(layout); // Re-renders immediately so the brush follows the mouse
         }
 
-        // --- ADD THIS LINE HERE FOR INSTANT UPDATES ---
-        if (coordDisplay) {
-            coordDisplay.textContent = `W: ${col}, H: ${row}`;
-        }
-
-        // --- 2. Delayed Logic (Optional) ---
-        // You can keep this if you want a specific action to happen after stillness,
-        // otherwise, you can delete the clearTimeout and setTimeout lines below.
-        clearTimeout(hoverTimer);
+        // --- 2. Delayed Coordinate Update (50ms) ---
+        clearTimeout(hoverTimer); // Reset the timer every time the mouse moves
         hoverTimer = setTimeout(() => {
-            // Logic for when mouse stops (e.g., showing tile info)
-        }, 500); 
+            if (coordDisplay) {
+                coordDisplay.textContent = `W: ${col}, H: ${row}`;
+            }
+        }, 25); 
 
     } else {
+        // Clear everything if mouse leaves the map area
         clearTimeout(hoverTimer);
         if (coordDisplay) coordDisplay.textContent = "W: -, H: -";
 
