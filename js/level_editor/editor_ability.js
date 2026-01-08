@@ -125,7 +125,7 @@ export const abilityEditor = (() => {
 
                         ${isFury ? `
                             <div class="ability-fury-modifiers">
-                                <p>MODIFIERS</p>
+                                <p>MODIFIERS (1 = 100%)</p>
                                 <label>Dmg Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
                                 <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
                                 <label>Fire Rate <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}"></label>
