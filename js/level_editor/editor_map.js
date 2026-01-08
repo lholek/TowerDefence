@@ -16,6 +16,7 @@ const camera = {
 
 // Global variable to store the position of the currently hovered tile
 let hoveredTile = { r: -1, c: -1 };
+let hoverTimer;
 
 // --- New Drawing State Variables ---
 let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
@@ -341,28 +342,45 @@ export function setupMapInteractions() {
     clampCamera();
 }
 
-
 function handleMapHover(e) {
     const layout = currentLevelData.maps[0].layout;
 
-    // Guard against empty layout
     if (!layout || layout.length === 0 || layout[0].length === 0) return;
 
     const { row, col } = getTileFromScreen(e.clientX, e.clientY, layout.length, layout[0].length);
+    const coordDisplay = document.getElementById('tileCoordinates');
 
     if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
+        
+        // --- 1. Instant Visual Update ---
         if (hoveredTile.r !== row || hoveredTile.c !== col) {
             hoveredTile = { r: row, c: col };
             renderMap(layout);
         }
+
+        // --- ADD THIS LINE HERE FOR INSTANT UPDATES ---
+        if (coordDisplay) {
+            coordDisplay.textContent = `W: ${col}, H: ${row}`;
+        }
+
+        // --- 2. Delayed Logic (Optional) ---
+        // You can keep this if you want a specific action to happen after stillness,
+        // otherwise, you can delete the clearTimeout and setTimeout lines below.
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => {
+            // Logic for when mouse stops (e.g., showing tile info)
+        }, 500); 
+
     } else {
+        clearTimeout(hoverTimer);
+        if (coordDisplay) coordDisplay.textContent = "W: -, H: -";
+
         if (hoveredTile.r !== -1) {
             hoveredTile = { r: -1, c: -1 };
             renderMap(layout);
         }
     }
 }
-
 
 
 // --- Map Rendering (Canvas API) ---
@@ -474,7 +492,10 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
  */
 function createTileKey() {
     let html = `
-        <p>Current Tile: <span id="currentTileDisplay" class="current-tile-display"></span></p>
+        <p>
+            Current Tile: <span id="currentTileDisplay" class="current-tile-display"></span> 
+            | <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
+        </p>
         <div class="tile-options">
     `;
     

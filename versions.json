@@ -11,7 +11,7 @@
         "Improved - UI - Towers now show how many tiles they shoot rather then in number",
         "Improved - UI - Ability bar now supports horizontal scrolling (slider) for maps with multiple abilities",
         "Improved - Editor - Ability - Editor of Lava Floor (Ability) no longer have Short Description and Usage Text (this items are now generated)",
-        "TODO: Improve - Editor - Map - Show cordintes (W: 15, H: 12) on tile wehre players hovers",
+        "Improved - Editor - Map - Show cordintes (X, Y) on tile wehre players hovers",
         "TODO: Improve - Editor - Map - Brush Shape can be set to ■ or ✦ while size is set by number ( min - 1, max 20 )",
         "TODO: Improve - Editor - Map - Only 1 Button for Start that increses and decreses automaticly",
         "TODO: Improve - Editor - Map - Only 1 Button for End that increses and decreses automaticly",
