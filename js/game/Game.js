@@ -541,6 +541,7 @@ async loadGameData(mapSource) {
       const div = document.createElement('div');
       let rangeInBlocks = (tower.range / this.map.tileSize).toFixed(1);
       div.className = 'shop-item';
+      div.style.border = '5px solid transparent';
       div.innerHTML = `
         <div class="name">${tower.name}</div>
         <div>🪙 Price: ${tower.price}</div>
@@ -556,10 +557,10 @@ async loadGameData(mapSource) {
       div.addEventListener('click', () => {
         if (this.selectedTowerType === key) {
           this.selectedTowerType = null;
-          div.style.border = 'none';
+          div.style.border = '5px solid transparent';
         } else {
           this.selectedTowerType = key;
-          shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = 'none');
+          shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = '5px solid transparent');
           div.style.border = `5px solid ${tower.color}`;
         }
       });
