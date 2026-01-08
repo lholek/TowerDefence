@@ -7,43 +7,86 @@
   max-width: 1000px;
   color: #fff;
   max-height: 500px;
-  overflow-y: scroll;
-  /* Custom scrollbar styling */
+  overflow-y: auto; /* Use auto for cleaner behavior */
   scrollbar-width: thin;
-  scrollbar-color: rgb(240, 198, 116) transparent;
+  scrollbar-color: #f0c674 transparent;
 }
 
-/* Webkit scrollbar styles (Chrome, Safari, newer Edge) */
+/* Webkit scrollbar styles */
 #versionPopupContent::-webkit-scrollbar {
   width: 8px;
 }
-
 #versionPopupContent::-webkit-scrollbar-track {
   background: #333;
   border-radius: 4px;
 }
-
 #versionPopupContent::-webkit-scrollbar-thumb {
-  background: #ffd700;
+  background: #f0c674;
   border-radius: 4px;
 }
 
-#versionPopupContent::-webkit-scrollbar-thumb:hover {
-  background: #ffed4a;
-}
-
+/* versionList Section - FIXED */
 #versionList {
   margin-top: 10px;
 }
+
 #versionList h3 {
-  color: gold;
-  margin-bottom: 4px;
+  color: #f0c674;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+  font-size: 1.1rem; /* Adjust to match your preference */
 }
+
 #versionList ul {
-  list-style-type: disc;
-  padding-left: 20px;
-  margin-bottom: 12px;
+  list-style: none;
+  padding: 0;
+  margin-left: 10px; /* Adjusted to give ball room */
 }
+
+#versionList ul li {
+  position: relative;
+  padding-left: 25px;   /* Space between line and text */
+  padding-bottom: 10px; /* Gap between items */
+  border-left: 2px solid #1a1a1a; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix: Remove line after last item AND prevent it from poking out the top */
+#versionList ul li:last-child {
+  border-left-color: transparent;
+}
+
+#versionList ul li::before {
+  content: "";
+  position: absolute;
+  
+  /* PERFECT CENTERING:
+     Line is 2px wide. Dot is 12px wide + 4px border = 16px.
+     Calculation: -(16/2) + (2/2) = -8px + 1px = -7px.
+  */
+  left: -9px; /* Tweaked slightly to account for browser sub-pixel rendering */
+  
+  /* Alignment to text: 
+     Using 'px' here is more stable than 'em' for fixed-size balls. 
+  */
+  top: 2px; 
+    
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a; 
+  border: 2px solid #f0c674;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #f0c674, inset 0 0 4px #f0c674;
+  z-index: 1;
+}
+
+/* Ensure the line starts AT the dot, not above it */
+#versionList ul li:first-child {
+  border-image: linear-gradient(to bottom, transparent 10px, #1a1a1a 10px) 1;
+}
+
+/* Legacy styles below */
 .version-item {
   margin-bottom: 1rem;
 }
@@ -57,17 +100,15 @@
   transition: background-color 0.2s;
 }
 
-/* Special styling for first version - removed bottom border */
 .version-title.first-version {
   cursor: default;
-  color: #ffd700; /* brighter gold for current version */
+  color: #ffd700;
   font-size: 1.2em;
   padding-bottom: 1rem;
   margin-bottom: 1rem;
 }
 
-/* Add top border to non-first versions */
-.version-item:not(:first-child) .version-title {
+.version-item:not(:first-child) {
   border-top: 1px solid #444;
   padding-top: 1rem;
   margin-top: 0.5rem;
@@ -81,7 +122,7 @@
   display: inline-block;
   width: 1.5em;
   user-select: none;
-  color: gold;
+  color: #f0c674;
 }
 
 .version-content {
