@@ -83,6 +83,8 @@ export const towerEditor = (() => {
 
         for (const towerId in towerTypes) {
             const tower = towerTypes[towerId];
+            const TILE_SIZE = 80; // Base size
+            const rangeInTiles = (tower.range / TILE_SIZE).toFixed(1);
             
             // HTML remains the same (it relies on window.app.towerEditor.deleteTower)
             html += `
@@ -97,10 +99,13 @@ export const towerEditor = (() => {
                         <label>🪙 Price <input type="number" name="price" data-key="price" value="${tower.price}" min="0"></label>
                         <label>⚔️ Damage <input type="number" name="demage" data-key="damage" value="${tower.damage}" min="0"></label>
                         <label>🕐 Fire Rate (ms) <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
-                        <label>🎯 Range <input type="number" name="range" data-key="range" value="${tower.range}" min="1"></label>
+                        <label>🎯 Range  
+                            <input type="number" name="range" data-key="range" value="${tower.range}" min="1">
+                            <span class="range-tile-info">(${rangeInTiles} tiles)</span>
+                        </label>
                         <label>🗲 Speed <input type="number" name="speed" data-key="speed" value="${tower.speed}" min="1"></label>
                         <label>💰 Sell Price <input type="number" name="sell_price" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
-                        <label>Color <input type="color" name="color" data-key="color" value="${tower.color}"></label>
+                        <label class="card-body-tower-color">Color <input type="color" name="color" data-key="color" value="${tower.color}"></label>
                     </div>
                 </div>
             `;

@@ -70,6 +70,10 @@
     color: white;
 }
 
+.card-body-tower-color{
+    align-items: center;
+}
+
 .btn-add{
     max-height: 50px;
 }
@@ -84,4 +88,9 @@
 
 .btn-delete:hover {
     background-color: #cc3333 !important;
+}
+
+.range-tile-info{
+    font-size: 0.85em;
+    margin-top: 10px;
 }

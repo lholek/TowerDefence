@@ -14,7 +14,7 @@
           "abilites": "-"
         }
       ],
-      "tileSize": 60,
+      "tileSize": 80,
       "layout": [
         ["X","X","X","X","X","X","X","X","X","X"],
         ["S1","O","X","X","X","O","O","O","O","X"],

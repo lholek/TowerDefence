@@ -13,7 +13,7 @@
           "abilites": "Towers Fury A🏹, Lava Floor B🌋, New towers_fury 3🏹, New towers_fury 4🏹"
         }
       ],
-      "tileSize": 60,
+      "tileSize": 80,
       "layout": [
               ["W","W","W","W","W","W","W","W","W","W","W","W","W"],
               ["W","W","W","W","W","X","X","X","X","X","W","W","W"],

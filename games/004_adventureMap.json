@@ -13,7 +13,7 @@
           "abilites": ""
         }
       ],
-      "tileSize": 60,
+      "tileSize": 80,
       "layout": [
               ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"],
               ["X","X","O","O","O","O","O","O","O","O","O","O","O","O","O","O","X","X"],

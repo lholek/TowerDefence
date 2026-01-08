@@ -43,7 +43,7 @@ const defaultLevelJson = {
                     "abilites": "-"
                 }
             ],
-            "tileSize": 60,
+            "tileSize": 80,
             "layout": [
                 ["-","-","X","X","X","X","X","X","X","-","-"],
                 ["S1","O","O","O","O","O","O","O","O","O","E1"],
