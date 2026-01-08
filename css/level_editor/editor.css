@@ -524,6 +524,32 @@ h2, h3 {
     margin-top: 0 !important;
 }
 
+.me-1{
+    margin-right: 10px !important;
+}
+
+.brushSizeInput{
+    background-color: #967456;
+    padding: 5px;
+    color: #f0f0f0;
+    text-align: center;
+    border-radius: 4px; 
+}
+
+/* For Chrome, Safari, Edge, and Opera */
+.brushSizeInput::-webkit-inner-spin-button,
+.brushSizeInput::-webkit-outer-spin-button {
+    /* Optional: If you want them larger or spaced differently */
+    cursor: pointer;
+}
+
+/* For Firefox */
+/* Note: Firefox doesn't allow direct coloring of arrows easily, 
+   but you can target the behavior */
+.brushSizeInput {
+    scrollbar-color: #f0f0f0 #967456; /* sometimes affects input widgets */
+}
+
 .tileCoordinates{
     margin-left: 10px; 
     color: #ffcc00; /* Gold color for visibility */

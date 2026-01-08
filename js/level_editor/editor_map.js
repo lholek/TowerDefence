@@ -23,51 +23,9 @@ let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
 
-// 1 = Paint, 0 = Ignore
-const BRUSH_SHAPES = {
-    'sq1': {
-        matrix: [[1]],
-        offset: 0 
-    },
-    'sq3': {
-        matrix: [
-            [1, 1, 1],
-            [1, 1, 1],
-            [1, 1, 1]
-        ],
-        offset: 1 // The center is index 1
-    },
-    'sq5': {
-        matrix: [
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1]
-        ],
-        offset: 2
-    },
-    'st3': {
-        matrix: [
-            [0, 1, 0],
-            [1, 1, 1],
-            [0, 1, 0]
-        ],
-        offset: 1
-    },
-    'st5': {
-        matrix: [
-            [0, 0, 1, 0, 0],
-            [0, 1, 1, 1, 0],
-            [1, 1, 1, 1, 1],
-            [0, 1, 1, 1, 0],
-            [0, 0, 1, 0, 0]
-        ],
-        offset: 2
-    }
-};
-
-let currentBrushKey = 'sq1'; // Default
+// --- Dynamic Brush State ---
+let brushShape = 'square'; // 'square' or 'star'
+let brushSize = 1;        // Radius/Size (1 to 20)
 
 // Placeholder for external module references
 export function setModuleReferences(refs) {
@@ -756,31 +714,49 @@ export function updateMapInfo() {
 }
 
 // Brush sizes
+
 /**
- * Returns an array of {r, c} objects representing all tiles affected by the brush
- * centered at (centerR, centerC).
+ * Generates a brush matrix dynamically based on shape and size.
  */
+function getDynamicBrushMatrix(shape, size) {
+    // size 1 = 1x1, size 2 = 3x3, size 3 = 5x5, etc.
+    const side = (size * 2) - 1;
+    const center = size - 1;
+    let matrix = [];
+
+    for (let r = 0; r < side; r++) {
+        matrix[r] = [];
+        for (let c = 0; c < side; c++) {
+            if (shape === 'square') {
+                // Square is always filled
+                matrix[r][c] = 1;
+            } else if (shape === 'star') {
+                // Star/Cross logic: Manhattan distance
+                // Paints if the tile is within 'size' distance from center
+                const dist = Math.abs(r - center) + Math.abs(c - center);
+                matrix[r][c] = dist < size ? 1 : 0;
+            }
+        }
+    }
+    return { matrix, offset: center };
+}
+
+// Update this function to use the dynamic generator
 function getBrushAffectedTiles(centerR, centerC) {
     const mapData = getCurrentMap();
     const rows = mapData.layout.length;
     const cols = mapData.layout[0].length;
     
-    const shape = BRUSH_SHAPES[currentBrushKey];
-    const matrix = shape.matrix;
-    const offset = shape.offset;
+    // Generate matrix based on current global brush state
+    const { matrix, offset } = getDynamicBrushMatrix(brushShape, brushSize);
 
     let tiles = [];
-
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[i].length; j++) {
-            // If the matrix has a 1 at this position
             if (matrix[i][j] === 1) {
-                // Calculate actual map coordinates
-                // i, j are matrix indices. We subtract offset to center them.
                 const targetR = centerR + (i - offset);
                 const targetC = centerC + (j - offset);
 
-                // Boundary Check: Ensure we don't paint outside the map
                 if (targetR >= 0 && targetR < rows && targetC >= 0 && targetC < cols) {
                     tiles.push({ r: targetR, c: targetC });
                 }
@@ -790,18 +766,38 @@ function getBrushAffectedTiles(centerR, centerC) {
     return tiles;
 }
 
-export function setBrush(brushKey) {
-    if (BRUSH_SHAPES[brushKey]) {
-        currentBrushKey = brushKey;
-        
-        // Update UI Button Visuals
-        document.querySelectorAll('.btn-brush').forEach(btn => {
-            btn.classList.remove('active');
-            // Check if button onclick text contains the key (simple hack) 
-            // OR ideally pass 'this' from HTML, but this works:
-            if (btn.getAttribute('onclick').includes(brushKey)) {
-                btn.classList.add('active');
-            }
-        });
+// New Exported setters for the UI
+export function setBrushShape(shape) {
+    brushShape = shape; // Update the logic ( 'square' or 'star' )
+    
+    // --- Graphical Update ---
+    const sqBtn = document.getElementById('btn-brush-square');
+    const stBtn = document.getElementById('btn-brush-star');
+    
+    if (sqBtn && stBtn) {
+        // Remove active class from both
+        sqBtn.classList.remove('active');
+        stBtn.classList.remove('active');
+
+        // Add to the selected one
+        if (shape === 'square') {
+            sqBtn.classList.add('active');
+        } else {
+            stBtn.classList.add('active');
+        }
     }
+    
+    // Force a re-render so the ghost/brush on the map updates immediately
+    renderMap();
+}
+
+export function setBrushSize(size) {
+    // Clamp between 1 and 20
+    brushSize = Math.max(1, Math.min(20, parseInt(size) || 1));
+    
+    // Optional: Sync the input field value if it was changed by clamping
+    const sizeInput = document.getElementById('brushSizeInput');
+    if (sizeInput) sizeInput.value = brushSize;
+
+    renderMap();
 }
