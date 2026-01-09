@@ -75,13 +75,23 @@ export default class Game {
         abilitiesUsed: 0,
         extraLifeBought: 0
     };
+
+    this.gameSpeed = 1; // Default speed
   }
 
-/**
- * Načte herní data mapy buď z URL, nebo z již předaného JSON objektu.
- * @param {string|object} mapSource URL/cesta k souboru mapy, NEBO parsovaný JSON objekt.
- */
-async loadGameData(mapSource) {
+  /**
+   * Nastaví násobitel rychlosti hry, který ovlivňuje rychlost pohybu nepřátel, střelbu věží a časování schopností.
+   * @param {number} multiplier Násobitel rychlosti (např. 1 pro normální, 2 pro dvojnásobnou, 0.5 pro zpomalení).
+   */
+  setSpeed(multiplier) {
+    this.gameSpeed = multiplier;
+  }
+  
+  /**
+   * Načte herní data mapy buď z URL, nebo z již předaného JSON objektu.
+   * @param {string|object} mapSource URL/cesta k souboru mapy, NEBO parsovaný JSON objekt.
+   */
+  async loadGameData(mapSource) {
     let rawData;
 
     // 1. ROZHODNUTÍ O ZDROJI DAT
@@ -248,10 +258,14 @@ async loadGameData(mapSource) {
   }
 
   loop(now) {
-    const deltaTime = now - (this.lastTime || now);
+    // Calculate raw deltaTime
+    const rawDeltaTime = now - (this.lastTime || now);
     this.lastTime = now;
+
     if (!this.paused && this.gameStarted && this.playerLifes > 0) {
-      this.update(deltaTime);
+      // Apply the multiplier here
+      const scaledDeltaTime = rawDeltaTime * this.gameSpeed; 
+      this.update(scaledDeltaTime); 
       this.render();
     }
     requestAnimationFrame(this.loop.bind(this));

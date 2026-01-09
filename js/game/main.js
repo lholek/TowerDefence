@@ -137,8 +137,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Logika tlačítka Start Game (s podporou souboru) ---
     startBtn.addEventListener('click', async () => {
+
+        // Forcing setting GameSpeed to 1x at start
+        if (gameSpeedSelect) {
+            gameSpeedSelect.value = "1";
+        }
+
         const isFileModeActive = modeFileBtn.classList.contains('active-mode');
-        let mapSource; // Může být URL (string) nebo JSON objekt (object)
+        let mapSource;
 
         if (isFileModeActive) {
             // --- REŽIM NAČÍTÁNÍ ZE SOUBORU ---
@@ -171,6 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Vytvořit instanci hry
         game = new Game(canvas);
+
+        game.setSpeed(1);
         
         // Handle pause after leave window (již existující funkce)
         window.addEventListener('blur', pauseOnBlur);
@@ -352,4 +360,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         updateMapPreview(); // ✅ refresh from SELECT
     });
+
+    /* Setting Game speed */
+    if (gameSpeedSelect) {
+        gameSpeedSelect.addEventListener('change', (e) => {
+            const speed = parseFloat(e.target.value);
+            // Změníme rychlost jen pokud instance 'game' už existuje
+            if (game) {
+                game.setSpeed(speed);
+            }
+        });
+    }
+    /* Setting Game speed */
 });

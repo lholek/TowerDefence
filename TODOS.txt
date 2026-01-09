@@ -5,7 +5,6 @@ TODOS:
 + Explosive enemies
 + Ability enemies (10s imunity - no demage (50% chance on spawn), Explosive enemies)
 + heroes like ablity - on the start you will choose hero whit special ablity
-+ all Abilities have duration - PROBLEM 
 + ability leveling
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
