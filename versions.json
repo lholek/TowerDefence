@@ -4,6 +4,7 @@
       "version": "Alpha 0.1.3",
       "relase": "TBC",
       "changes": [
+        "Improved - Gameplay - Game - Player can increse Game speed (x1, x1.5, x2, x3, x5)",
         "Improved - Gameplay - New ABILITY 'Tower's Fury 🏹'",
         "Improved - Editor - Added ABILITY 'Tower's Fury 🏹'",
         "Improved - UI - Added real-time visual timers for both Ability Cooldowns and Active Durations",
@@ -17,7 +18,6 @@
         "Improved - Editor - Map - Brush Shape can be set to ■ or ✦ while size is set by number ( min - 1, max 20 )",
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
-        "TODO: Improve - Gameplay - Game - Player can Increse Game speed (x1, x1.5, x2, x3, x5) - only need to update styles of select",
         "TODO: Improve - 4th Adventure Map"
       ]
     },
