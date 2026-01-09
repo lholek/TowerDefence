@@ -6,7 +6,7 @@
 export const newWaveStructure = {
     "level": 99, 
     "enemies": [
-        {"type": "basic", "count": 10, "health": 200, "speed": 1.5, "path": "S1E1", "interval": 750, "coinReward": 2}
+        {"type": "basic", "count": 10, "health": 200, "speed": 1.5, "path": "S1E1", "interval": 1000, "firstDelay": 0, "coinReward": 2}
     ]
 };
 

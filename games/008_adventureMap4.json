@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "4th Aventure map combining new Tower's Fury Ability whit Lava Floor on super-large Map",
-          "level count": 1,
+          "level count": 3,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "45x25",
           "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋"
@@ -262,6 +262,75 @@
               "interval": 1000,
               "firstDelay": "6000",
               "coinReward": 6
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 150,
+              "speed": 1.05,
+              "path": "S1E4",
+              "interval": 750,
+              "coinReward": 6,
+              "firstDelay": "0"
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 150,
+              "speed": 1.05,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 150,
+              "speed": 1.05,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 150,
+              "speed": 1.05,
+              "path": "S4E3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 150,
+              "speed": 1.05,
+              "path": "S5E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 6
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 750,
+              "coinReward": 2
             }
           ]
         }
