@@ -20,7 +20,7 @@
               ["W","W","W","W","W","X","X","X","W","W","W","W","W","W","W","W","W","W","W","W","X","X","S3","X","X","W","W","W","W","W","W","W","W","W","W","W","W","X","X","X","W","W","W","W","W"],
               ["W","W","W","W","X","X","X","X","X","W","W","W","W","W","W","W","W","W","X","X","X","X","O","X","X","X","X","W","W","W","W","W","W","W","W","W","X","X","X","X","X","W","W","W","W"],
               ["W","W","W","X","X","X","S2","X","X","X","W","W","W","X","X","X","X","X","X","O","O","O","O","O","O","O","X","X","X","X","X","X","W","W","W","X","X","X","S4","X","X","X","W","W","W"],
-              ["W","W","W","W","X","X","O","X","X","W","W","X","X","X","O","O","O","O","O","O","X","-","X","X","X","O","O","O","O","O","O","X","X","X","W","W","X","X","O","X","X","W","W","W","W"],
+              ["W","W","W","W","X","X","O","X","X","W","W","X","X","X","O","O","O","O","O","O","X","X","X","X","X","O","O","O","O","O","O","X","X","X","W","W","X","X","O","X","X","W","W","W","W"],
               ["W","W","W","W","W","X","O","X","W","W","X","X","O","O","O","X","X","-","-","-","-","-","-","-","-","-","-","-","X","X","O","O","O","X","X","W","W","X","O","X","W","W","W","W","W"],
               ["W","W","W","W","W","X","O","O","W","W","X","X","O","X","X","X","-","-","-","E1","-","X","X","X","-","E2","-","-","-","X","X","X","O","X","X","W","W","O","O","X","W","W","W","W","W"],
               ["W","W","W","W","W","X","X","O","O","W","X","X","O","X","X","X","X","X","X","O","X","X","X","X","X","O","X","X","X","X","X","X","O","X","X","W","O","O","X","X","W","W","W","W","W"],
@@ -195,13 +195,73 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 500,
-              "health": 100,
+              "count": 4,
+              "health": 90,
               "speed": 1,
               "path": "S1E1",
               "interval": 1000,
-              "coinReward": 1,
+              "coinReward": 4,
               "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 60,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 90,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 60,
+              "speed": 1,
+              "path": "S4E4",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 90,
+              "speed": 1,
+              "path": "S5E5",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 4
+            },
+            {
+              "type": "fast",
+              "count": 3,
+              "health": 50,
+              "speed": 1.2,
+              "path": "S2E4",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 6
+            },
+            {
+              "type": "fast",
+              "count": 3,
+              "health": 50,
+              "speed": 1.2,
+              "path": "S4E3",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 6
             }
           ]
         }
