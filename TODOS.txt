@@ -11,6 +11,7 @@ TODOS:
 + Camping
   " + bulding time" , " + zvuky stavění"
 + New Ability - 'Lightining strikes, strikes directly enemies'
++ New Ability - 'Swamp'
 
 alpha 0.1.4:
   "?TODO: Add mountins and to the map"
