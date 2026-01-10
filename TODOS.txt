@@ -1,5 +1,5 @@
 TODOS:
-+ price to unlock towers
++ price or time or level to unlock towers
 + UI music
 + Teleports
 + Explosive enemies
@@ -9,8 +9,6 @@ TODOS:
 + multiple block towers
 + boss summoning (Custom bosses send after click, whit some reload 3 per games)
 + Camping
-++ LONG TODO: Sending ways, playing from toher side
-+ 2x speed
   " + bulding time" , " + zvuky stavění"
 + New Ability - 'Lightining strikes, strikes directly enemies'
 
