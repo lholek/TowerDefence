@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "4th Aventure map combining new Tower's Fury Ability whit Lava Floor on super-large Map",
-          "level count": 6,
+          "level count": 7,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "45x25",
           "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋"
@@ -538,7 +538,7 @@
               "count": 5,
               "health": 750,
               "speed": 1.18,
-              "path": "S1E1",
+              "path": "S2E1",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 10
@@ -548,7 +548,7 @@
               "count": 5,
               "health": 750,
               "speed": 1.18,
-              "path": "S1E1",
+              "path": "S3E4",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 10
@@ -558,7 +558,7 @@
               "count": 5,
               "health": 750,
               "speed": 1.18,
-              "path": "S1E1",
+              "path": "S4E2",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 10
@@ -568,7 +568,7 @@
               "count": 5,
               "health": 750,
               "speed": 1.18,
-              "path": "S1E1",
+              "path": "S5E2",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 10
@@ -588,7 +588,7 @@
               "count": 3,
               "health": 500,
               "speed": 1.5,
-              "path": "S1E1",
+              "path": "S2E1",
               "interval": 1000,
               "firstDelay": "7500",
               "coinReward": 11
@@ -598,7 +598,7 @@
               "count": 3,
               "health": 500,
               "speed": 1.5,
-              "path": "S1E1",
+              "path": "S3E4",
               "interval": 1000,
               "firstDelay": "7500",
               "coinReward": 11
@@ -608,7 +608,7 @@
               "count": 3,
               "health": 500,
               "speed": 1.5,
-              "path": "S1E1",
+              "path": "S4E2",
               "interval": 1000,
               "firstDelay": "7500",
               "coinReward": 11
@@ -618,7 +618,7 @@
               "count": 3,
               "health": 500,
               "speed": 1.5,
-              "path": "S1E1",
+              "path": "S5E3",
               "interval": 1000,
               "firstDelay": "7500",
               "coinReward": 11
@@ -626,22 +626,52 @@
             {
               "type": "boss",
               "count": 1,
-              "health": 1000,
-              "speed": 1,
+              "health": 2000,
+              "speed": 0.9,
               "path": "S2E4",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 50
+              "coinReward": 100
             },
             {
               "type": "boss",
               "count": 1,
-              "health": 1000,
-              "speed": 1,
+              "health": 2000,
+              "speed": 0.9,
               "path": "S4E3",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 50
+              "coinReward": 100
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 2000,
+              "speed": 0.9,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 100
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 2000,
+              "speed": 0.9,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 100
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 2000,
+              "speed": 0.9,
+              "path": "S5E1",
+              "interval": 1000,
+              "firstDelay": "12000",
+              "coinReward": 100
             }
           ]
         },
@@ -650,7 +680,102 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 1000,
+              "count": 6,
+              "health": 1000,
+              "speed": 1.2,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 1000,
+              "speed": 1.2,
+              "path": "S3E4",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 1000,
+              "speed": 1.2,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 1000,
+              "speed": 1.2,
+              "path": "S5E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 1000,
+              "speed": 1.2,
+              "path": "S1E5",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "double",
+              "count": 4,
+              "health": 1000,
+              "speed": 1,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 12
+            },
+            {
+              "type": "double",
+              "count": 4,
+              "health": 1000,
+              "speed": 1,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 12
+            },
+            {
+              "type": "double",
+              "count": 4,
+              "health": 1000,
+              "speed": 1,
+              "path": "S4E4",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 12
+            },
+            {
+              "type": "double",
+              "count": 4,
+              "health": 1000,
+              "speed": 1,
+              "path": "S4E4",
+              "interval": 1000,
+              "firstDelay": "10000",
+              "coinReward": 12
+            }
+          ]
+        },
+        {
+          "level": 7,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10000,
               "health": 200,
               "speed": 1.5,
               "path": "S1E1",
