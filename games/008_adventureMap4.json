@@ -611,7 +611,7 @@
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "7500",
-              "coinReward": 1
+              "coinReward": 11
             },
             {
               "type": "fast",
