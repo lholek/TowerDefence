@@ -540,9 +540,13 @@ export default class Game {
   }
   
   updateUI() {
-    this.levelText.textContent = `Level ${this.currentLevelIndex + 1}`;
+    const totalLevels = this.levelData && this.levelData.levels ? this.levelData.levels.length : 0;
+
+    this.levelText.textContent = `Level ${this.currentLevelIndex + 1} / ${totalLevels}`;
+    
     this.lifesText.textContent = `❤️ ${this.playerLifes}`;
     this.coinsText.textContent = `🪙 ${this.playerCoins}`;
+    
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
   }

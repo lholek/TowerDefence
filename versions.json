@@ -13,6 +13,7 @@
         "Improved - UI - Ability bar now supports horizontal scrolling (slider) for maps with multiple abilities",
         "Improved - UI - Updated styles of Versions",
         "Improved - UI - Fixed small visual bug of tower cards",
+        "Improved - UI - Player can see a total number of levels in progress bar while playing",
         "Improved - Editor - Ability - Editor of Lava Floor (Ability) no longer have Short Description and Usage Text (this items are now generated)",
         "Improved - Editor - Map - Show cordintes (X, Y) on tile wehre players hovers",
         "Improved - Editor - Map - Brush Shape can be set to ■ or ✦ while size is set by number ( min - 1, max 20 )",
