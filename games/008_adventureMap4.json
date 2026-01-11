@@ -2,7 +2,6 @@
   "maps": [
     {
       "name": "Adventure Map IV (Spirit's Land)",
-      "_todo": "Otestovat Level 6,7",
       "startingCoins": 100,
       "startingLifes": 5,
       "description": [
