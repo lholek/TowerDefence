@@ -2976,7 +2976,7 @@
             {
               "type": "boss-final-am4",
               "count": 1,
-              "health": 50000000,
+              "health": 20000000,
               "speed": 1,
               "path": "S3E5",
               "interval": 1000,
