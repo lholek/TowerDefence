@@ -7,7 +7,7 @@
       "description": [
         {
           "descriptionText": "4th Aventure map combining new Tower's Fury Ability whit Lava Floor on large Map. More dynamic GamePlay",
-          "level count": 11,
+          "level count": 14,
           "difficulty": "⭐⭐⭐⭐",
           "map_size": "45x25",
           "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋"
@@ -1325,13 +1325,438 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 1000,
-              "health": 200,
-              "speed": 1.5,
+              "count": 6,
+              "health": 4000,
+              "speed": 1.2,
+              "path": "S1E5",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.2,
+              "path": "S5E5",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.2,
+              "path": "S4E3",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.2,
+              "path": "S2E4",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.2,
+              "path": "S3E5",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.85,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.85,
+              "path": "S2E4",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.85,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.85,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 30
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.85,
+              "path": "S5E1",
+              "interval": 1000,
+              "firstDelay": "60000",
+              "coinReward": 30
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 20000,
+              "speed": 0.5,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 400
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 20000,
+              "speed": 0.5,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 400
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 20000,
+              "speed": 0.5,
+              "path": "S4E1",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 400
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 20000,
+              "speed": 0.5,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 400
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 20000,
+              "speed": 0.5,
+              "path": "S5E3",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 400
+            }
+          ]
+        },
+        {
+          "level": 12,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.23,
+              "path": "S1E1",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.23,
+              "path": "S1E1",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.23,
+              "path": "S1E1",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.23,
+              "path": "S1E1",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.23,
+              "path": "S1E1",
+              "interval": "800",
+              "firstDelay": 0,
+              "coinReward": 28
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.65,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 30
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.65,
+              "path": "S2E4",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 30
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.65,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 30
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.65,
+              "path": "S4E3",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 30
+            },
+            {
+              "type": "fast",
+              "count": 5,
+              "health": 3000,
+              "speed": 1.65,
+              "path": "S5E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 30
+            }
+          ]
+        },
+        {
+          "level": 13,
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 12000,
+              "speed": 0.86,
+              "path": "S1E4",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 40
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 12000,
+              "speed": 0.86,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 40
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 12000,
+              "speed": 0.86,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 40
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 12000,
+              "speed": 0.86,
+              "path": "S4E4",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 40
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 12000,
+              "speed": 0.86,
+              "path": "S5E3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 40
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 6000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 35
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 6000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 35
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 6000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 35
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 6000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 35
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 6000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "7000",
+              "coinReward": 35
+            },
+            {
+              "type": "double",
+              "count": 6,
+              "health": 6000,
+              "speed": 1.2,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 42
+            },
+            {
+              "type": "double",
+              "count": 6,
+              "health": 6000,
+              "speed": 1.2,
+              "path": "S3E5",
+              "interval": 1000,
+              "firstDelay": "15000",
+              "coinReward": 42
+            }
+          ]
+        },
+        {
+          "level": 14,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 8000,
+              "speed": 1.25,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": 0,
               "coinReward": 2
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 1
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 1
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 1
+            },
+            {
+              "type": "basic",
+              "count": 1,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 1
             }
           ]
         }
@@ -1339,6 +1764,7 @@
       "enemyTypes": [
         "basic",
         "tank",
+        "super-tank",
         "fast",
         "double",
         "boss"
