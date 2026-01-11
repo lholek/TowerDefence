@@ -77,6 +77,10 @@ export default class Game {
     };
 
     this.gameSpeed = 1; // Default speed
+
+    // Shake the game
+    this.shakeDuration = 0;
+    this.shakeIntensity = 0;
   }
 
   /**
@@ -274,6 +278,11 @@ export default class Game {
   update(deltaTime) {
     // 1. Safety Checks and Timer Update
     if (!this.levelData) return;
+
+    // Shake the game
+    if (this.shakeDuration > 0) {
+        this.shakeDuration -= deltaTime;
+    }
     
     this.elapsedTime += deltaTime;
     this.timeDisplay.textContent = this.formatTime(this.elapsedTime);
@@ -476,20 +485,26 @@ export default class Game {
      const pathKey = config.path || 'S1E1'; 
      const path = this.map.paths[pathKey];
 
-     if (path && path.length > 0) {
-       // Create enemy with the specific path for this group
-       this.enemies.push(new Enemy(
-         this.map, 
-         path, 
-         0, 0, 
-         config.speed, 
-         config.health, 
-         config.coinReward
-       ));
-     } else {
-       // Warn only if we expected a path but didn't find one
-       console.warn(`Path '${pathKey}' not found! Check your map tokens (S#/E#) or JSON.`);
-     }
+     if (config.type === 'boss-final-am4') {
+        this.shakeDuration = 2000; // Shake for 2 seconds (2000ms)
+        this.shakeIntensity = 15;   // Intensity of the shake (15 pixels)
+        this.logEvent("⚠️ <b style='color:red'>THE FINAL BOSS HAS ARRIVED!</b>");
+    }
+
+    if (path && path.length > 0) {
+      // Create enemy with the specific path for this group
+      this.enemies.push(new Enemy(
+        this.map, 
+        path, 
+        0, 0, 
+        config.speed, 
+        config.health, 
+        config.coinReward
+      ));
+    } else {
+      // Warn only if we expected a path but didn't find one
+      console.warn(`Path '${pathKey}' not found! Check your map tokens (S#/E#) or JSON.`);
+    }
   }
 
   setLevel(index) {
@@ -762,6 +777,15 @@ export default class Game {
 
       if (!this.map) return;
 
+      // Shake
+      this.ctx.save(); // Save the clean, centered state
+      if (this.shakeDuration > 0) {
+        this.ctx.save(); // Remember the centered position
+        const dx = (Math.random() - 0.5) * this.shakeIntensity;
+        const dy = (Math.random() - 0.5) * this.shakeIntensity;
+        this.ctx.translate(dx, dy); // Apply the shake
+      }
+
       // Draw the map
       this.map.render(this.ctx);
 
@@ -846,6 +870,9 @@ export default class Game {
       // 3. Reset transform ONCE
       this.map.resetTransform(this.ctx);
 
+      if (this.shakeDuration > 0) {
+          this.ctx.restore(); // Reset the shake so the screen returns to normal
+      }
       // --- END OPTIMIZATION ---
   }
 

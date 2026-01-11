@@ -2923,8 +2923,8 @@
               "count": 10,
               "health": 200000,
               "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
+              "path": "S1E2",
+              "interval": "100",
               "firstDelay": 0,
               "coinReward": 1000
             },
@@ -2933,8 +2933,8 @@
               "count": 10,
               "health": 200000,
               "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
+              "path": "S2E4",
+              "interval": "100",
               "firstDelay": 0,
               "coinReward": 1000
             },
@@ -2943,8 +2943,8 @@
               "count": 10,
               "health": 200000,
               "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
+              "path": "S3E5",
+              "interval": "100",
               "firstDelay": 0,
               "coinReward": 1000
             },
@@ -2953,8 +2953,8 @@
               "count": 10,
               "health": 200000,
               "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
+              "path": "S4E3",
+              "interval": "100",
               "firstDelay": 0,
               "coinReward": 1000
             },
@@ -2963,8 +2963,8 @@
               "count": 10,
               "health": 200000,
               "speed": 1,
-              "path": "S1E1",
-              "interval": 1000,
+              "path": "S5E1",
+              "interval": "100",
               "firstDelay": 0,
               "coinReward": 1000
             }
@@ -2974,7 +2974,7 @@
           "level": 25,
           "enemies": [
             {
-              "type": "boss-final",
+              "type": "boss-final-am4",
               "count": 1,
               "health": 10000000,
               "speed": 1,
