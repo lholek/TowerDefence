@@ -15,3 +15,6 @@ TODOS:
 
 alpha 0.1.4:
   "?TODO: Add mountins and to the map"
+  "?TODO: New Ability - 'Freeze'"
+  "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
+  "TODO: Improve - Editor - Editor can set differnt prices for extra life",
