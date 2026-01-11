@@ -20,8 +20,8 @@
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
         "Improved - Editor - Fixed 'firstDelay' is no longer undefined for empty enemies in new waves 1st item",
-        "TODO: Improve - Gameplay - Custom Life Prices",
-        "TODO: Improve - Editor - Add custom Life Prices",
+        "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
+        "TODO: Improve - Editor - Editor can set differnt prices for extra life",
         "TODO: Improve - 4th Adventure Map"
       ]
     },
