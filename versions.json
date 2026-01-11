@@ -22,7 +22,7 @@
         "Improved - Editor - Fixed 'firstDelay' is no longer undefined for empty enemies in new waves 1st item",
         "TODO: Improve - 4th Adventure Map is finished but needs tests",
         "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
-        "TODO: Improve - PERFORMANCE BOOST "
+        "TODO: Improve - PERFORMANCE BOOST"
       ]
     },
     {
