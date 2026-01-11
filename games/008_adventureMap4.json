@@ -1,7 +1,7 @@
 {
   "maps": [
     {
-      "name": "Adventure Map IV (Spirit's Land) FINAL - NOT TESTED",
+      "name": "Adventure Map IV (Spirit's Land)",
       "startingCoins": 100,
       "startingLifes": 5,
       "description": [
@@ -2976,7 +2976,7 @@
             {
               "type": "boss-final-am4",
               "count": 1,
-              "health": 10000000,
+              "health": 50000000,
               "speed": 1,
               "path": "S3E5",
               "interval": 1000,
