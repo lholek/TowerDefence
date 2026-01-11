@@ -488,7 +488,6 @@ export default class Game {
      if (config.type === 'boss-final-am4') {
         this.shakeDuration = 2000; // Shake for 2 seconds (2000ms)
         this.shakeIntensity = 15;   // Intensity of the shake (15 pixels)
-        this.logEvent("⚠️ <b style='color:red'>THE FINAL BOSS HAS ARRIVED!</b>");
     }
 
     if (path && path.length > 0) {
