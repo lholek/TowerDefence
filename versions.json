@@ -6,6 +6,7 @@
       "changes": [
         "Improved - Gameplay - Game - Player can increse Game speed (x1, x1.5, x2, x3, x5)",
         "Improved - Gameplay - New ABILITY 'Tower's Fury 🏹'",
+        "TODO: Improve - Gameplay - Added option that Enemies shake the screens when they enter (highly recomended to use only few items per game)",
         "Improved - Editor - Added ABILITY 'Tower's Fury 🏹'",
         "Improved - UI - Added real-time visual timers for both Ability Cooldowns and Active Durations",
         "Improved - UX - Ability selection no longer auto-switches back to the Tower menu",
@@ -20,6 +21,7 @@
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
         "Improved - Editor - Fixed 'firstDelay' is no longer undefined for empty enemies in new waves 1st item",
+        "TODO: Improve - Editor - Add option to shake the screen when enemy spawns (highly recomended to use only few items per game)",
         "TODO: Improve - 4th Adventure Map is finished but needs tests",
         "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
         "TODO: Improve - PERFORMANCE BOOST"
