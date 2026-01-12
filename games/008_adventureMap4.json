@@ -3,7 +3,7 @@
     {
       "name": "Adventure Map IV (Spirit's Land)",
       "startingCoins": 100,
-      "startingLifes": 5,
+      "startingLifes": 10000,
       "description": [
         {
           "descriptionText": "4th Aventure map combining new Tower's Fury Ability whit Lava Floor on large Map. More dynamic GamePlay",
@@ -2553,7 +2553,7 @@
               "count": 4,
               "health": 100000,
               "speed": 0.9,
-              "path": "S1E1",
+              "path": "S1E5",
               "interval": "1000",
               "firstDelay": "4000",
               "coinReward": 100
@@ -2563,7 +2563,7 @@
               "count": 4,
               "health": 100000,
               "speed": 0.9,
-              "path": "S1E1",
+              "path": "S2E4",
               "interval": "1000",
               "firstDelay": "4000",
               "coinReward": 100
@@ -2573,7 +2573,7 @@
               "count": 4,
               "health": 100000,
               "speed": 0.9,
-              "path": "S1E1",
+              "path": "S3E5",
               "interval": "1000",
               "firstDelay": "4000",
               "coinReward": 100
@@ -2583,7 +2583,7 @@
               "count": 4,
               "health": 100000,
               "speed": 0.9,
-              "path": "S1E1",
+              "path": "S4E3",
               "interval": "1000",
               "firstDelay": "4000",
               "coinReward": 100
@@ -2593,7 +2593,7 @@
               "count": 4,
               "health": 100000,
               "speed": 0.9,
-              "path": "S1E1",
+              "path": "S5E5",
               "interval": "1000",
               "firstDelay": "4000",
               "coinReward": 100
