@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             vDiv.className = 'version-item';
             const isFirstVersion = index === 0;
             
-            const displayDate = formatVersionDate(v.relase);
+            const displayDate = formatVersionDate(v.release);
             vDiv.innerHTML = `
               <h3 class="version-title ${isFirstVersion ? 'first-version' : ''}">
                 ${isFirstVersion ? '' : '<span class="expand-icon">▶</span>'}
