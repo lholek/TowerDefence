@@ -2,21 +2,22 @@
   "versions": [
     {
       "version": "Alpha 0.1.3",
-      "relase": "TBC",
+      "relase": "2026-01-13",
       "changes": [
-        "Improved - Gameplay - Game - Player can increse Game speed (x1, x1.5, x2, x3, x5)",
+        "Improved - Gameplay - Game - Player can increase Game speed (x1, x1.5, x2, x3, x5)",
         "Improved - Gameplay - New ABILITY 'Tower's Fury 🏹'",
-        "Improved - Gameplay - Added option that Enemies shake the screens when they enter (For now only in 4th Adventure Map)",
+        "Improved - Gameplay - Added option that Enemies shake the screen when they enter (For now only in 4th Adventure Map)",
         "Improved - Editor - Added ABILITY 'Tower's Fury 🏹'",
         "Improved - UI - Added real-time visual timers for both Ability Cooldowns and Active Durations",
         "Improved - UX - Ability selection no longer auto-switches back to the Tower menu",
-        "Improved - UI - Towers now show how many tiles they shoot rather then in number",
+        "Improved - UI - Towers now show how many tiles they shoot rather than as a number",
         "Improved - UI - Ability bar now supports horizontal scrolling (slider) for maps with multiple abilities",
         "Improved - UI - Updated styles of Versions",
+        "Improved - UI - Updated texts of Versions",
         "Improved - UI - Fixed small visual bug of tower cards",
         "Improved - UI - Player can see a total number of levels in progress bar while playing",
-        "Improved - Editor - Ability - Editor of Lava Floor (Ability) no longer have Short Description and Usage Text (this items are now generated)",
-        "Improved - Editor - Map - Show cordintes (X, Y) on tile wehre players hovers",
+        "Improved - Editor - Ability - Editor of Lava Floor (Ability) no longer has Short Description and Usage Text (these items are now generated)",
+        "Improved - Editor - Map - Show coordinates (X, Y) on tile where players hovers",
         "Improved - Editor - Map - Brush Shape can be set to ■ or ✦ while size is set by number ( min - 1, max 20 )",
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
@@ -27,9 +28,9 @@
       "version": "Alpha 0.1.2",
       "relase": "2026-01-02",
       "changes": [
-        "Improved - Story - Added lore later behaind the game (In the menu)",
+        "Improved - Story - Added lore behind the game (In the menu)",
         "Improved - Gameplay - Slightly improved game log",
-        "Improved - Graphics - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localstorage)",
+        "Improved - Graphics - Added option to reduce graphics to low level PC (LOW, HIGH option in menu - stored in localStorage)",
         "Improved - Graphics - Improved Portals, Trees of Life AND Enemies on High settings",
         "Improved - Graphics - Diminished Portals, Trees of Life AND Enemies on Low settings",
         "Improved - UI - New layout of the main menu",
@@ -48,7 +49,7 @@
       "changes": [
         "Improved - Gameplay - Added water to the game",
         "Improved - Gameplay - Added statistics to the end screen (Enemies killed, damage dealt, gold earned, gold spent, towers built, towers sold, time elapsed, enemy leaks, ability uses)",
-        "Improved - Graphics - Removed left column and items redistributed to other sections",
+        "Improved - Graphics - Removed left column and items were redistributed to other sections",
         "Improved - Graphics - Increased map size",
         "Improved - Graphics - Added 'Map Styles' to Game Settings",
         "Improved - Graphics - New 'Map Style': Midnight Sky",
@@ -69,24 +70,24 @@
         "Improved - UI - Added water to the minimap",
         "Improved - UI - Game log now collapsible next to 'Return to Main Menu'",
         "Improved - UI - Music Player moved to the top-ui",
-        "Improved - UI - Improved text for Victory and Defeat screens",
-        "Improved - UI - Improved added date to version log"
+        "Improved - UI - Improved - text for Victory and Defeat screens",
+        "Improved - UI - Improved - added dates to version log"
       ]
     },
     {
       "version": "Alpha 0.1.0",
       "relase": "2025-12-16",
       "changes": [
-        "Improved - Multipath Maps - Maps can have multiple starts and Ends",
+        "Improved - Multipath Maps - Maps can have multiple starts and ends",
         "Improved - Custom enemy delays",
-        "Improved - Extra Live have button next to Tower/Ability Swither now, rather then in Towers",
+        "Improved - 'Extra Life' button is next to Tower/Ability Switcher now, rather then in Towers",
         "Improved - You can use multiple Lava Floors and build maps whit this option",
-        "Improved - Fixed bug - Fix that ability wont run out during pause (vissualy)",
+        "Improved - Fixed bug - Fix that ability wont run out during pause (visually)",
         "Improved - Added Level Editor where you can edit map or build new one",
         "Improved - Added option to load custom levels built in the editor",
-        "Improved - Added 3rd adveture map, whit mutliple paths and multiple Lava Floors",
+        "Improved - Added 3rd adventure map, whit multiple paths and multiple Lava Floors",
         "Improved - Improved Game log",
-        "Improved - Added 2 more backround music",
+        "Improved - Added 2 more background music",
         "UI - Improved CSS"
         ]
     }, 
@@ -96,17 +97,17 @@
       "changes": [
         "Improved - Adapted for any FPS monitors",
         "Improved - Added second ADVENTURE MAP (Islands)",
-        "Improved Map building pahts - prepared for more pahts on 1 map",
-        "Improved performace",
+        "Improved Map building paths - prepared for more paths on 1 map",
+        "Improved performance",
         "Fixed bug - When one music ends another begins",
         "Fixed bug - Loading first item then generate map info or reload",
         "Fixed bug - Loading versions to title from version.json",
-        "UI - make tower div scrollabe",
+        "UI - make tower div scrollable",
         "UI - Added map size to map description",
-        "UI - Redesing of Towers, Bullets, Map",
-        "UI - Redesing of Menu",
+        "UI - Redesign of Towers, Bullets, Map",
+        "UI - Redesign of Menu",
         "UI - Updated 'Version History'",
-        "UI - The Game will pause after player leave the window, and player have to mannualy resume it",
+        "UI - The Game will pause after player leave the window, and player have to manually resume it",
         "UI - Improved CSS"
         ]
     }, 
@@ -114,19 +115,19 @@
       "version": "Alpha 0.0.8",
       "relase": "2025-11-07",
       "changes": [
-        "Improvment - Set basic settings where player can set FPS",
-        "Improvment - Added ABILITY Lava floor 🌋",
-        "Improvment - Added TOWER / ABILITY Switcher",
-        "Improvment - added version history to main menu",
-        "Improvment - you can use wheel on towers",
-        "Improvment - added 'Return to Main Menu' button",
-        "Improvment - added '⭐' for rating difficulty of the map",
-        "Improvment - added '💥' for DPS (demage per second) to tower descrption",
-        "Improvment - added icons for towers",
-        "Improvment - added a minimap where choosing a map so player can see how the game will look",
+        "Improvement - Set basic settings where player can set FPS",
+        "Improvement - Added ABILITY Lava floor 🌋",
+        "Improvement - Added TOWER / ABILITY Switcher",
+        "Improvement - added version history to main menu",
+        "Improvement - you can use wheel on towers",
+        "Improvement - added 'Return to Main Menu' button",
+        "Improvement - added '⭐' for rating difficulty of the map",
+        "Improvement - added '💥' for DPS (damage per second) to tower description",
+        "Improvement - added icons for towers",
+        "Improvement - added a minimap where choosing a map so player can see how the game will look",
         "Fixed bug - fixed texts in versions",
-        "Fixed bug - when pause didnt tirgger sometimes",
-        "Fixed bug - Fix buidling on right tile, also it howers on bad tile",
+        "Fixed bug - when pause didnt trigger sometimes",
+        "Fixed bug - Fix building on right tile, also it hovers over valid tiles",
         "UI - Improved UI",
         "UI - Improved CSS"
         ]
@@ -135,21 +136,21 @@
       "version": "Alpha 0.0.7",
       "relase": "2025-11-01",
       "changes": [
-        "Improvment - Set - dynamic starting Lifes and Coins different for each game",
-        "Improvment - Tiles are now showing color where you can built or not",
-        "Improvment - Tower bar is now scrollable so player can choose from more towers",        
-        "Improvment - Dynamic live prices, so the game is harder",        
-        "Improvment - Music Player - Added more backround music",        
-        "Improvment - Music Player - Player can change time of current music",        
-        "Improvment - Added 4th Map 'The Main Game'",
+        "Improvement - Set - dynamic starting Lives and Coins different for each game",
+        "Improvement - Tiles are now showing color where you can build or not",
+        "Improvement - Tower bar is now scrollable so player can choose from more towers",        
+        "Improvement - Dynamic live prices, so the game is harder",        
+        "Improvement - Music Player - Added more background music",        
+        "Improvement - Music Player - Player can change time of current music",        
+        "Improvement - Added 4th Map 'The Main Game'",
         "Fixed bug - Move map only when pressing wheel not right/left click",
-        "Fixed bug - Player can not leave map to far whit camera",
+        "Fixed bug - Player can not leave map too far with the camera",
         "Fixed bug - set max/min zoom",
-        "Fixed bug - When clicking (clicking outside of the map) NOT on tile dont built tower",
-        "Fixed bug - Under Pause - replace text (P) whit 'Press (P) to continue'",
+        "Fixed bug - When clicking (clicking outside of the map) NOT on tile do not build tower",
+        "Fixed bug - Under Pause - replaced text (P) with 'Press (P) to continue'",
         "Fixed bug - Game doesn't restart on 'Play again' button, but it will go back to main menu",
-        "Fixed bug - When player won, when last enemy removed his live rather then lose",
-        "Fixed bug - Make version div scrollable"
+        "Fixed bug - When player won, when last enemy lost their life rather than lose",
+        "Fixed bug - Version div is now scrollable"
         ]
     }, 
     {
@@ -159,7 +160,7 @@
         "Added Enemy health bars",
         "Added music",
         "Added information about maps",
-        "After win/loss added option to refresh page",
+        "After a win/loss added option to refresh page",
         "Added test Map",
         "Improved UI - Round corners for all divs"
         ]
@@ -168,7 +169,7 @@
       "version": "Alpha 0.0.5",
       "relase": "2025-10-28",
       "changes": [
-        "Changed basic behaviour of the game - now game works trough drag/drop and wheel to so you can move around map",
+        "Changed basic behaviour of the game - now game works through drag/drop and wheel to so you can move around map",
         "Added 3rd map",
         "Prepared for bigger maps",
         "New longMapGame for tests",
@@ -180,7 +181,7 @@
       "relase": "2025-10-28",
       "changes": [
         "Full clickable towers and extra life cards",
-        "Removed resume button; replaced with (P) indicator",
+        "Removed resume button; replaced with the (P) indicator",
         "Added restart button on game over",
         "Added Info section under Game Log",
         "Improved overlay messages for win/loss",
@@ -194,7 +195,7 @@
       "version": "First Alpha",
       "relase": "2025-10-26",
       "changes": [
-        "Game first Alpha version realesed",
+        "Game first Alpha version released",
         "'The Day' when all of this started"
       ] 
     }
