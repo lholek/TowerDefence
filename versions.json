@@ -4,15 +4,15 @@
       "version": "Alpha 0.1.4",
       "release": "-",
       "changes": [
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "Improve - Updates"
+        "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
+        "TODO: Improve - Gameplay - Hot keys (Towers / Abilties)",
+        "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
+        "TODO: Improve - Editor - Editor can set differnt prices for extra life",
+        "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
+        "TODO: Improve - PERFORMANCE BOOST",
+        "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
+        "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
+        "TODO: Improve - Updates"
       ]
     },
     {
