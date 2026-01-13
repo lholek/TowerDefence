@@ -21,7 +21,6 @@
         "Improved - Editor - Tower - Range shows how many tiles the Tower shoots",
         "Improved - Editor - Tower - Center Color in the Editor",
         "Improved - Editor - Fixed 'firstDelay' is no longer undefined for empty enemies in new waves 1st item",
-        "TODO: Improve - 4th Adventure Map is finished but needs tests (1 level changed)",
         "TODO: Improve - PERFORMANCE BOOST"
       ]
     },
