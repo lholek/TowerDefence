@@ -21,6 +21,6 @@ alpha 0.1.4:
   "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
   "TODO: Improve - PERFORMANCE BOOST"
 
-alpha 0.1.5:
+alpha 0.1.4 ???:
   "?TODO: Add mountins and to the map"
   "?TODO: New Ability - 'Freeze'"
