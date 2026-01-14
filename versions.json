@@ -5,10 +5,12 @@
       "release": "-",
       "changes": [
         "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
-        "TODO: Improve - Gameplay - Hot keys (Towers / Abilties)",
+        "TODO: Improve - Gameplay - Hot keys tower panel (Towers (T) / Abilties (A) / Extra Life (E))",
+        "TODO: Improve - Gameplay - Hot keys towers/abilies select tower or ability (Towers (T-12345..(numbers)) / Abilties (A12345..(numbers)))",
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
         "TODO: Improve - Editor - Editor can set differnt prices for extra life",
         "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
+        "TODO: Improve - Menu - Add How to play",
         "TODO: Improve - PERFORMANCE BOOST",
         "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
         "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
