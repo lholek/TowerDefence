@@ -8,6 +8,8 @@
         "TODO: Improve - Gameplay - Hot keys tower panel (Towers (T) / Abilties (A) / Extra Life (E))",
         "TODO: Improve - Gameplay - Hot keys towers/abilies select tower or ability (Towers (T-12345..(numbers)) / Abilties (A12345..(numbers)))",
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
+        "TODO: Improve - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
+        "TODO: Improve - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means",
         "TODO: Improve - Editor - Map - Autoincrement of S1 and E1",
