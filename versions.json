@@ -10,6 +10,7 @@
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
         "TODO: Improve - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
         "TODO: Improve - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
+        "TODO: Improve - Gameplay - Arrows fly directly to the enemy and dont curve (but they can also miss now)",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means",
         "TODO: Improve - Editor - Map - Autoincrement of S1 and E1",
