@@ -4,7 +4,7 @@
       "version": "Alpha 0.1.4",
       "release": "-",
       "changes": [
-        "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
+        "Improved - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
         "TODO: Improve - Gameplay - Hot keys tower panel (Towers (T) / Abilties (A) / Extra Life (E))",
         "TODO: Improve - Gameplay - Hot keys towers/abilies select tower or ability (Towers (T-12345..(numbers)) / Abilties (A12345..(numbers)))",
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
@@ -14,7 +14,8 @@
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means [Do it trough array whit parameters]",
         "Improved - Editor - Map - Editor can not add Starts and Ends (autoincrement - No longer LIMITED to 5)",
-        "TODO: Improve - Editor - Map Information - Editor can set different prices for extra life",
+        "Improved - Editor - Map Information - Editor can disable 'Extra Life' button",
+        "Improved - Editor - Map Information - Editor can set different prices for 'Extra Life'",
         "Improved - Editor - Towers - Add Copy Tower Button",
         "Improved - Editor - Towers - Add DPS of towers",
         "TODO: Improve - Editor - Waves - Enemy Types List - Small cards that can be removed etc.",

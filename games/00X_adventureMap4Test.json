@@ -3002,8 +3002,10 @@
         "boss-pre-final",
         "boss-final"
       ],
-      "extraLife": true,
-      "extraLifePrices": []
+      "extraLife": false,
+      "extraLifePrices": [
+        0
+      ]
     }
   ]
 }
