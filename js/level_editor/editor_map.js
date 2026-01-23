@@ -1,4 +1,4 @@
-import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, getCurrentMap } from './level_data.js';
+import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, getCurrentMap, getNextAvailableMarker } from './level_data.js';
 import { modifyJson } from './json_functions.js';
 
 // Get references to elements (will be imported by main.js)
@@ -180,32 +180,58 @@ function handleZoom(e) {
  */
 function applyTileToCurrentPosition(screenX, screenY, tileType) {
     const layout = currentLevelData.maps[0].layout;
-    if (!layout || layout.length === 0) return false; 
+    if (!layout || layout.length === 0) return false;
 
-    // 1. Get the "Center" tile coordinates
+    // If we are placing a Start or End, and we have already drawn something 
+    // during this specific click-and-hold session, STOP.
+    const isMarker = tileType.startsWith('S') || tileType.startsWith('E');
+    if (isMarker && hasDrawn) {
+        return false; 
+    }
+
     const { row, col } = getTileFromScreen(screenX, screenY, layout.length, layout[0].length);
-    
-    // 2. Get ALL tiles affected by the brush (Square, Star, etc.)
     const tilesToPaint = getBrushAffectedTiles(row, col);
 
     let changed = false;
+    let needsSRefresh = false;
+    let needsERefresh = false;
 
-    // 3. Loop through every affected tile
     tilesToPaint.forEach(tile => {
-        // Double check bounds (getBrushAffectedTiles handles it, but safety first)
         if (tile.r >= 0 && tile.r < layout.length && tile.c >= 0 && tile.c < layout[0].length) {
-            
-            // Only update if the tile is actually different
-            if (layout[tile.r][tile.c] !== tileType) {
-                currentLevelData.maps[0].layout[tile.r][tile.c] = tileType;
+            const oldTile = String(layout[tile.r][tile.c]);
+            let tileToPlace = tileType;
+
+            if (tileType.startsWith('S')) {
+                tileToPlace = getNextAvailableMarker('S');
+            } else if (tileType.startsWith('E')) {
+                tileToPlace = getNextAvailableMarker('E');
+            }
+
+            // Standard placement logic
+            if (oldTile !== tileToPlace) {
+                // Prevent overwriting a different S with an S, or E with an E
+                // This stops the "machine gun" effect even for big brushes
+                const overwritingSameCategory = 
+                    (oldTile.startsWith('S') && tileToPlace.startsWith('S')) ||
+                    (oldTile.startsWith('E') && tileToPlace.startsWith('E'));
+                
+                if (overwritingSameCategory) return;
+
+                layout[tile.r][tile.c] = tileToPlace;
                 changed = true;
+
+                if (tileToPlace.startsWith('S') || oldTile.startsWith('S')) needsSRefresh = true;
+                if (tileToPlace.startsWith('E') || oldTile.startsWith('E')) needsERefresh = true;
             }
         }
     });
 
     if (changed) {
-        hasDrawn = true;
-        renderMap(layout); // Re-render immediately
+        hasDrawn = true; // This prevents the next "move" event from placing another marker
+        if (needsSRefresh) setCurrentTileType('REFRESH_S');
+        if (needsERefresh) setCurrentTileType('REFRESH_E');
+
+        renderMap(layout);
         return true;
     }
     return false;
@@ -556,61 +582,50 @@ export function toggleMapVisibility() {
  */
 export function checkMapValidity() {
     const data = currentLevelData;
-
-    // 1. Check basic structure 
     const layout = data.maps[0].layout;
-    if (!layout || layout.length === 0 || layout[0].length === 0) {
-        setStatus('Map layout is empty or invalid.', true);
-        return;
-    }
 
-    // 2. Find all start and end points
-    const startPoints = [];
-    const endPoints = [];
-    const rows = layout.length;
-    const cols = layout[0].length;
+    const starts = new Map(); // Store as { id: {r, c} }
+    const ends = new Map();
 
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
+    // 1. Collect all points
+    for (let r = 0; r < layout.length; r++) {
+        for (let c = 0; c < layout[r].length; c++) {
             const tile = layout[r][c];
-            if (tile.startsWith('S')) {
-                startPoints.push({ type: tile, r, c });
-            } else if (tile.startsWith('E')) {
-                endPoints.push({ type: tile, r, c });
-            }
+            if (tile.startsWith('S')) starts.set(tile.substring(1), {r, c, type: tile});
+            if (tile.startsWith('E')) ends.set(tile.substring(1), {r, c, type: tile});
         }
     }
 
-    if (startPoints.length === 0 || endPoints.length === 0) {
-        setStatus('Map Check: No Start (S) or End (E) points found.', true);
+    if (starts.size === 0 || ends.size === 0) {
+        setStatus('Map Check: Needs at least one S and one E.', true);
         return;
     }
 
-    // 3. Check path feasibility for every unique path (e.g., S1 -> E1)
-    const requiredPaths = new Set(startPoints.map(s => s.type.substring(1)));
+    let errors = [];
 
-    let allPathsValid = true;
-    const invalidPaths = [];
-
-    requiredPaths.forEach(pathNumber => {
-        const start = startPoints.find(p => p.type === `S${pathNumber}`);
-        const end = endPoints.find(p => p.type === `E${pathNumber}`);
-
-        if (start && end) {
-            if (!findPath(layout, start, end)) {
-                allPathsValid = false;
-                invalidPaths.push(`${start.type} -> ${end.type} (No Path)`);
+    // 2. Check if every Start has a matching End
+    starts.forEach((pos, id) => {
+        if (!ends.has(id)) {
+            errors.push(`Missing End (E${id}) for Start S${id}`);
+        } else {
+            // 3. Check physical pathing
+            if (!findPath(layout, pos, ends.get(id))) {
+                errors.push(`No path possible from S${id} to E${id}`);
             }
-        } else if (start || end) {
-             allPathsValid = false;
-             invalidPaths.push(`Missing pair for ${start ? start.type : end.type}`);
         }
     });
 
-    if (allPathsValid) {
-        setStatus('Map Check Successful! All required paths are connected.', false);
+    // 4. Check for "Dangling" ends (End with no Start)
+    ends.forEach((pos, id) => {
+        if (!starts.has(id)) {
+            errors.push(`End E${id} has no matching Start S${id}`);
+        }
+    });
+
+    if (errors.length === 0) {
+        setStatus(`Map Valid! Total paths: ${starts.size}`, false);
     } else {
-        setStatus(`Map Check Failed. Invalid/Missing paths: ${invalidPaths.join(', ')}`, true);
+        setStatus(`Map Errors: ${errors.join(' | ')}`, true);
     }
 }
 

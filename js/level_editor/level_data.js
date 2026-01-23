@@ -101,7 +101,7 @@ export function getCurrentMap() {
     return currentLevelData.maps[0];
 }
 export let currentTileType = 'O'; 
-export const tileTypes = ['-', 'O', 'X', 'W','S1', 'S2', 'S3', 'S4', 'S5', 'E1', 'E2', 'E3', 'E4', 'E5']; 
+export const tileTypes = ['-', 'O', 'X', 'W','S', 'E']; 
 
 /**
  * FIX: Renamed from setCurrentLevelData to updateCurrentLevelData
@@ -118,7 +118,39 @@ export function updateCurrentLevelData(data) {
     return false;
 }
 
-// Old setter function (renamed above, but keeping setter logic for the tile type)
+export function getNextAvailableMarker(prefix) {
+    const layout = currentLevelData.maps[0].layout;
+    const foundNumbers = new Set();
+
+    layout.forEach(row => {
+        row.forEach(tile => {
+            if (typeof tile === 'string' && tile.startsWith(prefix)) {
+                const match = tile.match(/\d+/);
+                if (match) foundNumbers.add(parseInt(match[0], 10));
+            }
+        });
+    });
+
+    let nextNum = 1;
+    while (foundNumbers.has(nextNum)) {
+        nextNum++;
+    }
+    return `${prefix}${nextNum}`;
+}
+
 export function setCurrentTileType(type) {
-    currentTileType = type;
+    // Determine what category we are currently holding
+    const isHoldingS = typeof currentTileType === 'string' && currentTileType.startsWith('S');
+    const isHoldingE = typeof currentTileType === 'string' && currentTileType.startsWith('E');
+
+    if (type === 'S' || (type === 'REFRESH_S' && isHoldingS)) {
+        currentTileType = getNextAvailableMarker('S');
+    } 
+    else if (type === 'E' || (type === 'REFRESH_E' && isHoldingE)) {
+        currentTileType = getNextAvailableMarker('E');
+    } 
+    else if (!type.startsWith('REFRESH_')) {
+        // Only update if it's a real tile selection (O, X, -, etc), not a refresh signal
+        currentTileType = type;
+    }
 }
