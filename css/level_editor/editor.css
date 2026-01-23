@@ -555,3 +555,9 @@ h2, h3 {
     color: #ffcc00; /* Gold color for visibility */
     font-size: 18px;
 }
+
+.tileDrawingPanel{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
