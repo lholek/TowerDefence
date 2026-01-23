@@ -1,7 +1,7 @@
 {
   "maps": [
     {
-      "name": "Adventure Map IV (Spirit's Land)",
+      "name": "Testing",
       "startingCoins": 100,
       "startingLifes": 5,
       "description": [
@@ -3000,6 +3000,11 @@
         "boss-snake",
         "boss-pre-final",
         "boss-final"
+      ],
+      "extraLife": true,
+      "extraLifePrices": [
+        10,
+        0
       ]
     }
   ]

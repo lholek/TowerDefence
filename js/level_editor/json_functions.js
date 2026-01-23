@@ -413,6 +413,29 @@ export function updateBasicInfoUI() {
     setVal('levelCountDisplay', desc["level count"] || 0);
     setVal('towerTypesDisplay', desc["tower types"] || 0);
     setVal('abilitiesDisplay', desc.abilites || "-");
+
+    // --- IMPROVED EXTRA LIFE LOGIC ---
+    const extraLifeCb = document.getElementById('extraLifeCheckbox');
+    const extraLifeInput = document.getElementById('extraLifePricesInput');
+
+    // 1. Determine Logic: Default to TRUE if undefined
+    const isExtraLifeEnabled = (map.extraLife !== undefined) ? map.extraLife : true;
+    
+    // 2. Determine Prices: Use JSON data or Default Fallback
+    const currentPrices = (map.extraLifePrices && map.extraLifePrices.length > 0) 
+        ? map.extraLifePrices 
+        : [10, 25, 50, 75, 100, 150, 200];
+
+    // 3. Update UI Elements
+    if (extraLifeCb) {
+        extraLifeCb.checked = isExtraLifeEnabled;
+    }
+
+    if (extraLifeInput) {
+        extraLifeInput.value = currentPrices.join(', '); // Fill the input
+        extraLifeInput.disabled = !isExtraLifeEnabled;   // Disable if unchecked
+    }
+    // ---------------------------------
 }
 
 // --- NEW EXPORT UTILITIES ---
@@ -470,4 +493,45 @@ export function exportLevelData() {
         // Use the imported setStatus from the modules reference
         modules.setStatus(`Export FAILED. Check the console for errors.`, true); 
     }
+}
+
+/**
+ * Updates the 'extraLife' boolean.
+ */
+// In js/level_editor/json_functions.js
+
+export function updateExtraLife(isChecked) {
+    // 1. Update JSON
+    modifyJson((data) => {
+        data.maps[0].extraLife = isChecked;
+        
+        // Optional: If checked but no prices exist yet, write the defaults to JSON immediately
+        if (isChecked && (!data.maps[0].extraLifePrices || data.maps[0].extraLifePrices.length === 0)) {
+            data.maps[0].extraLifePrices = [10, 25, 50, 75, 100, 150, 200];
+        }
+    }, `Extra Life enabled set to ${isChecked}.`);
+
+    // 2. Toggle the Input Field UI immediately
+    const priceInput = document.getElementById('extraLifePricesInput');
+    if (priceInput) {
+        priceInput.disabled = !isChecked;
+        
+        // If we just enabled it and the field was empty, fill it with defaults for UX
+        if (isChecked && priceInput.value.trim() === '') {
+             priceInput.value = "10, 25, 50, 75, 100, 150, 200";
+        }
+    }
+}
+/**
+ * Updates the 'extraLifePrices' array from a string.
+ */
+export function updateExtraLifePrices(valueString) {
+    // Allow spaces after commas
+    const pricesArray = valueString.split(',')
+        .map(num => parseInt(num.trim()))
+        .filter(num => !isNaN(num)); // Remove empty or text entries
+
+    modifyJson((data) => {
+        data.maps[0].extraLifePrices = pricesArray;
+    }, `Extra Life prices updated: [${pricesArray.join(', ')}]`);
 }

@@ -91,6 +91,20 @@
                             <input type="number" id="startingLifesInput" value="1" min="1"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', parseInt(this.value))">
                         </div>
+                        <div class="input-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="extraLifeCheckbox" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
+                                Enable Extra Life Button
+                            </label>
+                        
+                            <label>
+                                Price Progression (comma separated):
+                                <input type="text" id="extraLifePricesInput" 
+                                       placeholder="e.g. 10, 25, 50" 
+                                       onchange="window.app.jsonFunctions.updateExtraLifePrices(this.value)">
+                            </label>
+                            <small style="color: #888;">The last price will repeat indefinitely.</small>
+                        </div>
                     </div>
 
                     <h3 class="mt-4">Map Description</h3>

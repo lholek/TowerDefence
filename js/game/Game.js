@@ -127,7 +127,8 @@ export default class Game {
     this.playerCoins = this.levelData.startingCoins ?? 10;
     this.playerLifes = this.levelData.startingLifes ?? 10;
     this.towerTypes = this.levelData.towerTypes || {};
-    
+    this.lifePurchaseCount = 0;
+
     // 3. NAČTENÍ MAPY A SCHOPNOSTÍ
     // Předpokládáme, že Map.js má metodu loadMap nebo je inicializován v konstruktoru
     // Vycházím z vaší původní logiky: this.loadMap(this.levelData.layout);
@@ -721,53 +722,69 @@ export default class Game {
   }
 
   createLifePurchaseButton() {
-    // Ensure the container for the new button exists. 
     const container = document.getElementById('lifeButtonContainer');
-    if (!container) return; // Exit if container not found
+    if (!container) return;
     
-    // 🌟 FIX: Clear the container before adding a new button
-    container.innerHTML = ''; 
-    // --------------------------------------------------------
+    container.innerHTML = '';
+
+    // 1. Check if Extra Life is enabled (Default to true if missing)
+    const isEnabled = this.levelData.extraLife !== false; 
     
-    // --- Ensure lifePrice is initialized ---
-    if (typeof this.lifePrice === 'undefined') {
-      this.lifePrice = 10; // starting price
+    if (!isEnabled) {
+        // If disabled, just exit. The container is already cleared.
+        return; 
     }
 
+    // 2. Get Prices Configuration
+    // Use config from JSON, or fallback to your hardcoded defaults
+    const prices = (this.levelData.extraLifePrices && this.levelData.extraLifePrices.length > 0) 
+        ? this.levelData.extraLifePrices 
+        : [10, 25, 50, 75, 100, 150, 200];
+
+    // Helper to calculate current price
+    const getCurrentPrice = () => {
+        // Logic: if purchase count exceeds array length, keep using the LAST item
+        const index = Math.min(this.lifePurchaseCount, prices.length - 1);
+        return prices[index];
+    };
+
+    // Initialize current price
+    if (typeof this.lifePurchaseCount === 'undefined') this.lifePurchaseCount = 0;
+    let currentPrice = getCurrentPrice();
+
     const lifeButton = document.createElement('button');
-    // ... rest of the function remains the same ...
     lifeButton.id = 'extraLifeBtn';
     lifeButton.className = 'switch-btn life-purchase-btn';
-
-    // The initial display must be set when the button is created
-    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
+    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice})`;
 
     container.appendChild(lifeButton);
 
     lifeButton.addEventListener('click', () => {
-      if (this.playerCoins >= this.lifePrice) {
-        this.playerCoins -= this.lifePrice;
-        this.playerLifes += 1;
-        this.stats.extraLifeBought += 1;
-        this.stats.goldSpent += this.lifePrice;
-        this.updateUI();
-        this.logEvent(`Player bought 1 life ❤️ for ${this.lifePrice} 🪙`);
-      
-        // --- Price progression logic ---
-        const nextPrices = [10, 25, 50, 75, 100, 150, 200];
-        const currentIndex = nextPrices.indexOf(this.lifePrice);
+        // Recalculate price in case logic changes, though local variable works too
+        currentPrice = getCurrentPrice();
 
-        if (currentIndex !== -1 && currentIndex < nextPrices.length - 1) {
-          this.lifePrice = nextPrices[currentIndex + 1];
+        if (this.playerCoins >= currentPrice) {
+            this.playerCoins -= currentPrice;
+            this.playerLifes += 1;
+            
+            // Increment counters
+            this.stats.extraLifeBought += 1;
+            this.lifePurchaseCount += 1; 
+            
+            this.stats.goldSpent += currentPrice;
+            
+            // Update UI
+            this.updateUI();
+            this.logEvent(`Player bought 1 life ❤️ for ${currentPrice} 🪙`);
+
+            // CALCULATE NEXT PRICE
+            // We incremented lifePurchaseCount, so getCurrentPrice() now returns the NEXT tier
+            currentPrice = getCurrentPrice();
+            lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice})`;
+
         } else {
-          this.lifePrice = 200; // cap at 200
+            this.logEvent('Not enough coins to buy Extra life!');
         }
-      
-        // --- Update the button's displayed price ---
-        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${this.lifePrice})`;
-      } else {
-        this.logEvent('Not enough coins to buy Extra life!');
-      }
     });
   }
 
