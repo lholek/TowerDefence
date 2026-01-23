@@ -124,7 +124,7 @@ export function modifyJson(modifyFn, successMessage) {
     const height = layout.length;
     currentLevelData.maps[0].description[0].map_size = `${width}x${height}`;
     currentLevelData.maps[0].description[0]["level count"] = currentLevelData.maps[0].levels.length;
-    currentLevelData.maps[0].description[0]["tower types"] = currentLevelData.maps[0].towerTypes.length;
+    currentLevelData.maps[0].description[0]["tower types"] = Object.keys(currentLevelData.maps[0].towerTypes || {}).length;
     currentLevelData.maps[0].description[0]["abilites"] = currentLevelData.maps[0].abilities.map(x=>x.name+x.ui.icon).join(", ");
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
@@ -145,7 +145,9 @@ export function modifyJson(modifyFn, successMessage) {
     if (modules.abilityEditor && typeof modules.abilityEditor.renderAbilityRepeater === 'function') {
         modules.abilityEditor.renderAbilityRepeater(currentLevelData.maps[0].abilities || []);
     }
-    
+    // ✅ Ensure basic info fields (like extra life) refresh after any change
+    updateBasicInfoUI();
+
     // FIX 3: Return a resolved Promise to support async/await from caller functions (like deleteTower/deleteAbility).
     return Promise.resolve(true);
 }
@@ -179,6 +181,9 @@ export function updateMapFromEditor() {
             modules.setStatus('Error: Failed to update internal data structure.', true);
             return;
         }
+
+        // 2.5 UpdateBasicUiInfo
+        updateBasicInfoUI();
         
         const mapData = currentLevelData.maps[0]; 
 
@@ -421,10 +426,8 @@ export function updateBasicInfoUI() {
     // 1. Determine Logic: Default to TRUE if undefined
     const isExtraLifeEnabled = (map.extraLife !== undefined) ? map.extraLife : true;
     
-    // 2. Determine Prices: Use JSON data or Default Fallback
-    const currentPrices = (map.extraLifePrices && map.extraLifePrices.length > 0) 
-        ? map.extraLifePrices 
-        : [10, 25, 50, 75, 100, 150, 200];
+    // 2. Determine Prices: Use JSON data. Default to empty string if no prices set yet
+    const currentPrices = map.extraLifePrices || [];
 
     // 3. Update UI Elements
     if (extraLifeCb) {
@@ -432,7 +435,8 @@ export function updateBasicInfoUI() {
     }
 
     if (extraLifeInput) {
-        extraLifeInput.value = currentPrices.join(', '); // Fill the input
+        // Only join if it's an array with items
+        extraLifeInput.value = (Array.isArray(currentPrices) && currentPrices.length > 0) ? currentPrices.join(', ') : ""; 
         extraLifeInput.disabled = !isExtraLifeEnabled;   // Disable if unchecked
     }
     // ---------------------------------
@@ -501,6 +505,17 @@ export function exportLevelData() {
 // In js/level_editor/json_functions.js
 
 export function updateExtraLife(isChecked) {
+
+    const priceInput = document.getElementById('extraLifePricesInput');
+    if (priceInput) {
+        priceInput.disabled = !isChecked;
+        
+        // If we just enabled it and the field was empty, fill it with defaults for UX
+        if (isChecked && priceInput.value.trim() === '') {
+             priceInput.value = "10, 25, 50, 75, 100, 150, 200";
+        }
+    }
+
     // 1. Update JSON
     modifyJson((data) => {
         data.maps[0].extraLife = isChecked;
@@ -511,16 +526,6 @@ export function updateExtraLife(isChecked) {
         }
     }, `Extra Life enabled set to ${isChecked}.`);
 
-    // 2. Toggle the Input Field UI immediately
-    const priceInput = document.getElementById('extraLifePricesInput');
-    if (priceInput) {
-        priceInput.disabled = !isChecked;
-        
-        // If we just enabled it and the field was empty, fill it with defaults for UX
-        if (isChecked && priceInput.value.trim() === '') {
-             priceInput.value = "10, 25, 50, 75, 100, 150, 200";
-        }
-    }
 }
 /**
  * Updates the 'extraLifePrices' array from a string.

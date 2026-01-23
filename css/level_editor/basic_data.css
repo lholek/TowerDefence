@@ -8,7 +8,6 @@
 
 .input-row .input-group {
     flex-grow: 1;
-    min-width: 100px; /* Ensure fields aren't too small */
 }
 
 /* For fields that need more columns */

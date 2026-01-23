@@ -10,7 +10,8 @@
           "level count": 25,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "45x25",
-          "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋"
+          "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋",
+          "tower types": 8
         }
       ],
       "tileSize": 80,
@@ -3002,10 +3003,7 @@
         "boss-final"
       ],
       "extraLife": true,
-      "extraLifePrices": [
-        10,
-        0
-      ]
+      "extraLifePrices": []
     }
   ]
 }
