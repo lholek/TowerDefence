@@ -34,8 +34,15 @@ h2, h3 {
     text-align: center;
 }
 
-.subtitle { 
-    font-size: 18px;
+.subtitle {
+    font-size: 1.2rem;
+    background-color: rgb(139, 69, 19);
+    margin: 0 auto;
+    text-align: center;
+    padding: 0.5rem;
+    width: max-content;
+    border: none;
+    border-radius: 6px;
 }
 
 .editor-body {
