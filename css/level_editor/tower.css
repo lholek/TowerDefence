@@ -86,6 +86,10 @@
     font-size: 1rem;
 }
 
+.btn-padding-buttons{
+    padding: 5px 10px;
+}
+
 .btn-delete:hover {
     background-color: #cc3333 !important;
 }

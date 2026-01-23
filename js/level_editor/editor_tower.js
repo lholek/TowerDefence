@@ -49,11 +49,6 @@ function getNextTowerId() {
  */
 function reIndexTowerIds(towerTypes) {
     const newTowerTypes = {};
-    const oldTowers = Object.values(towerTypes); // Get the tower objects, lose the old IDs
-
-    // Sort by old ID keys to maintain user order preference, then assign new IDs
-    // NOTE: This relies on Object.keys being implicitly sorted for the numeric keys, 
-    // but Object.values() discards that order. We must manually sort.
     const sortedKeys = Object.keys(towerTypes).sort();
     const sortedTowers = sortedKeys.map(key => towerTypes[key]);
     
@@ -64,7 +59,6 @@ function reIndexTowerIds(towerTypes) {
 
     return newTowerTypes;
 }
-
 
 export const towerEditor = (() => {
     
@@ -85,14 +79,20 @@ export const towerEditor = (() => {
             const tower = towerTypes[towerId];
             const TILE_SIZE = 80; // Base size
             const rangeInTiles = (tower.range / TILE_SIZE).toFixed(1);
+
+            // Formula: Damage / (FireRate in seconds)
+            const dps = tower.fireRate > 0 ? ((tower.damage / tower.fireRate) * 1000).toFixed(1) : 0;
             
-            // HTML remains the same (it relies on window.app.towerEditor.deleteTower)
             html += `
                 <div class="tower-card box" data-tower-id="${towerId}">
                     <div class="card-header">
                         <input type="text" class="input-tower-id input-small" value="${towerId}" placeholder="ID" disabled>
                         <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
-                        <button class="btn btn-delete btn-delete-tower" data-delete-id="${towerId}">X</button>
+                        <span class="badge-dps">⚡ DPS: ${dps}</span>
+                        <div class="header-actions">
+                            <button class="btn btn-copy btn-copy-tower btn-padding-buttons" data-copy-id="${towerId}" title="Copy Tower">📋</button>
+                            <button class="btn btn-delete btn-delete-tower btn-padding-buttons" data-delete-id="${towerId}">X</button>
+                        </div>
                     </div>
                     
                     <div class="card-body">
@@ -114,24 +114,33 @@ export const towerEditor = (() => {
         contentContainer.innerHTML = html;
         attachChangeListeners();
         attachDeleteListeners();
+        attachCopyListeners();
     };
 
-    // NEW: Function to attach delete listeners (Moved up for proper scope)
+    // --- Event Listeners ---
+
     const attachDeleteListeners = () => {
         if (!contentContainer) return;
-
         contentContainer.querySelectorAll('.btn-delete-tower').forEach(button => {
-            button.addEventListener('click', async (e) => { // ADD async
-                const towerId = e.target.getAttribute('data-delete-id');
-                await deleteTower(towerId); // ADD await
+            button.addEventListener('click', async (e) => {
+                const towerId = e.currentTarget.getAttribute('data-delete-id');
+                await deleteTower(towerId);
             });
         });
     };
 
-    // 1. Function to handle saving changes
+    const attachCopyListeners = () => {
+        if (!contentContainer) return;
+        contentContainer.querySelectorAll('.btn-copy-tower').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const towerId = e.currentTarget.getAttribute('data-copy-id');
+                copyTower(towerId);
+            });
+        });
+    };
+
     const attachChangeListeners = () => {
         if (!contentContainer) return; 
-
         contentContainer.querySelectorAll('input:not(.input-tower-id)').forEach(input => {
             input.addEventListener('change', (e) => {
                 const card = e.target.closest('.tower-card');
@@ -141,52 +150,51 @@ export const towerEditor = (() => {
                 
                 modifyJson((data) => {
                     data.maps[0].towerTypes[towerId][key] = value;
+                    // Re-render to update the DPS badge and Tile Range info
+                    renderTowerRepeater(data.maps[0].towerTypes);
                 }, `Tower ${towerId}: ${key} updated.`);
             });
         });
     };
 
-    // 2. Function to add a new tower
+    // --- Logic Functions ---
+
     const addTower = () => {
-        // Calculate the ID here to use it for both the data and the status message.
         const newId = getNextTowerId(); 
-        
         modifyJson((data) => {
             const newTower = JSON.parse(JSON.stringify(newTowerStructure));
-            // Use the determined new ID in the name for immediate clarity
             newTower.name = `New Tower ${newId}`; 
-
             data.maps[0].towerTypes[newId] = newTower;
-            
-            // No need to re-index when adding, just re-render
             renderTowerRepeater(data.maps[0].towerTypes);
-
-        }, `New tower added with ID: ${newId}`); // CORRECTED: Use the calculated newId
+        }, `New tower added with ID: ${newId}`);
     };
 
-    // 3. Function to delete a tower (FIXED WITH CUSTOM CONFIRM & RE-ID)
+    const copyTower = (towerId) => {
+        const originalTower = currentLevelData.maps[0].towerTypes[towerId];
+        const newId = getNextTowerId();
+
+        modifyJson((data) => {
+            const towerCopy = JSON.parse(JSON.stringify(originalTower));
+            towerCopy.name = `${originalTower.name} (Copy)`;
+            
+            data.maps[0].towerTypes[newId] = towerCopy;
+            renderTowerRepeater(data.maps[0].towerTypes);
+        }, `Tower ${towerId} copied to ${newId}`);
+    };
+
     const deleteTower = async (towerId) => {
         const towerName = currentLevelData.maps[0].towerTypes[towerId].name;
-        
         const confirmed = await customConfirm(
             "Confirm Deletion",
             `Are you sure you want to delete Tower ${towerId}: ${towerName}? This will re-index all subsequent tower IDs.`
         );
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
         
         await modifyJson((data) => {
-            // 1. Delete the tower
             delete data.maps[0].towerTypes[towerId];
-
-            // 2. Re-index all remaining towers
             data.maps[0].towerTypes = reIndexTowerIds(data.maps[0].towerTypes);
-
-            // 3. Re-render the repeater to reflect the deletion and new IDs
             renderTowerRepeater(data.maps[0].towerTypes);
-            
         }, `Tower ${towerId} (${towerName}) deleted and IDs re-indexed.`);
     };
 
@@ -194,5 +202,6 @@ export const towerEditor = (() => {
         renderTowerRepeater,
         addTower,
         deleteTower,
+        copyTower
     };
 })();
