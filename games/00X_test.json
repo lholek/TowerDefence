@@ -10,7 +10,8 @@
           "level count": 1,
           "difficulty": "⭐",
           "map_size": "13x13",
-          "abilites": "Towers Fury A🏹, Lava Floor B🌋, New towers_fury 3🏹"
+          "abilites": "Towers Fury A🏹, Lava Floor B🌋, New towers_fury 3🏹",
+          "tower types": 1
         }
       ],
       "tileSize": 80,
@@ -114,6 +115,14 @@
             }
           ]
         }
+      ],
+      "extraLife": true,
+      "extraLifePrices": [
+        1,
+        2,
+        3,
+        4,
+        0
       ]
     }
   ]

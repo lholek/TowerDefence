@@ -4,7 +4,7 @@
       "version": "Alpha 0.1.4",
       "release": "-",
       "changes": [
-        "Improved - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
+        "Improved - Gameplay - Custom Life Prices for extra lifes not static prices in custom maps",
         "TODO: Improve - Gameplay - Hot keys tower panel (Towers (T) / Abilties (A) / Extra Life (E))",
         "TODO: Improve - Gameplay - Hot keys towers/abilies select tower or ability (Towers (T-12345..(numbers)) / Abilties (A12345..(numbers)))",
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
