@@ -5,8 +5,8 @@
       "release": "-",
       "changes": [
         "Improved - Gameplay - Custom Life Prices for extra lifes not static prices in custom maps",
-        "TODO: Improve - Gameplay - Hot keys tower panel (Towers (T) / Abilties (A) / Extra Life (E))",
-        "TODO: Improve - Gameplay - Hot keys towers/abilies select tower or ability (Towers (T-12345..(numbers)) / Abilties (A12345..(numbers)))",
+        "Improved - Gameplay - Hot keys added - switch panels (Towers (T) / Abilties (A) / Extra Life (E))",
+        "Improved - Gameplay - Hot keys towers/abilies items - select items by numbers (12345)",
         "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
         "TODO: Improve - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
         "TODO: Improve - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",

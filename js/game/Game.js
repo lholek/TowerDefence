@@ -81,6 +81,9 @@ export default class Game {
     // Shake the game
     this.shakeDuration = 0;
     this.shakeIntensity = 0;
+
+    // Hot keys
+    window.addEventListener('keydown', e => this.handleKeyDown(e));
   }
 
   /**
@@ -755,7 +758,7 @@ export default class Game {
     const lifeButton = document.createElement('button');
     lifeButton.id = 'extraLifeBtn';
     lifeButton.className = 'switch-btn life-purchase-btn';
-    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice})`;
+    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
 
     container.appendChild(lifeButton);
 
@@ -780,7 +783,7 @@ export default class Game {
             // CALCULATE NEXT PRICE
             // We incremented lifePurchaseCount, so getCurrentPrice() now returns the NEXT tier
             currentPrice = getCurrentPrice();
-            lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice})`;
+            lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
 
         } else {
             this.logEvent('Not enough coins to buy Extra life!');
@@ -984,30 +987,93 @@ export default class Game {
       this.hoveredTile = tile;
   }
 
-    getBullet() {
-        if (this.bulletPool.length > 0) {
-            return this.bulletPool.pop();
-        }
-        // Create new one if pool is empty
-        return new Bullet(0, 0, null, 0); 
+  getBullet() {
+    if (this.bulletPool.length > 0) {
+      return this.bulletPool.pop();
     }
+    // Create new one if pool is empty
+    return new Bullet(0, 0, null, 0); 
+  }
 
-    returnBullet(bullet) {
-        bullet.active = false;
-        this.bulletPool.push(bullet);
+  returnBullet(bullet) {
+    bullet.active = false;
+    this.bulletPool.push(bullet);
+  } 
+
+  formatTime(ms) {
+    // Convert ms to seconds
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    // Pad with leading zeros (e.g., 5 becomes 05)
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    return `${formattedMinutes}:${formattedSeconds}`;
+  }
+
+  handleKeyDown(e) {
+    if (!this.gameStarted || this.paused) return;
+
+    const key = e.key.toLowerCase();
+
+    // Helper function to check if an element is truly visible to the player
+    const isVisible = (el) => el && el.offsetParent !== null;
+
+    // --- 1. Panel Switching (T, A) ---
+    // Only switch if the toggle buttons themselves are visible
+    if (key === 't') {
+        const btn = document.getElementById('towerModeBtn');
+        if (isVisible(btn)) btn.click();
+        return;
+    } 
+    
+    if (key === 'a') {
+        const btn = document.getElementById('abilityModeBtn');
+        if (isVisible(btn)) btn.click();
+        return;
     } 
 
-    formatTime(ms) {
-        // Convert ms to seconds
-        const totalSeconds = Math.floor(ms / 1000);
+    // --- 2. Extra Life (E) ---
+    if (key === 'e') {
+        // Try to find the life card by ID first, then by text content
+        let extraLifeBtn = document.getElementById('extraLifeBtn');
+        if (!extraLifeBtn) {
+            extraLifeBtn = Array.from(document.querySelectorAll('.shop-item')).find(el => el.textContent.includes('Life'));
+        }
 
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-
-        // Pad with leading zeros (e.g., 5 becomes 05)
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(seconds).padStart(2, '0');
-
-        return `${formattedMinutes}:${formattedSeconds}`;
+        // ONLY trigger if the button exists and is currently visible in the shop
+        if (isVisible(extraLifeBtn)) {
+            extraLifeBtn.click();
+            extraLifeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+        return;
     }
+
+    // --- 3. Item Selection (1-9) supporting Czech Keyboard ---
+    if (e.code.startsWith('Digit')) {
+      const index = parseInt(e.code.replace('Digit', '')) - 1; 
+      if (index < 0 || index > 8) return;
+      
+      const towerPanel = document.getElementById('towerShop');
+      const abilityPanel = document.getElementById('abilityBar');
+      
+      // Logic for Towers: Only works if the Tower Panel is currently displayed
+      if (isVisible(towerPanel)) {
+        const towerItems = towerPanel.querySelectorAll('.shop-item');
+        if (towerItems[index]) {
+          towerItems[index].click();
+          towerItems[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      } 
+      // Logic for Abilities: Only works if the Ability Bar is currently displayed
+      else if (isVisible(abilityPanel)) {
+        const abilityCards = abilityPanel.querySelectorAll('.ability-card');
+        if (abilityCards[index]) {
+          abilityCards[index].click();
+          abilityCards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    }
+  }
 }
