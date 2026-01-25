@@ -481,7 +481,6 @@ export function exportLevelData() {
  * Updates the 'extraLife' boolean.
  */
 // In js/level_editor/json_functions.js
-
 export function updateExtraLife(isChecked) {
 
     const priceInput = document.getElementById('extraLifePricesInput');
@@ -505,6 +504,7 @@ export function updateExtraLife(isChecked) {
     }, `Extra Life enabled set to ${isChecked}.`);
 
 }
+
 /**
  * Updates the 'extraLifePrices' array from a string.
  */
@@ -517,4 +517,37 @@ export function updateExtraLifePrices(valueString) {
     modifyJson((data) => {
         data.maps[0].extraLifePrices = pricesArray;
     }, `Extra Life prices updated: [${pricesArray.join(', ')}]`);
+}
+
+/**
+ * Scans the current map layout and returns all possible S-E path combinations.
+ * Returns an array like ["S1E1", "S1E2", "S2E1", ...]
+ */
+export function getAvailablePaths() {
+    if (!currentLevelData || !currentLevelData.maps[0]) return [];
+    
+    const layout = currentLevelData.maps[0].layout;
+    const starts = new Set();
+    const ends = new Set();
+
+    layout.forEach(row => {
+        row.forEach(tile => {
+            if (typeof tile === 'string') {
+                if (tile.startsWith('S')) starts.add(tile);
+                if (tile.startsWith('E')) ends.add(tile);
+            }
+        });
+    });
+
+    const paths = [];
+    const sortedStarts = Array.from(starts).sort();
+    const sortedEnds = Array.from(ends).sort();
+
+    sortedStarts.forEach(s => {
+        sortedEnds.forEach(e => {
+            paths.push(`${s}${e}`);
+        });
+    });
+
+    return paths;
 }

@@ -153,3 +153,37 @@
     font-family: monospace;
     font-weight: bold;
 }
+
+/* Anchors the dropdown to the input */
+.path-input-container {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+/* Style the custom dropdown */
+.custom-path-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999; /* Ensure it stays above other enemy cards */
+    background: rgb(139, 69, 19) !important;
+    background: var(--main-bg-color);;
+    width: 100%;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #f0c674 transparent;
+}
+
+.path-option {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #ccc;
+}
+
+.path-option.active, .path-option:hover {
+    background: #f0c674; /* A lighter color to show selection */
+    color: var(--main-bg-color) !important;
+}

@@ -1,7 +1,7 @@
 // js/level_editor/editor_wave.js
 
 import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access the wave data and default structure
-import { modifyJson, customConfirm } from './json_functions.js'; // Import utilities
+import { modifyJson, customConfirm, getAvailablePaths } from './json_functions.js'; // Import utilities
 
 let contentContainer = null; 
 let setStatus = () => {}; // Dependency Injection for status messages
@@ -160,7 +160,16 @@ export const waveEditor = (() => {
                     <label>⭐ Count <input type="number" data-key="count" value="${enemy.count}" min="1"></label>
                     <label>❤️ Health <input type="number" data-key="health" value="${enemy.health}" min="1"></label>
                     <label>🗲 Speed <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01"></label>
-                    <label>Path <input type="text" data-key="path" value="${enemy.path}"></label>
+                    <label>Path 
+                        <div class="path-input-container">
+                            <input type="text" 
+                                   data-key="path" 
+                                   class="path-suggest-input" 
+                                   value="${enemy.path}" 
+                                   autocomplete="off">
+                            <div class="custom-path-dropdown" style="display:none;"></div>
+                        </div>
+                    </label>
                     <label>Interval <input type="text" data-key="interval" value="${enemy.interval}"></label>
                     <label>FirstDelay <input type="text" data-key="firstDelay" value="${enemy.firstDelay}"></label>
                     <label>🪙 Coin Reward <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0"></label>
@@ -170,16 +179,117 @@ export const waveEditor = (() => {
     };
 
     /**
+     * Attaches custom autocomplete logic to path inputs.
+     * Call this every time the wave list is re-rendered.
+     */
+    const setupPathAutocomplete = () => {
+        const inputs = document.querySelectorAll('.path-suggest-input');
+        const availablePaths = getAvailablePaths();
+        
+        inputs.forEach(input => {
+            const dropdown = input.nextElementSibling;
+            let activeIndex = -1;
+        
+            const renderSuggestions = (filtered) => {
+                if (filtered.length > 0) {
+                    dropdown.innerHTML = filtered.map((p, i) => 
+                        `<div class="path-option ${i === activeIndex ? 'active' : ''}" data-index="${i}">${p}</div>`
+                    ).join('');
+                    dropdown.style.display = 'block';
+                    
+                    // 💡 Auto-scroll to the active item
+                    if (activeIndex >= 0) {
+                        const activeElem = dropdown.children[activeIndex];
+                        if (activeElem) {
+                            activeElem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                        }
+                    }
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            };
+        
+            const showSuggestions = () => {
+                const val = input.value.toLowerCase();
+                const filtered = availablePaths.filter(p => p.toLowerCase().includes(val));
+                renderSuggestions(filtered);
+            };
+        
+            // Keyboard Handling
+            input.onkeydown = (e) => {
+                const val = input.value.toLowerCase();
+                const filtered = availablePaths.filter(p => p.toLowerCase().includes(val));
+            
+                if (dropdown.style.display === 'none' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                    showSuggestions();
+                    return;
+                }
+            
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeIndex = (activeIndex + 1) % filtered.length;
+                    renderSuggestions(filtered);
+                } 
+                else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+                    renderSuggestions(filtered);
+                } 
+                else if (e.key === 'Enter') {
+                    if (activeIndex > -1 && filtered[activeIndex]) {
+                        e.preventDefault();
+                        input.value = filtered[activeIndex];
+                        dropdown.style.display = 'none';
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+                else if (e.key === 'Escape') {
+                    dropdown.style.display = 'none';
+                    input.blur();
+                }
+            };
+        
+            input.onfocus = () => { activeIndex = -1; showSuggestions(); };
+            input.oninput = () => { activeIndex = -1; showSuggestions(); };
+        
+            dropdown.onclick = (e) => {
+                if (e.target.classList.contains('path-option')) {
+                    input.value = e.target.innerText;
+                    dropdown.style.display = 'none';
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            };
+        
+            // Cleanup: hide on click-away
+            const clickAway = (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                    document.removeEventListener('mousedown', clickAway);
+                }
+            };
+            input.onfocus = () => { 
+                activeIndex = -1; 
+                showSuggestions(); 
+                document.addEventListener('mousedown', clickAway);
+            };
+        });
+    };
+
+    /**
      * Renders the HTML for all waves and populates the content container.
      */
     const renderWaveRepeater = (levels) => {
         if (!contentContainer) return;
-        if (!levels || !Array.isArray(levels)) {
-            contentContainer.innerHTML = "<p>No wave data found in JSON.</p>";
-            return;
-        }
+        
+        // Generate the datalist HTML dynamically
+        const paths = getAvailablePaths();
+        const pathDatalist = `
+            <datalist id="path-list">
+                ${paths.map(p => `<option value="${p}">`).join('')}
+            </datalist>
+        `;
 
-        let html = '';
+        let html = pathDatalist; // Start with the datalist
 
         levels.forEach((wave, waveIndex) => {
             
@@ -221,6 +331,7 @@ export const waveEditor = (() => {
         contentContainer.innerHTML = html;
         attachChangeListeners();
         attachDeleteListeners();
+        setupPathAutocomplete();
     };
 
     // --- Interaction Functions ---
@@ -507,10 +618,54 @@ export const waveEditor = (() => {
     }
     /* Grap enemy types */
 
+    /**
+     * Copies an entire wave (level) and all its enemy groups
+     */
+    const copyWave = (waveIndex) => {
+        modifyJson((data) => {
+            const levels = data.maps[0].levels;
+            const waveToCopy = levels[waveIndex];
+            
+            const newWave = JSON.parse(JSON.stringify(waveToCopy));
+            
+            // Auto-increment level number
+            const maxLevel = levels.reduce((max, w) => Math.max(max, w.level), 0);
+            newWave.level = maxLevel + 1;
+
+            levels.push(newWave);
+            renderWaveRepeater(levels);
+        }, `Wave copied as Level ${maxLevel + 1}.`);
+    };
+
+    /**
+     * Copies a single enemy group within a specific wave
+     */
+    const copyEnemyGroup = (waveIndex, enemyIndex) => {
+        modifyJson((data) => {
+            const levels = data.maps[0].levels;
+            const wave = levels[waveIndex];
+            const groupToCopy = wave.enemies[enemyIndex];
+            
+            const newGroup = JSON.parse(JSON.stringify(groupToCopy));
+            wave.enemies.push(newGroup);
+            
+            renderWaveRepeater(levels);
+        }, `Enemy group duplicated.`);
+    };
+
+    const availablePaths = getAvailablePaths();
+    const pathDatalist = `
+        <datalist id="path-list">
+            ${availablePaths.map(p => `<option value="${p}">`).join('')}
+        </datalist>
+    `;
+
     return {
         renderWaveRepeater,
         addWave,
         deleteWave,
+        copyWave,
+        copyEnemyGroup,
         addEnemyToWave,
         deleteEnemyFromWave,
         removeEnemyType,
