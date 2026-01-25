@@ -136,31 +136,6 @@ function addNewEnemyType() {
     }, `Added enemy type: ${value}`);
 }
 
-/**
- * Removes a single enemy type with a safety check.
- */
-async function removeEnemyType(typeToRemove) {
-    const currentTypes = getEnemyTypes();
-
-    // Ensure at least one type remains
-    if (currentTypes.length <= 1) {
-        setStatus("Cannot remove the last enemy type. At least one is required!", true);
-        return;
-    }
-
-    const confirmed = await customConfirm(
-        "Remove Type", 
-        `Are you sure you want to remove "${typeToRemove}"?`
-    );
-    
-    if (!confirmed) return;
-
-    modifyJson((data) => {
-        data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);
-        renderEnemyTypeTags();
-        waveEditor.renderWaveRepeater(data.maps[0].levels);
-    }, `Removed enemy type: ${typeToRemove}`);
-}
 
 // --- Main Wave Editor Public Interface ---
 export const waveEditor = (() => {
@@ -436,74 +411,100 @@ export const waveEditor = (() => {
         }, `Enemy group deleted from Wave ${waveLevel}.`); // Now uses waveLevel
     };
 
+    /**
+     * Removes a single enemy type with a safety check.
+     */
+    const removeEnemyType = async (typeToRemove) => { // Change 'function' to 'const'
+        const currentTypes = getEnemyTypes();
+
+        // Ensure at least one type remains
+        if (currentTypes.length <= 1) {
+            setStatus("Cannot remove the last enemy type. At least one is required!", true);
+            return;
+        }
+
+        const confirmed = await customConfirm(
+            "Remove Type", 
+            `Are you sure you want to remove "${typeToRemove}"?`
+        );
+        
+        if (!confirmed) return;
+
+        modifyJson((data) => {
+            data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);
+            renderEnemyTypeTags(); // This function is accessible because it's in the outer scope
+            waveEditor.renderWaveRepeater(data.maps[0].levels);
+        }, `Removed enemy type: ${typeToRemove}`);
+    };
+
     /* Grap enemy types */
     let draggedItemIndex = null;
 
-function handleDragStart(e) {
-    const target = e.target.closest('.enemy-tag');
-    draggedItemIndex = parseInt(target.getAttribute('data-index'));
-    
-    // Visual feedback: item being moved becomes faint
-    target.classList.add('dragging');
-    
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', draggedItemIndex); 
-}
+    function handleDragStart(e) {
+        const target = e.target.closest('.enemy-tag');
+        draggedItemIndex = parseInt(target.getAttribute('data-index'));
 
-function handleDragEnter(e) {
-    const target = e.target.closest('.enemy-tag');
-    // Don't highlight the item we are currently holding
-    if (target && parseInt(target.getAttribute('data-index')) !== draggedItemIndex) {
-        target.classList.add('drag-over');
+        // Visual feedback: item being moved becomes faint
+        target.classList.add('dragging');
+
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedItemIndex); 
     }
-}
 
-function handleDragLeave(e) {
-    const target = e.target.closest('.enemy-tag');
-    if (target) {
-        target.classList.remove('drag-over');
+    function handleDragEnter(e) {
+        const target = e.target.closest('.enemy-tag');
+        // Don't highlight the item we are currently holding
+        if (target && parseInt(target.getAttribute('data-index')) !== draggedItemIndex) {
+            target.classList.add('drag-over');
+        }
     }
-}
 
-function handleDragOver(e) {
-    e.preventDefault(); // Necessary to allow drop
-    return false;
-}
+    function handleDragLeave(e) {
+        const target = e.target.closest('.enemy-tag');
+        if (target) {
+            target.classList.remove('drag-over');
+        }
+    }
 
-// CRITICAL: This cleans up all gray/highlight states regardless of where you drop
-function handleDragEnd(e) {
-    const tags = document.querySelectorAll('.enemy-tag');
-    tags.forEach(t => t.classList.remove('dragging', 'drag-over'));
-    draggedItemIndex = null;
-}
+    function handleDragOver(e) {
+        e.preventDefault(); // Necessary to allow drop
+        return false;
+    }
 
-function handleDrop(e) {
-    e.preventDefault();
-    const target = e.target.closest('.enemy-tag');
-    if (!target) return;
+    // CRITICAL: This cleans up all gray/highlight states regardless of where you drop
+    function handleDragEnd(e) {
+        const tags = document.querySelectorAll('.enemy-tag');
+        tags.forEach(t => t.classList.remove('dragging', 'drag-over'));
+        draggedItemIndex = null;
+    }
 
-    const targetIndex = parseInt(target.getAttribute('data-index'));
-    
-    // Requirement: Cancel if dropped on same place
-    if (draggedItemIndex === null || draggedItemIndex === targetIndex) {
+    function handleDrop(e) {
+        e.preventDefault();
+        const target = e.target.closest('.enemy-tag');
+        if (!target) return;
+
+        const targetIndex = parseInt(target.getAttribute('data-index'));
+
+        // Requirement: Cancel if dropped on same place
+        if (draggedItemIndex === null || draggedItemIndex === targetIndex) {
+            handleDragEnd();
+            return;
+        }
+
+        modifyJson((data) => {
+            // Ensure we are targeting the array correctly
+            const types = data.maps[0].enemyTypes || getEnemyTypes();
+            const [movedItem] = types.splice(draggedItemIndex, 1);
+            types.splice(targetIndex, 0, movedItem);
+
+            data.maps[0].enemyTypes = types; // Save back to data
+
+            renderEnemyTypeTags();
+            waveEditor.renderWaveRepeater(data.maps[0].levels);
+        }, `Reordered enemy types list.`);
+
         handleDragEnd();
-        return;
     }
-
-    modifyJson((data) => {
-        // Ensure we are targeting the array correctly
-        const types = data.maps[0].enemyTypes || getEnemyTypes();
-        const [movedItem] = types.splice(draggedItemIndex, 1);
-        types.splice(targetIndex, 0, movedItem);
-
-        data.maps[0].enemyTypes = types; // Save back to data
-        
-        renderEnemyTypeTags();
-        waveEditor.renderWaveRepeater(data.maps[0].levels);
-    }, `Reordered enemy types list.`);
-    
-    handleDragEnd();
-}
     /* Grap enemy types */
 
     return {
@@ -512,6 +513,7 @@ function handleDrop(e) {
         deleteWave,
         addEnemyToWave,
         deleteEnemyFromWave,
+        removeEnemyType,
         updateEnemyTypesEditor: renderEnemyTypeTags, // Point this to our new tag renderer
         handleDragStart,
         handleDragOver,
