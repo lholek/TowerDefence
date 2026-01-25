@@ -177,10 +177,12 @@
 }
 
 .path-option {
-    padding: 6px 10px;
     cursor: pointer;
     font-size: 12px;
     color: #ccc;
+    width: 100%;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 .path-option.active, .path-option:hover {
