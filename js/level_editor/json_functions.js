@@ -341,28 +341,6 @@ export function updateUIFromLoadedData() {
     modules.setStatus("Editor UI successfully synced with loaded map data.");
 }
 
-// --- Placeholder for the File Loading Logic (Example of how to use the function) ---
-export function handleFileLoad(newJsonContent) {
-    try {
-        const parsedData = JSON.parse(newJsonContent);
-        
-        // 1. Update the source of truth
-        const updateSuccess = updateCurrentLevelData(parsedData); 
-        
-        if (updateSuccess) {
-            // 2. Refresh the UI
-            updateUIFromLoadedData();
-            modules.setStatus("New map JSON loaded and UI updated.");
-        } else {
-             modules.setStatus("Loaded JSON format is invalid.", true);
-        }
-        
-    } catch (error) {
-        modules.setStatus(`Error loading JSON file: ${error.message}`, true);
-        console.error("JSON Load Error:", error);
-    }
-}
-
 // --- BASIC INFO EDITOR FUNCTIONS ---
 
 /**

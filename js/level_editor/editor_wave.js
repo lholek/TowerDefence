@@ -5,7 +5,6 @@ import { modifyJson, customConfirm } from './json_functions.js'; // Import utili
 
 let contentContainer = null; 
 let setStatus = () => {}; // Dependency Injection for status messages
-let enemyTypesEditor = null; // 💡 RE-ADDED: Element reference for the input field
 
 // The hard-coded ENEMY_TYPES constant is REMOVED
 

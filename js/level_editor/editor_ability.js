@@ -51,23 +51,6 @@ export const initialize = () => {
         addAbilityButton.addEventListener('click', abilityEditor.addAbility); 
     }
 };
-
-// --- Utility Functions ---
-
-/**
- * Re-indexes abilities sequentially (0, 1, 2, ...) based on array index.
- * This is used ONLY for rendering the array index in the editor, 
- * but the actual JSON structure is an Array, so the order is maintained.
- * We rely on array index for deletion/manipulation.
- * @param {Array<object>} abilities - The array holding all ability definitions.
- */
-function reIndexAbilitiesForDisplay(abilities) {
-    // Since the data is an array, the index is the ID. We just ensure the
-    // 'id' property is updated if needed, but for this editor, we use the
-    // array index (index) as the unique identifier for DOM manipulation.
-    // The unique ID is the array index.
-}
-
 // --- Main Ability Editor Public Interface ---
 
 export const abilityEditor = (() => {
