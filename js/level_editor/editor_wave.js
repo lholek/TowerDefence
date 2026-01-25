@@ -65,41 +65,32 @@ export function updateEnemyTypesEditor() {
  * Sets external dependencies and finds the main DOM container.
  * @param {object} refs - Object containing setStatus utility.
  */
+let tagsContainer = null;
+let newTypeInput = null;
 export const initialize = (refs) => {
     setStatus = refs.setStatus;
-    // CRITICAL: Ensure your level_editor.html has an element with this ID
     contentContainer = document.getElementById('waves-editor-container'); 
     
-    // 💡 RE-ADDED: Get the enemy types editor element
-    enemyTypesEditor = document.getElementById('enemyTypesEditor'); 
+    // New references
+    tagsContainer = document.getElementById('enemyTypesTagsContainer');
+    newTypeInput = document.getElementById('newEnemyTypeInput');
 
-    // 💡 RE-ADDED: Initialize the enemy types editor field and button
-    if (enemyTypesEditor) {
-        // Load the current types from data, join with comma-space
-        enemyTypesEditor.value = getEnemyTypes().join(', ');
-        
-        // Attach event listener for the save button
-        const saveButton = document.getElementById('save-enemy-types-button');
-        if (saveButton) {
-            saveButton.removeEventListener('click', saveEnemyTypes); // Prevent double-binding
-            saveButton.addEventListener('click', saveEnemyTypes);
-        }
+    // Attach "Add" button listener
+    const addTypeBtn = document.getElementById('add-enemy-type-button');
+    if (addTypeBtn) {
+        addTypeBtn.addEventListener('click', addNewEnemyType);
     }
 
-    if (!contentContainer) {
-        console.error("Wave Editor Error: Element #waves-editor-container not found.");
+    // Support "Enter" key in input
+    if (newTypeInput) {
+        newTypeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addNewEnemyType();
+        });
     }
-    
-    // Attach event listener for the main Add Wave button
-    const addWaveButton = document.getElementById('add-wave-button');
-    if (addWaveButton) {
-        // Attach the public function to the button
-        addWaveButton.addEventListener('click', waveEditor.addWave); 
-    }
-    
-    // Render initial content after initialization
+
     if (contentContainer) {
         waveEditor.renderWaveRepeater(getCurrentMap().levels);
+        renderEnemyTypeTags(); // Render tags on load
     }
 };
 
@@ -130,8 +121,59 @@ function getEnemyTypeOptions(selectedType) {
     ).join('');
 }
 
-// --- Main Wave Editor Public Interface ---
+/**
+ * Renders the small cards (tags) for each enemy type.
+ */
+function renderEnemyTypeTags() {
+    if (!tagsContainer) return;
+    const enemyTypes = getEnemyTypes();
+    
+    tagsContainer.innerHTML = enemyTypes.map(type => `
+        <div class="enemy-tag">
+            <span>${type}</span>
+            <button class="btn-remove-tag" onclick="window.app.waveEditor.removeEnemyType('${type}')">&times;</button>
+        </div>
+    `).join('');
+}
 
+/**
+ * Adds a single new enemy type to the list.
+ */
+function addNewEnemyType() {
+    const value = newTypeInput.value.trim().toLowerCase();
+    if (!value) return;
+
+    const currentTypes = getEnemyTypes();
+    if (currentTypes.includes(value)) {
+        setStatus("Type already exists!", true);
+        return;
+    }
+
+    modifyJson((data) => {
+        data.maps[0].enemyTypes = [...currentTypes, value];
+        newTypeInput.value = ""; // Clear input
+        renderEnemyTypeTags(); // Refresh tags
+        waveEditor.renderWaveRepeater(data.maps[0].levels); // Update dropdowns in waves
+    }, `Added enemy type: ${value}`);
+}
+
+/**
+ * Removes a single enemy type.
+ */
+async function removeEnemyType(typeToRemove) {
+    const confirmed = await customConfirm("Remove Type", `Are you sure you want to remove "${typeToRemove}"? This will affect existing wave dropdowns.`);
+    if (!confirmed) return;
+
+    modifyJson((data) => {
+        const currentTypes = getEnemyTypes();
+        data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);
+        
+        renderEnemyTypeTags();
+        waveEditor.renderWaveRepeater(data.maps[0].levels);
+    }, `Removed enemy type: ${typeToRemove}`);
+}
+
+// --- Main Wave Editor Public Interface ---
 export const waveEditor = (() => {
     
     // --- Rendering Functions ---
@@ -411,6 +453,7 @@ export const waveEditor = (() => {
         deleteWave,
         addEnemyToWave,
         deleteEnemyFromWave,
-        updateEnemyTypesEditor
+        updateEnemyTypesEditor: renderEnemyTypeTags, // Point this to our new tag renderer
+        removeEnemyType // Add this here
     };
 })();

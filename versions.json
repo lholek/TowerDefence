@@ -11,6 +11,7 @@
         "TODO: Improve - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
         "TODO: Improve - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
         "TODO: Improve - Gameplay - Arrows fly directly to the enemy and dont curve (but they can also miss now)",
+        "TODO: Improve - Editor - Update css (Fix font sizes)",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means [Do it trough array whit parameters]",
         "Improved - Editor - Map - Editor can not add Starts and Ends (autoincrement - No longer LIMITED to 5)",
