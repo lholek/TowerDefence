@@ -56,6 +56,13 @@ export const initialize = (refs) => {
         waveEditor.renderWaveRepeater(getCurrentMap().levels);
         renderEnemyTypeTags(); // Render tags on load
     }
+
+    // Attach event listener for the main Add Wave button
+    const addWaveButton = document.getElementById('add-wave-button');
+    if (addWaveButton) {
+        // Attach the public function to the button
+        addWaveButton.addEventListener('click', waveEditor.addWave);
+    } 
 };
 
 // --- Utility Functions ---
