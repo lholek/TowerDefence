@@ -25,41 +25,6 @@ export function getEnemyTypes() {
     ];
 }
 
-/**
- * 💡 RE-ADDED: Saves the enemy types from the input back to the JSON.
- */
-function saveEnemyTypes() {
-    if (!enemyTypesEditor) return;
-
-    const inputString = enemyTypesEditor.value.trim();
-    // Split by comma, clean up spaces, and filter out empty strings
-    const newTypes = inputString.split(',')
-                                .map(type => type.trim())
-                                .filter(type => type.length > 0);
-
-    if (newTypes.length === 0) {
-        setStatus("Enemy Types list cannot be empty! Reverted to previous list.", true);
-        // Re-load the previous valid value
-        enemyTypesEditor.value = getEnemyTypes().join(', '); 
-        return;
-    }
-    
-    modifyJson((data) => {
-        // Save the cleaned array to the map data
-        data.maps[0].enemyTypes = newTypes;
-        
-        // After saving, immediately re-render the waves to update the dropdowns
-        waveEditor.renderWaveRepeater(data.maps[0].levels);
-
-    }, `Enemy Types list updated to: ${newTypes.join(', ')}.`);
-}
-
-export function updateEnemyTypesEditor() {
-    if (enemyTypesEditor) {
-        enemyTypesEditor.value = getEnemyTypes().join(', ');
-    }
-}
-
 // --- Dependency Injection and Initialization ---
 /**
  * Sets external dependencies and finds the main DOM container.
@@ -128,14 +93,22 @@ function renderEnemyTypeTags() {
     if (!tagsContainer) return;
     const enemyTypes = getEnemyTypes();
     
-    tagsContainer.innerHTML = enemyTypes.map(type => `
-        <div class="enemy-tag">
-            <span>${type}</span>
+    tagsContainer.innerHTML = enemyTypes.map((type, index) => `
+        <div class="enemy-tag" 
+             draggable="true" 
+             data-index="${index}"
+             ondragstart="window.app.waveEditor.handleDragStart(event)"
+             ondragover="window.app.waveEditor.handleDragOver(event)"
+             ondragenter="window.app.waveEditor.handleDragEnter(event)"
+             ondragleave="window.app.waveEditor.handleDragLeave(event)"
+             ondragend="window.app.waveEditor.handleDragEnd(event)"
+             ondrop="window.app.waveEditor.handleDrop(event)">
+            <span class="drag-handle"></span> 
+            <span class="tag-text">${type}</span>
             <button class="btn-remove-tag" onclick="window.app.waveEditor.removeEnemyType('${type}')">&times;</button>
         </div>
     `).join('');
 }
-
 /**
  * Adds a single new enemy type to the list.
  */
@@ -158,16 +131,26 @@ function addNewEnemyType() {
 }
 
 /**
- * Removes a single enemy type.
+ * Removes a single enemy type with a safety check.
  */
 async function removeEnemyType(typeToRemove) {
-    const confirmed = await customConfirm("Remove Type", `Are you sure you want to remove "${typeToRemove}"? This will affect existing wave dropdowns.`);
+    const currentTypes = getEnemyTypes();
+
+    // Ensure at least one type remains
+    if (currentTypes.length <= 1) {
+        setStatus("Cannot remove the last enemy type. At least one is required!", true);
+        return;
+    }
+
+    const confirmed = await customConfirm(
+        "Remove Type", 
+        `Are you sure you want to remove "${typeToRemove}"?`
+    );
+    
     if (!confirmed) return;
 
     modifyJson((data) => {
-        const currentTypes = getEnemyTypes();
         data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);
-        
         renderEnemyTypeTags();
         waveEditor.renderWaveRepeater(data.maps[0].levels);
     }, `Removed enemy type: ${typeToRemove}`);
@@ -447,6 +430,76 @@ export const waveEditor = (() => {
         }, `Enemy group deleted from Wave ${waveLevel}.`); // Now uses waveLevel
     };
 
+    /* Grap enemy types */
+    let draggedItemIndex = null;
+
+function handleDragStart(e) {
+    const target = e.target.closest('.enemy-tag');
+    draggedItemIndex = parseInt(target.getAttribute('data-index'));
+    
+    // Visual feedback: item being moved becomes faint
+    target.classList.add('dragging');
+    
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedItemIndex); 
+}
+
+function handleDragEnter(e) {
+    const target = e.target.closest('.enemy-tag');
+    // Don't highlight the item we are currently holding
+    if (target && parseInt(target.getAttribute('data-index')) !== draggedItemIndex) {
+        target.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    const target = e.target.closest('.enemy-tag');
+    if (target) {
+        target.classList.remove('drag-over');
+    }
+}
+
+function handleDragOver(e) {
+    e.preventDefault(); // Necessary to allow drop
+    return false;
+}
+
+// CRITICAL: This cleans up all gray/highlight states regardless of where you drop
+function handleDragEnd(e) {
+    const tags = document.querySelectorAll('.enemy-tag');
+    tags.forEach(t => t.classList.remove('dragging', 'drag-over'));
+    draggedItemIndex = null;
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const target = e.target.closest('.enemy-tag');
+    if (!target) return;
+
+    const targetIndex = parseInt(target.getAttribute('data-index'));
+    
+    // Requirement: Cancel if dropped on same place
+    if (draggedItemIndex === null || draggedItemIndex === targetIndex) {
+        handleDragEnd();
+        return;
+    }
+
+    modifyJson((data) => {
+        // Ensure we are targeting the array correctly
+        const types = data.maps[0].enemyTypes || getEnemyTypes();
+        const [movedItem] = types.splice(draggedItemIndex, 1);
+        types.splice(targetIndex, 0, movedItem);
+
+        data.maps[0].enemyTypes = types; // Save back to data
+        
+        renderEnemyTypeTags();
+        waveEditor.renderWaveRepeater(data.maps[0].levels);
+    }, `Reordered enemy types list.`);
+    
+    handleDragEnd();
+}
+    /* Grap enemy types */
+
     return {
         renderWaveRepeater,
         addWave,
@@ -454,6 +507,11 @@ export const waveEditor = (() => {
         addEnemyToWave,
         deleteEnemyFromWave,
         updateEnemyTypesEditor: renderEnemyTypeTags, // Point this to our new tag renderer
-        removeEnemyType // Add this here
+        handleDragStart,
+        handleDragOver,
+        handleDragEnter,
+        handleDragLeave,
+        handleDragEnd,
+        handleDrop
     };
 })();

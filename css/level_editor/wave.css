@@ -111,3 +111,45 @@
     gap: 10px;
     margin-top: 10px;
 }
+
+.enemy-tag {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #4a90e2;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: grab;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+/* The "Grip" icon instead of "::" */
+.drag-handle {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    background-image: radial-gradient(circle, white 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.6;
+}
+
+/* This is the state of the item YOU ARE CURRENTLY HOLDING */
+.enemy-tag.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+    background: #2c3e50;
+}
+
+/* This is the state of the tag you are HOVERING OVER */
+.enemy-tag.drag-over {
+    border-left: 4px solid #fff; /* Vertical line showing where it will land */
+    transform: translateX(10px);
+    background: #357abd;
+}
+
+.tag-text {
+    font-family: monospace;
+    font-weight: bold;
+}
