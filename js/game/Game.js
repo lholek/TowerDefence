@@ -84,6 +84,13 @@ export default class Game {
 
     // Hot keys
     window.addEventListener('keydown', e => this.handleKeyDown(e));
+  
+    // Towers Hovering
+    this.keys = {};
+    this.hoveredTower = null;
+
+    window.addEventListener('keydown', e => this.keys[e.code] = true);
+    window.addEventListener('keyup', e => this.keys[e.code] = false);
   }
 
   /**
@@ -792,108 +799,117 @@ export default class Game {
   }
 
   render() {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  if (!this.map) return;
 
-      if (!this.map) return;
+  // Shake Logic
+  this.ctx.save(); 
+  if (this.shakeDuration > 0) {
 
-      // Shake
-      this.ctx.save(); // Save the clean, centered state
-      if (this.shakeDuration > 0) {
-        this.ctx.save(); // Remember the centered position
-        const dx = (Math.random() - 0.5) * this.shakeIntensity;
-        const dy = (Math.random() - 0.5) * this.shakeIntensity;
-        this.ctx.translate(dx, dy); // Apply the shake
-      }
-
-      // Draw the map
-      this.map.render(this.ctx);
-
-      // Update Tree of life
-      this.map.render(this.ctx, this.playerLifes);
-
-      // --- Draw hovered tile (inside camera transform so it matches map) ---
-      if (this.hoveredTile) {
-          this.map.applyCameraTransform(this.ctx);
-      
-          const col = this.hoveredTile.col;
-          const row = this.hoveredTile.row;
-          const pos = this.map.tileToWorld(col, row);
-          const x = pos.x;
-          const y = pos.y;
-      
-          // --- Determine hover color ---
-          let color = 'rgba(255,0,0,0.25)'; // default red (blocked)
-      
-          // --- TOWER --- //
-          const status = this.map.getTileStatus(col, row);
-          const hasTower = this.towers.some(t => t.col === col && t.row === row);
-          let buildingTower = (this.abilityManager.activeAbility == null);
-          if (buildingTower && status == 'X' && !hasTower) {
-            color = 'rgba(0,255,0,0.25)'; // green only if status AND no tower
-          }
-
-          // --- LAVA FLOOR --- //
-          if (!buildingTower) {
-            if (status === 'O' || /^S\d*/i.test(status) || /^E\d*/i.test(status)) {
-              color = 'rgba(0,255,0,0.25)'; // green if active ability
-            }
-          }
-
-          this.ctx.fillStyle = color;
-          const center = this.map.tileToWorld(col, row);
-          const calculatedX = center.x - this.map.tileSize / 2;
-          const calculatedY = center.y - this.map.tileSize / 2;
-          this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
-        
-          this.map.resetTransform(this.ctx);
-
-          // render ability preview overlay (after map and before UI)
-          if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
-            this.abilityManager.renderPreview(this.ctx);
-          }          
-      }
-
-      // Draw towers and enemies
-      // --- OPTIMIZATION: Centralize Camera Transforms ---
-
-      // 1. Apply camera transform ONCE
-      this.map.applyCameraTransform(this.ctx);
-
-      // 2. Draw all world-space items
-      // We pass 'this.map' so render methods know the tileSize, etc.
-      this.towers.forEach(t => t.render(this.ctx, this.map));
-      
-      // Also render all bullets under the same transform
-      for (const tower of this.towers) {
-          for (const bullet of tower.bullets) {
-              bullet.render(this.ctx); // Bullet.js render is already correct
-          }
-      }
-
-      this.enemies.forEach(e => e.render(this.ctx, this.map));
-      
-      // Assumes abilityManager.render also draws in world-space
-      this.abilityManager.render(this.ctx);
-
-      
-      // Tree of life at the TOP
-      for (const key in this.map.ends) {
-        const end = this.map.ends[key];
-        const worldPos = this.map.tileToWorld(end.col, end.row);
-        
-        // Zavoláme metodu z Map.js, ale až teď
-        // '100' je aktuální život stromu (napoj na svou proměnnou)
-        this.map._drawLifeTree(this.ctx, worldPos.x, worldPos.y, 100);
-      }
-      
-      // 3. Reset transform ONCE
-      this.map.resetTransform(this.ctx);
-
-      if (this.shakeDuration > 0) {
-          this.ctx.restore(); // Reset the shake so the screen returns to normal
-      }
-      // --- END OPTIMIZATION ---
+    const dx = (Math.random() - 0.5) * this.shakeIntensity;
+    const dy = (Math.random() - 0.5) * this.shakeIntensity;
+    this.ctx.translate(dx, dy);
   }
+
+  // Draw the map
+  this.map.render(this.ctx);
+  this.map.render(this.ctx, this.playerLifes);
+
+  // --- 1. HOVERED TILE (Uses its own transform block) ---
+  if (this.hoveredTile) {
+    this.map.applyCameraTransform(this.ctx);
+    
+    let color = 'rgba(255,0,0,0.25)';
+    const col = this.hoveredTile.col;
+    const row = this.hoveredTile.row;
+    const status = this.map.getTileStatus(col, row);
+    const hasTower = this.towers.some(t => t.col === col && t.row === row);
+    let buildingTower = (this.abilityManager.activeAbility == null);
+
+    if (buildingTower && status == 'X' && !hasTower) {
+      color = 'rgba(0,255,0,0.25)';
+    }
+    if (!buildingTower) {
+      if (status === 'O' || /^S\d*/i.test(status) || /^E\d*/i.test(status)) {
+        color = 'rgba(0,255,0,0.25)';
+      }
+    }
+
+    this.ctx.fillStyle = color;
+    const center = this.map.tileToWorld(col, row);
+    const calculatedX = center.x - this.map.tileSize / 2;
+    const calculatedY = center.y - this.map.tileSize / 2;
+    this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
+
+
+    this.map.resetTransform(this.ctx);
+    // Render ability preview overlay
+    if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
+      this.abilityManager.renderPreview(this.ctx);
+    } 
+
+    
+  }
+
+  // --- 2. WORLD OBJECTS & RANGE CIRCLES (Start Camera) ---
+  this.map.applyCameraTransform(this.ctx);
+
+  this.towers.forEach(t => t.render(this.ctx, this.map));
+  for (const tower of this.towers) {
+    for (const bullet of tower.bullets) {
+      bullet.render(this.ctx);
+    }
+  }
+
+  this.enemies.forEach(e => e.render(this.ctx, this.map));
+  this.abilityManager.render(this.ctx);
+
+  // Tree of life
+  for (const key in this.map.ends) {
+    const end = this.map.ends[key];
+    const worldPos = this.map.tileToWorld(end.col, end.row);
+    this.map._drawLifeTree(this.ctx, worldPos.x, worldPos.y, this.playerLifes);
+  }
+
+  // --- RANGE CIRCLES LOGIC (STAY INSIDE TRANSFORM) ---
+  const isShiftPressed = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
+  const isAPressed = this.keys['KeyA'];
+
+  const drawCircle = (x, y, range, fill = 'rgba(255, 255, 255, 0.15)') => {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, range, 0, Math.PI * 2);
+    this.ctx.fillStyle = fill;
+    this.ctx.fill();
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    this.ctx.lineWidth = 2 / this.map.camera.zoom; // Corrected for zoom
+    this.ctx.stroke();
+  };
+
+  if (isShiftPressed && isAPressed) {
+    this.towers.forEach(t => drawCircle(t.x, t.y, t.range, "rgba(0,0,0,0)"));
+  } 
+  // B. Show range circle when holding [Shift] while hovering a tower
+  else if (isShiftPressed && this.hoveredTile) {
+    const tower = this.towers.find(t => t.col === this.hoveredTile.col && t.row === this.hoveredTile.row);
+    if (tower) drawCircle(tower.x, tower.y, tower.range);
+  }
+
+  // C. Show range circle only when building it AND holding [Shift]
+  if (isShiftPressed && this.selectedTowerType && this.hoveredTile) {
+    const type = this.towerTypes[this.selectedTowerType];
+    const pos = this.map.tileToWorld(this.hoveredTile.col, this.hoveredTile.row);
+    drawCircle(pos.x, pos.y, type.range, 'rgba(100, 255, 100, 0.45)');
+  }
+
+  // --- 3. CLEANUP (End Camera & End Shake) ---
+  this.map.resetTransform(this.ctx); // This resets the Camera (Zoom/Pan)
+
+  if (this.shakeDuration > 0) {
+    this.ctx.restore(); // This resets the Shake
+  }
+  
+  //this.ctx.restore(); // Final restore for the initial save()
+}
 
   logEvent(htmlString) {
     const div = document.createElement('div');
@@ -984,6 +1000,7 @@ export default class Game {
       const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
 
       // getTileFromCoords clamps to valid range, but we keep hoveredTile for rendering
+      this.hoveredTower = this.towers.find(t => t.col === tile.col && t.row === tile.row);
       this.hoveredTile = tile;
   }
 
@@ -1028,7 +1045,7 @@ export default class Game {
         return;
     } 
     
-    if (key === 'a') {
+    if (key === 'a' && !e.shiftKey) {
         const btn = document.getElementById('abilityModeBtn');
         if (isVisible(btn)) btn.click();
         return;
@@ -1075,5 +1092,15 @@ export default class Game {
         }
       }
     }
+  }
+
+  drawRangeCircle(x, y, range, color = 'rgba(255, 255, 255, 0.2)') {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, range, 0, Math.PI * 2);
+    this.ctx.fillStyle = color;
+    this.ctx.fill();
+    this.ctx.strokeStyle = color.replace('0.2', '0.5'); // Slightly darker border
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
   }
 }
