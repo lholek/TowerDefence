@@ -9,7 +9,6 @@
         "Improved - Gameplay - Hot keys towers/abilies items - select items by numbers (12345)",
         "Improved - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
         "Improved - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
-        "TODO: Improve - Gameplay - Arrows fly directly to the enemy and dont curve (but they can also miss now)",
         "TODO: Improve - Editor - Add shake effect to the editor - create function (do this as parametr in json)",
         "TODO: Improve - Editor - Update css (Fix font sizes)",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
@@ -32,8 +31,6 @@
         "TODO: Improve - Menu - Improve menu description",
         "TODO: Improve - Menu - Improve that player can import only corected versions of maps (also popup if map is wrong)",
         "TODO: Improve - PERFORMANCE BOOST",
-        "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
-        "TODO: Improve - UpdatesUpdates Updates UpdatesUpdates UpdatesUpdates UpdatesUpdatesUpdates Updates Updates Updates Updates",
         "TODO: Improve - Updates"
       ]
     },

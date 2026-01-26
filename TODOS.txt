@@ -13,14 +13,8 @@ TODOS:
 + New Ability - 'Lightining strikes, strikes directly enemies'
 + New Ability - 'Swamp'
 
-alpha 0.1.4:
-  "TODO: Improve - Gameplay - Custom Life Prices for lifes not static prices in custom maps",
-  "TODO: Improve - Gameplay - Hot keys (Towers / Abilties)"
-  "TODO: Improve - Gameplay - Add shake effect to the editor - create function (do this as parametr in json)",
-  "TODO: Improve - Editor - Editor can set differnt prices for extra life",
-  "TODO: Improve - Editor - Add shake effect for enemies to the editor - for now only 'shake-screen': 'true'; (checkbox) + shake impact ",
-  "TODO: Improve - PERFORMANCE BOOST"
 
-alpha 0.1.4 ???:
-  "?TODO: Add mountins and to the map"
-  "?TODO: New Ability - 'Freeze'"
+alpha 0.1.5:
+  "???TODO: Improve - Gameplay - Arrows fly directly to the enemy and dont curve (but they can also miss now)",
+  "???TODO: Add mountins and to the map"
+  "???TODO: New Ability - 'Freeze'"
