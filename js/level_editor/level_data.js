@@ -57,7 +57,7 @@ const defaultLevelJson = {
                     "id": "lava_floor",
                     "configId": "lava_floor",
                     "name": "Lava Floor",
-                    "description": "Demage - 250dmg / 0.25s",
+                    "description": "Damage - 250dmg / 0.25s",
                     "description_text": "3 tile before and after selected tile",
                     "type": "targeted", 
                     "selectionCount": 7, 

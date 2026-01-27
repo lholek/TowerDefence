@@ -97,7 +97,7 @@ export const towerEditor = (() => {
                     
                     <div class="card-body">
                         <label>🪙 Price <input type="number" name="price" data-key="price" value="${tower.price}" min="0"></label>
-                        <label>⚔️ Damage <input type="number" name="demage" data-key="damage" value="${tower.damage}" min="0"></label>
+                        <label>⚔️ Damage <input type="number" name="damage" data-key="damage" value="${tower.damage}" min="0"></label>
                         <label>🕐 Fire Rate (ms) <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
                         <label>🎯 Range  
                             <input type="number" name="range" data-key="range" value="${tower.range}" min="1">

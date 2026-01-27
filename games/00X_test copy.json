@@ -53,7 +53,7 @@
           "configId": "lava_floor_1",
           "id": "lava_floor",
           "name": "Lava Floor B",
-          "description": "Demage - 250dmg / 1000",
+          "description": "Damage - 250dmg / 1000",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
           "selectionCount": 1,
