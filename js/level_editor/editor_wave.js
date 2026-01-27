@@ -145,10 +145,13 @@ export const waveEditor = (() => {
     /**
      * Renders the HTML structure for a single enemy spawn group within a wave.
      */
-        const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
-        return `
-            <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
-            <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
+       const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
+    return `
+        <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
+            <div class="card-controls">
+                <button class="btn btn-copy btn-small" onclick="window.app.waveEditor.copyEnemyGroup(${waveIndex}, ${enemyIndex})">📋</button>
+                <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
+            </div>
             <div class="card-header-inner">
                     <label>Type: 
                         <select data-key="type" class="input-enemy-type">
@@ -315,7 +318,10 @@ export const waveEditor = (() => {
                             <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="${totalCoins} coins">
                         </label>
                         <h4>Enemies (Total Coins: 🪙 ${totalCoins})</h4>
-                        <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
+                        <div class="header-actions">
+                            <button class="btn btn-copy" onclick="window.app.waveEditor.copyWave(${waveIndex})">📋</button>
+                            <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
+                        </div>
                     </div>
                     
                     <div class="card-body waves-body">
@@ -625,16 +631,16 @@ export const waveEditor = (() => {
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const waveToCopy = levels[waveIndex];
-            
+
             const newWave = JSON.parse(JSON.stringify(waveToCopy));
-            
-            // Auto-increment level number
-            const maxLevel = levels.reduce((max, w) => Math.max(max, w.level), 0);
+
+            // Auto-increment level number correctly
+            const maxLevel = levels.length > 0 ? Math.max(...levels.map(w => w.level)) : 0;
             newWave.level = maxLevel + 1;
 
             levels.push(newWave);
             renderWaveRepeater(levels);
-        }, `Wave copied as Level ${maxLevel + 1}.`);
+        }, `Wave copied as Level ${getCurrentMap().levels.length + 1}.`);
     };
 
     /**
