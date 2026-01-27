@@ -13,7 +13,7 @@
         "TODO: Improve - Editor - Update css (Fix font sizes)",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means [Do it trough array whit parameters]{in pahts add info it will show all paths not only availiable}",
-        "Improved - Editor - Map - Editor can not add Starts and Ends (autoincrement - No longer LIMITED to 5)",
+        "Improved - Editor - Map - Editor can add infinite Starts and Ends (autoincrement - No longer LIMITED to 5)",
         "Improved - Editor - Map Information - Editor can disable 'Extra Life' button",
         "Improved - Editor - Map Information - Editor can set different prices for 'Extra Life'",
         "Improved - Editor - Towers - Add Copy Tower Button",
