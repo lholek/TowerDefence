@@ -10,7 +10,7 @@
         "Improved - Gameplay - Show range circle when holding [Shift] while placing or hovering.",
         "Improved - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
         "TODO: Improve - Editor - Update css (Fix font sizes)",
-        "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y)",
+        "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [scroll to stacked selector]",
         "TODO: Improve - Editor - Add to items (i) on hover it shows what it means [Do it trough array whit parameters]{in pahts add info it will show all paths not only availiable}",
         "Improved - Editor - Map - Editor can add infinite Starts and Ends (autoincrement - No longer LIMITED to 5)",
         "Improved - Editor - Map Information - Editor can disable 'Extra Life' button",
