@@ -295,7 +295,13 @@ export const abilityEditor = (() => {
         
         // For Fire Rate display, we flip the sign visually (0.85 becomes +15%)
         const displayChange = inverted ? -change : change;
-        const displaySign = displayChange >= 0 ? '+' : '';
+        let displaySign = "";
+        if (!inverted){
+            displaySign = displayChange >= 0 ? '+' : '';
+        } else {
+            displaySign = displayChange >= 0 ? '-' : '';
+        }
+        
 
         if (change !== 0) {
             return `<span class="${colorClass}" style="color: ${isPositive ? '#4caf50' : '#f44336'}; font-weight: bold;">
