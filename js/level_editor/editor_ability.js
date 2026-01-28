@@ -291,16 +291,9 @@ export const abilityEditor = (() => {
         // For Damage/Speed: >1 is positive. For Fire Rate: <1 (inverted) is positive.
         const isPositive = inverted ? change <= 0 : change >= 0;
         const colorClass = isPositive ? 'stat-pos' : 'stat-neg';
-        const sign = change >= 0 ? '+' : '';
-        
-        // For Fire Rate display, we flip the sign visually (0.85 becomes +15%)
         const displayChange = inverted ? -change : change;
-        let displaySign = "";
-        if (!inverted){
-            displaySign = displayChange >= 0 ? '+' : '';
-        } else {
-            displaySign = displayChange >= 0 ? '-' : '';
-        }
+        const finalValue = inverted ? -change : change;
+        const displaySign = finalValue >= 0 ? '+' : '';
         
 
         if (change !== 0) {
