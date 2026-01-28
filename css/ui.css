@@ -562,11 +562,12 @@
     border: 2px solid #468bb0;
     padding: 30px;
     border-radius: 12px;
-    width: 500px;
-    max-width: 90vw;
+    width: 650px;
+    max-width: 95vw;
     position: relative;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
     color: white;
+    overflow-x: hidden;
 }
 
 .close-tutorial {
@@ -575,22 +576,52 @@
 }
 .close-tutorial:hover { color: #fff; }
 
+.hotkey-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: center;
+    column-gap: 100px;
+    row-gap: 12px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.key-item {
+    display: contents;
+}
+
+.hotkey-grid-compact {
+    display: grid;
+    /* This creates: [Key] [Desc] [Gap] [Key] [Desc] */
+    grid-template-columns: auto 1fr auto 1fr;
+    column-gap: 15px;
+    row-gap: 15px;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+/* Ensure the keycaps don't shrink and look uniform */
 .key-cap {
     background: #2a2a2a;
     border: 1px solid #444;
     border-bottom: 3px solid #000;
-    padding: 2px 8px;
+    padding: 3px 6px;
     border-radius: 4px;
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
     color: #ffd700;
-    margin-right: 8px;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 60px;
+    display: inline-block;
 }
 
-.hotkey-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
+/* Responsive adjustment: If the screen is too small, drop to 1 column */
+@media (max-width: 600px) {
+    .hotkey-grid-compact {
+        grid-template-columns: auto 1fr;
+    }
 }
 
 .tip-box {

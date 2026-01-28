@@ -80,20 +80,27 @@
   padding-bottom: 8px;
 }
 
+
 /* The Key/Mouse Badge */
 .key-cap {
-  background: #8b4513; /* Your gold color */
-  color: #f3e5ab;      /* Dark brown text */
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-family: 'Cinzel', serif;
-  font-weight: bold;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  border: 1px solid #5c2e0e;
-  box-shadow: 0 3px 0 #5c2e0e; /* Depth effect */
-  min-width: 100px;
-  text-align: center;
+    background: #8b4513;
+    display: flex;
+    color: #f3e5ab;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    border: 1px solid #5c2e0e;
+    box-shadow: 0 3px 0 #5c2e0e;
+    min-width: 145px;
+    height: 25px;
+    text-align: center;
+    white-space: nowrap;
+    justify-self: start;
+    align-items: center;
+    justify-content: center;
 }
 
 /* The Description Text */
