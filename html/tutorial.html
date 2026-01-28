@@ -1,0 +1,81 @@
+<div class="tutorial-card">
+    <span id="closeTutorial" class="close-tutorial">&times;</span>
+    
+    <div class="tutorial-header">
+        <h2 class="cl-primary text-center">📜 Guardian's Manual</h2>
+        <div class="page-indicator text-center" style="font-size: 0.8em; opacity: 0.7;">
+            Step <span id="currentStepNum">1</span> of 5
+        </div>
+        <hr class="separator">
+    </div>
+    
+    <div id="tutorialPages">
+        <div class="tutorial-page" id="page-0">
+            <h3>🛡️ The Core Mission</h3>
+            <p>Protect the <strong>Tree of Life</strong>. Enemies emerge from Portals (S) and march toward the Exit (E).</p>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Every enemy that escapes reduces your ❤️ 10 Lives. If you reach 0, the game is over.
+            </div>
+            <ul class="guide-list">
+                <li>🪙 <strong>Gold:</strong> Earned by destroying enemies.</li>
+                <li>🏰 <strong>Strategy:</strong> Place towers on green tiles to maximize their firing time.</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-1">
+            <h3>🏹 Tower Mechanics</h3>
+            <p>Understanding your defenses is key to survival:</p>
+            <ul class="guide-list">
+                <li><strong>Range:</strong> The circular area where the tower can detect enemies.</li>
+                <li><strong>Fire Rate:</strong> Shown in milliseconds (ms). 
+                    <br><small><em>(Note: 400ms is <strong>faster</strong> than 800ms because the delay between shots is shorter!)</em></small>
+                </li>
+                <li><strong>Damage:</strong> The health removed from an enemy per hit.</li>
+            </ul>
+            <div class="tip-box">
+                Right-click a tower to <strong>Dismantle</strong> it and recover some gold.
+            </div>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-2">
+            <h3>🌋 Ability: Lava Floor</h3>
+            <p>A powerful area-of-effect (AoE) attack that scorches the earth.</p>
+            <ul class="guide-list">
+                <li><strong>Usage:</strong> Select the ability and click a path tile.</li>
+                <li><strong>Effect:</strong> Sets the selected tile (and nearby tiles) on fire.</li>
+                <li><strong>Damage:</strong> Deals rapid damage to every enemy standing on the burning tiles.</li>
+            </ul>
+            <p><small>Best used on "choke points" where enemies group together!</small></p>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-3">
+            <h3>🏹 Ability: Tower's Fury</h3>
+            <p>A global buff that pushes your towers beyond their limits.</p>
+            <ul class="guide-list">
+                <li><strong>Effect:</strong> Temporarily reduces the <strong>Fire Rate</strong> of ALL towers on the map.</li>
+                <li><strong>Power:</strong> Your towers will shoot significantly faster for the duration of the spell.</li>
+                <li><strong>Timing:</strong> Save this for massive waves or Boss enemies!</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-4">
+            <h3>⌨️ Commander Hotkeys</h3>
+            <div class="hotkey-grid">
+                <div class="key-item"><span class="key-cap">1 - 5</span> Fast Select Item</div>
+                <div class="key-item"><span class="key-cap">SHIFT</span> Show Range</div>
+                <div class="key-item"><span class="key-cap">SHIFT+A</span> All Ranges</div>
+                <div class="key-item"><span class="key-cap">T / A</span> Shop Tabs</div>
+                <div class="key-item"><span class="key-cap">P</span> Pause Game</div>
+                <div class="key-item"><span class="key-cap">E</span> Buy Life</div>
+            </div>
+            <div class="tip-box text-center" style="margin-top: 20px; border: none; background: rgba(76, 175, 80, 0.2);">
+                <strong>Good luck, Guardian!</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="tutorial-footer">
+        <button id="prevPage" class="btn" style="visibility: hidden;">Back</button>
+        <button id="nextPage" class="btn btn-primary">Next</button>
+    </div>
+</div>
