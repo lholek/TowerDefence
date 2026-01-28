@@ -53,7 +53,7 @@ export default class TowersFury extends Ability {
         
         this.activeInstances.push({
             durationLeft: this.effectDuration, 
-            onEnd: () => { console.log(`${this.name} (${this.id}) Ended`); }
+            onEnd: () => {}
         });
 
         // IMPORTANT: We let AbilityManager handle the UI cooldown timer 

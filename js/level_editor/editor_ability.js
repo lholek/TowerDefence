@@ -78,7 +78,10 @@ export const abilityEditor = (() => {
                         <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
                         <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
                         <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
-                        <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
+                        <div class="header-actions">
+                            <button class="btn btn-copy btn-copy-ability" data-ability-index="${index}" title="Copy Ability">📋</button>
+                            <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -131,13 +134,19 @@ export const abilityEditor = (() => {
     const attachDeleteListeners = () => {
         if (!contentContainer) return;
         
+        // Delete Listeners
         contentContainer.querySelectorAll('.btn-delete-ability').forEach(button => {
             button.addEventListener('click', async (e) => { 
-                // FIX: Use e.currentTarget instead of e.target. 
-                // e.currentTarget is guaranteed to be the button the listener is attached to,
-                // which ensures the 'data-ability-index' is correctly retrieved.
                 const index = parseInt(e.currentTarget.getAttribute('data-ability-index'), 10);
                 await deleteAbility(index); 
+            });
+        });
+
+        // Copy Listeners
+        contentContainer.querySelectorAll('.btn-copy-ability').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.currentTarget.getAttribute('data-ability-index'), 10);
+                copyAbility(index);
             });
         });
     };
@@ -246,10 +255,35 @@ export const abilityEditor = (() => {
         }, `Ability ${abilityName} deleted.`);
     };
 
+    const copyAbility = (index) => {
+        modifyJson((data) => {
+            const abilities = data.maps[0].abilities; // Defined inside here
+            const sourceAbility = abilities[index];
+
+            if (!sourceAbility) return;
+
+            // Deep copy the selected ability
+            const newAbility = JSON.parse(JSON.stringify(sourceAbility));
+
+            // Update identifiers to avoid duplicates
+            newAbility.name = `${sourceAbility.name} (Copy)`;
+            newAbility.configId = `${sourceAbility.id}_${Date.now()}`;
+
+            // Insert right after the original
+            abilities.splice(index + 1, 0, newAbility);
+
+            // Re-render
+            renderAbilityRepeater(abilities);
+
+            // Log inside the scope where 'sourceAbility' is known
+        }, `Copied ability at index ${index}`);
+    };
+
     return {
         renderAbilityRepeater,
         addAbility,
         deleteAbility,
+        copyAbility
     };
 })();
 
