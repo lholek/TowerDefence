@@ -81,9 +81,9 @@
             "icon": "🏹"
           },
           "modifiers": {
-            "damage_mul": 1,
-            "speed_mul": 1,
-            "fireRate_mul": 1
+            "damage_mul": 6,
+            "speed_mul": 6,
+            "fireRate_mul": -4
           }
         }
       ],

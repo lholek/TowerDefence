@@ -111,6 +111,13 @@ export const abilityEditor = (() => {
 
                         ${isFury ? `
                             <div class="ability-fury-modifiers">
+                                <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+                                    <div class="stat-row">${formatStat(ability.modifiers?.damage_mul || 1)} <span class="stat-label">Damage</span></div>
+                                    <div class="stat-row">
+                                        ${formatStat(ability.modifiers?.speed_mul || 1)} <span class="stat-label">Speed</span> | 
+                                        ${formatStat(ability.modifiers?.fireRate_mul || 1, true)} <span class="stat-label">Fire Rate</span>
+                                    </div>
+                                </div>
                                 <p>MODIFIERS (1 = 100%)</p>
                                 <label>Dmg Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
                                 <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
@@ -277,6 +284,25 @@ export const abilityEditor = (() => {
 
             // Log inside the scope where 'sourceAbility' is known
         }, `Copied ability at index ${index}`);
+    };
+
+    const formatStat = (val, inverted = false) => {
+        const change = Math.round((val - 1) * 100);
+        // For Damage/Speed: >1 is positive. For Fire Rate: <1 (inverted) is positive.
+        const isPositive = inverted ? change <= 0 : change >= 0;
+        const colorClass = isPositive ? 'stat-pos' : 'stat-neg';
+        const sign = change >= 0 ? '+' : '';
+        
+        // For Fire Rate display, we flip the sign visually (0.85 becomes +15%)
+        const displayChange = inverted ? -change : change;
+        const displaySign = displayChange >= 0 ? '+' : '';
+
+        if (change !== 0) {
+            return `<span class="${colorClass}" style="color: ${isPositive ? '#4caf50' : '#f44336'}; font-weight: bold;">
+                ${displaySign}${displayChange}%
+            </span>`;
+        }
+        return `<span>±0%</span>`;
     };
 
     return {

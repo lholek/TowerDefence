@@ -11,7 +11,6 @@
         "Improved - Gameplay - Show range circle of all tower when holding [Shift + A (all)]",
         "TODO: Improve - Editor - Update css (Fix font sizes)",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [scroll to stacked selector]",
-        "TODO: Improve - Editor - Add Editor Guide",
         "Improved - Editor - Map - Editor can add infinite Starts and Ends (autoincrement - No longer LIMITED to 5)",
         "Improved - Editor - Map Information - Editor can disable 'Extra Life' button",
         "Improved - Editor - Map Information - Editor can set different prices for 'Extra Life'",
@@ -30,6 +29,7 @@
         "TODO: Improve - Menu - Improve menu description",
         "TODO: Improve - Menu - Improve that player can import only corected versions of maps (also popup if map is wrong)",
         "TODO: Improve - Menu - Add How to play (Tutorial / Guide)",
+        "TODO: Improve - Game - Add Favicon",
         "TODO: Improve - PERFORMANCE BOOST",
         "TODO: Improve - Updates"
       ]
