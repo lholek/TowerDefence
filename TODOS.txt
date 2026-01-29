@@ -16,8 +16,9 @@ TODOS:
 
 alpha 0.1.5:
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
+  "TODO: Improve - PERFORMANCE BOOST"
   "???TODO: Improve - Gameplay - Arrows fly directly to the enemy and dont curve (but they can also miss now)",
   "???TODO: Add mountins and to the map"
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
-  "???TODO: New Ability - 'Freeze'"
+  "???TODO: New Ability - 'Freeze'",

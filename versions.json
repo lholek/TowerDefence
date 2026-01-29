@@ -28,8 +28,8 @@
         "Improved - Menu - Added 'How to play' (Tutorial / Guide)",
         "Improved - Menu - Controls moved to 'How to play' section",
         "TODO: Improve - Menu - Improve that player can import only corected versions of maps (also popup if map is wrong)",
-        "TODO: Improve - Game - Add some maps",
-        "TODO: Improve - PERFORMANCE BOOST"
+        "TODO: Improve - Menu - Fix that on reload always load json and render minimap",
+        "TODO: Improve - Game - Add some maps"
       ]
     },
     {
