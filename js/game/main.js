@@ -86,27 +86,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             // ✅ description
             if (map.description && map.description.length) {
                 const d = map.description[0];
+
+                // Create a 2-column layout wrapper
                 infoDiv.innerHTML = `
-                    <div class="map-desc">
-                        <p><b>Description:</b><br>${d.descriptionText || '-'}</p>
-                        <p><b>Level count:</b> ${d['level count'] || '-'}</p>
-                        <p><b>Difficulty:</b> ${d.difficulty || '-'}</p>
-                        <p><b>Map size:</b> ${d.map_size || '-'}</p>
-                        <p><b>Tower Types:</b> ${Object.keys(map.towerTypes).length || '-'}</p>
-                        <p>
-                        <b>Abilities:</b> 
-                          ${
-                            map.abilities && map.abilities.length > 0
-                              ? map.abilities.map(ab => `${ab.name} ${ab.ui.icon}`).join('<br>')
-                              : '-'
-                          }
-                        </p>
+                    <div class="map-preview-wrapper">
+                        <div class="map-stats-col">
+                            <table class="map-info-table">
+                                <tr><td><b>Description:</b></td><td>${d.descriptionText || '-'}</td></tr>
+                                <tr><td><b>Level Count:</b></td><td>${d['level count'] || '-'}</td></tr>
+                                <tr><td><b>Difficulty:</b></td><td>${d.difficulty || '-'}</td></tr>
+                                <tr><td><b>Map Size:</b></td><td>${d.map_size || '-'}</td></tr>
+                                <tr><td><b>Towers:</b></td><td>${Object.keys(map.towerTypes).length || '-'} types</td></tr>
+                                <tr>
+                                    <td><b>Abilities:</b></td>
+                                    <td>
+                                        ${map.abilities && map.abilities.length > 0
+                                            ? map.abilities.map(ab => `<span>${ab.ui.icon} ${ab.name}</span>`).join('<br>')
+                                            : '-'
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                                    
+                        <div id="minimapContainer">
+                            <div id="minimap"></div>
+                        </div>
                     </div>
                 `;
+                                    
+                // Call the minimap render function
+                renderMinimap(map); 
             } else {
                 infoDiv.textContent = 'No description available.';
             }
-
             renderMinimap(map);
 
         } catch (err) {

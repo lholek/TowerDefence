@@ -95,6 +95,63 @@
 .minimap-tile.water { background: #0b3a5e; }
 /* mini map */
 
+/* map info table */
+/* The parent wrapper for 2 columns */
+.map-preview-wrapper {
+    display: flex;
+    flex-direction: row;    /* Side by side */
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Left Column: Table adjustments */
+.map-stats-col {
+    flex: 1; /* Takes up remaining space */
+    min-width: 200px;
+}
+
+.map-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #eee;
+}
+
+.map-info-table td {
+    padding: 8px 4px;
+    border-bottom: 1px solid rgba(240, 198, 116, 0.1);
+}
+
+.map-info-table td:first-child {
+    color: #f0c674;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+/* Right Column: Fixed Map Box */
+#minimapContainer {
+    width: 350px !important;
+    height: 350px !important;
+    flex: 0 0 350px; /* Forces it to stay exactly 350px width */
+    background: #BBC7D4;
+    border: 2px solid #5c2e0e;
+    border-radius: 4px;
+    overflow: hidden;
+    display: block;
+}
+
+#minimap {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    /* grid-template logic remains in main.js using 1fr */
+} /* Columns/Rows are set dynamically in JS */
+/* map info table */
+
 /* Log Popup Specifics */
 .log-popup-content {
     min-width: 500px;
