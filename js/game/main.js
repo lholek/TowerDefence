@@ -382,4 +382,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     /* Setting Game speed */
+    
+    // This triggers the preview for the default selected option on page load
+    updateMapPreview()
 });
