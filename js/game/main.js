@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (map.description && map.description.length) {
                 const d = map.description[0];
                 infoDiv.innerHTML = `
-                    <div>
+                    <div class="map-desc">
                         <p><b>Description:</b><br>${d.descriptionText || '-'}</p>
                         <p><b>Level count:</b> ${d['level count'] || '-'}</p>
                         <p><b>Difficulty:</b> ${d.difficulty || '-'}</p>
@@ -276,78 +276,75 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     //Render minimap
-    function renderMinimap(mapData) {
-      // find or create container elements safely
-      const mapInfo = document.getElementById('mapInfo');
-      if (!mapInfo) {
-        console.warn('renderMinimap: #mapInfo not found in DOM. Aborting minimap render.');
-        return;
-      }
-    
-      // minimap container
-      let minimap = document.getElementById('minimap');
-      if (!minimap) {
-        const container = document.createElement('div');
-        container.id = 'minimapContainer';
-        const inner = document.createElement('div');
-        inner.id = 'minimap';
-        container.appendChild(inner);
-        mapInfo.appendChild(container);
-        minimap = inner;
-      }
-    
-      // clear previous
-      minimap.innerHTML = '';
-    
-      // Update name/description safely
-      const mapName = mapData.name || 'Unnamed Map';
-      const desc = (mapData.description && mapData.description[0] && mapData.description[0].descriptionText) || '';
-      //nameEl.textContent = mapName;
-    
-      // layout must be an array of strings
-      if (!mapData.layout || !Array.isArray(mapData.layout) || mapData.layout.length === 0) {
-        console.warn('renderMinimap: invalid layout in mapData', mapData);
-        return;
-      }
-    
-      const rows = mapData.layout.length;
-      const cols = mapData.layout[0].length;
-    
-      // set grid template based on rows/cols
-      const tileSize = 10; // px - tweak if needed
-      minimap.style.gridTemplateRows = `repeat(${rows}, ${tileSize}px)`;
-      minimap.style.gridTemplateColumns = `repeat(${cols}, ${tileSize}px)`;
-    
-      // create tiles
-      for (let r = 0; r < rows; r++) {
-        // Assuming mapData.layout[r] is now an ARRAY of tile identifiers
-        const rowTiles = mapData.layout[r]; 
-            
-        // Iterate through the tile identifiers in the array
-        for (let c = 0; c < cols; c++) {
-          // Get the full tile identifier (e.g., 'S1', 'E2', 'O', '-')
-          const tileIdentifier = rowTiles[c] || 'X'; 
-          const tile = document.createElement('div');
-          tile.className = 'minimap-tile';
-        
-          // 🌟 Use a regular expression to match all 'O', 'S[number]', and 'E[number]' patterns
-          const isPathTile = /^(O|S\d+|E\d+)$/.test(tileIdentifier);
+ function renderMinimap(mapData) {
+  const mapInfo = document.getElementById('mapInfo');
+  if (!mapInfo) return;
 
-          if (isPathTile) {
-            tile.classList.add('path');
-          } else if (tileIdentifier === '-') {
-            tile.classList.add('sky');
-          } else if (tileIdentifier === 'W') {
-            tile.classList.add('water');
-          }  else {
-            // Default for 'X' or any other unknown/unhandled identifier
-            tile.classList.add('block');
-          }
-        
-          minimap.appendChild(tile);
-        }
+  // 1. Ensure the container is strictly 400x400 and ignores parent layout rules
+  let container = document.getElementById('minimapContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'minimapContainer';
+    container.style.cssText = `
+        width: 300px !important;
+        height: 300px !important;
+        min-width: 350px;
+        min-height: 350px;
+        overflow: hidden;
+        background: transparent;
+        border-radius: 8px;
+        margin: 10px auto;
+        display: block;
+        flex-shrink: 0; 
+    `;
+    mapInfo.appendChild(container);
+  }
+
+  let minimap = document.getElementById('minimap');
+  if (!minimap) {
+    minimap = document.createElement('div');
+    minimap.id = 'minimap';
+    container.appendChild(minimap);
+  }
+
+  minimap.innerHTML = '';
+  if (!mapData.layout || !Array.isArray(mapData.layout)) return;
+
+  const rows = mapData.layout.length;
+  const cols = mapData.layout[0].length;
+
+  // 2. Set grid to fill 100% of the 400px container
+  minimap.style.display = 'grid';
+  minimap.style.width = '100%';
+  minimap.style.height = '100%';
+  
+  // Using 1fr ensures that 45 columns or 25 rows fit exactly into the 400px
+  minimap.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  minimap.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+  for (let r = 0; r < rows; r++) {
+    const rowTiles = mapData.layout[r];
+    for (let c = 0; c < cols; c++) {
+      const tileIdentifier = rowTiles[c] || 'X';
+      const tile = document.createElement('div');
+      tile.className = 'minimap-tile';
+      
+      // Match the identifier logic from your main.js
+      const isPathTile = /^(O|S\d+|E\d+)$/.test(tileIdentifier);
+
+      if (isPathTile) {
+        tile.classList.add('path');
+      } else if (tileIdentifier === '-') {
+        tile.classList.add('sky');
+      } else if (tileIdentifier === 'W') {
+        tile.classList.add('water');
+      } else {
+        tile.classList.add('block');
       }
+      minimap.appendChild(tile);
     }
+  }
+}
 
     mapSelect.addEventListener('change', updateMapPreview);
     mapFileInput.addEventListener('change', updateMapPreview);
