@@ -724,3 +724,18 @@
     justify-content: space-between;
 }
 /* *** TUTORIAL *** */
+
+/* *** Import Error *** */
+.import-error-notice h3{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #dc3545!important;
+}
+
+.import-error-notice p{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+}
+/* *** Import Error *** */

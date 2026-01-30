@@ -20,16 +20,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let game;
 
-    // --- Pomocná funkce pro načítání souboru ---
-    /**
-     * Načte obsah souboru pomocí FileReader a parsuje ho jako JSON.
-     * @param {File} file Soubor vybraný uživatelem z input type="file".
-     * @returns {Promise<Object>} Promise, který se vyřeší s JSON objektem dat mapy.
-     */
     function loadMapDataFromFile(file) {
         return new Promise((resolve, reject) => {
+            const mapFileInput = document.getElementById('mapFileInput');
+
             // 1. Check file extension
             if (!file.name.toLowerCase().endsWith('.json')) {
+                if (mapFileInput) mapFileInput.value = ""; // Delete/Clear the file
                 reject(new Error("File must be a .json file."));
                 return;
             }
@@ -38,40 +35,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             reader.onload = (event) => {
                 try {
                     const mapData = JSON.parse(event.target.result);
-
+                
                     // 2. Validate Root Structure
                     if (!mapData.maps || !Array.isArray(mapData.maps) || mapData.maps.length === 0) {
-                        reject(new Error("Invalid map format: Missing 'maps' array."));
-                        return;
+                        throw new Error("Missing 'maps' array.");
                     }
-
-                    // 3. Validate Required Sub-items (Checking the first map in the array)
+                
+                    // 3. Validate Required Sub-items
                     const m = mapData.maps[0];
                     const requiredFields = [
                         'name', 'startingCoins', 'startingLifes', 'layout', 
                         'towerTypes', 'levels', 'description'
                     ];
-
+                
                     const missing = requiredFields.filter(field => !m.hasOwnProperty(field));
-                    
                     if (missing.length > 0) {
-                        reject(new Error(`Invalid map data: Missing fields (${missing.join(', ')}).`));
-                        return;
+                        throw new Error(`Missing fields: ${missing.join(', ')}`);
                     }
-
-                    // 4. Validate Layout (Must be an array of arrays)
-                    if (!Array.isArray(m.layout) || !Array.isArray(m.layout[0])) {
-                        reject(new Error("Invalid map layout: Must be a 2D array."));
-                        return;
-                    }
-
+                
                     resolve(mapData);
                 } catch (e) {
-                    reject(new Error("Soubor není platný JSON formát nebo je poškozen."));
+                    if (mapFileInput) mapFileInput.value = ""; // Delete/Clear the file
+                    reject(e);
                 }
             };
 
-            reader.onerror = () => reject(new Error("Chyba při čtení souboru."));
+            reader.onerror = () => {
+                if (mapFileInput) mapFileInput.value = "";
+                    reject(new Error("Read error"));
+            };
             reader.readAsText(file);
         });
     }
@@ -150,8 +142,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderMinimap(map);
 
         } catch (err) {
-            console.error(err);
-            infoDiv.textContent = 'Failed to load map preview.';
+            // This displays your requested Alpha 0.1.4 error notice
+            infoDiv.innerHTML = `
+                <div class="import-error-notice">
+                    <h3>Malformed data for Map</h3>
+                    <p>Reason: ${err.message}</p>
+                </div>
+            `;
         }
     }
     // --- Logika přepínání režimů mapy (Select / File) ---
