@@ -132,6 +132,19 @@
     font-weight: bold;
 }
 
+.info-table-life{
+  font-weight: 900;
+}
+
+.info-table-life-no{
+  color: red;
+}
+
+.info-table-life-yes{
+  color: green;
+
+}
+
 /* Right Column: Fixed Map Box */
 #minimapContainer {
     width: 350px !important;

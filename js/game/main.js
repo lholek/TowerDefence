@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // ✅ description
             if (map.description && map.description.length) {
                 const d = map.description[0];
-
                 // Create a 2-column layout wrapper
                 infoDiv.innerHTML = `
                     <div class="map-preview-wrapper">
@@ -124,6 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <tr><td><b>Difficulty:</b></td><td>${d.difficulty || '-'}</td></tr>
                                 <tr><td><b>Map Size:</b></td><td>${d.map_size || '-'}</td></tr>
                                 <tr><td><b>Towers:</b></td><td>${Object.keys(map.towerTypes).length || '-'} types</td></tr>
+                                <tr><td><b>Extra Life:</b></td><td class="info-table-life ${map.extraLife === false ? 'info-table-life-no' : 'info-table-life-yes'}">${map.extraLife === false ? '✖' : '✔'}</td></tr>
                                 <tr>
                                     <td><b>Abilities:</b></td>
                                     <td>
