@@ -29,7 +29,9 @@
         "Improved - Menu - Added 'How to play' (Tutorial / Guide)",
         "Improved - Menu - Controls moved to 'How to play' section",
         "Improved - Menu - Player can see if extra lives are available in the map or not",
-        "Improved - Menu - Improved that player can import only corrected versions of maps"
+        "Improved - Menu - Improved that player can import only corrected versions of maps",
+        "Todo: Improve - UI - Towers add small number 1 - 9 to the corner of towers card to indicate its number",
+        "Todo: Improve - UI - Abilites add small number 1 - 9 to the corner of towers card to indicate its number"
       ]
     },
     {
