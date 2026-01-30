@@ -10,7 +10,8 @@
           "level count": 25,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "45x25",
-          "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋"
+          "abilites": "Tower's Fury🏹, Wind's Rage🏹🏹, Lava Floor🌋, Magma Floor🌋🌋",
+          "tower types": 8
         }
       ],
       "tileSize": 80,
@@ -3001,6 +3002,13 @@
         "boss-pre-final",
         "boss-final",
         "boss-final-am4"
+      ],
+      "enemyEffects": [
+        {
+          "type": "boss-final-am4",
+          "shakeDuration": 2000,
+          "shakeIntensity": 15
+        }
       ]
     }
   ]
