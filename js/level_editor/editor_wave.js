@@ -708,46 +708,47 @@ export const waveEditor = (() => {
      */
     const renderEffectsRepeater = () => {
         if (!effectsContainer) return;
-
+        
         const effects = getEffects();
-        const enemyTypes = getEnemyTypes(); // Use your existing helper
-
+        const enemyTypes = getEnemyTypes();
+        
         // Helper to build dropdown options
         const buildOptions = (selected) => {
-            // Handle both string types and object types from your previous refactor
             return enemyTypes.map(t => {
                 const val = typeof t === 'string' ? t : t.id;
                 return `<option value="${val}" ${val === selected ? 'selected' : ''}>${val}</option>`;
             }).join('');
         };
-
+    
+        // FIX: Clear the container first and handle the empty state explicitly
         if (effects.length === 0) {
             effectsContainer.innerHTML = '<p style="color:#888;">No effects defined. Click "Add New Effect" to start.</p>';
-            return;
+            return; // Now it updates the UI before returning
         }
-
+    
+        // Render the rows if effects exist
         effectsContainer.innerHTML = effects.map((effect, index) => `
             <div class="effect-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: rgba(255,255,255,0.05); padding: 10px;">
-
+    
                 <div style="flex: 1;">
                     <label style="font-size: 0.8em; display:block;">Enemy Type</label>
-                    <select onchange="window.app.waveEditor.updateEffect(${index}, 'type', this.value)" style="width: 100%;">
+                    <select onchange="window.app.waveEditor.updateEffect(${index}, 'type', this.value)" class="input-enemy-effect-type" style="width: 100%;">
                         ${buildOptions(effect.type)}
                     </select>
                 </div>
-
+    
                 <div style="flex: 1;">
                     <label style="font-size: 0.8em; display:block;">Shake Duration (ms)</label>
                     <input type="number" value="${effect.shakeDuration || 0}" step="100" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
                 </div>
-
+    
                 <div style="flex: 1;">
                     <label style="font-size: 0.8em; display:block;">Shake Intensity (px)</label>
                     <input type="number" value="${effect.shakeIntensity || 0}" step="0.5" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
                 </div>
-
+    
                 <button class="btn btn-delete" onclick="window.app.waveEditor.deleteEffect(${index})">X</button>
             </div>
         `).join('');
