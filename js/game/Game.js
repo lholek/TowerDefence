@@ -496,9 +496,11 @@ export default class Game {
      const pathKey = config.path || 'S1E1'; 
      const path = this.map.paths[pathKey];
 
-     if (config.type === 'boss-final-am4') {
-        this.shakeDuration = 2000; // Shake for 2 seconds (2000ms)
-        this.shakeIntensity = 15;   // Intensity of the shake (15 pixels)
+    const effect = this.levelData.enemyEffects?.find(e => e.type === config.type);
+    
+    if (effect) {
+        this.shakeDuration = effect.shakeDuration;
+        this.shakeIntensity = effect.shakeIntensity;
     }
 
     if (path && path.length > 0) {

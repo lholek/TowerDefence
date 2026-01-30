@@ -31,9 +31,27 @@ export function getEnemyTypes() {
  */
 let tagsContainer = null;
 let newTypeInput = null;
+let effectsContainer = null;
+
 export const initialize = (refs) => {
     setStatus = refs.setStatus;
     contentContainer = document.getElementById('waves-editor-container'); 
+
+    effectsContainer = document.getElementById('enemy-effects-repeater');
+    
+    // NEW: Listener for the "Add Effect" button
+    const addEffectBtn = document.getElementById('add-effect-btn');
+    if (addEffectBtn) {
+        addEffectBtn.addEventListener('click', waveEditor.addEffect);
+    }
+    
+    if (contentContainer) {
+        waveEditor.renderWaveRepeater(getCurrentMap().levels);
+        renderEnemyTypeTags();
+        
+        // NEW: Render the effects table on load
+        waveEditor.renderEffectsRepeater(); 
+    }
     
     // New references
     tagsContainer = document.getElementById('enemyTypesTagsContainer');
@@ -129,6 +147,11 @@ function addNewEnemyType() {
     }
 
     modifyJson((data) => {
+        const newTypeObject = { 
+            id: value, 
+            shakeDuration: 0, 
+            shakeIntensity: 0 
+        };
         data.maps[0].enemyTypes = [...currentTypes, value];
         newTypeInput.value = ""; // Clear input
         renderEnemyTypeTags(); // Refresh tags
@@ -666,6 +689,112 @@ export const waveEditor = (() => {
         </datalist>
     `;
 
+    /**
+     * Gets the effects array, initializing it if missing.
+     */
+    const getEffects = () => {
+        const map = getCurrentMap();
+        if (!map.enemyEffects) {
+            map.enemyEffects = []; // Initialize if missing
+        }
+        return map.enemyEffects;
+    };
+
+    /**
+     * Renders the Effect Repeater (Type | Duration | Intensity)
+     */
+    const renderEffectsRepeater = () => {
+        if (!effectsContainer) return;
+
+        const effects = getEffects();
+        const enemyTypes = getEnemyTypes(); // Use your existing helper
+
+        // Helper to build dropdown options
+        const buildOptions = (selected) => {
+            // Handle both string types and object types from your previous refactor
+            return enemyTypes.map(t => {
+                const val = typeof t === 'string' ? t : t.id;
+                return `<option value="${val}" ${val === selected ? 'selected' : ''}>${val}</option>`;
+            }).join('');
+        };
+
+        if (effects.length === 0) {
+            effectsContainer.innerHTML = '<p style="color:#888;">No effects defined. Click "Add New Effect" to start.</p>';
+            return;
+        }
+
+        effectsContainer.innerHTML = effects.map((effect, index) => `
+            <div class="effect-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: rgba(255,255,255,0.05); padding: 10px;">
+
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8em; display:block;">Enemy Type</label>
+                    <select onchange="window.app.waveEditor.updateEffect(${index}, 'type', this.value)" style="width: 100%;">
+                        ${buildOptions(effect.type)}
+                    </select>
+                </div>
+
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8em; display:block;">Shake Duration (ms)</label>
+                    <input type="number" value="${effect.shakeDuration || 0}" step="100" 
+                           onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
+                </div>
+
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8em; display:block;">Shake Intensity (px)</label>
+                    <input type="number" value="${effect.shakeIntensity || 0}" step="0.5" 
+                           onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
+                </div>
+
+                <button class="btn btn-delete" onclick="window.app.waveEditor.deleteEffect(${index})">X</button>
+            </div>
+        `).join('');
+    };
+
+    /**
+     * Adds a new blank effect entry
+     */
+    const addEffect = () => {
+        modifyJson((data) => {
+            if (!data.maps[0].enemyEffects) data.maps[0].enemyEffects = [];
+
+            // Default to the first available enemy type
+            const defaultType = getEnemyTypes()[0];
+            const typeId = typeof defaultType === 'string' ? defaultType : defaultType.id;
+
+            data.maps[0].enemyEffects.push({
+                type: typeId,
+                shakeDuration: 1000,
+                shakeIntensity: 5
+            });
+
+            renderEffectsRepeater();
+        }, "Added new enemy effect.");
+    };
+
+    /**
+     * Updates a specific property of an effect
+     */
+    const updateEffect = (index, key, value) => {
+        modifyJson((data) => {
+            const effect = data.maps[0].enemyEffects[index];
+            // If it's a number input, parse it, otherwise keep string
+            effect[key] = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseFloat(value) : value;
+
+            // No need to re-render the whole list for simple input changes, 
+            // but if you want to be safe: renderEffectsRepeater();
+        }, `Updated effect ${key}`);
+    };
+
+    /**
+     * Deletes an effect entry
+     */
+    const deleteEffect = (index) => {
+        modifyJson((data) => {
+            data.maps[0].enemyEffects.splice(index, 1);
+            renderEffectsRepeater();
+        }, "Deleted enemy effect.");
+    };    
+
     return {
         renderWaveRepeater,
         addWave,
@@ -681,6 +810,10 @@ export const waveEditor = (() => {
         handleDragEnter,
         handleDragLeave,
         handleDragEnd,
-        handleDrop
+        handleDrop,
+        renderEffectsRepeater,
+        addEffect,
+        updateEffect,
+        deleteEffect
     };
 })();
