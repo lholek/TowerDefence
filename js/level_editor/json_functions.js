@@ -206,6 +206,10 @@ export function updateMapFromEditor() {
             if (modules.waveEditor.updateEnemyTypesEditor) {
                 modules.waveEditor.updateEnemyTypesEditor();
             }
+
+            if (typeof modules.waveEditor.renderEffectsRepeater === 'function') {
+                modules.waveEditor.renderEffectsRepeater();
+            }
         }
         
         // D. Ability Editor

@@ -96,6 +96,11 @@
           "type": "basic",
           "shakeDuration": 1000,
           "shakeIntensity": 25
+        },
+         {
+          "type": "fast",
+          "shakeDuration": 45,
+          "shakeIntensity": 25
         }
       ]
     }

@@ -36,10 +36,11 @@ let effectsContainer = null;
 export const initialize = (refs) => {
     setStatus = refs.setStatus;
     contentContainer = document.getElementById('waves-editor-container'); 
-
     effectsContainer = document.getElementById('enemy-effects-repeater');
-    
-    // NEW: Listener for the "Add Effect" button
+    tagsContainer = document.getElementById('enemyTypesTagsContainer');
+    newTypeInput = document.getElementById('newEnemyTypeInput');
+
+    // 1. Attach Button Listeners
     const addEffectBtn = document.getElementById('add-effect-btn');
     if (addEffectBtn) {
         addEffectBtn.addEventListener('click', waveEditor.addEffect);
@@ -73,6 +74,8 @@ export const initialize = (refs) => {
     if (contentContainer) {
         waveEditor.renderWaveRepeater(getCurrentMap().levels);
         renderEnemyTypeTags(); // Render tags on load
+
+        waveEditor.renderEffectsRepeater();
     }
 
     // Attach event listener for the main Add Wave button
@@ -776,15 +779,19 @@ export const waveEditor = (() => {
      */
     const updateEffect = (index, key, value) => {
         modifyJson((data) => {
+            if (!data.maps[0].enemyEffects) data.maps[0].enemyEffects = [];
             const effect = data.maps[0].enemyEffects[index];
-            // If it's a number input, parse it, otherwise keep string
-            effect[key] = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseFloat(value) : value;
 
-            // No need to re-render the whole list for simple input changes, 
-            // but if you want to be safe: renderEffectsRepeater();
+            if (effect) {
+                // Convert to number if it's shake data
+                const val = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseFloat(value) : value;
+                effect[key] = val || 0;
+            }
         }, `Updated effect ${key}`);
-    };
 
+        // FIX: Re-render so the UI matches the data immediately
+        waveEditor.renderEffectsRepeater(); 
+    };
     /**
      * Deletes an effect entry
      */
@@ -797,6 +804,7 @@ export const waveEditor = (() => {
 
     return {
         renderWaveRepeater,
+        renderEffectsRepeater,
         addWave,
         deleteWave,
         copyWave,
@@ -811,7 +819,6 @@ export const waveEditor = (() => {
         handleDragLeave,
         handleDragEnd,
         handleDrop,
-        renderEffectsRepeater,
         addEffect,
         updateEffect,
         deleteEffect
