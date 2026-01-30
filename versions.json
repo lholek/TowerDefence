@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - Game - Added Favicon",
+        "Improved - Game - Added map 'Simple Roads'",
         "Improved - Gameplay - Custom Life Prices for extra lifes - no longer static prices",
         "Improved - Gameplay - Hot keys added - switch panels (Towers (T) / Abilties (A) / Extra Life (E))",
         "Improved - Gameplay - Hot keys added - towers/abilies items - select items by numbers (12345)",
@@ -23,11 +24,10 @@
         "Improved - Editor - Waves - Enemy Types List - Player can now set differt shake effect for enemies",
         "Improved - Editor - Ability - Copy Ability button next to remove",
         "Improved - Editor - Ability - Tower's Fury show real stas like (+100% Deamge, +100% Bul. Speed, +15% fire Rate)",
-        "Improved - Menu - Show in the description if extra lives are avaliable",
         "Improved - Menu - Improve game description",
         "Improved - Menu - Added 'How to play' (Tutorial / Guide)",
         "Improved - Menu - Controls moved to 'How to play' section",
-        "Improved - Game - Add map 'Simple Roads'",
+        "Improve - Menu - Show in the description if extra lives are avaliable",
         "TODO: Improve - Menu - Improve that player can import only corected versions of maps (also popup if map is wrong)"
       ]
     },
