@@ -119,6 +119,27 @@
   line-height: 1.8;
 }
 
+.parchment-content .enchanted-boon {
+    /* Use a deeper bronze for the border instead of bright gold */
+    border-left: 3px solid #8b7355; 
+    padding-left: 15px;
+    margin: 20px 0;
+    font-style: italic;
+    font-weight: 700;
+    /* Darker, brownish-charcoal for better legibility on parchment */
+    color: #3d352a; 
+    /* Subdued shadow to prevent "glow blur" that makes text hard to read */
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05); 
+}
+
+.parchment-content .enchanted-boon strong {
+    /* Deep forest green or rich copper to signify Elven magic without being bright */
+    color: #2d4c2d; 
+    /* Remove glow and use standard bolding for maximum clarity */
+    text-shadow: none;
+    font-weight: 700;
+}
+
 .lore-header {
   text-align: center;
   color: #2b1506;
