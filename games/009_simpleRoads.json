@@ -10,11 +10,11 @@
       ],
       "description": [
         {
-          "descriptionText": "Difficult HARDCORE Map whit no extra life!\nRemeber Pause is CHEAT :D",
+          "descriptionText": "Medium-Hard Short Map whit no extra life!\nRemeber Pause is CHEAT :D",
           "level count": 10,
-          "difficulty": "⭐⭐⭐⭐⭐",
+          "difficulty": "⭐⭐⭐⭐",
           "map_size": "33x13",
-          "tower types": 5,
+          "tower types": 4,
           "abilites": "Thunder's Fury🏹, Thunder's Fury II🏹🏹, Magma's Core🌋, Magma's Core II🌋🌋"
         }
       ],
@@ -140,16 +140,6 @@
           "color": "#c16815",
           "sellPrice": 75,
           "speed": 5
-        },
-        "005": {
-          "name": "Emperor's Tower",
-          "price": 1500,
-          "damage": 500,
-          "fireRate": 100,
-          "range": 1000,
-          "color": "#d4ce11",
-          "sellPrice": 0,
-          "speed": 7
         }
       },
       "levels": [
