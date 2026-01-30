@@ -28,23 +28,50 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function loadMapDataFromFile(file) {
         return new Promise((resolve, reject) => {
-            const reader = new FileReader();
+            // 1. Check file extension
+            if (!file.name.toLowerCase().endsWith('.json')) {
+                reject(new Error("File must be a .json file."));
+                return;
+            }
 
+            const reader = new FileReader();
             reader.onload = (event) => {
                 try {
-                    // Převede obsah souboru na JSON objekt
                     const mapData = JSON.parse(event.target.result);
+
+                    // 2. Validate Root Structure
+                    if (!mapData.maps || !Array.isArray(mapData.maps) || mapData.maps.length === 0) {
+                        reject(new Error("Invalid map format: Missing 'maps' array."));
+                        return;
+                    }
+
+                    // 3. Validate Required Sub-items (Checking the first map in the array)
+                    const m = mapData.maps[0];
+                    const requiredFields = [
+                        'name', 'startingCoins', 'startingLifes', 'layout', 
+                        'towerTypes', 'levels', 'description'
+                    ];
+
+                    const missing = requiredFields.filter(field => !m.hasOwnProperty(field));
+                    
+                    if (missing.length > 0) {
+                        reject(new Error(`Invalid map data: Missing fields (${missing.join(', ')}).`));
+                        return;
+                    }
+
+                    // 4. Validate Layout (Must be an array of arrays)
+                    if (!Array.isArray(m.layout) || !Array.isArray(m.layout[0])) {
+                        reject(new Error("Invalid map layout: Must be a 2D array."));
+                        return;
+                    }
+
                     resolve(mapData);
                 } catch (e) {
-                    reject(new Error("Soubor není platný JSON formát."));
+                    reject(new Error("Soubor není platný JSON formát nebo je poškozen."));
                 }
             };
 
-            reader.onerror = () => {
-                reject(new Error("Chyba při čtení souboru."));
-            };
-
-            // Spustí čtení souboru jako text
+            reader.onerror = () => reject(new Error("Chyba při čtení souboru."));
             reader.readAsText(file);
         });
     }

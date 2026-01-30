@@ -1,0 +1,621 @@
+{
+  "maps": [
+    {
+      "name": "Simple Roads",
+      "startingCoins": 50,
+      "startingLifes": 1,
+      "extraLife": false,
+      "extraLifePrices": [
+        0
+      ],
+      "description": [
+        {
+          "descriptionText": "Difficult HARDCORE Map whit no extra life!\nRemeber Pause is CHEAT :D",
+          "level count": 10,
+          "difficulty": "⭐⭐⭐⭐⭐",
+          "map_size": "33x13",
+          "tower types": 5,
+          "abilites": "Thunder's Fury🏹, Thunder's Fury II🏹🏹, Magma's Core🌋, Magma's Core II🌋🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","X","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","X","W","W","W","W","W","W","W"],
+              ["W","W","X","W","X","X","X","W","W","W","W","W","X","X","X","W","W","W","W","W","W","W","W","W","X","X","X","W","W","W","W","W","W"],
+              ["W","X","X","X","X","S2","X","X","W","W","W","X","X","X","X","X","W","W","W","W","W","W","W","X","X","E1","X","X","W","W","W","W","W"],
+              ["X","X","S1","X","X","O","X","W","W","W","X","X","O","O","O","X","X","W","W","W","W","W","X","X","O","O","X","W","W","W","W","W","W"],
+              ["W","X","O","O","O","O","X","W","W","W","X","O","O","X","O","O","X","X","W","W","W","X","X","X","O","X","X","W","W","W","W","W","W"],
+              ["W","X","X","O","X","X","W","W","W","X","O","O","X","X","X","O","O","X","X","X","X","X","O","O","O","X","W","W","W","W","W","W","W"],
+              ["W","W","X","O","X","X","X","X","X","O","O","X","X","W","X","X","O","O","X","X","O","O","O","X","O","X","X","X","X","X","W","W","W"],
+              ["W","X","X","O","O","X","X","X","O","O","X","X","W","W","W","X","X","O","O","O","O","X","X","X","O","O","O","X","E2","X","X","W","W"],
+              ["W","W","X","X","O","O","O","O","O","X","X","S3","X","W","W","W","X","X","X","X","X","X","W","X","X","X","O","O","O","X","X","X","W"],
+              ["W","W","W","X","X","X","X","X","O","O","O","O","X","X","W","W","W","X","X","X","X","W","W","W","W","X","X","X","X","X","X","W","W"],
+              ["W","W","W","W","W","X","X","X","X","X","X","X","X","W","W","W","W","W","W","W","W","W","W","W","W","W","W","X","X","X","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+          ],
+      "abilities": [
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1769795067262",
+          "name": "Thunder's Fury",
+          "type": "global",
+          "cooldown": 15000,
+          "effectDuration": 5000,
+          "color": "rgba(56, 89, 255, 1)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 3,
+            "speed_mul": 2,
+            "fireRate_mul": 0.5
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1769796036932",
+          "name": "Thunder's Fury II",
+          "type": "global",
+          "cooldown": 15000,
+          "effectDuration": 5000,
+          "color": "rgba(56, 205, 255, 1)",
+          "ui": {
+            "icon": "🏹🏹"
+          },
+          "modifiers": {
+            "damage_mul": 3,
+            "speed_mul": 2,
+            "fireRate_mul": 0.5
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1769795155316",
+          "name": "Magma's Core",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 500,
+          "damage_every": 500,
+          "cooldown": 15000,
+          "effectDuration": 5000,
+          "color": "rgba(161, 33, 33, 0.5)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1769796030284",
+          "name": "Magma's Core II",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 500,
+          "damage_every": 500,
+          "cooldown": 15000,
+          "effectDuration": 5000,
+          "color": "rgba(161, 33, 33, 0.5)",
+          "ui": {
+            "icon": "🌋🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Stone Tower",
+          "price": 10,
+          "damage": 50,
+          "fireRate": 1000,
+          "range": 400,
+          "color": "#4c4f52",
+          "sellPrice": 8,
+          "speed": 3
+        },
+        "002": {
+          "name": "Shore Tower",
+          "price": 25,
+          "damage": 75,
+          "fireRate": 750,
+          "range": 500,
+          "color": "#3f924d",
+          "sellPrice": 20,
+          "speed": 3.5
+        },
+        "003": {
+          "name": "Kings Tower",
+          "price": 100,
+          "damage": 175,
+          "fireRate": 500,
+          "range": 600,
+          "color": "#9f8819",
+          "sellPrice": 25,
+          "speed": 4
+        },
+        "004": {
+          "name": "Highking's Tower",
+          "price": 250,
+          "damage": 300,
+          "fireRate": 400,
+          "range": 700,
+          "color": "#c16815",
+          "sellPrice": 75,
+          "speed": 5
+        },
+        "005": {
+          "name": "Emperor's Tower",
+          "price": 1500,
+          "damage": 500,
+          "fireRate": 100,
+          "range": 1000,
+          "color": "#d4ce11",
+          "sellPrice": 0,
+          "speed": 7
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 400,
+              "speed": 1.4,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 5,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 400,
+              "speed": 1.4,
+              "path": "S2E2",
+              "interval": 1000,
+              "coinReward": 5,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 400,
+              "speed": 1.4,
+              "path": "S3E1",
+              "interval": 1000,
+              "coinReward": 5,
+              "firstDelay": 0
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 650,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": "850",
+              "coinReward": 6,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 650,
+              "speed": 1.5,
+              "path": "S2E1",
+              "interval": "850",
+              "coinReward": 6,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 650,
+              "speed": 1.5,
+              "path": "S3E2",
+              "interval": "850",
+              "coinReward": 6,
+              "firstDelay": 0
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 3000,
+              "speed": 0.85,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "4000",
+              "coinReward": 6
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 5000,
+              "speed": 0.85,
+              "path": "S1E1",
+              "interval": "850",
+              "coinReward": 7,
+              "firstDelay": 0
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 5000,
+              "speed": 0.85,
+              "path": "S2E2",
+              "interval": "850",
+              "coinReward": 7,
+              "firstDelay": 0
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 5000,
+              "speed": 0.85,
+              "path": "S3E1",
+              "interval": "850",
+              "coinReward": 7,
+              "firstDelay": 0
+            },
+            {
+              "type": "double",
+              "count": 3,
+              "health": 3000,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "4000",
+              "coinReward": 7
+            },
+            {
+              "type": "double",
+              "count": 3,
+              "health": 3000,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "4000",
+              "coinReward": 7
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.15,
+              "path": "S1E2",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 9
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.15,
+              "path": "S3E1",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 9
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4000,
+              "speed": 1.15,
+              "path": "S2E2",
+              "interval": "750",
+              "firstDelay": 0,
+              "coinReward": 9
+            },
+            {
+              "type": "tank",
+              "count": 3,
+              "health": 8000,
+              "speed": 0.8,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "6000",
+              "coinReward": 12
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "enemies": [
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 20000,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 100
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 20000,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 100
+            },
+            {
+              "type": "boss",
+              "count": 1,
+              "health": 20000,
+              "speed": 1,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 100
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "enemies": [
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 5500,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "fast",
+              "count": 6,
+              "health": 5500,
+              "speed": 1.5,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 25000,
+              "speed": 0.85,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 15
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 25000,
+              "speed": 0.85,
+              "path": "S2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 15
+            },
+            {
+              "type": "tank",
+              "count": 1,
+              "health": 25000,
+              "speed": 0.85,
+              "path": "S3",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 15
+            }
+          ]
+        },
+        {
+          "level": 7,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 8000,
+              "speed": 1.25,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 16
+            }
+          ]
+        },
+        {
+          "level": 8,
+          "enemies": [
+            {
+              "type": "shake",
+              "count": 3,
+              "health": 8000,
+              "speed": 1.4,
+              "path": "S1E1",
+              "interval": "1500",
+              "firstDelay": 0,
+              "coinReward": 20
+            },
+            {
+              "type": "shake",
+              "count": 3,
+              "health": 8000,
+              "speed": 1.4,
+              "path": "S2E2",
+              "interval": "1500",
+              "firstDelay": 0,
+              "coinReward": 20
+            },
+            {
+              "type": "shake",
+              "count": 3,
+              "health": 8000,
+              "speed": 1.4,
+              "path": "S3E2",
+              "interval": "1500",
+              "firstDelay": 0,
+              "coinReward": 20
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 10000,
+              "speed": 1,
+              "path": "S3E2",
+              "interval": "5000",
+              "firstDelay": 0,
+              "coinReward": 18
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 10000,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": "5000",
+              "firstDelay": 0,
+              "coinReward": 18
+            }
+          ]
+        },
+        {
+          "level": 9,
+          "enemies": [
+            {
+              "type": "super-shake",
+              "count": 1,
+              "health": 8000,
+              "speed": 1.4,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 25
+            },
+            {
+              "type": "mini-fast",
+              "count": 8,
+              "health": 2500,
+              "speed": 2.5,
+              "path": "S1E1",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 8
+            },
+            {
+              "type": "mini-fast",
+              "count": 8,
+              "health": 2500,
+              "speed": 2.5,
+              "path": "S2E1",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 8
+            },
+            {
+              "type": "mini-fast",
+              "count": 8,
+              "health": 2500,
+              "speed": 2.5,
+              "path": "S3E2",
+              "interval": "100",
+              "firstDelay": 0,
+              "coinReward": 8
+            }
+          ]
+        },
+        {
+          "level": 10,
+          "enemies": [
+            {
+              "type": "boss",
+              "count": 10,
+              "health": 25000,
+              "speed": 1.15,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 150
+            },
+            {
+              "type": "boss",
+              "count": 10,
+              "health": 25000,
+              "speed": 1.15,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 150
+            },
+            {
+              "type": "boss",
+              "count": 10,
+              "health": 25000,
+              "speed": 1.15,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 150
+            }
+          ]
+        }
+      ],
+      "enemyEffects": [
+        {
+          "type": "shake",
+          "shakeDuration": 3000,
+          "shakeIntensity": 20
+        },
+        {
+          "type": "super-shake",
+          "shakeDuration": 8000,
+          "shakeIntensity": 50
+        }
+      ],
+      "enemyTypes": [
+        "basic",
+        "tank",
+        "fast",
+        "double",
+        "shake",
+        "super-shake",
+        "mini-fast",
+        "boss"
+      ]
+    }
+  ]
+}
