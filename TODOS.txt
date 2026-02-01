@@ -15,7 +15,7 @@ TODOS:
 
 
 alpha 0.1.5:
-  "TODO: Improve - Editor - Test Map"
+  "TODO: Improve - Editor - Test Map Button that will automaticly play the game in new tab"
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
   "TODO: Improve - PERFORMANCE BOOST"
   "???TODO: Add mountins and to the map"
