@@ -12,13 +12,7 @@ TODOS:
   " + bulding time" , " + zvuky stavění"
 + New Ability - 'Lightining strikes, strikes directly enemies'
 + New Ability - 'Swamp'
-
-
-alpha 0.1.5:
-  "TODO: Improve - Editor - Test Map Button that will automaticly play the game in new tab"
-  "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
   "TODO: Improve - PERFORMANCE BOOST"
-  "???TODO: Add mountins and to the map"
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
   "???TODO: New Ability - 'Freeze'",

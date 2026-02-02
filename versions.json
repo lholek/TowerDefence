@@ -4,9 +4,10 @@
       "version": "Alpha 0.1.5",
       "release": "TBC",
       "changes": [
-        "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
-        "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
-        "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
+        "TODO: Improve - Gameplay - Add mountins to the game, that will block all arrows going trough them",
+        "TODO: Improve - Editor - Add mountins to the editor (M) to the map",
+        "TODO: Improve - Editor - Add 'Test Map' button to the Game",
+        "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
