@@ -27,11 +27,12 @@
       "tileSize": 80,
       "layout": [
               ["M","M","M","M","M","M","M","M","M","M","M"],
+              ["M","M","M","M","M","M","M","M","M","M","M"],
               ["W","W","X","X","X","X","X","X","X","W","W"],
               ["S1","O","O","O","O","O","O","O","O","O","E1"],
-              ["W","W","M","M","X","X","M","M","M","W","W"],
-              ["W","W","X","X","X","X","X","X","X","W","W"],
-              ["W","W","X","X","X","X","X","X","X","W","W"]
+              ["W","W","M","M","X","O","M","M","M","M","M"],
+              ["W","W","S2","O","O","O","O","E2","X","M","M"],
+              ["W","W","X","M","M","M","X","X","X","M","M"]
           ],
       "abilities": [
         {
@@ -79,7 +80,7 @@
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
-              "firstDelay": 0
+              "firstDelay": "13000000"
             },
             {
               "type": "tank",
@@ -89,7 +90,7 @@
               "path": "S1E1",
               "interval": 1000,
               "coinReward": 1,
-              "firstDelay": "13000"
+              "firstDelay": "130000000"
             }
           ]
         }
