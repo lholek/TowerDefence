@@ -337,128 +337,127 @@ export default class Map {
     ctx.translate(this.camera.x, this.camera.y);
     ctx.scale(this.camera.zoom, this.camera.zoom);
 
-    // Výpočet viditelné oblasti
+    // 1. Visible Area calculation
     const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
     const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
     const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
     const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
 
-    const sX = startCol * this.tileSize;
+    const sX = startCol * this.tileSize; //a
     const sY = startRow * this.tileSize;
     const sW = (endCol - startCol) * this.tileSize;
     const sH = (endRow - startRow) * this.tileSize;
 
-    // 1. PASS: TRÁVA
+    // 2. PASS: BACKGROUND (Floor)
     ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
-
-    // 2. PASS: OCEÁN (Základ + Maskovaný Shader)
-    if (this.waterLayer) {
-        ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
-        //this.drawWaterOverlay(ctx, startRow, endRow, startCol, endCol);
-    }
-
-    // 3. PASS: CESTA
+    if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
     ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
-    // 4. PASS: OBJEKTY (Sorted by Y-axis row-by-row for correct depth)
+    // 3. PASS: THE WORLD (Y-Sorted Row-by-Row)
     for (let r = startRow; r < endRow; r++) {
-      for (let c = startCol; c < endCol; c++) {
-        const tok = String(this.grid[r][c]);
-        const bounds = this.getTileBounds(c, r);
-        const ts = this.tileSize;
-
-        // --- A. MOUNTAINS (Behind everything else in the row) ---
-        if (tok === 'M') {
-          ctx.save();
-          
-          // Use 1.6x height for the peaks to poke into the tile above
-          // Inside render loop: if (tok === 'M')
-          const yOff = (ts * 1.6) - ts;
-                  
-          if (this.quality === 'low') {
-              if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
-              ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
-          } else {
-              // --- HIGH QUALITY VARIATION ---
-              if (!this.mountainSet) this.mountainSet = this._preRenderMountainSet(ts);
-              
-              // SEED: Pick one of the 5 mountains based on row (r) and column (c)
-              // This makes the height different per tile but consistent when scrolling
-              const seed = Math.abs(r * 7 + c * 3) % this.mountainSet.length;
-              const p = this.mountainSet[seed];
-          
-              const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
-              const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
-          
-              // 1. Ground/Foundation
-              ctx.fillStyle = "#242c3d";
-              if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
-              else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
-              else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
-          
-              // 2. Mist/BG (p.bg)
-              if (hasLeft || hasRight) {
-                  ctx.save();
-                  ctx.beginPath();
-                  ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
-                  ctx.clip();
-                  ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
-                  ctx.restore();
-              }
-            
-              // 3. Peak Parts
-              if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
-              if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
-              ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
-          }
-          ctx.restore();
+        
+        // -- STEP A: Draw Towers & Enemies for this row first --
+        // They are "short" so they go behind mountains in the same row
+        for (let c = startCol; c < endCol; c++) {
+            if (this.towers && this.towers[r] && this.towers[r][c]) {
+                this.towers[r][c].render(ctx);
+            }
+            // if (this.enemies && this.enemies[r] && this.enemies[r][c]) {
+            //    this.enemies[r][c].render(ctx);
+            // }
         }
 
-        // --- B. TREES (Rendered on top of mountains in the same row) ---
-        if (tok === 'E') {
-          const treeImg = (this.quality === 'low') ? this.cachedTreeLow : this.cachedTreeHigh;
-          if (treeImg) {
-            // Standard tree offset (adjust ts * 0.5 based on your tree height)
-            ctx.drawImage(treeImg, bounds.x, bounds.y - (ts * 0.5));
-          }
+        // -- STEP B: Draw Mountains & Fog for this row --
+        // They are "tall" so they cover the towers we just drew
+        for (let c = startCol; c < endCol; c++) {
+            const tok = String(this.grid[r][c]);
+            const bounds = this.getTileBounds(c, r);
+            const ts = this.tileSize;
+
+            if (tok === 'M') {
+                const yOff = (ts * 1.6) - ts;
+                if (this.quality === 'low') {
+                    if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
+                    ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
+                } else {
+                    if (!this.mountainSet) this.mountainSet = this._preRenderMountainSet(ts);
+                    const seed = Math.abs(r * 7 + c * 3) % this.mountainSet.length;
+                    const p = this.mountainSet[seed];
+                    const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
+                    const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
+
+                    // 1. Foundation
+                    ctx.fillStyle = "#242c3d";
+                    if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
+                    else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
+                    else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
+
+                    // 2. Connector Fog (The "white thing" between peaks)
+                    if (p && (hasLeft || hasRight)) {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
+                        ctx.clip();
+                        ctx.drawImage(p.bg, bounds.x, bounds.y - yOff); // p.bg contains the mist/snow
+                        ctx.restore();
+                    }
+
+                    // 3. Peaks
+                    if (p) {
+                        if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
+                        if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
+                        ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
+                    }
+                }
+            }
         }
 
-        // --- C. TOWERS (If you have them in the grid) ---
-        if (this.towers && this.towers[r] && this.towers[r][c]) {
-           this.towers[r][c].render(ctx);
-        }
+        // -- STEP C: Draw Tree of Life & Portals --
+        // These are the absolute top objects for the row
+        for (let c = startCol; c < endCol; c++) {
+            const tok = String(this.grid[r][c]);
+            const bounds = this.getTileBounds(c, r);
+            const ts = this.tileSize;
 
-        // --- D. PORTALS (Always on top) ---
-        if (tok.startsWith('S')) {
-          const portalX = bounds.x + ts / 2;
-          const portalY = bounds.y + ts / 2;
-          const isLow = this.quality === 'low';
-          
-          if (isLow) {
-            this._drawMagicPortalLow(ctx, portalX, portalY, performance.now());
-          } else {
-            this._drawMagicPortalHigh(ctx, portalX, portalY, performance.now());
-          }
+            if (tok === 'L' || tok === 'T') {
+                const treeImg = (this.quality === 'low') ? this.cachedTreeLow : this.cachedTreeHigh;
+                if (treeImg) {
+                    const isLife = (tok === 'L');
+                    const scale = isLife ? 1.6 : 1.0; 
+                    const h = treeImg.height * scale;
+                    const w = treeImg.width * scale;
+                    // Draw centered on tile, anchored to bottom
+                    ctx.drawImage(treeImg, 
+                        bounds.x - (w - ts) / 2, 
+                        bounds.y - (h - ts), 
+                        w, h
+                    );
+                }
+            }
+
+            if (tok.startsWith('S')) {
+                const portalX = bounds.x + ts/2;
+                const portalY = bounds.y + ts/2;
+                const time = performance.now();
+                if (this.quality === 'low') this._drawMagicPortalLow(ctx, portalX, portalY, time);
+                else this._drawMagicPortalHigh(ctx, portalX, portalY, time);
+            }
         }
-      }
     }
 
-    ctx.restore(); // Final camera restore
+    ctx.restore();
 
-    // 5. PASS: AAA CINEMATIC VIGNETTE
+    // 4. PASS: AAA CINEMATIC VIGNETTE
     const vGrad = ctx.createRadialGradient(
-        this.canvas.width / 2,  // Center X (now 615px)
-        this.canvas.height / 2, // Center Y (300px)
-        this.canvas.width / 3, 
-        this.canvas.width / 2, 
-        this.canvas.height / 2, 
-        this.canvas.width * 0.9
+        this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.3,
+        this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.8
     );
     vGrad.addColorStop(0, 'transparent');
     vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
     ctx.fillStyle = vGrad;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-}
+  }
+
   // --- TILE / COORD conversions ---
   tileToWorld(col, row) {
     return {
