@@ -368,45 +368,48 @@ export default class Map {
       for (let c = startCol; c < endCol; c++) {
         const tok = String(this.grid[r][c]);
 
-       if (tok === 'M') {
+      if (tok === 'M') {
     const bounds = this.getTileBounds(c, r);
     ctx.save();
 
-    // 1. AAA ATMOSPHERE
-    // This makes rows at the top of the screen look like a "distant landscape"
-    const depthRatio = r / this.rows; 
-    // Further away (top) = more blue/dark
-    ctx.filter = `brightness(${70 + depthRatio * 30}%) saturate(${60 + depthRatio * 40}%)`;
+    const ts = this.tileSize;
+    
+    // 1. THE FOG BASE (Replaces Grass/Black)
+    // This makes the entire tile background a soft "Mist"
+    ctx.fillStyle = "#cbd5e1"; // Soft Fog Blue
+    ctx.fillRect(bounds.x, bounds.y, ts, ts);
 
     if (this.cachedMountain) {
-        const ts = this.tileSize;
         const imgH = this.cachedMountain.height;
         const yOff = imgH - ts;
 
-        // 2. NEIGHBOR CHECK (Horizontal Ridge Connection)
-        const left = (c > 0) ? String(this.grid[r][c-1]) : null;
-        const right = (c < this.cols - 1) ? String(this.grid[r][c+1]) : null;
+        // 2. CHECK NEIGHBORS
+        const leftM = (c > 0 && String(this.grid[r][c-1]) === 'M');
+        const rightM = (c < this.cols - 1) && String(this.grid[r][c+1]) === 'M';
 
-        // Fill background with solid rock before drawing
-        ctx.fillStyle = "#020617";
-        ctx.fillRect(bounds.x, bounds.y, ts, ts);
-
-        // 3. DRAW THE PACKED MOUNTAIN RANGE
+        // 3. DRAW THE CACHED IMAGE
         ctx.drawImage(this.cachedMountain, bounds.x, bounds.y - yOff);
 
-        // 4. DRAW "BRIDGE" RIDGES
-        // If two mountains are next to each other, draw a dark block to bridge the gap
-        if (right === 'M') {
-            ctx.fillStyle = "#0f172a";
-            // Bridge the background peaks
-            ctx.fillRect(bounds.x + ts - 5, bounds.y + ts * 0.2, 10, ts * 0.8);
-            // Bridge the foreground peak ridges
-            ctx.strokeStyle = "#334155";
-            ctx.lineWidth = 4;
+        // 4. THE CONNECTION (Foggy Bridge)
+        if (rightM) {
+            // Draw a slightly darker mist ridge to connect neighbors
+            ctx.fillStyle = "rgba(148, 163, 184, 0.5)"; 
             ctx.beginPath();
-            ctx.moveTo(bounds.x + ts - 10, bounds.y + ts * 0.5);
-            ctx.lineTo(bounds.x + ts + 10, bounds.y + ts * 0.55);
-            ctx.stroke();
+            ctx.moveTo(bounds.x + ts - 10, bounds.y + ts * 0.4);
+            ctx.lineTo(bounds.x + ts + 10, bounds.y + ts * 0.4);
+            ctx.lineTo(bounds.x + ts + 5, bounds.y + ts);
+            ctx.lineTo(bounds.x + ts - 5, bounds.y + ts);
+            ctx.fill();
+        }
+
+        // 5. EDGE CLEANUP (Only if it's the end of a mountain range)
+        if (!leftM) {
+            // Fade the left edge into the world
+            const g = ctx.createLinearGradient(bounds.x, 0, bounds.x + 20, 0);
+            g.addColorStop(0, "rgba(203, 213, 225, 0.8)"); // Fog color
+            g.addColorStop(1, "transparent");
+            ctx.fillStyle = g;
+            ctx.fillRect(bounds.x, bounds.y, 20, ts);
         }
     }
 
@@ -1555,61 +1558,66 @@ _drawMagicPortalHigh(ctx, x, y, time) {
     canvas.height = h;
     const ctx = canvas.getContext("2d");
 
+    // AAA Palette
     const colors = {
-        skyShadow: "#020617", // For the furthest peaks
-        deep: "#0f172a",
-        mid: "#1e293b",
-        light: "#334155",
-        snow: "#f8fafc"
+        fog: "#e2e8f0",      // Light blue-grey fog
+        mist: "#ffffff",     // Pure white clouds
+        rock: "#1e293b",     // Main mountain body
+        shadow: "#0f172a",   // Dark side
+        snow: "#ffffff"
     };
 
-    // Improved Peak Drawer with "Connection" logic
-    const drawTerrainPeak = (x, y, pW, pH, isFront) => {
+    // 1. BACKGROUND ATMOSPHERE (The "Fog" behind the mountains)
+    // This replaces the black background with a soft sky glow
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+    skyGrad.addColorStop(0, colors.fog);
+    skyGrad.addColorStop(0.5, "transparent");
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. WHITE CLOUDS (Procedural)
+    for(let i = 0; i < 2; i++) {
+        const cx = Math.random() * w;
+        const cy = h * 0.2 + (Math.random() * h * 0.2);
+        const cw = ts * 0.7;
+        const cloudGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cw);
+        cloudGrad.addColorStop(0, "rgba(255, 255, 255, 0.4)");
+        cloudGrad.addColorStop(1, "transparent");
+        ctx.fillStyle = cloudGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, cw, cw * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    const drawPeak = (x, y, pW, pH, isFront) => {
+        // Shadow (Right)
+        ctx.fillStyle = colors.shadow;
         ctx.beginPath();
         ctx.moveTo(x, y - pH);
-        ctx.lineTo(x + pW * 0.6, y); // Wider base for overlap
-        ctx.lineTo(x - pW * 0.6, y);
-        ctx.closePath();
-        
-        const grad = ctx.createLinearGradient(x - pW/2, y - pH, x + pW/2, y);
-        if (isFront) {
-            grad.addColorStop(0, "#475569"); // Brighter front
-            grad.addColorStop(0.5, "#1e293b");
-            grad.addColorStop(1, "#0f172a");
-        } else {
-            grad.addColorStop(0, "#1e293b"); // Darker back
-            grad.addColorStop(1, "#020617");
-        }
-        ctx.fillStyle = grad;
+        ctx.lineTo(x + pW * 0.5, y);
+        ctx.lineTo(x, y);
         ctx.fill();
 
-        // Snow (only on peaks that aren't too far back)
-        ctx.fillStyle = isFront ? colors.snow : "#94a3b8"; 
+        // Light (Left)
+        ctx.fillStyle = isFront ? "#475569" : colors.rock;
+        ctx.beginPath();
+        ctx.moveTo(x, y - pH);
+        ctx.lineTo(x - pW * 0.5, y);
+        ctx.lineTo(x, y);
+        ctx.fill();
+
+        // Snow Cap
+        ctx.fillStyle = colors.snow;
         ctx.beginPath();
         ctx.moveTo(x, y - pH);
         ctx.lineTo(x + pW * 0.2, y - pH * 0.7);
-        ctx.lineTo(x - pW * 0.15, y - pH * 0.75);
+        ctx.lineTo(x - pW * 0.2, y - pH * 0.75);
         ctx.fill();
     };
 
-    // --- DRAW ORDER (Back to Front) ---
-
-    // 1. FILL BASE (Ensures 100% coverage, no grass/grey)
-    ctx.fillStyle = colors.skyShadow;
-    ctx.fillRect(0, h - ts, w, ts);
-
-    // 2. LAYER 1: The "Far Horizon" (Connected Background)
-    // These peaks are wide and sit at the edges to touch neighbors
-    drawTerrainPeak(0, h - ts * 0.2, ts * 1.2, h * 0.4, false);
-    drawTerrainPeak(w, h - ts * 0.2, ts * 1.2, h * 0.45, false);
-
-    // 3. LAYER 2: Middle Range
-    drawTerrainPeak(w * 0.3, h - ts * 0.1, ts * 0.8, h * 0.6, false);
-    drawTerrainPeak(w * 0.8, h - ts * 0.1, ts * 0.7, h * 0.55, false);
-
-    // 4. LAYER 3: Main Foreground Peaks
-    drawTerrainPeak(w * 0.65, h, ts * 1.0, h * 0.9, true); // Big Peak
-    drawTerrainPeak(w * 0.1, h, ts * 0.7, h * 0.65, true); // Small Side Peak
+    // 3. DRAW PEAKS (Back to Front)
+    drawPeak(w * 0.25, h, ts * 0.7, h * 0.55, false); // Distant Peak
+    drawPeak(w * 0.7, h, ts * 1.0, h * 0.9, true);   // Main Peak
 
     return canvas;
 }
