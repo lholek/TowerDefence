@@ -4,7 +4,8 @@
       "version": "Alpha 0.1.5",
       "release": "TBC",
       "changes": [
-        "TODO: Improve - Gameplay - Add mountins to the game, that will block all arrows going trough them",
+        "Improved - Gameplay - Add mountins to the game, that will block all arrows going trough them",
+        "Improve - Gameplay - Upgrate the graphics of the mountain",
         "TODO: Improve - Editor - Add mountins to the editor (M) to the map",
         "TODO: Improve - Editor - Add 'Test Map' button to the Game that will automaticly start the map in new window",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",

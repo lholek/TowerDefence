@@ -370,8 +370,53 @@ export default class Map {
 
         if (tok === 'M') {
           const bounds = this.getTileBounds(c, r);
-          // Draw slightly offset upwards to look tall
-          ctx.drawImage(this.cachedMountain, bounds.x, bounds.y - this.tileSize * 0.2);
+          ctx.save();
+              
+          // AAA Atmospheric Fog (Distant mountains are slightly bluer/faded)
+          const rowRatio = r / this.rows;
+          ctx.filter = `brightness(${80 + rowRatio * 20}%) saturate(${70 + rowRatio * 30}%)`;
+              
+          if (this.cachedMountain) {
+              const ts = this.tileSize;
+              const imgH = this.cachedMountain.height;
+              const yOff = imgH - ts;
+          
+              // 1. Draw the actual mountain
+              ctx.drawImage(this.cachedMountain, bounds.x, bounds.y - yOff);
+          
+              // 2. DYNAMIC CONNECTION (The Stitch)
+              // Check neighbor to the RIGHT
+              const neighborRight = (c < this.cols - 1) ? String(this.grid[r][c+1]) : null;
+              
+              if (neighborRight === 'M') {
+                  // Draw a connecting ridge between this mountain and the next
+                  ctx.fillStyle = "#1e293b"; // Rock Mid color
+                  const ridgeH = ts * 0.45; // Height of the ridge
+                  
+                  ctx.beginPath();
+                  // Start at current mountain slope
+                  ctx.moveTo(bounds.x + ts * 0.8, bounds.y + ts - ridgeH);
+                  // Peak of the bridge
+                  ctx.lineTo(bounds.x + ts, bounds.y + ts - ridgeH - 5);
+                  // End at neighbor mountain slope
+                  ctx.lineTo(bounds.x + ts + ts * 0.2, bounds.y + ts - ridgeH);
+                  ctx.lineTo(bounds.x + ts + 5, bounds.y + ts);
+                  ctx.lineTo(bounds.x + ts - 5, bounds.y + ts);
+                  ctx.fill();
+              
+                  // Add a tiny bit of snow on the ridge for AAA detail
+                  ctx.fillStyle = "#ffffff";
+                  ctx.fillRect(bounds.x + ts - 2, bounds.y + ts - ridgeH - 6, 4, 2);
+              }
+            
+              // 3. BLOCKER (Covers background completely)
+              // This ensures NO grass/grey is visible behind the mountain base
+              ctx.globalCompositeOperation = 'destination-over';
+              ctx.fillStyle = "#0f172a"; 
+              ctx.fillRect(bounds.x, bounds.y, ts, ts);
+          }
+        
+          ctx.restore();
           continue;
         }
 
@@ -1510,75 +1555,87 @@ _drawMagicPortalHigh(ctx, x, y, time) {
 
   _preRenderMountainHigh(tileSize) {
     const w = tileSize;
-    const h = tileSize * 1.4; // Taller for majesty
+    const h = tileSize * 1.4;
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
 
     const cx = w / 2;
-    const cy = h -20; // Bottom baseline
+    const cy = h - 5; // Slightly higher to allow for connecting base
 
-    // Helper to draw a jagged rock shape
-    const drawJaggedPeak = (x, y, width, height, colorDark, colorLight) => {
+    // Palette: Slate & Arctic Blue (AAA Standard)
+    const colors = {
+        rockDark:  "#0f172a", // Deep Slate
+        rockMid:   "#334155", // Mid Rock
+        rockLight: "#64748b", // Light Rock
+        snow:      "#ffffff",
+        snowShadow:"#cbd5e1"  // Blue-ish snow shadow
+    };
+
+    const drawAAAPeak = (x, y, pW, pH, isMain = true) => {
+        // 1. Core Shadow (Right side)
+        ctx.fillStyle = colors.rockDark;
         ctx.beginPath();
-        ctx.moveTo(x, y - height); // Peak
-        // Right slope (jagged)
-        ctx.lineTo(x + width * 0.3, y - height * 0.7);
-        ctx.lineTo(x + width * 0.2, y - height * 0.5);
-        ctx.lineTo(x + width * 0.5, y); 
-        // Bottom
-        ctx.lineTo(x - width * 0.5, y);
-        // Left slope (jagged)
-        ctx.lineTo(x - width * 0.2, y - height * 0.4);
-        ctx.lineTo(x - width * 0.3, y - height * 0.6);
-        ctx.closePath();
+        ctx.moveTo(x, y - pH);
+        ctx.lineTo(x + pW * 0.5, y);
+        ctx.lineTo(x, y);
+        ctx.fill();
 
-        // Fill with gradient (Volume)
-        const grad = ctx.createLinearGradient(x - width/2, y - height, x + width/2, y);
-        grad.addColorStop(0, colorLight);
-        grad.addColorStop(1, colorDark);
+        // 2. Light Face (Left side)
+        const grad = ctx.createLinearGradient(x - pW/2, y - pH, x, y);
+        grad.addColorStop(0, colors.rockLight);
+        grad.addColorStop(1, colors.rockMid);
         ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(x, y - pH);
+        ctx.lineTo(x - pW * 0.5, y);
+        ctx.lineTo(x, y);
         ctx.fill();
 
-        // Rim Light (Left side)
-        ctx.strokeStyle = "rgba(255,255,255,0.15)";
-        ctx.lineWidth = 2;
+        // 3. Snow Cap (Multi-layered for AAA depth)
+        ctx.fillStyle = colors.snow;
         ctx.beginPath();
-        ctx.moveTo(x, y - height);
-        ctx.lineTo(x - width * 0.3, y - height * 0.6);
-        ctx.lineTo(x - width * 0.5, y);
-        ctx.stroke();
-    };
-
-    // Helper to draw Snow Cap
-    const drawSnow = (x, y, width, height) => {
-        ctx.fillStyle = "#f8fafc";
-        ctx.beginPath();
-        ctx.moveTo(x, y - height); // Peak tip
-        ctx.lineTo(x + width * 0.25, y - height * 0.75); 
-        // Jagged snow bottom line
-        ctx.lineTo(x + width * 0.1, y - height * 0.8); 
-        ctx.lineTo(x, y - height * 0.7); 
-        ctx.lineTo(x - width * 0.15, y - height * 0.82); 
-        ctx.lineTo(x - width * 0.25, y - height * 0.75); 
-        ctx.closePath();
+        ctx.moveTo(x, y - pH);
+        ctx.lineTo(x + pW * 0.2, y - pH * 0.7);
+        ctx.lineTo(x + pW * 0.05, y - pH * 0.65); // Jagged dip
+        ctx.lineTo(x - pW * 0.1, y - pH * 0.72);
+        ctx.lineTo(x - pW * 0.25, y - pH * 0.68);
         ctx.fill();
+
+        // Snow shadow (creates a 3D edge on the snow)
+        ctx.fillStyle = colors.snowShadow;
+        ctx.beginPath();
+        ctx.moveTo(x, y - pH);
+        ctx.lineTo(x + pW * 0.18, y - pH * 0.72);
+        ctx.lineTo(x, y - pH * 0.6);
+        ctx.fill();
+
+        // 4. "Birch-style" Rock Fissures (matches your tree style)
+        ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.lineWidth = 1;
+        for(let i = 0; i < 6; i++) {
+            const fy = (y - pH) + (Math.random() * pH * 0.6);
+            const fx = x + (Math.random() - 0.5) * (pW * 0.2);
+            ctx.beginPath();
+            ctx.moveTo(fx, fy);
+            ctx.lineTo(fx + (Math.random()-0.5)*10, fy + 2);
+            ctx.stroke();
+        }
     };
 
-    // 1. Ground Shadow
-    ctx.fillStyle = "rgba(0,0,0,0.35)";
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, w * 0.45, h * 0.08, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // 1. Ambient Occlusion (Dark base shadow)
+    const aoGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, w * 0.6);
+    aoGrad.addColorStop(0, "rgba(0,0,0,0.4)");
+    aoGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = aoGrad;
+    ctx.fillRect(0, cy - 10, w, 20);
 
-    // 2. Small Side Peak (Background/Right)
-    drawJaggedPeak(cx + w * 0.25, cy, w * 0.6, h * 0.5, '#4b5563', '#6b7280');
-    drawSnow(cx + w * 0.25, cy, w * 0.6, h * 0.5);
+    // 2. Secondary Peak (Back/Left)
+    drawAAAPeak(cx - w * 0.25, cy, w * 0.7, h * 0.5, false);
 
-    // 3. Main Peak (Foreground)
-    drawJaggedPeak(cx - w * 0.05, cy + 4, w * 0.9, h * 0.85, '#1f2937', '#4b5563');
-    drawSnow(cx - w * 0.05, cy + 4, w * 0.9, h * 0.85);
+    // 3. Main Peak (Front/Right)
+    drawAAAPeak(cx + w * 0.1, cy + 2, w * 0.9, h * 0.9, true);
 
     return canvas;
   }
