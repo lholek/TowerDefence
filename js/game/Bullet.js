@@ -69,6 +69,16 @@ export default class Bullet {
             return;
         }
 
+        // 1. Get current tile coordinates of the bullet
+        const tilePos = this.game.map.getTileFromCoords(this.x, this.y);
+        
+        // 2. Check if that tile is a Mountain 'M'
+        const tileType = this.game.map.getTileStatus(tilePos.col, tilePos.row);
+        if (tileType === 'M') {
+            this.active = false;
+            return;
+        }
+
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;
         const dist = Math.sqrt(dx*dx + dy*dy);

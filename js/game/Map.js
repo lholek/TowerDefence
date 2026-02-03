@@ -86,9 +86,12 @@ export default class Map {
     // 8. PRE-RENDER TREE
     if(this.quality == "low"){
       this.cachedTree = this._preRenderTreeLow(this.tileSize);
+      this.cachedMountain = this._preRenderMountainLow(this.tileSize);
     } else {
       this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+      this.cachedMountain = this._preRenderMountainHigh(this.tileSize);
     }
+
 
     this.clampCamera();
 
@@ -363,7 +366,16 @@ export default class Map {
     // 4. PASS: OBJEKTY
     for (let r = startRow; r < endRow; r++) {
       for (let c = startCol; c < endCol; c++) {
-        if (String(this.grid[r][c]).startsWith('S')) {
+        const tok = String(this.grid[r][c]);
+
+        if (tok === 'M') {
+          const bounds = this.getTileBounds(c, r);
+          // Draw slightly offset upwards to look tall
+          ctx.drawImage(this.cachedMountain, bounds.x, bounds.y - this.tileSize * 0.2);
+          continue;
+        }
+
+        if (tok.startsWith('S')) {
           const bounds = this.getTileBounds(c, r);
           const portalX = bounds.x + this.tileSize / 2;
           const portalY = bounds.y + this.tileSize / 2;
@@ -438,6 +450,7 @@ export default class Map {
     const tok = String(this.grid[row][col] ?? '');
   
     // Block paths and special start/end tiles
+    if (tok === 'M') return false;
     if (tok === 'O') return false;        // path
     if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
     if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
@@ -1456,5 +1469,117 @@ _drawMagicPortalHigh(ctx, x, y, time) {
         ctx.arc(px, py, Math.random() * 3, 0, Math.PI * 2);
         ctx.fill();
     }
+  }
+
+  /* PreRenderMountain */
+  _preRenderMountainLow(tileSize) {
+    const w = tileSize;
+    const h = tileSize * 1.2;
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+
+    const cx = w / 2;
+    const cy = h - 2;
+
+    // 1. Simple Shadow
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, w * 0.4, h * 0.1, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Main Body (Simple Triangle)
+    ctx.fillStyle = "#4b5563"; // Solid Grey
+    ctx.beginPath();
+    ctx.moveTo(cx, h * 0.1); // Top
+    ctx.lineTo(cx + w * 0.45, cy); // Bottom Right
+    ctx.lineTo(cx - w * 0.45, cy); // Bottom Left
+    ctx.fill();
+
+    // 3. Simple Snow Cap (Triangle)
+    ctx.fillStyle = "#e2e8f0"; // Off-white
+    ctx.beginPath();
+    ctx.moveTo(cx, h * 0.1); // Tip
+    ctx.lineTo(cx + w * 0.15, h * 0.4); 
+    ctx.lineTo(cx - w * 0.15, h * 0.4);
+    ctx.fill();
+
+    return canvas;
+  }
+
+  _preRenderMountainHigh(tileSize) {
+    const w = tileSize;
+    const h = tileSize * 1.4; // Taller for majesty
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+
+    const cx = w / 2;
+    const cy = h -20; // Bottom baseline
+
+    // Helper to draw a jagged rock shape
+    const drawJaggedPeak = (x, y, width, height, colorDark, colorLight) => {
+        ctx.beginPath();
+        ctx.moveTo(x, y - height); // Peak
+        // Right slope (jagged)
+        ctx.lineTo(x + width * 0.3, y - height * 0.7);
+        ctx.lineTo(x + width * 0.2, y - height * 0.5);
+        ctx.lineTo(x + width * 0.5, y); 
+        // Bottom
+        ctx.lineTo(x - width * 0.5, y);
+        // Left slope (jagged)
+        ctx.lineTo(x - width * 0.2, y - height * 0.4);
+        ctx.lineTo(x - width * 0.3, y - height * 0.6);
+        ctx.closePath();
+
+        // Fill with gradient (Volume)
+        const grad = ctx.createLinearGradient(x - width/2, y - height, x + width/2, y);
+        grad.addColorStop(0, colorLight);
+        grad.addColorStop(1, colorDark);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Rim Light (Left side)
+        ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y - height);
+        ctx.lineTo(x - width * 0.3, y - height * 0.6);
+        ctx.lineTo(x - width * 0.5, y);
+        ctx.stroke();
+    };
+
+    // Helper to draw Snow Cap
+    const drawSnow = (x, y, width, height) => {
+        ctx.fillStyle = "#f8fafc";
+        ctx.beginPath();
+        ctx.moveTo(x, y - height); // Peak tip
+        ctx.lineTo(x + width * 0.25, y - height * 0.75); 
+        // Jagged snow bottom line
+        ctx.lineTo(x + width * 0.1, y - height * 0.8); 
+        ctx.lineTo(x, y - height * 0.7); 
+        ctx.lineTo(x - width * 0.15, y - height * 0.82); 
+        ctx.lineTo(x - width * 0.25, y - height * 0.75); 
+        ctx.closePath();
+        ctx.fill();
+    };
+
+    // 1. Ground Shadow
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, w * 0.45, h * 0.08, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Small Side Peak (Background/Right)
+    drawJaggedPeak(cx + w * 0.25, cy, w * 0.6, h * 0.5, '#4b5563', '#6b7280');
+    drawSnow(cx + w * 0.25, cy, w * 0.6, h * 0.5);
+
+    // 3. Main Peak (Foreground)
+    drawJaggedPeak(cx - w * 0.05, cy + 4, w * 0.9, h * 0.85, '#1f2937', '#4b5563');
+    drawSnow(cx - w * 0.05, cy + 4, w * 0.9, h * 0.85);
+
+    return canvas;
   }
 }

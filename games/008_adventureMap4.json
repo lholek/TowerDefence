@@ -3,7 +3,7 @@
     {
       "name": "Adventure Map IV (Spirit's Land)",
       "startingCoins": 100,
-      "startingLifes": 5,
+      "startingLifes": 500000,
       "description": [
         {
           "descriptionText": "4th Aventure map combining new Tower's Fury Ability whit Lava Floor on large Map. More dynamic GamePlay",

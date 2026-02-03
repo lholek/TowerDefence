@@ -243,9 +243,14 @@ export default class Tower {
         const dy = enemy.y - ty;
         const d2 = dx * dx + dy * dy;
 
+        // Check distance FIRST (optimization)
         if (d2 < bestDistSq) {
-            bestDistSq = d2;
-            best = enemy;
+            // Check Line of Sight SECOND (heavier calculation)
+            // Only perform if this enemy is actually a better candidate distance-wise
+            if (this.checkLineOfSight(enemy.x, enemy.y)) {
+                bestDistSq = d2;
+                best = enemy;
+            }
         }
     }
 
@@ -342,6 +347,36 @@ export default class Tower {
             ctx.fillRect(bx, by, bw, bh);
         }
     }
+}
+
+// In Tower.js -> Add method inside the class
+
+checkLineOfSight(ex, ey) {
+    // Bresenham-like check or Step check
+    const startX = this.x;
+    const startY = this.y;
+    const dx = ex - startX;
+    const dy = ey - startY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    
+    // How many checks? Check every half-tile size to ensure we don't skip a mountain
+    const tileSize = this.map.tileSize;
+    const steps = Math.ceil(dist / (tileSize / 2)); 
+
+    for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const checkX = startX + dx * t;
+        const checkY = startY + dy * t;
+
+        // Convert world coord to tile
+        const tile = this.map.getTileFromCoords(checkX, checkY);
+        const type = this.map.getTileStatus(tile.col, tile.row);
+
+        if (type === 'M') {
+            return false; // Vision blocked
+        }
+    }
+    return true; // Clear line of sight
 }
 }
 

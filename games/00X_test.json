@@ -19,16 +19,19 @@
           "descriptionText": "Edit description",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "11x3",
+          "map_size": "11x5",
           "tower types": 1,
           "abilites": "Lava Floor🌋"
         }
       ],
       "tileSize": 80,
       "layout": [
-              ["-","-","X","X","X","X","X","X","X","-","-"],
+              ["W","W","X","X","X","X","X","X","X","W","W"],
+              ["W","W","X","X","X","X","X","X","X","W","W"],
               ["S1","O","O","O","O","O","O","O","O","O","E1"],
-              ["-","-","X","X","X","X","X","X","X","-","-"]
+              ["W","W","M","M","X","X","M","M","M","W","W"],
+              ["W","W","X","X","X","X","X","X","X","W","W"],
+              ["W","W","X","X","X","X","X","X","X","W","W"]
           ],
       "abilities": [
         {
@@ -91,18 +94,7 @@
           ]
         }
       ],
-      "enemyEffects": [
-        {
-          "type": "basic",
-          "shakeDuration": 1000,
-          "shakeIntensity": 25
-        },
-         {
-          "type": "fast",
-          "shakeDuration": 45,
-          "shakeIntensity": 25
-        }
-      ]
+      "enemyEffects": []
     }
   ]
 }
