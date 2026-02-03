@@ -27,6 +27,7 @@
       "tileSize": 80,
       "layout": [
               ["M","M","M","M","M","M","M","M","M","M","M"],
+              ["W","W","X","X","X","X","X","X","X","W","W"],
               ["M","M","M","M","M","M","M","M","M","M","M"],
               ["W","W","X","X","X","X","X","X","X","W","W"],
               ["S1","O","O","O","O","O","O","O","O","O","E1"],
@@ -80,7 +81,7 @@
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
-              "firstDelay": "13000000"
+              "firstDelay": "0"
             },
             {
               "type": "tank",
@@ -90,7 +91,7 @@
               "path": "S1E1",
               "interval": 1000,
               "coinReward": 1,
-              "firstDelay": "130000000"
+              "firstDelay": "0"
             }
           ]
         }

@@ -82,16 +82,13 @@ export default class Map {
 
     // Getting quailty from local storage
     this.quality = localStorage.getItem('graphicsSetting') || 'low';
-
-    // 8. PRE-RENDER TREE
-    if(this.quality == "low"){
-      this.cachedTree = this._preRenderTreeLow(this.tileSize);
-      this.cachedMountain = this._preRenderMountainLow(this.tileSize);
+    if (this.quality === 'low') {
+        this.cachedTree = this._preRenderTreeLow(this.tileSize);
+        this.cachedMountainLow = this._preRenderMountainLow(this.tileSize);
     } else {
-      this.cachedTree = this._preRenderTreeHigh(this.tileSize);
-      this.cachedMountain = this._preRenderMountainHigh(this.tileSize);
+        this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+        this.mountainSet = this._preRenderMountainSet(this.tileSize);
     }
-
 
     this.clampCamera();
 
@@ -363,74 +360,81 @@ export default class Map {
     // 3. PASS: CESTA
     ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
-    // 4. PASS: OBJEKTY
+    // 4. PASS: OBJEKTY (Sorted by Y-axis row-by-row for correct depth)
     for (let r = startRow; r < endRow; r++) {
       for (let c = startCol; c < endCol; c++) {
         const tok = String(this.grid[r][c]);
+        const bounds = this.getTileBounds(c, r);
+        const ts = this.tileSize;
 
-   if (tok === 'M') {
-    const bounds = this.getTileBounds(c, r);
-    const ts = this.tileSize;
-    ctx.save();
-
-    const hasLeft = (c > 0 && String(this.grid[r][c-1]) === 'M');
-    const hasRight = (c < this.cols - 1 && String(this.grid[r][c+1]) === 'M');
-
-    // 1. FOUNDATION: Only draw where the mountain range exists
-    ctx.fillStyle = "#242c3d";
-    if (hasLeft && hasRight) {
-        ctx.fillRect(bounds.x, bounds.y, ts, ts);
-    } else if (!hasLeft && hasRight) {
-        ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts); // Starts near peak
-    } else if (hasLeft && !hasRight) {
-        ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts); // Ends near peak
-    }
-
-    if (!this.mountainParts) this.mountainParts = this._preRenderMountainParts(ts);
-    const p = this.mountainParts;
-    const yOff = (ts * 1.6) - ts;
-
-    // 2. THE FOG FIX: Clip fog to only exist between peaks
-    if (hasLeft || hasRight) {
-        ctx.save();
-        ctx.beginPath();
-        if (hasLeft && hasRight) {
-            ctx.rect(bounds.x, bounds.y - yOff, ts, ts * 1.6);
-        } else if (!hasLeft && hasRight) {
-            // Start tile: Fog only on the right half
-            ctx.rect(bounds.x + ts * 0.5, bounds.y - yOff, ts * 0.5, ts * 1.6);
-        } else if (hasLeft && !hasRight) {
-            // End tile: Fog only on the left half
-            ctx.rect(bounds.x, bounds.y - yOff, ts * 0.5, ts * 1.6);
+        // --- A. MOUNTAINS (Behind everything else in the row) ---
+        if (tok === 'M') {
+          ctx.save();
+          
+          // Use 1.6x height for the peaks to poke into the tile above
+          // Inside render loop: if (tok === 'M')
+          const yOff = (ts * 1.6) - ts;
+                  
+          if (this.quality === 'low') {
+              if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
+              ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
+          } else {
+              // --- HIGH QUALITY VARIATION ---
+              if (!this.mountainSet) this.mountainSet = this._preRenderMountainSet(ts);
+              
+              // SEED: Pick one of the 5 mountains based on row (r) and column (c)
+              // This makes the height different per tile but consistent when scrolling
+              const seed = Math.abs(r * 7 + c * 3) % this.mountainSet.length;
+              const p = this.mountainSet[seed];
+          
+              const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
+              const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
+          
+              // 1. Ground/Foundation
+              ctx.fillStyle = "#242c3d";
+              if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
+              else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
+              else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
+          
+              // 2. Mist/BG (p.bg)
+              if (hasLeft || hasRight) {
+                  ctx.save();
+                  ctx.beginPath();
+                  ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
+                  ctx.clip();
+                  ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
+                  ctx.restore();
+              }
+            
+              // 3. Peak Parts
+              if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
+              if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
+              ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
+          }
+          ctx.restore();
         }
-        ctx.clip(); 
-        ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
-        ctx.restore();
-    }
 
-    // 3. DRAW ADAPTIVE PEAKS
-    // Draw wings first, then the main peak on top for a clean silhouette
-    if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
-    if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
-    ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
+        // --- B. TREES (Rendered on top of mountains in the same row) ---
+        if (tok === 'E') {
+          const treeImg = (this.quality === 'low') ? this.cachedTreeLow : this.cachedTreeHigh;
+          if (treeImg) {
+            // Standard tree offset (adjust ts * 0.5 based on your tree height)
+            ctx.drawImage(treeImg, bounds.x, bounds.y - (ts * 0.5));
+          }
+        }
 
-    ctx.restore();
-    continue;
-}
+        // --- C. TOWERS (If you have them in the grid) ---
+        if (this.towers && this.towers[r] && this.towers[r][c]) {
+           this.towers[r][c].render(ctx);
+        }
+
+        // --- D. PORTALS (Always on top) ---
         if (tok.startsWith('S')) {
-          const bounds = this.getTileBounds(c, r);
-          const portalX = bounds.x + this.tileSize / 2;
-          const portalY = bounds.y + this.tileSize / 2;
-
-          // 1. Calculate distance to screen center (or player)
-          const screenCenterX = this.camera.x + (this.canvas.width / 2);
-          const screenCenterY = this.camera.y + (this.canvas.height / 2);
-          const dist = Math.hypot(portalX - screenCenterX, portalY - screenCenterY);
-
-          // 2. High Quality if close, Low Quality if far
-          // Adjust '500' based on your screen size
+          const portalX = bounds.x + ts / 2;
+          const portalY = bounds.y + ts / 2;
           const isLow = this.quality === 'low';
-          if (isLow ) {
+          
+          if (isLow) {
             this._drawMagicPortalLow(ctx, portalX, portalY, performance.now());
           } else {
             this._drawMagicPortalHigh(ctx, portalX, portalY, performance.now());
@@ -439,7 +443,7 @@ export default class Map {
       }
     }
 
-    ctx.restore();
+    ctx.restore(); // Final camera restore
 
     // 5. PASS: AAA CINEMATIC VIGNETTE
     const vGrad = ctx.createRadialGradient(
@@ -1513,125 +1517,22 @@ _drawMagicPortalHigh(ctx, x, y, time) {
     }
   }
 
-  /* PreRenderMountain */
-  _preRenderMountainLow(tileSize) {
-    const w = tileSize;
-    const h = tileSize * 1.2;
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-
-    const cx = w / 2;
-    const cy = h - 2;
-
-    // 1. Simple Shadow
-    ctx.fillStyle = "rgba(0,0,0,0.2)";
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, w * 0.4, h * 0.1, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 2. Main Body (Simple Triangle)
-    ctx.fillStyle = "#4b5563"; // Solid Grey
-    ctx.beginPath();
-    ctx.moveTo(cx, h * 0.1); // Top
-    ctx.lineTo(cx + w * 0.45, cy); // Bottom Right
-    ctx.lineTo(cx - w * 0.45, cy); // Bottom Left
-    ctx.fill();
-
-    // 3. Simple Snow Cap (Triangle)
-    ctx.fillStyle = "#e2e8f0"; // Off-white
-    ctx.beginPath();
-    ctx.moveTo(cx, h * 0.1); // Tip
-    ctx.lineTo(cx + w * 0.15, h * 0.4); 
-    ctx.lineTo(cx - w * 0.15, h * 0.4);
-    ctx.fill();
-
-    return canvas;
-  }
-
-  _preRenderMountainHigh(tileSize) {
-      const ts = tileSize;
-      const w = ts;
-      const h = ts * 1.6; // Extra height for the peaks to poke into the tile above
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext("2d");
-  
-      // Start coordinate for the 80x80 background area
-      const bgY = h - ts; 
-  
-      // --- 1. THE 3-POINT ATMOSPHERE GRADIENT (0.15 -> 0.8 -> 0.15) ---
-      // This creates a thick band of mist in the center of the tile
-      const skyGrad = ctx.createLinearGradient(0, bgY, 0, h);
-      skyGrad.addColorStop(0, "rgba(203, 213, 225, 0.15)");   // Top: Faint
-      skyGrad.addColorStop(1, "rgba(226, 232, 240, 0.8)"); // Middle: Thick Mist
-      skyGrad.addColorStop(1, "rgba(148, 163, 184, 0.15)");   // Bottom: Faint
-      
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, bgY, w, ts);
-  
-      // --- 2. SOFT MIST PUFFS (Inside the tile) ---
-      ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
-      for(let i = 0; i < 3; i++) {
-          ctx.beginPath();
-          // Positioned around the "thick" middle part of the mist
-          const cx = (i * (w / 2)) + (Math.random() * 10);
-          const cy = bgY + (ts * 0.4) + (Math.random() * 10);
-          ctx.arc(cx, cy, ts * 0.35, 0, Math.PI * 2);
-          ctx.fill();
-      }
-    
-      // --- 3. PEAK DRAWING HELPER ---
-      const drawPeak = (x, y, pW, pH, isMain) => {
-          // Rock Body
-          ctx.beginPath();
-          ctx.moveTo(x, y - pH);
-          ctx.lineTo(x + pW * 0.5, y);
-          ctx.lineTo(x - pW * 0.5, y);
-          ctx.closePath();
-          
-          // AAA Lighting (Left side lit, Right side dark)
-          const grad = ctx.createLinearGradient(x - pW/2, y, x + pW/2, y);
-          if (isMain) {
-              grad.addColorStop(0, "#475569"); // Light Slate
-              grad.addColorStop(0.5, "#1e293b"); // Deep Blue/Grey
-              grad.addColorStop(1, "#0f172a");   // Shadow
-          } else {
-              grad.addColorStop(0, "#334155"); 
-              grad.addColorStop(1, "#020617"); 
-          }
-          ctx.fillStyle = grad;
-          ctx.fill();
+  _preRenderMountainSet(ts) {
+    const variations = [];
+    for (let i = 0; i < 5; i++) {
         
-          // Jagged Snow Cap
-          ctx.fillStyle = "#f8fafc";
-          ctx.beginPath();
-          ctx.moveTo(x, y - pH);
-          ctx.lineTo(x + pW * 0.18, y - pH * 0.72);
-          ctx.lineTo(x + pW * 0.05, y - pH * 0.65); // Jagged dip
-          ctx.lineTo(x - pW * 0.1, y - pH * 0.7);
-          ctx.lineTo(x - pW * 0.2, y - pH * 0.75);
-          ctx.fill();
-      };
-    
-      // --- 4. DRAW THE RANGE (Back to Front) ---
-      
-      // Distant Background Peaks (Wider bases to hit corners)
-      // Left Background
-      drawPeak(w * 0.1, h, ts * 1.1, h * 0.45, false);
-      // Right Background
-      drawPeak(w * 0.9, h, ts * 1.1, h * 0.4, false);
-    
-      // Main Foreground Peak (Tall and Sharp)
-      // Width ts * 1.1 ensures the slope reaches the very corners of the tile
-      drawPeak(w * 0.55, h, ts * 1.2, h * 0.85, true);
-    
-      return canvas;
+        // --- EDIT THESE NUMBERS ---
+        const minHeight = 0.75; // 75% of original size
+        const maxHeight = 1.25; // 135% of original size
+        
+        const hMult = minHeight + (Math.random() * (maxHeight - minHeight)); 
+        
+        variations.push(this._preRenderMountainParts(ts, hMult));
+    }
+    return variations;
   }
 
-  _preRenderMountainParts(ts) {
+  _preRenderMountainParts(ts, hMult = 1.0) {
     const h = ts * 1.6;
     const createPart = () => {
         const canvas = document.createElement("canvas");
@@ -1642,66 +1543,155 @@ _drawMagicPortalHigh(ctx, x, y, time) {
 
     const parts = { main: createPart(), left: createPart(), right: createPart(), bg: createPart() };
     
-    // Whiter, cleaner mist colors
-    const colors = {
-        rock: "#1e293b", shadow: "#0f172a", snow: "#ffffff",
-        mistTop: "rgba(255, 255, 255, 0.45)", // Brighter gap between peaks
-        mistMid: "rgba(255, 255, 255, 0.95)", // Thick white internal fog
-        mistBot: "rgba(255, 255, 255, 0.2)"
-    };
+    // Apply the multiplier to the mountain heights
+    const mainH = (h * 0.85) * hMult;
+    const connectH = (h * 0.55) * 1.0;
 
-    // --- FIX: Fixed Slope Helper ---
-    // This ensures slopes hit the corners exactly without "leaning"
-    const drawFixedPeak = (ctx, peakX, peakY, leftX, rightX, pH, isMain) => {
-        ctx.beginPath();
-        ctx.moveTo(peakX, peakY - pH);
-        ctx.lineTo(rightX + 1.5, peakY); // +1.5 Overlap to prevent pixel gaps
-        ctx.lineTo(leftX - 1.5, peakY);  // -1.5 Overlap
-        ctx.closePath();
-        
-        // Shadow (Right)
-        ctx.fillStyle = colors.shadow;
-        ctx.fill();
+    // Use your drawFixedPeak method to draw into the canvases
+    this.drawFixedPeak(parts.main.ctx, ts * 0.5, h, 0, ts, mainH, true);
+    this.drawFixedPeak(parts.left.ctx, 0, h, -ts * 0.5, ts * 0.5, connectH, false);
+    this.drawFixedPeak(parts.right.ctx, ts, h, ts * 0.5, ts * 1.5, connectH, false);
 
-        // Light (Left)
-        ctx.beginPath();
-        ctx.moveTo(peakX, peakY - pH);
-        ctx.lineTo(leftX - 1.5, peakY);
-        ctx.lineTo(peakX, peakY);
-        ctx.fillStyle = isMain ? "#475569" : "#334155";
-        ctx.fill();
-
-        // Snow Cap
-        ctx.fillStyle = colors.snow;
-        const sW = (rightX - leftX) * 0.15;
-        ctx.beginPath();
-        ctx.moveTo(peakX, peakY - pH);
-        ctx.lineTo(peakX + sW, peakY - pH * 0.72);
-        ctx.lineTo(peakX, peakY - pH * 0.65);
-        ctx.lineTo(peakX - sW, peakY - pH * 0.72);
-        ctx.fill();
-    };
-
-    // 1. Fog Background (Brighter white)
-    const grad = parts.bg.ctx.createLinearGradient(0, h - ts, 0, h);
-    grad.addColorStop(0, colors.mistTop);
-    grad.addColorStop(0.5, colors.mistMid);
-    grad.addColorStop(1, colors.mistBot);
-    parts.bg.ctx.fillStyle = grad;
+    // Draw the Fog/Mist background part
+    const fogGrad = parts.bg.ctx.createLinearGradient(0, h - ts, 0, h);
+    fogGrad.addColorStop(0, "rgba(226, 232, 240, 0.8)");
+    fogGrad.addColorStop(1, "transparent");
+    parts.bg.ctx.fillStyle = fogGrad;
     parts.bg.ctx.fillRect(0, h - ts, ts, ts);
 
-    // 2. MAIN PEAK: Anchored exactly to tile edges 0 and ts
-    drawFixedPeak(parts.main.ctx, ts * 0.5, h, 0, ts, h * 0.85, true);
-
-    // 3. CONNECTION PEAKS: Anchored to reach center of tile
-    const connectH = h * 0.55;
-    
-    // Left Joint: Peak at 0, base spans -ts/2 to +ts/2
-    drawFixedPeak(parts.left.ctx, 0, h, -ts * 0.5, ts * 0.5, connectH, false);
-
-    // Right Joint: Peak at ts, base spans ts/2 to 1.5*ts
-    drawFixedPeak(parts.right.ctx, ts, h, ts * 0.5, ts * 1.5, connectH, false);
-
-    return { main: parts.main.canvas, left: parts.left.canvas, right: parts.right.canvas, bg: parts.bg.canvas };
+    return { 
+        main: parts.main.canvas, 
+        left: parts.left.canvas, 
+        right: parts.right.canvas, 
+        bg: parts.bg.canvas 
+    };
   }
+
+  _preRenderMountainHigh(ts) {
+    const h = ts * 1.6;
+    const canvas = document.createElement("canvas");
+    canvas.width = ts;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+
+    const drawNaturalPeak = (x, y, pW, pH, colors, isSharp) => {
+        ctx.save();
+        const segments = 6;
+        const pts = [];
+        // Create jagged points for a realistic ridge
+        for (let i = 0; i <= segments; i++) {
+            const pct = i / segments;
+            const px = x - (pW/2) + (pW * pct);
+            let py = y - (isSharp ? Math.sin(Math.PI * pct) : Math.pow(Math.sin(Math.PI * pct), 0.5)) * pH;
+            if (i > 0 && i < segments) py += (Math.random() - 0.5) * (pH * 0.1);
+            pts.push({x: px, y: py});
+        }
+
+        // Draw Rock Body
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, y);
+        pts.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(pts[pts.length-1].x, y);
+        ctx.fillStyle = colors.rock;
+        ctx.fill();
+
+        // Draw Jagged Snow (Clip to rock)
+        ctx.clip();
+        ctx.fillStyle = "#f8fafc";
+        ctx.beginPath();
+        ctx.moveTo(x - pW/2, y - pH * 0.6); // Snow line
+        pts.forEach(p => ctx.lineTo(p.x, p.y)); // Follow ridge
+        ctx.fill();
+        ctx.restore();
+    };
+
+    // 1. Atmosphere Gradient (Valley Fog)
+    const fog = ctx.createLinearGradient(0, h-ts, 0, h);
+    fog.addColorStop(0, "rgba(226, 232, 240, 0)");
+    fog.addColorStop(0.6, "rgba(255, 255, 255, 0.7)");
+    fog.addColorStop(1, "rgba(203, 213, 225, 0.2)");
+    ctx.fillStyle = fog;
+    ctx.fillRect(0, h-ts, ts, ts);
+
+    // 2. The Range (Back to Front)
+    drawNaturalPeak(ts * 0.2, h, ts * 0.9, h * 0.45, {rock: "#334155"}, false);
+    drawNaturalPeak(ts * 0.8, h, ts * 0.9, h * 0.4, {rock: "#334155"}, true);
+    drawNaturalPeak(ts * 0.5, h, ts * 1.2, h * 0.85, {rock: "#1e293b"}, true);
+
+    return canvas;
+}
+
+_preRenderMountainLow(ts) {
+    const h = ts * 1.6;
+    const canvas = document.createElement("canvas");
+    canvas.width = ts;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+
+    const drawTriangle = (x, y, w, h, color, hasSnow) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x - w/2, y);
+        ctx.lineTo(x, y - h);
+        ctx.lineTo(x + w/2, y);
+        ctx.fill();
+        if(hasSnow) {
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.moveTo(x, y - h);
+            ctx.lineTo(x + w*0.1, y - h*0.7);
+            ctx.lineTo(x - w*0.1, y - h*0.7);
+            ctx.fill();
+        }
+    };
+
+    drawTriangle(ts * 0.3, h, ts * 0.8, h * 0.4, "#475569", false);
+    drawTriangle(ts * 0.7, h, ts * 0.8, h * 0.4, "#475569", false);
+    drawTriangle(ts * 0.5, h, ts * 1.0, h * 0.8, "#1e293b", true);
+    return canvas;
+}
+
+drawFixedPeak(ctx, peakX, peakY, leftX, rightX, pH, isMain) {
+    const colors = {
+        snow: "#f8fafc",
+        mistTop: "rgba(226, 232, 240, 0.8)",
+        mistMid: "rgba(203, 213, 225, 0.4)",
+        mistBot: "rgba(203, 213, 225, 0)"
+    };
+
+    // 1. DRAW ROCK FACE
+    ctx.beginPath();
+    ctx.moveTo(leftX, peakY);
+    ctx.lineTo(peakX, peakY - pH);
+    ctx.lineTo(rightX, peakY);
+    ctx.closePath();
+    ctx.fillStyle = isMain ? "#1e293b" : "#334155";
+    ctx.fill();
+
+    // 2. SHADING (Right Side)
+    ctx.beginPath();
+    ctx.moveTo(peakX, peakY - pH);
+    ctx.lineTo(rightX + 1.5, peakY);
+    ctx.lineTo(peakX, peakY);
+    ctx.fillStyle = isMain ? "#0f172a" : "#1e293b";
+    ctx.fill();
+
+    // 3. SHADING (Left Side)
+    ctx.beginPath();
+    ctx.moveTo(peakX, peakY - pH);
+    ctx.lineTo(leftX - 1.5, peakY);
+    ctx.lineTo(peakX, peakY);
+    ctx.fillStyle = isMain ? "#475569" : "#334155";
+    ctx.fill();
+
+    // 4. SNOW CAP
+    ctx.fillStyle = colors.snow;
+    const sW = (rightX - leftX) * 0.15;
+    ctx.beginPath();
+    ctx.moveTo(peakX, peakY - pH);
+    ctx.lineTo(peakX + sW, peakY - pH * 0.72);
+    ctx.lineTo(peakX, peakY - pH * 0.65);
+    ctx.lineTo(peakX - sW, peakY - pH * 0.72);
+    ctx.fill();
+}
 }
