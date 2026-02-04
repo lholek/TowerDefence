@@ -386,19 +386,58 @@ export default class Map {
                     const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
                     const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
 
+                    const hasUp    = (r > 0 && String(this.grid[r - 1][c]) === 'M');
+                    const hasDown  = (r < this.rows - 1 && String(this.grid[r + 1][c]) === 'M');
+
+                   /* let fogAlpha = 1.0; 
+                    if (hasLeft && hasRight){ 
+                        // fully surrounded horizontally 
+                        fogAlpha = 1.0;
+                    }
+                    else if (hasLeft || hasRight) { 
+                        // edge mountain 
+                        fogAlpha = 0.25; 
+                    } else { 
+                        // isolated mountain, minimal connector fog 
+                        fogAlpha = 0.25; 
+                    }*/
+
                     // 1. Foundation
                     ctx.fillStyle = "#242c3d";
                     if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
                     else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
                     else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
 
-                    // 2. Connector Fog (The "white thing" between peaks)
-                    if (p && (hasLeft || hasRight)) {
+                    // 2. Connector Fog
+                    if (p && (hasLeft || hasRight)) { 
                         ctx.save();
+                    
+                        // 1. Fog alpha
+                        let fogAlpha;
+                        if (hasLeft && hasRight) {
+                           fogAlpha = 0.6;
+                           // surrounded → darker fog
+                        } else if (hasLeft || hasRight) {
+                           fogAlpha = 0.5;
+                           // edge → medium fog
+                        } else {
+                           fogAlpha = 0.75;
+                           // isolated → lighter fog 
+                        }
+                    
+                        ctx.globalAlpha = fogAlpha;
+                    
+                        // 2. Softer blending mode
+                        ctx.globalCompositeOperation = "lighter";
+                    
+                        // 3. Clip area
                         ctx.beginPath();
                         ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
                         ctx.clip();
-                        ctx.drawImage(p.bg, bounds.x, bounds.y - yOff); // p.bg contains the mist/snow
+                    
+                        // 4. Draw fog texture
+                        ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
+                    
                         ctx.restore();
                     }
 

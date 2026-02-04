@@ -6,8 +6,8 @@
       "changes": [
         "Improved - Gameplay - Add mountins to the game, that will block all arrows going trough them",
         "Improve - Gameplay - Fix rendering of the mountains also add white fog between the mounatins",
-        "Improve - Gameplay - Do it by lines generate all items of first row then second then third etc.",
         "Improved - Editor - Add mountins to the editor (M) to the map",
+        "Improve - Gameplay - Do it by lines generate all items of first row then second then third etc.",
         "TODO: Improve - Editor - Add 'Test Map' button to the Game that will automaticly start the map in new window",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
