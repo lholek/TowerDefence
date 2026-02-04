@@ -643,6 +643,34 @@ export default class Map {
     ctx.restore();
   }
 
+  /*_renderGlobalShadows(ctx, sR, eR, sC, eC) {
+    ctx.save();
+    ctx.fillStyle = `rgba(0, 0, 0, ${this.shadowOpacity})`;
+    
+    for (let r = sR; r < eR; r++) {
+        for (let c = sC; c < eC; c++) {
+            const tok = String(this.grid[r][c] ?? '');
+            // Only markers and towers cast these long shadows
+            if (/^S|E/i.test(tok)) {
+                const bounds = this.getTileBounds(c, r);
+                const cx = bounds.x + this.tileSize / 2;
+                const cy = bounds.y + this.tileSize / 2;
+
+                ctx.beginPath();
+                ctx.ellipse(
+                    cx + (this.tileSize * 0.3 * this.sunDir.x), 
+                    cy + (this.tileSize * 0.3 * this.sunDir.y), 
+                    this.tileSize * 0.4, 
+                    this.tileSize * 0.2, 
+                    Math.PI / 4, 0, Math.PI * 2
+                );
+                ctx.fill();
+            }
+        }
+    }
+    ctx.restore();
+  }*/
+
   _prerenderRoad() {
     const ctx = this.roadLayer.getContext('2d');
     const ts = this.tileSize;
@@ -736,163 +764,338 @@ export default class Map {
     ctx.restore();
   }
 
-    _prerenderWater() {
-        const ctx = this.waterLayer.getContext('2d');
-        const ts = this.tileSize;
-
-        ctx.clearRect(0, 0, this.waterLayer.width, this.waterLayer.height);
-
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                if (this.grid[r][c] === 'W') {
-                    const x = c * ts;
-                    const y = r * ts;
-
-                    // 1. ZÁKLAD: Temný, hluboký oceán
-                    ctx.fillStyle = "#0b3a5e"; 
-                    ctx.fillRect(x, y, ts, ts);
-
-                    // 2. ŠANCE 10% NA ZÁŘI (To, co jsi chtěl)
-                    if (Math.random() < 0.1) {
-                        const grad = ctx.createRadialGradient(x+ts/2, y+ts/2, 2, x+ts/2, y+ts/2, ts*0.8);
-                        grad.addColorStop(0, "rgba(14, 165, 233, 0.15)");
-                        grad.addColorStop(1, "transparent");
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(x, y, ts, ts);
-                    }
-
-                    // 3. STÍNY BŘEHU (Zakončení trávy - aby voda nelezla pod ni)
-                    const isLand = (row, col) => {
-                        if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return false;
-                        return this.grid[row][col] !== 'W';
-                    };
-
-                    ctx.fillStyle = "#4A8C46"; // Silnější stín pro hloubku
-                    if (isLand(r-1, c)) ctx.fillRect(x, y, ts, 8);      // Horní břeh
-                    if (isLand(r+1, c)) ctx.fillRect(x, y+ts-8, ts, 8); // Dolní břeh
-                    if (isLand(r, c-1)) ctx.fillRect(x, y, 8, ts);      // Levý břeh
-                    if (isLand(r, c+1)) ctx.fillRect(x+ts-8, y, 8, ts); // Pravý břeh
-                }
-            }
-        }
-    }
+  /*_drawOvergrowthEdge(ctx, r, c, side) {
+    const ts = this.tileSize;
+    const wx = c * ts;
+    const wy = r * ts;
+    // How far the grass encroaches onto the road stones (e.g., 25% of a tile)
+    const depth = ts * 0.25; 
     
-    _prerenderGrass() {
-        const ctx = this.grassLayer.getContext('2d');
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                if (this.grid[r][c] === '-') continue;
-                const x = c * this.tileSize;
-                const y = r * this.tileSize;
-                ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+    // Dark, semi-transparent grass color representing unkempt edges
+    ctx.fillStyle = "rgba(47, 79, 31, 0.6)";
+
+    const numPatches = 12; // Number of grass blobs per tile edge
+
+    for (let i = 0; i < numPatches; i++) {
+        const noiseFunc = (s) => (Math.abs(Math.sin(s * (r+c)*i)) % 1);
+        const noise = noiseFunc(i);
+        // Randomize blob size
+        const sizeX = (ts * 0.08) + (noise * ts * 0.1);
+        const sizeY = (ts * 0.08) + (noiseFunc(i+10) * ts * 0.1);
+
+        let x, y;
+
+        // Position blobs randomly along the specified edge
+        if (side === 'N') {
+            x = wx + Math.random() * ts; 
+            y = wy + (noise * depth) - sizeY/2; // Jitter inwards from top
+        } else if (side === 'S') {
+            x = wx + Math.random() * ts; 
+            y = wy + ts - (noise * depth) - sizeY/2; // Jitter inwards from bottom
+        } else if (side === 'W') {
+            x = wx + (noise * depth) - sizeX/2; // Jitter inwards from left
+            y = wy + Math.random() * ts;
+        } else if (side === 'E') {
+            x = wx + ts - (noise * depth) - sizeX/2; // Jitter inwards from right
+            y = wy + Math.random() * ts;
+        }
+        
+        ctx.beginPath();
+        // Draw an irregular oval blob
+        ctx.ellipse(x, y, sizeX, sizeY, Math.random()*Math.PI, 0, Math.PI*2);
+        ctx.fill();
+    }
+  }*/
+
+  _prerenderWater() {
+    const ctx = this.waterLayer.getContext('2d');
+    const ts = this.tileSize;
+
+    ctx.clearRect(0, 0, this.waterLayer.width, this.waterLayer.height);
+
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === 'W') {
+                const x = c * ts;
+                const y = r * ts;
+
+                // 1. ZÁKLAD: Temný, hluboký oceán
+                ctx.fillStyle = "#0b3a5e"; 
+                ctx.fillRect(x, y, ts, ts);
+
+                // 2. ŠANCE 10% NA ZÁŘI (To, co jsi chtěl)
+                if (Math.random() < 0.1) {
+                    const grad = ctx.createRadialGradient(x+ts/2, y+ts/2, 2, x+ts/2, y+ts/2, ts*0.8);
+                    grad.addColorStop(0, "rgba(14, 165, 233, 0.15)");
+                    grad.addColorStop(1, "transparent");
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(x, y, ts, ts);
+                }
+
+                // 3. STÍNY BŘEHU (Zakončení trávy - aby voda nelezla pod ni)
+                const isLand = (row, col) => {
+                    if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return false;
+                    return this.grid[row][col] !== 'W';
+                };
+
+                ctx.fillStyle = "#4A8C46"; // Silnější stín pro hloubku
+                if (isLand(r-1, c)) ctx.fillRect(x, y, ts, 8);      // Horní břeh
+                if (isLand(r+1, c)) ctx.fillRect(x, y+ts-8, ts, 8); // Dolní břeh
+                if (isLand(r, c-1)) ctx.fillRect(x, y, 8, ts);      // Levý břeh
+                if (isLand(r, c+1)) ctx.fillRect(x+ts-8, y, 8, ts); // Pravý břeh
             }
         }
     }
+}
 
-    _drawMagicPortal(ctx, x, y, performanceTime) {
-        const time = (typeof performanceTime === 'number' && isFinite(performanceTime)) 
-                     ? performanceTime 
-                     : performance.now();
+  // Unused
+  /*drawWaterOverlay(ctx, startRow, endRow, startCol, endCol) {
+    const ts = this.tileSize;
+    const time = performance.now() * 0.0004; // Majestátní pomalý pohyb
+    
+    ctx.save();
+    
+    // MASKA: Odlesky se vykreslí JEN ve vodě, nikdy na trávě
+    ctx.beginPath();
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
+            if (this.grid[r][c] === 'W') {
+                ctx.rect(c * ts, r * ts, ts, ts);
+            }
+        }
+    }
+    ctx.clip();
+
+    // ODLESKY SLUNCE (Caustics)
+    ctx.globalCompositeOperation = 'screen';
+    ctx.lineWidth = 2;
+
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
+            if (this.grid[r][c] === 'W') {
+                this._drawOceanGlimmer(ctx, c * ts, r * ts, ts, time, r, c);
+            }
+        }
+    }
+    ctx.restore();
+  }*/
+
+/*_drawOceanGlimmer(ctx, x, y, ts, time, r, c) {
+    // Matematika pro propojené vlnění přes více bloků
+    const noise = Math.sin(time + r * 0.5 + c * 0.3) * 10;
+    const noise2 = Math.cos(time * 0.8 + c * 0.5 - r * 0.2) * 8;
+
+    ctx.strokeStyle = "rgba(180, 240, 255, 0.07)"; // Velmi jemné, luxusní odlesky
+    
+    ctx.beginPath();
+    // Kreslíme jemnou "síť" světla
+    ctx.moveTo(x - 20 + noise, y + ts/2 + noise2);
+    ctx.bezierCurveTo(
+        x + ts/2, y + noise,
+        x + ts/2, y + ts + noise2,
+        x + ts + 20 + noise, y + ts/2 - noise
+    );
+    ctx.stroke();
+}*/
+
+/*_drawCausticWeb(ctx, x, y, ts, time, seed, alpha) {
+    // Globální posun založený na X a Y souřadnicích dlaždice
+    // Tím zajistíme, že vzor přechází plynule z jednoho čtverce do druhého
+    const globalX = x / ts;
+    const globalY = y / ts;
+
+    const shiftX = Math.sin(time + globalX * 0.5) * 15;
+    const shiftY = Math.cos(time * 0.8 + globalY * 0.5) * 12;
+
+    ctx.strokeStyle = `rgba(180, 245, 255, ${alpha})`;
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+    // Vytváříme "tekutou" síť, která nerespektuje hranice dlaždic
+    ctx.moveTo(x - 20 + shiftX, y + ts/2 + shiftY);
+    ctx.bezierCurveTo(
+        x + ts/2 + shiftX, y - 30 + shiftY,
+        x + ts/2 - shiftX, y + ts + 30 + shiftY,
+        x + ts + 20 + shiftX, y + ts/2 - shiftY
+    );
+    ctx.stroke();
+}*/
+/* 
+_drawCausticNode(ctx, x, y, ts, time, seed) {
+    const driftX = Math.sin(time + seed) * 15;
+    const driftY = Math.cos(time * 0.7 + seed) * 10;
+
+    ctx.strokeStyle = "rgba(180, 240, 255, 0.08)";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    // Interaktivní sítě světla (působí jako tekutý krystal)
+    for (let i = 0; i < 3; i++) {
+        const angle = (Math.PI * 2 / 3) * i + time;
+        const px = x + ts/2 + Math.cos(angle) * (ts/3) + driftX;
+        const py = y + ts/2 + Math.sin(angle) * (ts/3) + driftY;
         
-        // NOVÉ PEKELNÉ BARVY
-        const fireLight = "#fef08a";
-        const fireMid = "#ef4444";
-        const fireDark = "#7f1d1d";
-        const obsidianBlack = "#0a0a0a";
+        ctx.moveTo(px, py);
+        ctx.lineTo(x + ts/2 + driftX, y + ts/2 + driftY);
+    }
+    ctx.stroke();
+}
+*/
+/*
+  _drawCausticWave(ctx, x, y, ts, time, seed, alpha, scale) {
+      const offX = Math.sin(time + seed) * 10;
+      const offY = Math.cos(time * 0.5 + seed) * 10;
 
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(186, 242, 255, ${alpha})`;
+      ctx.lineWidth = 3 * scale;
+
+      // Organická křivka simulující lom světla na dně
+      ctx.moveTo(x + offX, y + ts/2 + offY);
+      ctx.bezierCurveTo(
+          x + ts/2, y + offY,
+          x + ts/2, y + ts + offY,
+          x + ts + offX, y + ts/2 + offY
+      );
+      ctx.stroke();
+  }*/
+
+      /*
+_drawCrystalReflection(ctx, x, y, ts, time, offset, alpha, scale) {
+    const s = Math.sin(time + offset) * 8;
+    const c = Math.cos(time * 0.7 + offset) * 5;
+
+    ctx.beginPath();
+    ctx.lineWidth = 1.5 * scale;
+    ctx.strokeStyle = `rgba(186, 242, 255, ${alpha})`;
+    
+    // Tvar "nekonečné" vlny (Caustics)
+    ctx.moveTo(x + 5 + s, y + ts * 0.5 + c);
+    ctx.bezierCurveTo(
+        x + ts * 0.3 + s, y + ts * 0.2 - c,
+        x + ts * 0.7 - s, y + ts * 0.8 + c,
+        x + ts - 5 - s, y + ts * 0.5 - c
+    );
+    ctx.stroke();
+}
+*/
+
+  _prerenderGrass() {
+    const ctx = this.grassLayer.getContext('2d');
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === '-') continue;
+            const x = c * this.tileSize;
+            const y = r * this.tileSize;
+            ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+        }
+    }
+  }
+
+  _drawMagicPortal(ctx, x, y, performanceTime) {
+    const time = (typeof performanceTime === 'number' && isFinite(performanceTime)) 
+                 ? performanceTime 
+                 : performance.now();
+    
+    // NOVÉ PEKELNÉ BARVY
+    const fireLight = "#fef08a";
+    const fireMid = "#ef4444";
+    const fireDark = "#7f1d1d";
+    const obsidianBlack = "#0a0a0a";
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    // --- 1. VRSTVA: ŽHNOUCÍ RADIÁLNÍ ZÁŘE ---
+    const pulse = Math.sin(time / 400) * 10;
+    const baseGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 + pulse);
+    baseGlow.addColorStop(0, "rgba(127, 29, 29, 0.5)"); // fireDark s opacitou
+    baseGlow.addColorStop(0.7, "rgba(239, 68, 68, 0.2)"); // fireMid s opacitou
+    baseGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    
+    ctx.fillStyle = baseGlow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 70 + pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- 2. VRSTVA: ROTUJÍCÍ OBSIDIÁNOVÉ KAMENY ---
+    const stoneCount = 8;
+    for (let i = 0; i < stoneCount; i++) {
         ctx.save();
-        ctx.translate(x, y);
-
-        // --- 1. VRSTVA: ŽHNOUCÍ RADIÁLNÍ ZÁŘE ---
-        const pulse = Math.sin(time / 400) * 10;
-        const baseGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 + pulse);
-        baseGlow.addColorStop(0, "rgba(127, 29, 29, 0.5)"); // fireDark s opacitou
-        baseGlow.addColorStop(0.7, "rgba(239, 68, 68, 0.2)"); // fireMid s opacitou
-        baseGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+        const angle = (time / 3000) + (i * (Math.PI * 2 / stoneCount));
+        const float = Math.sin((time / 600) + i) * 4;
+        ctx.rotate(angle);
         
-        ctx.fillStyle = baseGlow;
-        ctx.beginPath();
-        ctx.arc(0, 0, 70 + pulse, 0, Math.PI * 2);
-        ctx.fill();
+        // Stín
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(38 + float, 2, 12, 12);
 
-        // --- 2. VRSTVA: ROTUJÍCÍ OBSIDIÁNOVÉ KAMENY ---
-        const stoneCount = 8;
-        for (let i = 0; i < stoneCount; i++) {
-            ctx.save();
-            const angle = (time / 3000) + (i * (Math.PI * 2 / stoneCount));
-            const float = Math.sin((time / 600) + i) * 4;
-            ctx.rotate(angle);
-
-            // Stín
-            ctx.fillStyle = "rgba(0,0,0,0.6)";
-            ctx.fillRect(38 + float, 2, 12, 12);
-
-            // Kámen (Obsidián)
-            ctx.fillStyle = obsidianBlack;
-            ctx.fillRect(35 + float, -5, 10, 10);
-
-            // Žhnoucí runa (Oheň)
-            const runeOpacity = 0.5 + Math.sin((time / 200) + i) * 0.5;
-            ctx.globalAlpha = runeOpacity;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = fireMid;
-            ctx.fillStyle = fireLight;
-            ctx.fillRect(38 + float, -2, 4, 4);
-            ctx.restore();
-        }
-
-        // --- 3. VRSTVA: OHNIVÝ VÍR ---
-        ctx.save();
-        ctx.rotate(-time / 800);
-        for (let i = 0; i < 3; i++) {
-            ctx.beginPath();
-            ctx.rotate((Math.PI * 2) / 3);
-            const grad = ctx.createLinearGradient(10, 0, 30, 0);
-            grad.addColorStop(0, fireLight);
-            grad.addColorStop(1, "transparent");
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 4;
-            ctx.lineCap = "round";
-            ctx.arc(0, 0, 18 + (i * 2), 0, Math.PI * 0.8);
-            ctx.stroke();
-        }
-        ctx.restore();
-
-        // --- 4. VRSTVA: ŽHAVÉ JISKRY ---
-        for (let i = 0; i < 8; i++) {
-            const seed = i * 1.5;
-            const pTime = (time * 0.05 + seed * 100) % 100;
-            const opacity = 1 - (pTime / 100);
-            const distance = (pTime / 100) * 50;
-            const pAngle = seed + (time / 2000);
-
-            const px = Math.cos(pAngle) * distance;
-            const py = Math.sin(pAngle) * distance - (pTime * 0.2);
-
-            ctx.globalAlpha = opacity;
-            ctx.fillStyle = fireLight;
-            ctx.shadowBlur = 8;
-            ctx.shadowColor = fireMid;
-            ctx.beginPath();
-            ctx.arc(px, py, 2.5 * opacity, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // --- 5. VRSTVA: JÁDRO (Brána do pekel) ---
-        ctx.globalAlpha = 1.0;
-        ctx.shadowBlur = 0;
-        const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
-        coreGrad.addColorStop(0, "#000000"); 
-        coreGrad.addColorStop(0.6, fireDark);
-        coreGrad.addColorStop(1, "rgba(0,0,0,0)");
-
-        ctx.fillStyle = coreGrad;
-        ctx.beginPath();
-        ctx.arc(0, 0, 15, 0, Math.PI * 2);
-        ctx.fill();
-
+        // Kámen (Obsidián)
+        ctx.fillStyle = obsidianBlack;
+        ctx.fillRect(35 + float, -5, 10, 10);
+        
+        // Žhnoucí runa (Oheň)
+        const runeOpacity = 0.5 + Math.sin((time / 200) + i) * 0.5;
+        ctx.globalAlpha = runeOpacity;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = fireMid;
+        ctx.fillStyle = fireLight;
+        ctx.fillRect(38 + float, -2, 4, 4);
         ctx.restore();
     }
+
+    // --- 3. VRSTVA: OHNIVÝ VÍR ---
+    ctx.save();
+    ctx.rotate(-time / 800);
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.rotate((Math.PI * 2) / 3);
+        const grad = ctx.createLinearGradient(10, 0, 30, 0);
+        grad.addColorStop(0, fireLight);
+        grad.addColorStop(1, "transparent");
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 4;
+        ctx.lineCap = "round";
+        ctx.arc(0, 0, 18 + (i * 2), 0, Math.PI * 0.8);
+        ctx.stroke();
+    }
+    ctx.restore();
+
+    // --- 4. VRSTVA: ŽHAVÉ JISKRY ---
+    for (let i = 0; i < 8; i++) {
+        const seed = i * 1.5;
+        const pTime = (time * 0.05 + seed * 100) % 100;
+        const opacity = 1 - (pTime / 100);
+        const distance = (pTime / 100) * 50;
+        const pAngle = seed + (time / 2000);
+        
+        const px = Math.cos(pAngle) * distance;
+        const py = Math.sin(pAngle) * distance - (pTime * 0.2);
+
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = fireLight;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = fireMid;
+        ctx.beginPath();
+        ctx.arc(px, py, 2.5 * opacity, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // --- 5. VRSTVA: JÁDRO (Brána do pekel) ---
+    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
+    const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
+    coreGrad.addColorStop(0, "#000000"); 
+    coreGrad.addColorStop(0.6, fireDark);
+    coreGrad.addColorStop(1, "rgba(0,0,0,0)");
+    
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
 
 /**
  * Draws a Dark Abyssal Portal
