@@ -19,21 +19,21 @@
           "descriptionText": "Edit description",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "11x8",
+          "map_size": "14x8",
           "tower types": 1,
           "abilites": "Lava Floor🌋"
         }
       ],
       "tileSize": 80,
       "layout": [
-              ["M","M","M","M","M","M","M","M","M","M","M"],
-              ["M","M","M","X","X","X","X","X","X","M","M"],
-              ["M","M","M","M","X","X","M","X","X","M","M"],
-              ["W","W","X","M","M","M","M","X","X","W","X"],
-              ["S1","O","O","O","O","O","O","O","O","O","E1"],
-              ["W","W","M","M","X","O","M","M","M","M","M"],
-              ["W","W","S2","O","O","O","O","E2","X","M","M"],
-              ["W","W","X","M","M","M","X","X","X","M","M"]
+              ["W","W","W","X","X","X","X","X","X","X","X","W","W","W"],
+              ["W","W","X","X","X","O","O","O","O","O","O","X","W","W"],
+              ["W","X","X","S1","O","O","M","M","M","X","O","X","X","W"],
+              ["X","X","-","-","-","-","M","M","M","X","O","X","X","X"],
+              ["W","X","X","S2","O","X","M","M","X","X","O","O","E1","X"],
+              ["W","W","X","X","O","O","O","O","O","O","O","X","X","W"],
+              ["W","W","W","X","X","X","X","X","X","M","M","X","W","W"],
+              ["W","W","W","W","X","X","X","M","M","M","M","W","W","W"]
           ],
       "abilities": [
         {
@@ -63,7 +63,7 @@
           "price": 1,
           "damage": 50,
           "fireRate": 400,
-          "range": 2500,
+          "range": 250,
           "color": "#468bb0",
           "sellPrice": 1,
           "speed": 2
