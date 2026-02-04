@@ -405,6 +405,12 @@ h2, h3 {
     background-color: #2c4d96; /* Empty color */
     color: #ccc;
 }
+
+.tile-m {
+    background-color: #616161;
+    color: white;
+}
+
 .tile- {
     background-color: #2e261d; /* Empty color */
     color: #ccc;

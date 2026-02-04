@@ -415,8 +415,9 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
                 case 'O': color = '#8B4513'; break; // Path (Brown)
                 case 'S': color = '#38761d'; break; // Start (Dark Green)
                 case 'E': color = '#990000'; break; // End (Dark Red)
-                case 'X': color = '#3F7D3C'; break; // Tower Site (Mid Green)
-                case 'W': color = '#2c4d96'; break; // Tower Site (Mid Green)
+                case 'X': color = '#3F7D3C'; break; // Grass (Mid Green)
+                case 'W': color = '#2c4d96'; break; // Water (Dark Blue)
+                case 'M': color = '#616161'; break; // Mountain (Dark GraY)
                 case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
             }
 
