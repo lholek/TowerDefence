@@ -1321,8 +1321,8 @@ _drawMagicPortalHigh(ctx, x, y, time) {
     for (let i = 0; i < 5; i++) {
         
         // --- EDIT THESE NUMBERS ---
-        const minHeight = 0.75; // 75% of original size
-        const maxHeight = 1.25; // 135% of original size
+        const minHeight = 0.8; // 80% of original size
+        const maxHeight = 1.3; // 130% of original size
         
         const hMult = minHeight + (Math.random() * (maxHeight - minHeight)); 
         
