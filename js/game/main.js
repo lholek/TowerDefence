@@ -375,6 +375,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         tile.classList.add('sky');
       } else if (tileIdentifier === 'W') {
         tile.classList.add('water');
+      } else if (tileIdentifier === 'M') {
+        tile.classList.add('mountain');
       } else {
         tile.classList.add('block');
       }

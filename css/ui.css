@@ -93,6 +93,7 @@
 .minimap-tile.block { background: #3F7D3C; }
 .minimap-tile.sky { background: transparent; }
 .minimap-tile.water { background: #0b3a5e; }
+.minimap-tile.mountain{ background: #5a6363; }
 /* mini map */
 
 /* map info table */

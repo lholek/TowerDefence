@@ -1352,9 +1352,12 @@ _drawMagicPortalHigh(ctx, x, y, time) {
     this.drawFixedPeak(parts.right.ctx, ts, h, ts * 0.5, ts * 1.5, connectH, false);
 
     // Draw the Fog/Mist background part
-    const fogGrad = parts.bg.ctx.createLinearGradient(0, h - ts, 0, h);
-    fogGrad.addColorStop(0, "rgba(226, 232, 240, 0.8)");
-    fogGrad.addColorStop(1, "transparent");
+    const fogGrad = parts.bg.ctx.createLinearGradient(0, h - ts * 1.2, 0, h);
+    fogGrad.addColorStop(0, "rgba(255, 255, 255, 0)"); // Transparent top
+    fogGrad.addColorStop(0.5, "rgba(203, 213, 225, 0.5)"); // Mist middle
+    fogGrad.addColorStop(1, "rgba(15, 23, 42, 0.8)"); // Dark base to blend with ground
+    parts.bg.ctx.fillStyle = fogGrad;
+    parts.bg.ctx.fillRect(0, h - ts * 1.2, ts, ts * 1.2);
     parts.bg.ctx.fillStyle = fogGrad;
     parts.bg.ctx.fillRect(0, h - ts, ts, ts);
 
@@ -1450,47 +1453,159 @@ _preRenderMountainLow(ts) {
     return canvas;
 }
 
+// REPLACE your existing drawFixedPeak with this:
 drawFixedPeak(ctx, peakX, peakY, leftX, rightX, pH, isMain) {
-    const colors = {
-        snow: "#f8fafc",
-        mistTop: "rgba(226, 232, 240, 0.8)",
-        mistMid: "rgba(203, 213, 225, 0.4)",
-        mistBot: "rgba(203, 213, 225, 0)"
-    };
+    // 1. SETUP COLORS (AAA Palette)
+    const sunColor = "#64748b";   // Slate-500 (Lit rock)
+    const shadeColor = "#1e293b"; // Slate-800 (Shadow rock)
+    const snowColor = "#f1f5f9";  // Slate-100 (White snow)
+    const snowShadow = "#cbd5e1"; // Slate-300 (Snow in shadow)
+    
+    // Generate the noise pattern if it doesn't exist yet
+    if (!this.rockPattern) this.rockPattern = this._createNoisePattern();
 
-    // 1. DRAW ROCK FACE
+    // 2. CALCULATE GEOMETRY
+    // We create jagged ridges for the left and right slopes
+    const leftRidge = this._getJaggedLine(leftX, peakY, peakX, peakY - pH, 8, 1.5);
+    const rightRidge = this._getJaggedLine(peakX, peakY - pH, rightX, peakY, 8, 1.5);
+
+    // 3. DRAW BASE SHAPE (The Body)
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(leftX, peakY);
-    ctx.lineTo(peakX, peakY - pH);
-    ctx.lineTo(rightX, peakY);
+    ctx.moveTo(leftRidge[0].x, leftRidge[0].y);
+    // Trace up the left side
+    for(let p of leftRidge) ctx.lineTo(p.x, p.y);
+    // Trace down the right side
+    for(let p of rightRidge) ctx.lineTo(p.x, p.y);
     ctx.closePath();
-    ctx.fillStyle = isMain ? "#1e293b" : "#334155";
+
+    // FILL: Gradient + Noise Pattern
+    // A vertical gradient gives "Atmospheric Perspective" (darker at top, misty at bottom)
+    const rockGrad = ctx.createLinearGradient(0, peakY - pH, 0, peakY);
+    rockGrad.addColorStop(0, shadeColor);
+    rockGrad.addColorStop(1, "#0f172a"); // Darker base
+    ctx.fillStyle = rockGrad;
     ctx.fill();
 
-    // 2. SHADING (Right Side)
-    ctx.beginPath();
-    ctx.moveTo(peakX, peakY - pH);
-    ctx.lineTo(rightX + 1.5, peakY);
-    ctx.lineTo(peakX, peakY);
-    ctx.fillStyle = isMain ? "#0f172a" : "#1e293b";
+    // Overlay texture
+    ctx.fillStyle = this.rockPattern;
+    ctx.globalCompositeOperation = "overlay"; // Blends texture beautifully
+    ctx.globalAlpha = 0.6;
     ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = "source-over"; // Reset blend mode
+    ctx.restore();
 
-    // 3. SHADING (Left Side)
+    // 4. DRAW LIGHTING (Fixed: No center line)
+    
+    // PART A: The Sun Gradient (The Fill)
+    // This needs to be a closed shape so the color fills properly
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(peakX, peakY - pH);
-    ctx.lineTo(leftX - 1.5, peakY);
-    ctx.lineTo(peakX, peakY);
-    ctx.fillStyle = isMain ? "#475569" : "#334155";
+    ctx.moveTo(leftRidge[0].x, leftRidge[0].y);
+    for(let p of leftRidge) ctx.lineTo(p.x, p.y);
+    // Close the shape vertically down the middle for the fill
+    ctx.lineTo(peakX, peakY); 
+    ctx.lineTo(leftRidge[0].x, leftRidge[0].y); // Back to start
+    ctx.closePath();
+    
+    // Sun gradient (same as before)
+    const sunGrad = ctx.createLinearGradient(leftX, 0, peakX, 0);
+    sunGrad.addColorStop(0, "rgba(255,255,255,0.15)");
+    sunGrad.addColorStop(1, "rgba(0,0,0,0.0)"); // Transparent at the center seam
+    ctx.fillStyle = sunGrad;
     ctx.fill();
+    ctx.restore();
 
-    // 4. SNOW CAP
-    ctx.fillStyle = colors.snow;
-    const sW = (rightX - leftX) * 0.15;
+    // PART B: The Rim Light (The Stroke)
+    // We draw this separately so we DON'T stroke the middle line
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(peakX, peakY - pH);
-    ctx.lineTo(peakX + sW, peakY - pH * 0.72);
-    ctx.lineTo(peakX, peakY - pH * 0.65);
-    ctx.lineTo(peakX - sW, peakY - pH * 0.72);
+    // Start at the bottom left
+    ctx.moveTo(leftRidge[0].x, leftRidge[0].y);
+    // Trace ONLY the ridge up to the peak
+    for(let p of leftRidge) ctx.lineTo(p.x, p.y);
+    // Do NOT close the path or draw a line down the middle
+    
+    ctx.strokeStyle = "rgba(255,255,255,0.2)"; // Slightly brighter for AAA pop
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round'; // Makes the jagged corners smoother
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. DRAW AAA SNOW CAP
+    // Snow shouldn't be a straight line. It should cover the top 35% of the mountain.
+    ctx.save();
+    ctx.beginPath();
+    
+    // Start slightly down the left slope
+    const snowStartIdx = Math.floor(leftRidge.length * 0.65);
+    const snowEndIdx = Math.ceil(rightRidge.length * 0.35);
+
+    ctx.moveTo(leftRidge[snowStartIdx].x, leftRidge[snowStartIdx].y);
+    
+    // Trace up to peak
+    for (let i = snowStartIdx; i < leftRidge.length; i++) ctx.lineTo(leftRidge[i].x, leftRidge[i].y);
+    // Trace down right side
+    for (let i = 0; i < snowEndIdx; i++) ctx.lineTo(rightRidge[i].x, rightRidge[i].y);
+
+    // CLOSE THE BOTTOM OF SNOW WITH "DRIPS"
+    // Instead of a straight line, we zigzag back to the start to look like snow drifts
+    const snowBottomY = peakY - pH * 0.65;
+    ctx.bezierCurveTo(
+        peakX + 10, snowBottomY + 10, // Control point 1 (sagging snow)
+        peakX - 10, snowBottomY - 5,  // Control point 2
+        leftRidge[snowStartIdx].x, leftRidge[snowStartIdx].y // End
+    );
+
+    ctx.closePath();
+    
+    // Fill Snow
+    const snowGrad = ctx.createLinearGradient(0, peakY - pH, 0, peakY - pH * 0.5);
+    snowGrad.addColorStop(0, snowColor);
+    snowGrad.addColorStop(1, snowShadow);
+    ctx.fillStyle = snowGrad;
     ctx.fill();
+    ctx.restore();
+}
+
+// Add this new helper method to Map class
+_getJaggedLine(x1, y1, x2, y2, segments = 5, rough = 2) {
+    const points = [{x: x1, y: y1}];
+    
+    // Recursive midpoint displacement (simplified for loop)
+    let dx = (x2 - x1) / segments;
+    let dy = (y2 - y1) / segments;
+    
+    for(let i = 1; i < segments; i++) {
+        const progress = i / segments;
+        // The closer to the center (0.5), the more "jagged" it can be
+        const arc = Math.sin(progress * Math.PI); 
+        
+        points.push({
+            x: x1 + dx * i + (Math.random() - 0.5) * (rough * 5 * arc),
+            y: y1 + dy * i + (Math.random() - 0.5) * (rough * 10 * arc)
+        });
+    }
+    points.push({x: x2, y: y2});
+    return points;
+}
+
+// Add this new helper method to Map class
+_createNoisePattern() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; 
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = "#2d3748"; // Base rock color
+    ctx.fillRect(0,0,64,64);
+    
+    // Add noise
+    for(let i=0; i<400; i++) {
+        ctx.fillStyle = Math.random() > 0.5 ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.1)";
+        ctx.fillRect(Math.random()*64, Math.random()*64, 2, 2);
+    }
+    return ctx.createPattern(canvas, 'repeat');
 }
 }
