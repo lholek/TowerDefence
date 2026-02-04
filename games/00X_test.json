@@ -19,7 +19,7 @@
           "descriptionText": "Edit description",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "11x5",
+          "map_size": "11x8",
           "tower types": 1,
           "abilites": "Lava Floor🌋"
         }
@@ -29,7 +29,7 @@
               ["M","M","M","M","M","M","M","M","M","M","M"],
               ["M","M","M","X","X","X","X","X","X","M","M"],
               ["M","M","M","M","X","X","M","X","X","M","M"],
-              ["W","W","X","X","M","M","X","X","X","W","X"],
+              ["W","W","X","M","M","M","M","X","X","W","X"],
               ["S1","O","O","O","O","O","O","O","O","O","E1"],
               ["W","W","M","M","X","O","M","M","M","M","M"],
               ["W","W","S2","O","O","O","O","E2","X","M","M"],
