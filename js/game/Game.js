@@ -582,12 +582,15 @@ export default class Game {
     const shopDiv = document.getElementById('towerShop');
     shopDiv.innerHTML = '';
 
+    let index = 0;
     for (const [key, tower] of Object.entries(this.towerTypes)) {
+      index++;
       const div = document.createElement('div');
       let rangeInBlocks = (tower.range / this.map.tileSize).toFixed(1);
       div.className = 'shop-item';
       div.style.border = '5px solid transparent';
       div.innerHTML = `
+        <div class="index">${index}</div>
         <div class="name">${tower.name}</div>
         <div>🪙 Price: ${tower.price}</div>
         <div>⚔️ Damage: ${tower.damage}</div>
@@ -630,7 +633,9 @@ export default class Game {
     }
     this.abilityCards = {};
 
+    let index = 0;
     for (const a of this.abilityManager.getAvailable()) {
+      index++;
       const card = document.createElement('div');
       card.className = 'ability-card';
       card.id = a.configId || a.id;
@@ -643,6 +648,7 @@ export default class Game {
     
           <div class="duration-timer" style="position:absolute; right:6px; top:6px; color:#4ade80; font-weight:bold; pointer-events:none; z-index:10; font-size:12px; text-shadow: 1px 1px 2px #000;"></div>
           
+          <div class="index">${index}</div>
           <div class="ability-icon">${a.ui?.icon || ''}</div>
           <div class="ability-info">
             <div class="ability-name">${a.name}</div>

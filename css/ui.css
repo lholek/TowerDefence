@@ -313,6 +313,11 @@
   color: #ccc;
 }
 
+.ability-card  .index{
+    position: absolute;
+    float: left;
+}
+
 /* The container */
 .ability-dmg {
   line-height: 1.5;

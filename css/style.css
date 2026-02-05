@@ -284,6 +284,12 @@ canvas {
     cursor: pointer;
     background: var(--main-bg-color);
 }
+
+.shop-item .index{
+    position: relative;
+    float: left;
+}
+
 /* Hover & Active States */
 .shop-item:hover {
   background-color: rgb(157, 80, 41);
