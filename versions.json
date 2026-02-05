@@ -6,9 +6,9 @@
       "changes": [
         "Improved - Gameplay - Added mountins to the game, that will block all arrows",
         "Improved - Editor - Added mountins to the editor (M) so you can build them and implement them into your maps",
+        "Improved - Menu - Small change in Settings (if you want a better performace use Sky Background)",
         "TODO: Improve - Editor - Add 'Test Map' button to the Game that will automaticly start the map in new window",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
-        "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
         "Improve - Some updates to improve the game, Some updates to improve the game, Some updates to improve the game",
