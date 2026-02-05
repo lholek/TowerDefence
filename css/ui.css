@@ -151,8 +151,7 @@
     width: 350px !important;
     height: 350px !important;
     flex: 0 0 350px; /* Forces it to stay exactly 350px width */
-    background: #BBC7D4;
-    border: 2px solid #5c2e0e;
+    /*background: #BBC7D4;*/
     border-radius: 4px;
     overflow: hidden;
     display: block;
