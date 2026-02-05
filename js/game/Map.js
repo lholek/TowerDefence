@@ -121,11 +121,8 @@ export default class Map {
     const isWalkable = (r,c) => {
       const tok = String(this.grid[r][c] ?? '');
       // treat 'O' and any S*/E*/T* as walkable; treat 'X' as obstacle; treat '-' as blocked for pathing
-      if (tok === 'X') return false;
-      if (tok === 'W') return false;
-      if (tok === '-') return false;
+      return tok.startsWith("S") || tok.startsWith("E") || tok == "O";
       // everything else is walkable (O, S1, E1, L, etc.)
-      return true;
     };
 
     const dirs = [[0,-1],[0,1],[-1,0],[1,0]]; // up,down,left,right
@@ -330,7 +327,9 @@ export default class Map {
   }
 
   // --- RENDER (keeps your original render but uses tokens) ---
-  render(ctx) {
+  // In Map.js
+
+render(ctx, playerLifes = 0, towers = [], enemies = []) {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
@@ -343,7 +342,7 @@ export default class Map {
     const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
     const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
 
-    const sX = startCol * this.tileSize; //a
+    const sX = startCol * this.tileSize;
     const sY = startRow * this.tileSize;
     const sW = (endCol - startCol) * this.tileSize;
     const sH = (endRow - startRow) * this.tileSize;
@@ -353,22 +352,47 @@ export default class Map {
     if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
     ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
+    // --- HELPER: Sort dynamic entities into rows for performance ---
+    // This allows us to draw them inside the row loop without searching arrays every time
+    const rowTowers = new Array(this.rows).fill(null).map(() => []);
+    const rowEnemies = new Array(this.rows).fill(null).map(() => []);
+
+    // Organize Towers
+    towers.forEach(t => {
+        if(t.row >= startRow && t.row < endRow) {
+            rowTowers[t.row].push(t);
+        }
+    });
+
+    // Organize Enemies (Using fuzzy Y to determine visual row if they are moving)
+    enemies.forEach(e => {
+        // Calculate visual row based on Y position (center of entity)
+        // Enemies might be between tiles, so we use their world Y to slot them correctly
+        const r = Math.floor((e.y + this.tileSize * 0.2) / this.tileSize); 
+        if(r >= startRow && r < endRow) {
+            rowEnemies[r].push(e);
+        }
+    });
+
+
     // 3. PASS: THE WORLD (Y-Sorted Row-by-Row)
     for (let r = startRow; r < endRow; r++) {
         
-        // -- STEP A: Draw Towers & Enemies for this row first --
-        // They are "short" so they go behind mountains in the same row
-        for (let c = startCol; c < endCol; c++) {
-            if (this.towers && this.towers[r] && this.towers[r][c]) {
-                this.towers[r][c].render(ctx);
-            }
-            // if (this.enemies && this.enemies[r] && this.enemies[r][c]) {
-            //    this.enemies[r][c].render(ctx);
-            // }
+        // LAYER 1: ENEMIES (Bottom)
+        // Draw enemies belonging to this row
+        for (const enemy of rowEnemies[r]) {
+            enemy.render(ctx, this);
         }
 
-        // -- STEP B: Draw Mountains & Fog for this row --
-        // They are "tall" so they cover the towers we just drew
+        // LAYER 2: TOWERS (Middle)
+        // Draw towers belonging to this row
+        // Because this happens BEFORE mountains in the same loop, 
+        // a Mountain at this row will draw OVER this tower (hiding it behind).
+        for (const tower of rowTowers[r]) {
+            tower.render(ctx, this);
+        }
+
+        // LAYER 3: MOUNTAINS & FOG (High)
         for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c]);
             const bounds = this.getTileBounds(c, r);
@@ -386,22 +410,6 @@ export default class Map {
                     const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
                     const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
 
-                    const hasUp    = (r > 0 && String(this.grid[r - 1][c]) === 'M');
-                    const hasDown  = (r < this.rows - 1 && String(this.grid[r + 1][c]) === 'M');
-
-                   /* let fogAlpha = 1.0; 
-                    if (hasLeft && hasRight){ 
-                        // fully surrounded horizontally 
-                        fogAlpha = 1.0;
-                    }
-                    else if (hasLeft || hasRight) { 
-                        // edge mountain 
-                        fogAlpha = 0.25; 
-                    } else { 
-                        // isolated mountain, minimal connector fog 
-                        fogAlpha = 0.25; 
-                    }*/
-
                     // 1. Foundation
                     ctx.fillStyle = "#242c3d";
                     if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
@@ -411,8 +419,6 @@ export default class Map {
                     // 2. Connector Fog
                     if (p && (hasLeft || hasRight)) { 
                         ctx.save();
-                    
-                        // 1. Fog alpha
                         let fogAlpha;
                         if (hasLeft && hasRight) {
                            fogAlpha = 0.6;
@@ -426,18 +432,11 @@ export default class Map {
                         }
                     
                         ctx.globalAlpha = fogAlpha;
-                    
-                        // 2. Softer blending mode
                         ctx.globalCompositeOperation = "lighter";
-                    
-                        // 3. Clip area
                         ctx.beginPath();
                         ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
                         ctx.clip();
-                    
-                        // 4. Draw fog texture
                         ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
-                    
                         ctx.restore();
                     }
 
@@ -451,22 +450,22 @@ export default class Map {
             }
         }
 
-        // -- STEP C: Draw Tree of Life & Portals --
-        // These are the absolute top objects for the row
+        // LAYER 4: TREES & PORTALS (Top)
         for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c]);
             const bounds = this.getTileBounds(c, r);
             const ts = this.tileSize;
+            console.log()
+            if (tok.startsWith('E')) {
+                const actualImg = this.cachedTree;
+                // If High quality tree is missing (init logic order), simple fallback or ensure init
 
-            if (tok === 'L' || tok === 'T') {
-                const treeImg = (this.quality === 'low') ? this.cachedTreeLow : this.cachedTreeHigh;
-                if (treeImg) {
+                if (actualImg) {
                     const isLife = (tok === 'L');
                     const scale = isLife ? 1.6 : 1.0; 
-                    const h = treeImg.height * scale;
-                    const w = treeImg.width * scale;
-                    // Draw centered on tile, anchored to bottom
-                    ctx.drawImage(treeImg, 
+                    const h = actualImg.height * scale;
+                    const w = actualImg.width * scale;
+                    ctx.drawImage(actualImg, 
                         bounds.x - (w - ts) / 2, 
                         bounds.y - (h - ts), 
                         w, h
@@ -486,7 +485,7 @@ export default class Map {
 
     ctx.restore();
 
-    // 4. PASS: AAA CINEMATIC VIGNETTE
+    // 4. PASS: VIGNETTE
     const vGrad = ctx.createRadialGradient(
         this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.3,
         this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.8
@@ -495,7 +494,7 @@ export default class Map {
     vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
     ctx.fillStyle = vGrad;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  }
+}
 
   // --- TILE / COORD conversions ---
   tileToWorld(col, row) {

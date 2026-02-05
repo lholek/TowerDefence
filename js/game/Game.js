@@ -800,22 +800,21 @@ export default class Game {
     });
   }
 
-  render() {
+render() {
   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   if (!this.map) return;
 
   // Shake Logic
   this.ctx.save(); 
   if (this.shakeDuration > 0) {
-
     const dx = (Math.random() - 0.5) * this.shakeIntensity;
     const dy = (Math.random() - 0.5) * this.shakeIntensity;
     this.ctx.translate(dx, dy);
   }
 
-  // Draw the map
-  this.map.render(this.ctx);
-  this.map.render(this.ctx, this.playerLifes);
+  // --- CHANGED: Pass towers and enemies to map.render ---
+  // We pass 'this.towers' and 'this.enemies' so the map can sort them with mountains
+  this.map.render(this.ctx, this.playerLifes, this.towers, this.enemies);
 
   // --- 1. HOVERED TILE (Uses its own transform block) ---
   if (this.hoveredTile) {
@@ -843,37 +842,29 @@ export default class Game {
     const calculatedY = center.y - this.map.tileSize / 2;
     this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
 
-
     this.map.resetTransform(this.ctx);
+    
     // Render ability preview overlay
     if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
       this.abilityManager.renderPreview(this.ctx);
     } 
-
-    
   }
 
-  // --- 2. WORLD OBJECTS & RANGE CIRCLES (Start Camera) ---
+  // --- 2. WORLD OBJECTS OVERLAY (Bullets & Abilities) ---
+  // Bullets and Abilities are "flying", so they can stay on top
   this.map.applyCameraTransform(this.ctx);
 
-  this.towers.forEach(t => t.render(this.ctx, this.map));
+  // Draw Bullets (Towers are now drawn inside map.render)
   for (const tower of this.towers) {
     for (const bullet of tower.bullets) {
       bullet.render(this.ctx);
     }
   }
 
-  this.enemies.forEach(e => e.render(this.ctx, this.map));
+  // Draw Abilities
   this.abilityManager.render(this.ctx);
 
-  // Tree of life
-  for (const key in this.map.ends) {
-    const end = this.map.ends[key];
-    const worldPos = this.map.tileToWorld(end.col, end.row);
-    this.map._drawLifeTree(this.ctx, worldPos.x, worldPos.y, this.playerLifes);
-  }
-
-  // --- RANGE CIRCLES LOGIC (STAY INSIDE TRANSFORM) ---
+  // --- RANGE CIRCLES LOGIC ---
   const isShiftPressed = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
   const isAPressed = this.keys['KeyA'];
 
@@ -883,34 +874,30 @@ export default class Game {
     this.ctx.fillStyle = fill;
     this.ctx.fill();
     this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    this.ctx.lineWidth = 2 / this.map.camera.zoom; // Corrected for zoom
+    this.ctx.lineWidth = 2 / this.map.camera.zoom; 
     this.ctx.stroke();
   };
 
   if (isShiftPressed && isAPressed) {
     this.towers.forEach(t => drawCircle(t.x, t.y, t.range, "rgba(0,0,0,0)"));
   } 
-  // B. Show range circle when holding [Shift] while hovering a tower
   else if (isShiftPressed && this.hoveredTile) {
     const tower = this.towers.find(t => t.col === this.hoveredTile.col && t.row === this.hoveredTile.row);
     if (tower) drawCircle(tower.x, tower.y, tower.range);
   }
 
-  // C. Show range circle only when building it AND holding [Shift]
   if (isShiftPressed && this.selectedTowerType && this.hoveredTile) {
     const type = this.towerTypes[this.selectedTowerType];
     const pos = this.map.tileToWorld(this.hoveredTile.col, this.hoveredTile.row);
     drawCircle(pos.x, pos.y, type.range, 'rgba(100, 255, 100, 0.45)');
   }
 
-  // --- 3. CLEANUP (End Camera & End Shake) ---
-  this.map.resetTransform(this.ctx); // This resets the Camera (Zoom/Pan)
+  // --- 3. CLEANUP ---
+  this.map.resetTransform(this.ctx); 
 
   if (this.shakeDuration > 0) {
-    this.ctx.restore(); // This resets the Shake
+    this.ctx.restore(); 
   }
-  
-  //this.ctx.restore(); // Final restore for the initial save()
 }
 
   logEvent(htmlString) {
