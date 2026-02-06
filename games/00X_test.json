@@ -16,7 +16,7 @@
       ],
       "description": [
         {
-          "descriptionText": "Edit description",
+          "descriptionText": "This is map only for testing, its not hard or easy its only for testing ONLY. For example this text is testing long descriptions in the menu... so this is reason why its so long, becouse its important to test that items dont show to many items etc.",
           "level count": 1,
           "difficulty": "⭐",
           "map_size": "20x8",
@@ -120,6 +120,86 @@
           "_comment": "cooldown - 30000",
           "id": "lava_floor",
           "configId": "lava_floor_1770319955680",
+          "name": "Lava Floor (Copy)",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor_1770319955454",
+          "name": "Lava Floor (Copy)",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor_1770319955454",
+          "name": "Lava Floor (Copy)",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor_1770319955454",
+          "name": "Lava Floor (Copy)",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor_1770319955454",
           "name": "Lava Floor (Copy)",
           "description": "Damage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",

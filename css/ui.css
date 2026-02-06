@@ -133,6 +133,22 @@
     font-weight: bold;
 }
 
+.map-info-table .description{
+  display: block;
+  max-height: 80px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(240, 198, 116) transparent;
+}
+
+.map-info-table .ability-list{
+  display: block;
+  max-height: 50px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(240, 198, 116) transparent;
+}
+
 .info-table-life{
   font-weight: 900;
 }

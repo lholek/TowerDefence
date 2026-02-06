@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="map-preview-wrapper">
                         <div class="map-stats-col">
                             <table class="map-info-table">
-                                <tr><td><b>Description:</b></td><td>${d.descriptionText || '-'}</td></tr>
+                                <tr><td><b>Description:</b></td><td class="description">${d.descriptionText || '-'}</td></tr>
                                 <tr><td><b>Level Count:</b></td><td>${d['level count'] || '-'}</td></tr>
                                 <tr><td><b>Difficulty:</b></td><td>${d.difficulty || '-'}</td></tr>
                                 <tr><td><b>Map Size:</b></td><td>${d.map_size || '-'}</td></tr>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <tr><td><b>Extra Life:</b></td><td class="info-table-life ${map.extraLife === false ? 'info-table-life-no' : 'info-table-life-yes'}">${map.extraLife === false ? '✖' : '✔'}</td></tr>
                                 <tr>
                                     <td><b>Abilities:</b></td>
-                                    <td>
+                                    <td class="ability-list">
                                         ${map.abilities && map.abilities.length > 0
                                             ? map.abilities.map(ab => `<span>${ab.ui.icon} ${ab.name}</span>`).join('<br>')
                                             : '-'
