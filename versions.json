@@ -12,6 +12,8 @@
         "Improved - Versions - Added updates of very old versions",
         "TODO: Improve - Editor - Add 'Test Map' button to automatically launch the map in a new window.",
         "TODO: Improve - Editor - Add info icons ('i') to explain field functions or add a comprehensive 'How to Build' section.",
+        "TODO: Improve - Editor - Add 3 save current map items that will store data to local storage",
+        "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
         "TODO: Improve - Some updates to improve the game, Some updates to improve the game",
         "TODO: Improve - Some updates to improve the game, Some updates to improve the game",
