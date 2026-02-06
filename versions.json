@@ -8,8 +8,9 @@
         "Improved - Gameplay - Added small number to Towers and Abilities that indicate the number (hot-key) of the Tower / Ability",
         "Improved - Editor - Added mountins to the editor (M) so you can build them and implement them into your maps",
         "Improved - Menu - Small change in Settings (if you want a better performace use Sky Background)",
-        "TODO: Improve - Menu - Add scrolball for abilites in map preview",
-        "TODO: Improve - Menu - Improve minimap",
+        "Improved - Versions - Added updates of very old versions",
+        "TODO: Improve - Menu - Add scrolball for abilites and description in map preview",
+        "TODO: Improve - Menu - Improve minimap to be graphicly nicer",
         "TODO: Improve - Editor - Add 'Test Map' button to the Game that will automaticly start the map in new window",
         "TODO: Improve - Editor - Add 'i' to each item that explains what doest the field to or some huge how to build section",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
@@ -244,7 +245,28 @@
       ]
     },
     {
-      "version": "First Alpha",
+      "version": " Alpha 0.0.3",
+      "release": "2025-10-26",
+      "changes": [
+        "Small minimalistic updates",
+        "Added third tower to the map",
+        "Creating basics of the game",
+        "Extra life moved to cards"
+
+      ]
+    },
+    {
+      "version": "Alpha 0.0.2",
+      "release": "2025-10-26",
+      "changes": [
+        "Ui chages",
+        "Added option to buy extra life",
+        "Added second tower to the map",
+        "Added game log"
+      ]
+    },
+    {
+      "version": "Alpha 0.0.1",
       "release": "2025-10-26",
       "changes": [
         "Game first Alpha version released",
