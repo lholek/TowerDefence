@@ -4,7 +4,7 @@
       "version": "Alpha 0.1.5",
       "release": "TBC",
       "changes": [
-        "Improved - Gameplay - Added mountains that block all incoming arrows.",
+        "Improved - Gameplay - Added mountains that block all incoming arrows and towers dont see enemies trough them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
         "Improved - Editor - Added mountains to the editor (M) so you can build them and implement them into your maps",
         "Improved - Menu - Settings update: Use 'Sky Background' for better performance",
