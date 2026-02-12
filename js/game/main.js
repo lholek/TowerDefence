@@ -411,4 +411,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // This triggers the preview for the default selected option on page load
     updateMapPreview()
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isTestMode = urlParams.get('mapEditorTest') === 'true';
+
+    if (isTestMode) {
+        const rawData = localStorage.getItem('test_map_data');
+        if (rawData) {
+            try {
+                const testMapData = JSON.parse(rawData);
+                
+                // Hide overlays immediately
+                document.getElementById('startOverlay').style.display = 'none';
+                document.getElementById('title').style.display = 'none';
+                document.getElementById('subtitle').style.display = 'none';
+
+                // Initialize Game
+                game = new Game(canvas);
+                game.setSpeed(1);
+                
+                // Load the JSON object directly
+                await game.loadGameData(testMapData);
+                
+                window.game = game;
+                game.start();
+                
+                // Force UI to tower mode
+                document.getElementById('towerModeBtn')?.click();
+                game.logEvent("<b>Test Mode:</b> Map imported from Editor");
+
+            } catch (err) {
+                console.error("Test Map Load Failed:", err);
+                alert("Failed to load test map. Check console.");
+            }
+        }
+    }
 });

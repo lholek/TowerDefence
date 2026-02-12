@@ -7,16 +7,13 @@
         "Improved - Gameplay - Added mountains that block all incoming arrows and towers dont see enemies trough them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
         "Improved - Editor - Added mountains to the editor (M) so you can build them and implement them into your maps",
+        "Improved - Editor - Added 'Test Map' button to automatically launch the map in a new window",
         "Improved - Menu - Settings update: Use 'Sky Background' for better performance",
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
         "Improved - Versions - Added updates of very old versions",
-        "TODO: Improve - Editor - Add 'Test Map' button to automatically launch the map in a new window.",
-        "TODO: Improve - Editor - Add info icons ('i') to explain field functions or add a comprehensive 'How to Build' section.",
-        "TODO: Improve - Editor - Add 3 save current map items that will store data to local storage",
+        "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
         "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
-        "TODO: Improve - Some updates to improve the game, Some updates to improve the game",
-        "TODO: Improve - Some updates to improve the game, Some updates to improve the game",
         "TODO: Improve - Some updates to improve the game, Some updates to improve the game",
         "TODO: Improve - Some updates to improve the game"
       ]

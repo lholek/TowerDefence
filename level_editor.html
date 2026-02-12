@@ -203,13 +203,14 @@
 
         <div class="controls">
             <div class="button-group">
-                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
+                <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate btn-green">Validate Map Paths</button>
             </div>
-
+            
             <div id="statusMessage" class="status-message text-center d-none"></div>
             
             <div class="status-and-nav">
-                <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate btn-green">Validate Map Paths</button>
+                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
+                <button id="testMapBtn" class="btn btn-green">Test Map</button>
                 <button onclick="window.app.jsonFunctions.exportLevelData()" class="btn btn-save btn-green">Export Map</button>
             </div>
 

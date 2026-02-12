@@ -1,4 +1,16 @@
 // This block replaces both of your original DOMContentLoaded blocks.
+import { currentLevelData } from './level_data.js';
+
+document.getElementById('testMapBtn').addEventListener('click', () => {
+    // 1. Save the current state of the editor to localStorage
+    const mapString = JSON.stringify(currentLevelData);
+    localStorage.setItem('test_map_data', mapString);
+
+    // 2. Open the game in a new tab/window
+    // The 'test=true' query param tells the game to look in localStorage
+    window.open('index.html?mapEditorTest=true', '_blank');
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     /**
