@@ -91,9 +91,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // and make sure all linked panels are visible on load.
     
     toggleButtons.forEach(button => {
-        const targetIds = button.getAttribute('data-target').split(' ');
+        const targetAttr = button.getAttribute('data-target');
         const isActive = button.classList.contains('active-tab');
-        
+        if(!targetAttr){
+            return;
+        }
+        const targetIds = targetAttr.split(' ')
         targetIds.forEach(id => {
             const targetPanel = document.getElementById(id);
             if (targetPanel) {
