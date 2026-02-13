@@ -44,14 +44,13 @@ h3 {
     text-align: center;
     color: #f0c674;
     margin-top: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     position: relative;
     z-index: 101;
 }
+
 .subtitle {
     text-align: center;
-    left: 50%;
-    transform: translateX(-50%);
     margin-top: 0px;
     position: absolute;
     z-index: 1;
@@ -68,10 +67,32 @@ h3 {
     transition: background 0.2s;
 }
 
+.titles{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    top: 0;
+    position: absolute;
+}
+
+.title, .subtitle {
+    display: block;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.subtitle {
+    position: relative;
+    width: auto;
+}
+
 /* main container flex */
 #mainContainer {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
     margin-top: 12px;
     width: 98%;           /* Use most of the screen */
