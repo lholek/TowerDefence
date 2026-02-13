@@ -1,5 +1,4 @@
 .wave-card{
-    margin: 1rem;
     background-color: #2e261d;
     padding: 15px;
     border-radius: 8px;
@@ -8,7 +7,7 @@
 
 .enemy-card {
     float: left;
-    margin: 1rem;
+    margin: 0.8rem;
 }
 .enemy-types-editor input {
     width: 100%;
@@ -17,7 +16,7 @@
     box-shadow: 0 0 0 1000px #967456 inset !important; 
     color: #f0f0f0 !important;
     -webkit-text-fill-color: #f0f0f0 !important; 
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     border-radius: 4px;
@@ -45,7 +44,7 @@
 
 .wave-card input{
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
@@ -58,7 +57,7 @@
 }
 .wave-card select{
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
@@ -193,9 +192,19 @@
 .input-enemy-effect-type{
     width: 100%;
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
     border-radius: 4px;
+}
+
+.effect-row{
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
 }

@@ -33,11 +33,16 @@
 .input-group input[type="number"],
 .input-group textarea {
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
     border-radius: 4px;
+}
+
+.input-group textarea {
+    min-width: 98%; /* Replace with your current width */
+    max-width: 98%; /* Replace with your current width */
 }
 
 .input-group input[readonly] {

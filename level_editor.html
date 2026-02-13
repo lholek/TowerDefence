@@ -17,11 +17,11 @@
         <h1 class="title cl-primary text-center">The CZSrna's Tower Defence – Map Editor</h1>
         <h2 class="subtitle"></h2>
         <div class="editor-tabs">
-            <button class="btn active-tab" data-target="mapEditorPanel">Map</button>
-            <button class="btn active-tab" data-target="basicInfoEditorPanel">Map Settings</button>
-            <button class="btn active-tab" data-target="towerEditorPanel">Towers</button>
-            <button class="btn active-tab" data-target="waveEditorPanel">Waves</button>
-            <button class="btn active-tab" data-target="abilityEditorPanel">Abilities</button>
+            <button class="btn active-tab" data-target="mapEditorPanel hr-map">Map</button>
+            <button class="btn active-tab" data-target="basicInfoEditorPanel hr-settings">Map Settings</button>
+            <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
+            <button class="btn active-tab" data-target="waveEditorPanel hr-wave">Waves</button>
+            <button class="btn active-tab" data-target="abilityEditorPanel hr-ability">Abilities</button>
             <a href="/" class="btn btn-link text-center">Main Menu</a>
 
         </div>
@@ -71,11 +71,10 @@
 
                 </div>
             </div>
-
+            <hr id="hr-map">
             <div id="basicInfoEditorPanel" class="editor-panel">
-                <hr>
-                <div class=" editor-description">
-                <h3>Map Settings</h3>
+                <h2>Map Settings</h2>
+                <div class="editor-description">
                     <div class="input-row">
                         <div class="input-group mt-4">
                             <label for="mapNameInput">🗺️ Map Title</label>
@@ -128,9 +127,8 @@
                     </div>
                 </div>
             </div>
-
+            <hr id="hr-settings">
             <div id="towerEditorPanel" class="editor-panel"> 
-                <hr>
                 <h2>Tower Editor</h2>
 
                 <div class="tower-editor-layout"> 
@@ -140,10 +138,9 @@
                     <button onclick="window.app.towerEditor.addTower()" class="btn btn-green">+ Add New Tower</button>
                 </div>
             </div>
-
+            <hr id="hr-tower">
             <div id="waveEditorPanel" class="editor-panel d-none"> 
-                <hr>
-                <h3>Wave Editor</h3>
+                <h2>Wave Editor</h2>
 
                 <div class="enemy-types-editor box-card repeater-header mb-4">
                     <h3>Enemy Types List</h3>
@@ -155,30 +152,25 @@
                     </div>
                 
                     <p class="enemyTypesEditorDescription">Manage the enemy types available for selection in the Wave Editor.</p>
-                    <div class="box">
-                        <h3>Enemy Shake Effects</h3>
-                                        
-                        <div id="enemy-effects-repeater"></div>
-                                        
-                        <button class="btn btn-add" id="add-effect-btn">Add New Effect</button>
-                    </div>
+                    <h3>Enemy Shake Effects</h3>
+                                    
+                    <div id="enemy-effects-repeater"></div>
+                                    
+                    <button class="btn btn-add" id="add-effect-btn">Add New Effect</button>
                 </div>
 
                 <div id="waves-editor-container" class="repeater-container">
                 </div>
                 <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
             </div>
-            
             <div id="waveEditorPanel" class="editor-panel d-none"> 
-                <hr>
                 <h3>Wave Editor</h3>
                 <div id="waves-editor-container" class="repeater-container">
                 </div>
                 <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
             </div>
-
+            <hr id="hr-wave">
             <div id="abilityEditorPanel" class="editor-panel">
-                <hr>
                 <h2>Ability Editor</h2>
                     
                 <div class="ability-editor-layout"> 
@@ -195,10 +187,9 @@
                     </div>
                 </div>
             </div>
-            
+            <hr id="hr-ability">
         </div>
-        <hr>
-        <h3>Final JSON</h3>
+        <h2 class="text-center d-block final-json">Final JSON</h2>
         <textarea id="jsonEditor" class="json-textarea"></textarea>
 
         <div class="controls">

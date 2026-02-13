@@ -18,28 +18,27 @@ document.addEventListener('DOMContentLoaded', async () => {
      * @param {string} targetId The ID of the panel to toggle (e.g., 'mapEditorPanel').
      * @param {HTMLElement} clickedButton The button that was clicked.
      */
-    function toggleEditorPanel(targetId, clickedButton) {
+    function toggleEditorPanel(targetIds, clickedButton) {
+        // Split the string by spaces to handle multiple IDs
+        const targets = targetIds.split(' ');
         
-        const targetPanel = document.getElementById(targetId);
+        // Toggle the button's active state once
+        clickedButton.classList.toggle('active-tab');
 
-        if (targetPanel) {
-            // A. Toggle the panel's visibility
-            // If it has 'd-none', remove it (show). If it doesn't, add it (hide).
-            targetPanel.classList.toggle('d-none');
-            
-            // B. Toggle the button's active state
-            clickedButton.classList.toggle('active-tab');
+        targets.forEach(id => {
+            const targetPanel = document.getElementById(id);
+            if (targetPanel) {
+                // Toggle visibility for each target
+                targetPanel.classList.toggle('d-none');
 
-            // C. Optional: Run any necessary resize/init functions when showing the map
-            // This condition checks if the panel is currently SHOWN (i.e., does NOT contain 'd-none')
-            if (targetId === 'mapEditorPanel' && !targetPanel.classList.contains('d-none')) {
-                if (window.app && window.app.mapEditor && window.app.mapEditor.onTabShown) {
-                    window.app.mapEditor.onTabShown();
+                // Specialized logic for the map editor resize
+                if (id === 'mapEditorPanel' && !targetPanel.classList.contains('d-none')) {
+                    if (window.app && window.app.mapEditor && window.app.mapEditor.onTabShown) {
+                        window.app.mapEditor.onTabShown();
+                    }
                 }
             }
-        }
-        
-        // **NOTE**: The "Hide ALL" logic (from the radio behavior) has been removed.
+        });
     }
 
     /**
@@ -92,19 +91,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // and make sure all linked panels are visible on load.
     
     toggleButtons.forEach(button => {
-        const targetId = button.getAttribute('data-target');
-        const targetPanel = document.getElementById(targetId);
-
-        // If the button is active and the panel exists, ensure the panel is visible 
-        // by removing 'd-none' if present.
-        if (button.classList.contains('active-tab') && targetPanel) {
-             targetPanel.classList.remove('d-none');
-             
-             // Run the map resize if it's the map panel
-             if (targetId === 'mapEditorPanel' && window.app && window.app.mapEditor && window.app.mapEditor.onTabShown) {
-                window.app.mapEditor.onTabShown();
+        const targetIds = button.getAttribute('data-target').split(' ');
+        const isActive = button.classList.contains('active-tab');
+        
+        targetIds.forEach(id => {
+            const targetPanel = document.getElementById(id);
+            if (targetPanel) {
+                if (isActive) {
+                    targetPanel.classList.remove('d-none');
+                    // Run the map resize if it's the map panel
+                    if (id === 'mapEditorPanel' && window.app?.mapEditor?.onTabShown) {
+                        window.app.mapEditor.onTabShown();
+                    }
+                } else {
+                    targetPanel.classList.add('d-none');
+                }
             }
-        }
-        // If a button is NOT active, its panel should start hidden (have 'd-none').
+        });
     });
 });

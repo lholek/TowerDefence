@@ -21,28 +21,51 @@ body, h1, h2, p, button, input, textarea {
     font-family: 'Inter', sans-serif;
 }
 
-.box{
+.box {
     background: var(--main-bg-color);
+    border: 1px solid #333;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 h2, h3 {
     margin: 0;
-    color: #f0c674;
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 26px;
     text-align: center;
 }
 
+h2 {
+    color: #f0c674;
+    font-size: 32px;
+    display: inline-block;
+    padding-bottom: 4px;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #F0C6A1;
+    /* Adds a soft "aura" around the text and the border */
+    text-shadow: 0 0 15px rgba(240, 198, 116, 0.3);
+    filter: drop-shadow(0 4px 4px rgba(240, 161, 161, 0.2));
+}
+
+h3{
+    color: #f0c674;
+
+}
+
 .subtitle {
+    display: block;
+    width: max-content;
+    margin: 10px auto;
+    text-align: center;
     font-size: 1.2rem;
     background-color: rgb(139, 69, 19);
-    margin: 0 auto;
-    text-align: center;
-    padding: 0.5rem;
-    width: max-content;
     border: none;
+    filter: none;
+    padding: 0.5rem;
     border-radius: 6px;
+    color: #f0c674;
+    text-shadow: none;
 }
 
 .editor-body {
@@ -102,15 +125,18 @@ h2, h3 {
 .editor-panel{
     text-align: center;
     margin-top: 15px;
+    padding: 1rem;
 }
 
-.editor-panel hr {
+hr {
     margin-bottom: 15px;
+    margin-top: 15px;
+    border: none;                /* Remove the thin default gray line */
+    height: 3px;                 /* This makes it "fatter" */
+    background-color: #F0C6A1;   /* Your peach color */
+    border-radius: 10px;         /* Optional: rounds the edges for a softer look */
 }
 
-.box {
-    border: 1px solid #333;
-}
 
 .tower-editor-layout {
     display: flex;
@@ -120,7 +146,6 @@ h2, h3 {
 
 /* --- Decription editor ---*/
 .editor-description{
-    margin: 1rem;
     background-color: #2e261d;
     padding: 15px;
     border-radius: 8px;
@@ -330,7 +355,7 @@ h2, h3 {
 
 .input-small {
     width: 60px;
-    padding: 5px;
+    padding: 8px;
     border: 1px solid #967456;
     background-color: #967456;
     color: #f0f0f0;
@@ -339,7 +364,7 @@ h2, h3 {
 
 .input-medium {
     width: 120px;
-    padding: 5px;
+    padding: 8px;
     border: 1px solid #967456;
     background-color: #967456;
     color: #f0f0f0;
@@ -557,7 +582,7 @@ h2, h3 {
 
 .brushSizeInput{
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     color: #f0f0f0;
     text-align: center;
     border-radius: 4px; 
@@ -587,4 +612,13 @@ h2, h3 {
     display: flex;
     justify-content: space-around;
     align-items: center;
+}
+
+ .d-block {
+    display: block !important;
+ }
+
+ .final-json{
+    width: max-content;
+    margin: 20px auto;
 }

@@ -1,10 +1,10 @@
 /* --- Tower Editor Repeater Styles --- */
 #towerEditorContent.repeater-container {
     width: 100%; 
-    margin-bottom: 20px; 
+    margin-bottom: 10px; 
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
 }
 
 #editor-panel .btn-validate {
@@ -16,7 +16,6 @@
 }
 
 #towerEditorContent {
-    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -27,11 +26,12 @@
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #5c2e0e;
+    margin-bottom: 0px;
 }
 
 .tower-card input{
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
@@ -70,8 +70,11 @@
     color: white;
 }
 
-.card-body-tower-color{
+.card-body-tower-color input {
     align-items: center;
+    padding: 3px;
+    margin: 0 auto;
+    margin-top: 8px;
 }
 
 .btn-add{

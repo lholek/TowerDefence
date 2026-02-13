@@ -728,7 +728,7 @@ export const waveEditor = (() => {
     
         // Render the rows if effects exist
         effectsContainer.innerHTML = effects.map((effect, index) => `
-            <div class="effect-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: rgba(255,255,255,0.05); padding: 10px;">
+            <div class="effect-row">
     
                 <div style="flex: 1;">
                     <label style="font-size: 0.8em; display:block;">Enemy Type</label>

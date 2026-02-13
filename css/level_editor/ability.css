@@ -1,5 +1,4 @@
 .ability-card{
-    margin: 1rem;
     background-color: #2e261d;
     padding: 15px;
     border-radius: 8px;
@@ -8,7 +7,7 @@
 
 .ability-card input {
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
@@ -30,7 +29,7 @@
 
 .ability-card select{
     background-color: #967456;
-    padding: 5px;
+    padding: 8px;
     margin-top: 3px;
     border: 1px solid #555;
     color: #f0f0f0;
@@ -121,9 +120,9 @@
 }
 
 .ability-color-base{
+    padding: 6px !important;
     width: 40px;
     height: 30px;
-    padding: 2px;
     border: 1px solid #444;
     cursor: pointer;
 }
