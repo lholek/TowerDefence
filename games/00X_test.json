@@ -19,7 +19,7 @@
           "descriptionText": "This is map only for testing, its not hard or easy its only for testing ONLY. For example this text is testing long descriptions in the menu... so this is reason why its so long, becouse its important to test that items dont show to many items etc.",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "20x8",
+          "map_size": "20x18",
           "tower types": 1,
           "abilites": "Lava Floor🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋"
         }
@@ -32,8 +32,18 @@
               ["X","X","-","-","-","X","X","X","X","O","X","X","M","M","M","X","X","M","M","W"],
               ["W","X","X","S2","O","X","X","X","X","O","X","X","M","M","M","X","E1","X","M","W"],
               ["W","W","X","X","O","O","O","O","O","O","O","O","O","O","O","O","O","X","W","W"],
-              ["W","W","W","X","X","X","X","X","X","M","M","M","M","X","X","X","X","W","W","W"],
-              ["W","W","W","W","X","X","X","M","M","M","M","M","M","M","M","M","W","W","W","W"]
+              ["W","W","W","X","X","X","X","X","M","M","M","M","M","X","X","X","X","W","W","W"],
+              ["W","W","W","W","X","X","M","M","M","M","M","M","M","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","M","M","M","M","M","M","M","M","M","W","W","W","W","W","W"],
+              ["W","W","W","W","M","M","M","M","M","M","M","M","M","M","M","W","W","W","W","W"],
+              ["W","W","W","M","M","M","M","M","M","M","M","M","M","M","M","M","W","W","W","W"],
+              ["W","W","M","M","M","M","M","M","M","M","M","M","M","M","M","M","M","W","W","W"],
+              ["W","W","M","M","M","M","M","M","M","M","M","M","M","M","M","M","M","W","W","W"],
+              ["W","W","W","M","M","M","M","M","M","M","M","M","M","M","M","M","W","W","W","W"],
+              ["W","W","W","W","M","M","M","M","M","M","M","M","M","M","M","W","W","W","W","W"],
+              ["W","W","W","W","W","M","M","M","W","W","M","M","M","M","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","M","W","W","W","W","W","M","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
           ],
       "abilities": [
         {
