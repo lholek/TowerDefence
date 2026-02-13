@@ -16,3 +16,6 @@ TODOS:
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
   "???TODO: New Ability - 'Freeze'",
+
+          "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
+        "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
