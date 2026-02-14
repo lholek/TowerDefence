@@ -184,7 +184,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 
     // If we are placing a Start or End, and we have already drawn something 
     // during this specific click-and-hold session, STOP.
-    const isMarker = tileType.startsWith('S') || tileType.startsWith('E');
+    const isMarker = (tileType.startsWith('S') && tileType !== 'SNW' && tileType !== 'SND') || tileType.startsWith('E');
     if (isMarker && hasDrawn) {
         return false; 
     }
@@ -201,7 +201,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
             const oldTile = String(layout[tile.r][tile.c]);
             let tileToPlace = tileType;
 
-            if (tileType.startsWith('S')) {
+            if (tileType.startsWith('S') && tileType !== 'SNW' && tileType !== 'SND')  {
                 tileToPlace = getNextAvailableMarker('S');
             } else if (tileType.startsWith('E')) {
                 tileToPlace = getNextAvailableMarker('E');
@@ -411,15 +411,19 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
             // Set color based on tile type
             let color;
-            switch (tileType.charAt(0)) {
-                case 'O': color = '#8B4513'; break; // Path (Brown)
-                case 'S': color = '#38761d'; break; // Start (Dark Green)
-                case 'E': color = '#990000'; break; // End (Dark Red)
-                case 'X': color = '#3F7D3C'; break; // Grass (Mid Green)
-                case 'W': color = '#2c4d96'; break; // Water (Dark Blue)
-                case 'M': color = '#616161'; break; // Mountain (Dark GraY)
-                case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
+            if (typeof tileType === 'string') {
+                switch (tileType.charAt(0)) {
+                    case 'O': color = '#8B4513'; break; // Path (Brown)
+                    case 'S': color = '#38761d'; break; // Start (Dark Green)
+                    case 'E': color = '#990000'; break; // End (Dark Red)
+                    case 'X': color = '#3F7D3C'; break; // Grass (Mid Green)
+                    case 'W': color = '#2c4d96'; break; // Water (Dark Blue)
+                    case 'M': color = '#616161'; break; // Mountain (Dark GraY)
+                    case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
+                }
             }
+            if (tileType === 'SNW') color = '#f0f0f0';
+            if (tileType === 'SND') color = '#d2b48c';
 
             ctx.fillStyle = color;
             ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
@@ -431,6 +435,7 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
             // Draw tile text
             ctx.fillStyle = 'white';
+            if (tileType === 'SNW' || tileType === 'SND') ctx.fillStyle = 'black';
             ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
         }
     }
@@ -473,10 +478,12 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
  */
 function createTileKey() {
     const labels = {
+        'X': 'Grass',
+        'SNW': 'Snow',
+        'SND': 'Sand',
         'O': 'Path',
         'S': 'Start',
         'E': 'End',
-        'X': 'Grass',
         'W': 'Water',
         'M': 'Mountain',
         '-': 'Air'
@@ -484,7 +491,7 @@ function createTileKey() {
 
     // 1. SET YOUR ORDER HERE
     // Place the codes in the exact order you want them to appear (4 in first row, 3 in second)
-    const customOrder = ['X', 'O', 'S', 'E','W', 'M', '-'];
+    const customOrder = ['X', 'O', 'SNW', 'SND', 'S', 'E','W', 'M', '-'];
 
     // 2. Sort the imported tileTypes based on your customOrder
     const sortedTiles = [...tileTypes].sort((a, b) => {

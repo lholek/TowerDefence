@@ -436,6 +436,16 @@ hr {
     color: white;
 }
 
+.tile-snw {
+    background-color: white;
+    color: black;
+}
+
+.tile-snd {
+    background-color: #f0d78c;
+    color: black;
+}
+
 .tile- {
     background-color: #2e261d; /* Empty color */
     color: #ccc;

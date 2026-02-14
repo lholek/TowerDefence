@@ -103,7 +103,7 @@ export function getCurrentMap() {
     return currentLevelData.maps[0];
 }
 export let currentTileType = 'O'; 
-export const tileTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E']; 
+export const tileTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND']; 
 
 /**
  * FIX: Renamed from setCurrentLevelData to updateCurrentLevelData
@@ -142,7 +142,7 @@ export function getNextAvailableMarker(prefix) {
 
 export function setCurrentTileType(type) {
     // Determine what category we are currently holding
-    const isHoldingS = typeof currentTileType === 'string' && currentTileType.startsWith('S');
+    const isHoldingS = typeof currentTileType === 'string' && currentTileType.startsWith('S') && (currentTileType !== 'SNW' && currentTileType !== 'SND') 
     const isHoldingE = typeof currentTileType === 'string' && currentTileType.startsWith('E');
 
     if (type === 'S' || (type === 'REFRESH_S' && isHoldingS)) {

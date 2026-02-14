@@ -19,6 +19,11 @@
         "TODO: Improve - Editor - New Terrain:  Snow (SNW) added to the editor",
         "TODO: Improve - Editor - New Terrain:  Sand (SND) added to the editor",
         "TODO: Improve - Improve Coasts to fit Snow and Sand",
+        "TODO: Improve - 1) Fix the coats to mathch the Sand AND Snow",
+        "TODO: Improve - 2) New Type of Road - Snow Road (O[SNW]) and Sand Road (O[SND]) that look like snowy/sandy paths but have the same properties as normal roads",
+        "TODO: Improve - 3) New Type of Portal - Snow Portal (S*[SNW]) and Sand Portal (S*[SND]) that look like snowy/sandy portals but have the same properties as normal portals",
+        "TODO: Improve - 4) New Type of Tree of Tree of life  - Snow Tree of life (E*[SNW]) and Sand Tree of life (E*[SND]) that look like snowy/sandy Tree of life but have the same properties as normal Tree of life",
+        "TODO: Improve - 5) Mountains (M) will be always generated on snow",
         "TODO: Improve - Some updates to improve the game"
       ]
     },

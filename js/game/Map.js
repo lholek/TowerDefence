@@ -130,11 +130,15 @@ export default class Map {
     const er = end.row, ec = end.col;
 
     const inBounds = (r,c) => r>=0 && r<this.rows && c>=0 && c<this.cols;
-    const isWalkable = (r,c) => {
+    const isWalkable = (r, c) => {
       const tok = String(this.grid[r][c] ?? '');
-      // treat 'O' and any S*/E*/T* as walkable; treat 'X' as obstacle; treat '-' as blocked for pathing
-      return tok.startsWith("S") || tok.startsWith("E") || tok == "O";
-      // everything else is walkable (O, S1, E1, L, etc.)
+
+      // Regex breakdown:
+      // ^(O|L)$      -> Matches exactly "O"
+      // ^[SET]\d+$   -> Matches S, E
+      const walkablePattern = /^(O)$|^[SE]\d+$/;
+
+      return walkablePattern.test(tok);
     };
 
     const dirs = [[0,-1],[0,1],[-1,0],[1,0]]; // up,down,left,right
