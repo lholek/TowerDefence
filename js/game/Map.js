@@ -136,7 +136,7 @@ export default class Map {
       // Regex breakdown:
       // ^(O|L)$      -> Matches exactly "O"
       // ^[SET]\d+$   -> Matches S, E
-      const walkablePattern = /^(O)$|^[SE]\d+$/;
+      const walkablePattern = /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/;
 
       return walkablePattern.test(tok);
     };
@@ -369,14 +369,14 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
         for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c]);
             const bounds = this.getTileBounds(c, r);
-        
+
             // NEW: If it's a mountain, draw snow underneath it
-            if (tok === 'SNW' || tok === 'M') { 
+            if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
                 if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
                 ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-            } else if (tok === 'SND') {
+            } else if (tok === 'SND'|| tok === 'O[SND]') {
                 if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
-                ctx.drawImage(this.sandTexture, bounds.y, bounds.y);
+                ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
             }
         }
     }
@@ -568,7 +568,7 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
   
     // Block paths and special start/end tiles
     if (tok === 'M') return false;
-    if (tok === 'O') return false;        // path
+    if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') return false; // path
     if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
     if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
     if (tok === '-') return false;        // blocked tiles
@@ -745,19 +745,8 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
             }
 
             // --- KLASICKÁ CESTA (O) ---
-            if (tok === 'O') {
-                const grassIdx = this.terrainIndices[r][c];
-                ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
-
-                // Dirt blend
-                const grad = ctx.createRadialGradient(worldX+ts/2, worldY+ts/2, 0, worldX+ts/2, worldY+ts/2, ts/1.2);
-                grad.addColorStop(0, "rgba(69, 53, 39, 0.4)");
-                grad.addColorStop(1, "rgba(69, 53, 39, 0)");
-                ctx.fillStyle = grad;
-                ctx.fillRect(worldX, worldY, ts, ts);
-
+            if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') {
                 // Kameny (tvůj stávající kód pro kameny...)
-                                // 3. DRAW SEAMLESS STONES
                 const density = 4;
                 const step = ts / density;
                 for (let i = 0; i < density; i++) {
