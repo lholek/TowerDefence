@@ -369,12 +369,12 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
         for (let c = startCol; c < endCol; c++) {
             const tok = String(this.grid[r][c]);
             const bounds = this.getTileBounds(c, r);
-
-            // NEW: If it's a mountain, draw snow underneath it
+        
             if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
                 if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
                 ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-            } else if (tok === 'SND'|| tok === 'O[SND]') {
+            } 
+            else if (tok === 'SND' || tok === 'O[SND]') {
                 if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
                 ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
             }
@@ -1670,77 +1670,104 @@ _createNoisePattern() {
     return ctx.createPattern(canvas, 'repeat');
 }
 
-// Map.js
+
 _preRenderSnow(tileSize) {
     const offCanvas = document.createElement("canvas");
     offCanvas.width = tileSize;
     offCanvas.height = tileSize;
     const ctx = offCanvas.getContext("2d");
 
-    // Základní nadýchaný modrobílý gradient
-    const grad = ctx.createRadialGradient(tileSize/2, tileSize/2, 0, tileSize/2, tileSize/2, tileSize);
-    grad.addColorStop(0, '#ffffff');    // Střed je čistě bílý
-    grad.addColorStop(1, '#d1d9e6');    // Okraje jsou lehce namodralé/šedé
-    ctx.fillStyle = grad;
+    // 1. ZÁKLAD: Mnohem tmavší "matná" modro-šedá
+    // V HDR bude tato barva vypadat jako "normální bílá", 
+    // což nám umožní vykreslit vločky ještě světleji.
+    ctx.fillStyle = '#b8c9d9'; 
     ctx.fillRect(0, 0, tileSize, tileSize);
 
-    // Přidání "třpytu" (ice crystals)
-    for (let i = 0; i < 12; i++) {
+    // 2. TEXTURA POVRCHU (Vysoký kontrast)
+    for (let i = 0; i < 350; i++) {
         const x = Math.random() * tileSize;
         const y = Math.random() * tileSize;
-        const size = Math.random() * 2;
         
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Malá záře kolem třpytky
-        ctx.fillStyle = 'rgba(200, 230, 255, 0.3)';
-        ctx.fillRect(x-1, y-1, size+2, size+2);
+        // Používáme výraznější tmavé body pro simulaci stínů mezi zrnky
+        ctx.fillStyle = Math.random() > 0.6 ? 'rgba(255, 255, 255, 0.6)' : 'rgba(60, 90, 120, 0.3)';
+        ctx.fillRect(x, y, 1.2, 1.2);
     }
 
-    // Jemný vnitřní stín pro hloubku
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, tileSize-2, tileSize-2);
+    // 3. HLUBOKÉ STÍNY (Závěje)
+    // Přidáme tmavší gradienty, které HDR nerozpije
+    const shadowGrad = ctx.createRadialGradient(tileSize, tileSize, 0, tileSize, tileSize, tileSize);
+    shadowGrad.addColorStop(0, 'rgba(0, 40, 80, 0.15)');
+    shadowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. HDR-READY KRYSTALY
+    // Místo velkých ploch použijeme mikroskopické, ale velmi kontrastní body
+    for (let i = 0; i < 40; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        
+        // Ostrý bílý bod (v HDR bude svítit)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, 1, 1);
+        
+        // Temně modrý "halo" efekt kolem krystalu (vytvoří umělý kontrast)
+        if (Math.random() > 0.8) {
+            ctx.fillStyle = 'rgba(0, 100, 255, 0.4)';
+            ctx.fillRect(x - 1, y, 3, 1);
+            ctx.fillRect(x, y - 1, 1, 3);
+        }
+    }
+
+    // 5. ZVÝRAZNĚNÉ HRANY
+    // V HDR splývají dlaždice dohromady, proto přidáme tmavou linku na spodek
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
 
     return offCanvas;
 }
-
 _preRenderSand(tileSize) {
     const offCanvas = document.createElement("canvas");
     offCanvas.width = tileSize;
     offCanvas.height = tileSize;
     const ctx = offCanvas.getContext("2d");
 
-    // Hlavní písková barva
-    ctx.fillStyle = '#f0d78c';
+    // 1. Základní barva - bohatší žlutohnědá
+    ctx.fillStyle = '#eecd7d';
     ctx.fillRect(0, 0, tileSize, tileSize);
 
-    // Efekt dun (jemné šikmé pruhy)
-    ctx.beginPath();
-    const duneGrad = ctx.createLinearGradient(0, 0, tileSize, tileSize);
-    duneGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    duneGrad.addColorStop(0.5, 'rgba(212, 175, 55, 0.2)');
-    duneGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = duneGrad;
-    ctx.fillRect(0, 0, tileSize, tileSize);
-
-    // Realistická zrna (tmavá i světlá)
-    for (let i = 0; i < 40; i++) {
+    // 2. Textura zrnek (vysoká hustota)
+    for (let i = 0; i < 400; i++) {
         const x = Math.random() * tileSize;
         const y = Math.random() * tileSize;
-        
-        // Střídání světlých (odlesk) a tmavých (stín) zrnek
-        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)';
-        ctx.fillRect(x, y, 1, 1);
+        const opacity = Math.random() * 0.2;
+        // Náhodně tmavší hnědá nebo světlejší žlutá zrnka
+        ctx.fillStyle = Math.random() > 0.5 ? `rgba(139, 69, 19, ${opacity})` : `rgba(255, 255, 255, ${opacity})`;
+        ctx.fillRect(x, y, 1.2, 1.2);
     }
 
-    // Vnější "teplý" stín
-    ctx.strokeStyle = 'rgba(160, 120, 40, 0.15)';
-    ctx.lineWidth = 1;
+    // 3. Efekt větrných dun (více vrstev gradientů)
+    const dune = ctx.createLinearGradient(0, 0, tileSize, tileSize * 0.5);
+    dune.addColorStop(0, 'rgba(0,0,0,0)');
+    dune.addColorStop(0.3, 'rgba(180, 130, 40, 0.15)'); // Stín duny
+    dune.addColorStop(0.5, 'rgba(255, 240, 150, 0.2)'); // Vrcholek duny (osvětlený)
+    dune.addColorStop(0.7, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dune;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. Teplý okraj (Ambient Occlusion)
+    // Horní/Levý okraj zesvětlíme (světlo), Dolní/Pravý ztmavíme (stín)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, tileSize, tileSize);
+    
+    ctx.strokeStyle = 'rgba(120, 80, 20, 0.2)';
+    ctx.beginPath();
+    ctx.moveTo(0, tileSize);
+    ctx.lineTo(tileSize, tileSize);
+    ctx.lineTo(tileSize, 0);
+    ctx.stroke();
 
     return offCanvas;
 }
