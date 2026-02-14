@@ -6,9 +6,10 @@
       "changes": [
         "Improved - Gameplay - Added mountains that block all incoming arrows and towers dont see enemies trough them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
-        "Improved - Editor - Added mountains to the editor (M) so you can build them and implement them into your maps",
-        "Improved - Editor - Added 'Test Map' button to automatically launch the map in a new window",
-        "Improved - Editor - Improved numbers of towers, abilites and waves",
+        "Improved - Editor - Global - Added mountains to the editor (M) so you can build them and implement them into your maps",
+        "Improved - Editor - Global - Added 'Test Map' button to automatically launch the map in a new window",
+        "Improved - Editor - Global - Improved numbers of towers, abilites and waves",
+        "Improved - Editor - Map - Selector from map tile types",
         "Improved - Editor - Improved css",
         "Improved - Menu - Settings update: Use 'Sky Background' for better performance",
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
