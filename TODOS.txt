@@ -20,3 +20,6 @@ TODOS:
           "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
         "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
+
+'SND': 'Sand',   // Matching SaND
+'SNW': 'Snow',   // Matching SNoW
