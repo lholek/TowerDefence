@@ -20,7 +20,7 @@
           "level count": 1,
           "difficulty": "⭐",
           "map_size": "20x18",
-          "tower types": 1,
+          "tower types": 10,
           "abilites": "Lava Floor🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋, Lava Floor (Copy) (Copy)🌋"
         }
       ],
@@ -31,11 +31,11 @@
               ["SND","SND","X","S1","O","O","M","SNW","M","O","X","X","X","M","M","M","X","M","M","M"],
               ["SND","X","-","-","-","SNW","SNW","SNW","SNW","O","X","X","M","M","M","X","X","M","M","M"],
               ["SND","SND","X","S2","O","SNW","SNW","SNW","SNW","O","X","X","M","M","M","X","E1","X","M","W"],
-              ["W","SND","SND","X","O","O","O","O","O","O","X","O","O","O","O","O","O","X","SND","W"],
+              ["W","SND","SND","X","O","O","O","O","O","O","-","O","O","O","O","O","O","X","SND","W"],
               ["W","W","SND","SND","X","X","X","X","O","SNW","SNW","O","SNW","X","X","X","SND","SND","SND","W"],
-              ["W","W","W","SND","SND","X","M","SNW","O","SND","SND","O","SNW","SND","SND","SND","SND","W","W","W"],
-              ["W","W","W","W","W","M","SNW","SNW","O","SND","SND","O","SNW","SNW","W","W","W","W","W","W"],
-              ["W","W","W","W","M","M","SNW","O","O","SND","SND","O","O","SNW","M","W","W","W","W","W"],
+              ["W","W","W","SND","SND","X","M","SNW","O","SNW","SNW","O","SNW","SND","SND","SND","SND","W","W","W"],
+              ["W","W","W","W","W","M","SNW","SNW","O","SNW","SNW","O","SNW","SNW","W","W","W","W","W","W"],
+              ["W","W","W","W","M","M","SNW","O","O","SNW","SNW","O","O","SNW","M","W","W","W","W","W"],
               ["W","W","W","M","M","SNW","SNW","O","SNW","SNW","SNW","SNW","O","SNW","M","M","W","W","W","W"],
               ["W","W","M","M","M","SNW","M","O","SNW","SNW","SNW","SNW","O","SNW","M","M","M","W","W","W"],
               ["W","W","M","M","M","SNW","M","O","O","O","O","O","O","SNW","M","M","M","W","W","W"],
@@ -430,6 +430,96 @@
       "towerTypes": {
         "001": {
           "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "002": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "003": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "004": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "005": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "006": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "007": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "008": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "009": {
+          "name": "Basic Tower (Copy)",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 250,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        },
+        "010": {
+          "name": "Basic Tower (Copy)",
           "price": 1,
           "damage": 50,
           "fireRate": 400,

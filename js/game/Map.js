@@ -366,21 +366,20 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
     // 2. PASS: BACKGROUND (Floor)
     ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
     for (let r = startRow; r < endRow; r++) {
-    for (let c = startCol; c < endCol; c++) {
-        const tok = String(this.grid[r][c]);
-        const bounds = this.getTileBounds(c, r);
-
-        if (tok === 'SNW') {
-            // Draw your pre-rendered snow texture
-            if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
-            ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-        } else if (tok === 'SND') {
-            // Draw your pre-rendered sand texture
-            if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
-            ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
+        for (let c = startCol; c < endCol; c++) {
+            const tok = String(this.grid[r][c]);
+            const bounds = this.getTileBounds(c, r);
+        
+            // NEW: If it's a mountain, draw snow underneath it
+            if (tok === 'SNW' || tok === 'M') { 
+                if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
+                ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
+            } else if (tok === 'SND') {
+                if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
+                ctx.drawImage(this.sandTexture, bounds.y, bounds.y);
+            }
         }
     }
-}
 
     if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
     ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
