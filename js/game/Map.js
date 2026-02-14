@@ -101,6 +101,9 @@ export default class Map {
 
     this.clampCamera();
 
+    this.snowTexture = this._preRenderSnow(this.tileSize);
+    this.sandTexture = this._preRenderSand(this.tileSize);
+
     // 9. GAME QUALITY
     this.quality = localStorage.getItem('graphicsSetting') || 'low';
 }
@@ -358,6 +361,23 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
 
     // 2. PASS: BACKGROUND (Floor)
     ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
+    for (let r = startRow; r < endRow; r++) {
+    for (let c = startCol; c < endCol; c++) {
+        const tok = String(this.grid[r][c]);
+        const bounds = this.getTileBounds(c, r);
+
+        if (tok === 'SNW') {
+            // Draw your pre-rendered snow texture
+            if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
+            ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
+        } else if (tok === 'SND') {
+            // Draw your pre-rendered sand texture
+            if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
+            ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
+        }
+    }
+}
+
     if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
     ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
@@ -465,7 +485,8 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
             const bounds = this.getTileBounds(c, r);
             const ts = this.tileSize;
             console.log()
-            if (tok.startsWith('E')) {
+            // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
+            if (/^E\d+/.test(tok)) {
                 const actualImg = this.cachedTree;
                 // If High quality tree is missing (init logic order), simple fallback or ensure init
 
@@ -482,7 +503,8 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
                 }
             }
 
-            if (tok.startsWith('S')) {
+            // This will ignore "SNW" and "SND" because they have letters after S, not numbers
+            if (/^S\d+/.test(tok)) {
                 const portalX = bounds.x + ts/2;
                 const portalY = bounds.y + ts/2;
                 const time = performance.now();
@@ -713,7 +735,7 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
             }
 
             // --- PORTÁL (S) ---
-            if (/^S/i.test(tok)) {
+            if (/^S\d+/.test(tok)) {
                 // Pod portálem vykreslíme spálenou zem
                 this._drawBurnedGround(ctx, worldX, worldY);
                 continue; // Přeskočíme kreslení kamenů
@@ -1654,5 +1676,80 @@ _createNoisePattern() {
         ctx.fillRect(Math.random()*64, Math.random()*64, 2, 2);
     }
     return ctx.createPattern(canvas, 'repeat');
+}
+
+// Map.js
+_preRenderSnow(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // Základní nadýchaný modrobílý gradient
+    const grad = ctx.createRadialGradient(tileSize/2, tileSize/2, 0, tileSize/2, tileSize/2, tileSize);
+    grad.addColorStop(0, '#ffffff');    // Střed je čistě bílý
+    grad.addColorStop(1, '#d1d9e6');    // Okraje jsou lehce namodralé/šedé
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // Přidání "třpytu" (ice crystals)
+    for (let i = 0; i < 12; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        const size = Math.random() * 2;
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Malá záře kolem třpytky
+        ctx.fillStyle = 'rgba(200, 230, 255, 0.3)';
+        ctx.fillRect(x-1, y-1, size+2, size+2);
+    }
+
+    // Jemný vnitřní stín pro hloubku
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1, 1, tileSize-2, tileSize-2);
+
+    return offCanvas;
+}
+
+_preRenderSand(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // Hlavní písková barva
+    ctx.fillStyle = '#f0d78c';
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // Efekt dun (jemné šikmé pruhy)
+    ctx.beginPath();
+    const duneGrad = ctx.createLinearGradient(0, 0, tileSize, tileSize);
+    duneGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    duneGrad.addColorStop(0.5, 'rgba(212, 175, 55, 0.2)');
+    duneGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = duneGrad;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // Realistická zrna (tmavá i světlá)
+    for (let i = 0; i < 40; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        
+        // Střídání světlých (odlesk) a tmavých (stín) zrnek
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)';
+        ctx.fillRect(x, y, 1, 1);
+    }
+
+    // Vnější "teplý" stín
+    ctx.strokeStyle = 'rgba(160, 120, 40, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
+
+    return offCanvas;
 }
 }
