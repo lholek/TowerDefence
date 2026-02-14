@@ -482,8 +482,14 @@ function createTileKey() {
         'SNW': 'Snow',
         'SND': 'Sand',
         'O': 'Path',
+        'O[SNW]': 'Path Snow',
+        'O[SND]': 'Path Sand',
         'S': 'Start',
+        'S[SNW]': 'Start Snow', 
+        'S[SND]': 'Start Sand', 
         'E': 'End',
+        'E[SNW]': 'End Snow', 
+        'E[SND]': 'End Sand',
         'W': 'Water',
         'M': 'Mountain',
         '-': 'Air'
@@ -491,11 +497,17 @@ function createTileKey() {
 
     // 1. SET YOUR ORDER HERE
     // Place the codes in the exact order you want them to appear (4 in first row, 3 in second)
-    const customOrder = ['X', 'O', 'SNW', 'SND', 'S', 'E','W', 'M', '-'];
+    const customOrder = [
+        'X', 'O', 'O[SNW]', 'O[SND]', 
+        'SNW', 'SND', 
+        'S', 'S[SNW]', 'S[SND]', 
+        'E', 'W', 'M', '-'
+    ];
 
     // 2. Sort the imported tileTypes based on your customOrder
-    const sortedTiles = [...tileTypes].sort((a, b) => {
-        return customOrder.indexOf(a) - customOrder.indexOf(b);
+    const sortedTiles = customOrder.filter(type => {
+        // Zobrazíme jen ty, které jsou definované v labels nebo existují v logice
+        return labels[type] !== undefined;
     });
 
     let html = `
@@ -519,8 +531,20 @@ function createTileKey() {
     sortedTiles.forEach(type => {
         const char = type.charAt(0);
         const labelText = labels[char] || 'Unknown';
-        const baseType = type.replace(/[0-9]/g, '').toLowerCase() || '-';
-
+        let baseType = type.replace(/[0-9]/g, '').toLowerCase() || '-';
+        if (type === 'O[SNW]') {
+            baseType = 'o-snw';
+        }   else if (type === 'O[SND]') {
+            baseType = 'o-snd';
+        }   else if (type === 'S[SNW]') {
+            baseType = 's-snw';
+        }   else if (type === 'S[SND]') {
+            baseType = 's-snd';
+        }   else if (type === 'E[SNW]') {
+            baseType = 'e-snw';
+        }   else if (type === 'E[SND]') {
+            baseType= 'e-snd';
+        }
         html += `
             <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
                 <span style="font-size: 0.8rem; font-weight: bold; color: #CCCCCC; text-transform: uppercase;">

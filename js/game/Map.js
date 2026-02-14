@@ -1,7 +1,11 @@
 // js/game/Map.js
 /*
 X - Grass
+SND - Sand
+SNW - Snow
 O - Road
+O[SNW] - Snowy Road
+O[SND] - Sandy Road
 S* - Start (S1, S2...) [Portal]
 E* - End (E1, E2...) [Tree]
 W - Water (impassable, non-buildable, shootable)
