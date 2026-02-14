@@ -1,4 +1,13 @@
 // js/game/Map.js
+/*
+X - Grass
+O - Road
+S* - Start (S1, S2...) [Portal]
+E* - End (E1, E2...) [Tree]
+W - Water (impassable, non-buildable, shootable)
+M - Mountain (impassable, non-buildable, non-shootable)
+- - Air(impassable, non-buildable, shootable)
+*/
 export default class Map {
   constructor(canvas, layout, tileSize = 80) {
     this.canvas = canvas;
