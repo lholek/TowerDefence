@@ -622,3 +622,10 @@ hr {
     width: max-content;
     margin: 20px auto;
 }
+
+.item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f0c674;
+    padding-left: 10px;
+}

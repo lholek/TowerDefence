@@ -86,7 +86,7 @@ export const towerEditor = (() => {
             html += `
                 <div class="tower-card box" data-tower-id="${towerId}">
                     <div class="card-header">
-                        <input type="text" class="input-tower-id input-small" value="${towerId}" placeholder="ID" disabled>
+                        <div class="item-title">Tower ${Number(towerId)}</div>
                         <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
                         <span class="badge-dps">⚡ DPS: ${dps}</span>
                         <div class="header-actions">

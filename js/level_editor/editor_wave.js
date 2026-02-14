@@ -179,7 +179,7 @@ export const waveEditor = (() => {
                 <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
             </div>
             <div class="card-header-inner">
-                    <label>Type: 
+                    <label>Type 
                         <select data-key="type" class="input-enemy-type">
                             ${getEnemyTypeOptions(enemy.type)}
                         </select>
@@ -339,9 +339,9 @@ export const waveEditor = (() => {
             html += `
                 <div class="wave-card box" data-wave-index="${waveIndex}">
                     <div class="card-header">
-                        <div class="level-label">Wave ${wave.level}</div>
+                        <div class="level-label item-title">Wave ${wave.level}</div>
                         <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
-                            <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="${totalCoins} coins">
+                            <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="Notes about wave...">
                         </label>
                         <h4>Enemies (Total Coins: 🪙 ${totalCoins})</h4>
                         <div class="header-actions">

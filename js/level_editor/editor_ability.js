@@ -75,6 +75,7 @@ export const abilityEditor = (() => {
             html += `
                 <div class="ability-card box" data-ability-index="${index}">
                     <div class="card-header">
+                        <div class="level-label item-title">Ability ${index + 1}</div>
                         <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
                         <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
                         <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>

@@ -472,30 +472,69 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
  * Creates the key/legend for tile types and selection controls.
  */
 function createTileKey() {
+    const labels = {
+        'O': 'Path',
+        'S': 'Start',
+        'E': 'End',
+        'X': 'Grass',
+        'W': 'Water',
+        'M': 'Mountain',
+        '-': 'Air'
+    };
+
+    // 1. SET YOUR ORDER HERE
+    // Place the codes in the exact order you want them to appear (4 in first row, 3 in second)
+    const customOrder = ['X', 'O', 'S', 'E','W', 'M', '-'];
+
+    // 2. Sort the imported tileTypes based on your customOrder
+    const sortedTiles = [...tileTypes].sort((a, b) => {
+        return customOrder.indexOf(a) - customOrder.indexOf(b);
+    });
+
     let html = `
         <p>
-            Current Tile: <span id="currentTileDisplay" class="current-tile-display"></span> 
+            <strong>Selected:</strong> <span id="currentTileDisplay" class="current-tile-display"></span> 
             | <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
         </p>
-        <div class="tile-options">
+        
+        <div class="tile-grid-main" style="
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 15px; 
+            background: #2e261d; 
+            padding: 15px; 
+            border-radius: 4px;
+            margin-top: 10px;
+        ">
     `;
     
-    tileTypes.forEach(type => {
+    // 3. Use sortedTiles instead of tileTypes
+    sortedTiles.forEach(type => {
+        const char = type.charAt(0);
+        const labelText = labels[char] || 'Unknown';
         const baseType = type.replace(/[0-9]/g, '').toLowerCase() || '-';
+
         html += `
-            <button 
-                class="tile-selector-btn tile-${baseType}" 
-                data-tile="${type}"
-                onclick="window.app.mapEditor.setTileType('${type}')">
-                ${type}
-            </button>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <span style="font-size: 0.8rem; font-weight: bold; color: #CCCCCC; text-transform: uppercase;">
+                    ${labelText}
+                </span>
+                <button 
+                    class="tile-selector-btn tile-${baseType}" 
+                    style="width: 80%; min-width: 60px; padding: 6px;"
+                    data-tile="${type}"
+                    onclick="window.app.mapEditor.setTileType('${type}')">
+                    ${type}
+                </button>
+            </div>
         `;
     });
+
     html += '</div>';
 
     if (tileKey) {
         tileKey.innerHTML = html;
-        updateCurrentTileDisplay();
+        updateCurrentTileDisplay(); 
     }
 }
 
