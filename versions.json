@@ -30,7 +30,8 @@
         "TODO: Improve - Fix the bug where game doesnt pause in test map",
         "TODO: Improve - Put burn netherack under the Portals",
         "TODO: Improve - Fix minimpap to show new terrains",
-        "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game"
+        "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game",
+        "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt apper for types of enemies that you will add during edditing - they add only when you import json"
       ]
     },
     {
