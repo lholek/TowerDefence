@@ -485,11 +485,7 @@ function createTileKey() {
         'O[SNW]': 'Path Snow',
         'O[SND]': 'Path Sand',
         'S': 'Start',
-        'S[SNW]': 'Start Snow', 
-        'S[SND]': 'Start Sand', 
         'E': 'End',
-        'E[SNW]': 'End Snow', 
-        'E[SND]': 'End Sand',
         'W': 'Water',
         'M': 'Mountain',
         '-': 'Air'
