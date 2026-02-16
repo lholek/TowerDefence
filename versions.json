@@ -28,7 +28,8 @@
         "TODO: Improve - Improve visuals of Snow and Sand terrains on High settings",
         "TODO: Improve - Fix bug where lava floor can not be placed on Snow and Sand terrains raods",
         "TODO: Improve - Fix the bug where game doesnt pause in test map",
-        "TODO: Improve - Put burn netherack under the Portals",
+        "TODO: Improve - Put burn netherack under the Portals - so it will look like portals are burning the ground and i will solve the problem whit different terrains under portals",
+        "TODO: Improve - Put the super duper looking life terrein udner trees - so it will look like holy ground and i will solve the problem whit different terrains under trees",
         "TODO: Improve - Fix minimpap to show new terrains",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game",
         "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt apper for types of enemies that you will add during edditing - they add only when you import json"
