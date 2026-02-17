@@ -172,6 +172,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         modeSelectBtn.classList.remove('active-mode');
     });
 
+    // Handle pause after leave window (již existující funkce)
+    window.addEventListener('blur', pauseOnBlur);
+
     // --- Logika tlačítka Start Game (s podporou souboru) ---
     startBtn.addEventListener('click', async () => {
 
@@ -217,9 +220,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         game.setSpeed(1);
         
-        // Handle pause after leave window (již existující funkce)
-        window.addEventListener('blur', pauseOnBlur);
-
         try {
             // loadGameData nyní musí akceptovat URL nebo JSON objekt
             await game.loadGameData(mapSource); 
