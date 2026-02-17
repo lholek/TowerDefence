@@ -26,7 +26,9 @@
         "TODO: Improve - Put burn netherack under the Portals - so it will look like portals are burning the ground and i will solve the problem whit different terrains under portals",
         "TODO: Improve - Put the super duper looking life golden holy terrein udner trees - so it will look like holy ground and i will solve the problem whit different terrains under trees",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game",
-        "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt apper for types of enemies that you will add during edditing - they add only when you import json"
+        "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt apper for types of enemies that you will add during edditing - they add only when you import json",
+        "TODO: Improve - Editor - fix max width on enemy type in select"
+        
       ]
     },
     {
