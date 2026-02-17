@@ -50,10 +50,13 @@ _getCenteredPathTiles(centerTile, count) {
     
     // If the starting tile isn't a path tile, we can't search for connected path tiles.
     // Allowing 'O', 'S', and 'E' markers to be valid start points.
-    const isPathTile = centerTileType === 'O' || centerTileType.startsWith('S') || centerTileType.startsWith('E');
-    if (!isPathTile) { 
-        return [];
-    }
+    const isPathTile = centerTileType === 'O' || 
+                   centerTileType === 'O[SNW]' || 
+                   centerTileType === 'O[SND]' || 
+                   /^S\d+/.test(centerTileType) || 
+                   /^E\d+/.test(centerTileType);
+
+    if (!isPathTile) return [];
 
     // 2. Breadth-First Search (BFS) for Connected Tiles
     
@@ -76,27 +79,29 @@ _getCenteredPathTiles(centerTile, count) {
 
     while (queue.length > 0 && connectedTiles.length < count) {
         const { col, row } = queue.shift();
+        const currentType = mapGrid[row][col];
         
-        // Only add pure 'O' tiles to the result set. 
-        if (mapGrid[row][col] === 'O') {
+        // Only add valid road types to the active effect list
+        if (currentType === 'O' || currentType === 'O[SNW]' || currentType === 'O[SND]') {
             connectedTiles.push({ col, row });
         }
         
-        // Explore neighbors
+        // Explore neighbors to continue the "snake"
         for (const dir of directions) {
             const nextCol = col + dir.dc;
             const nextRow = row + dir.dr;
             const nextKey = `${nextCol},${nextRow}`;
-
-            // Check Bounds and ensure tile hasn't been visited
-            if (
-                nextRow >= 0 && nextRow < maxRows &&
-                nextCol >= 0 && nextCol < maxCols &&
-                !visited.has(nextKey)
-            ) {
+        
+            if (nextRow >= 0 && nextRow < maxRows && nextCol >= 0 && nextCol < maxCols && !visited.has(nextKey)) {
                 const tileType = mapGrid[nextRow][nextCol];
-                // Only queue it if it is a path block or a start/end marker
-                const isNextPathTile = tileType === 'O' || tileType.startsWith('S') || tileType.startsWith('E');
+                
+                // Allow the "snake" to expand through roads or markers
+                const isNextPathTile = tileType === 'O' || 
+                                       tileType === 'O[SNW]' || 
+                                       tileType === 'O[SND]' || 
+                                       /^S\d+/.test(tileType) || 
+                                       /^E\d+/.test(tileType);
+                
                 if (isNextPathTile) {
                     visited.add(nextKey);
                     queue.push({ col: nextCol, row: nextRow });

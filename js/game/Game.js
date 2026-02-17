@@ -806,105 +806,121 @@ export default class Game {
     });
   }
 
-render() {
-  this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  if (!this.map) return;
+  render() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (!this.map) return;
 
-  // Shake Logic
-  this.ctx.save(); 
-  if (this.shakeDuration > 0) {
-    const dx = (Math.random() - 0.5) * this.shakeIntensity;
-    const dy = (Math.random() - 0.5) * this.shakeIntensity;
-    this.ctx.translate(dx, dy);
-  }
-
-  // --- CHANGED: Pass towers and enemies to map.render ---
-  // We pass 'this.towers' and 'this.enemies' so the map can sort them with mountains
-  this.map.render(this.ctx, this.playerLifes, this.towers, this.enemies);
-
-  // --- 1. HOVERED TILE (Uses its own transform block) ---
-  if (this.hoveredTile) {
-    this.map.applyCameraTransform(this.ctx);
-    
-    let color = 'rgba(255,0,0,0.25)';
-    const col = this.hoveredTile.col;
-    const row = this.hoveredTile.row;
-    const status = this.map.getTileStatus(col, row);
-    const hasTower = this.towers.some(t => t.col === col && t.row === row);
-    let buildingTower = (this.abilityManager.activeAbility == null);
-
-    if (buildingTower && status == 'X' && !hasTower) {
-      color = 'rgba(0,255,0,0.25)';
+    // Shake Logic
+    this.ctx.save(); 
+    if (this.shakeDuration > 0) {
+      const dx = (Math.random() - 0.5) * this.shakeIntensity;
+      const dy = (Math.random() - 0.5) * this.shakeIntensity;
+      this.ctx.translate(dx, dy);
     }
-    if (!buildingTower) {
-      if (status === 'O' || /^S\d*/i.test(status) || /^E\d*/i.test(status)) {
-        color = 'rgba(0,255,0,0.25)';
+
+    // --- CHANGED: Pass towers and enemies to map.render ---
+    // We pass 'this.towers' and 'this.enemies' so the map can sort them with mountains
+    this.map.render(this.ctx, this.playerLifes, this.towers, this.enemies);
+
+    // --- 1. HOVERED TILE (Uses its own transform block) ---
+    if (this.hoveredTile) {
+      this.map.applyCameraTransform(this.ctx);
+        
+      let color = 'rgba(255,0,0,0.25)'; // Default is RED (invalid)
+      const col = this.hoveredTile.col;
+      const row = this.hoveredTile.row;
+      const status = this.map.getTileStatus(col, row);
+      const hasTower = this.towers.some(t => t.col === col && t.row === row);
+        
+      // Identify state: Are we placing an Ability or a Tower?
+      const isPlacingAbility = (this.abilityManager.activeAbility != null);
+      const isPlacingTower = (this.selectedTowerType != null);
+        
+      if (isPlacingTower && !isPlacingAbility) {
+          // TOWER MODE: Green on Grass, Snow, and Sand
+          console.log(status);
+
+          const isBuildableTerrain = (status === 'X' || status === 'SNW' || status === 'SND');
+          if (isBuildableTerrain && !hasTower) {
+              color = 'rgba(0,255,0,0.25)'; // GREEN
+          }
+      } 
+      else if (isPlacingAbility) {
+          // ABILITY MODE (Lava Floor): Green ONLY on roads
+          const validRoadTokens = ['O', 'O[SNW]', 'O[SND]'];
+          const isStartEndMarker = /^S\d+/i.test(status) || /^E\d+/i.test(status);
+          console.log(status);
+          console.log(validRoadTokens);
+          console.log(validRoadTokens.includes(status));
+          if (validRoadTokens.includes(status) || isStartEndMarker) {
+              color = 'rgba(0,255,0,0.25)'; // GREEN
+          }
+          // If status is 'SNW' or 'SND', it is NOT in validRoadTokens, so it stays RED.
+      }
+      
+      this.ctx.fillStyle = color;
+      const center = this.map.tileToWorld(col, row);
+      const calculatedX = center.x - this.map.tileSize / 2;
+      const calculatedY = center.y - this.map.tileSize / 2;
+      this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
+      
+      this.map.resetTransform(this.ctx);
+        
+      // Render ability preview overlay
+      if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
+          this.abilityManager.renderPreview(this.ctx);
+      } 
+    }
+
+    // --- 2. WORLD OBJECTS OVERLAY (Bullets & Abilities) ---
+    // Bullets and Abilities are "flying", so they can stay on top
+    this.map.applyCameraTransform(this.ctx);
+
+    // Draw Bullets (Towers are now drawn inside map.render)
+    for (const tower of this.towers) {
+      for (const bullet of tower.bullets) {
+        bullet.render(this.ctx);
       }
     }
 
-    this.ctx.fillStyle = color;
-    const center = this.map.tileToWorld(col, row);
-    const calculatedX = center.x - this.map.tileSize / 2;
-    const calculatedY = center.y - this.map.tileSize / 2;
-    this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
+    // Draw Abilities
+    this.abilityManager.render(this.ctx);
 
-    this.map.resetTransform(this.ctx);
-    
-    // Render ability preview overlay
-    if (this.abilityManager && typeof this.abilityManager.renderPreview === 'function') {
-      this.abilityManager.renderPreview(this.ctx);
+    // --- RANGE CIRCLES LOGIC ---
+    const isShiftPressed = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
+    const isAPressed = this.keys['KeyA'];
+
+    const drawCircle = (x, y, range, fill = 'rgba(255, 255, 255, 0.15)') => {
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, range, 0, Math.PI * 2);
+      this.ctx.fillStyle = fill;
+      this.ctx.fill();
+      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      this.ctx.lineWidth = 2 / this.map.camera.zoom; 
+      this.ctx.stroke();
+    };
+
+    if (isShiftPressed && isAPressed) {
+      this.towers.forEach(t => drawCircle(t.x, t.y, t.range, "rgba(0,0,0,0)"));
     } 
-  }
+    else if (isShiftPressed && this.hoveredTile) {
+      const tower = this.towers.find(t => t.col === this.hoveredTile.col && t.row === this.hoveredTile.row);
+      if (tower) drawCircle(tower.x, tower.y, tower.range);
+    }
 
-  // --- 2. WORLD OBJECTS OVERLAY (Bullets & Abilities) ---
-  // Bullets and Abilities are "flying", so they can stay on top
-  this.map.applyCameraTransform(this.ctx);
+    if (isShiftPressed && this.selectedTowerType && this.hoveredTile) {
+      const type = this.towerTypes[this.selectedTowerType];
+      const pos = this.map.tileToWorld(this.hoveredTile.col, this.hoveredTile.row);
+      drawCircle(pos.x, pos.y, type.range, 'rgba(100, 255, 100, 0.45)');
+    }
 
-  // Draw Bullets (Towers are now drawn inside map.render)
-  for (const tower of this.towers) {
-    for (const bullet of tower.bullets) {
-      bullet.render(this.ctx);
+    // --- 3. CLEANUP ---
+    this.map.resetTransform(this.ctx); 
+
+    if (this.shakeDuration > 0) {
+      this.ctx.restore(); 
     }
   }
-
-  // Draw Abilities
-  this.abilityManager.render(this.ctx);
-
-  // --- RANGE CIRCLES LOGIC ---
-  const isShiftPressed = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
-  const isAPressed = this.keys['KeyA'];
-
-  const drawCircle = (x, y, range, fill = 'rgba(255, 255, 255, 0.15)') => {
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, range, 0, Math.PI * 2);
-    this.ctx.fillStyle = fill;
-    this.ctx.fill();
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    this.ctx.lineWidth = 2 / this.map.camera.zoom; 
-    this.ctx.stroke();
-  };
-
-  if (isShiftPressed && isAPressed) {
-    this.towers.forEach(t => drawCircle(t.x, t.y, t.range, "rgba(0,0,0,0)"));
-  } 
-  else if (isShiftPressed && this.hoveredTile) {
-    const tower = this.towers.find(t => t.col === this.hoveredTile.col && t.row === this.hoveredTile.row);
-    if (tower) drawCircle(tower.x, tower.y, tower.range);
-  }
-
-  if (isShiftPressed && this.selectedTowerType && this.hoveredTile) {
-    const type = this.towerTypes[this.selectedTowerType];
-    const pos = this.map.tileToWorld(this.hoveredTile.col, this.hoveredTile.row);
-    drawCircle(pos.x, pos.y, type.range, 'rgba(100, 255, 100, 0.45)');
-  }
-
-  // --- 3. CLEANUP ---
-  this.map.resetTransform(this.ctx); 
-
-  if (this.shakeDuration > 0) {
-    this.ctx.restore(); 
-  }
-}
 
   logEvent(htmlString) {
     const div = document.createElement('div');

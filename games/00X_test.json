@@ -3,7 +3,7 @@
     {
       "name": "EDIT TITLE",
       "startingCoins": 100,
-      "startingLifes": 100,
+      "startingLifes": 10000,
       "extraLife": true,
       "extraLifePrices": [
         10,
@@ -545,7 +545,7 @@
             },
             {
               "type": "tank",
-              "count": 5,
+              "count": 5000,
               "health": 100,
               "speed": 1,
               "path": "S2E1",
