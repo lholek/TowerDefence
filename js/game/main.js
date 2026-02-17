@@ -325,8 +325,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.style.cssText = `
         width: 300px !important;
         height: 300px !important;
-        min-width: 350px;
-        min-height: 350px;
         overflow: hidden;
         background: transparent;
         border-radius: 8px;
@@ -369,16 +367,36 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Match the identifier logic from your main.js
       const isPathTile = /^(O|S\d+|E\d+)$/.test(tileIdentifier);
 
+      // Check the boolean condition first
       if (isPathTile) {
         tile.classList.add('path');
-      } else if (tileIdentifier === '-') {
-        tile.classList.add('sky');
-      } else if (tileIdentifier === 'W') {
-        tile.classList.add('water');
-      } else if (tileIdentifier === 'M') {
-        tile.classList.add('mountain');
       } else {
-        tile.classList.add('block');
+        // Use switch for specific string identifiers
+        console.log(`Processing tile at (${r},${c}): ${tileIdentifier}`);
+        switch (tileIdentifier) {
+          case '-':
+            tile.classList.add('sky');
+            break;
+          case 'W':
+            tile.classList.add('water');
+            break;
+          case 'M':
+            tile.classList.add('mountain');
+            break;
+          case 'SND':
+            tile.classList.add('sand');
+            break;
+          case 'SNW':
+            tile.classList.add('snow');
+            break;
+          case 'O[SND]':
+          case 'O[SNW]':
+            tile.classList.add('path');
+            break;
+          default:
+            tile.classList.add('block');
+            break;
+        }
       }
       minimap.appendChild(tile);
     }

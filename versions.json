@@ -6,6 +6,7 @@
       "changes": [
         "Improved - Gameplay - Added mountains that block all incoming arrows and towers dont see enemies trough them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
+        "Improved - Gameplay - Minimap - added mountains, snow and sand to the minimap",
         "Improved - Editor - Global - Added 'Test Map' button to automatically launch the map in a new window",
         "Improved - Editor - Global - Improved numbers of towers, abilites and waves",
         "Improved - Editor - Map - Added mountains to the editor (M) so you can build them and implement them into your maps",
@@ -18,6 +19,7 @@
         "Improved - Gameplay - New Terrain: Sand (SND) added to the game",
         "Improved - Editor - New Terrain:  Snow (SNW) added to the editor",
         "Improved - Editor - New Terrain:  Sand (SND) added to the editor",
+        "TODO: Improve - Editor - Fix button hover on menu itmes",
         "TODO: Improve - Improve Coasts to fit Snow and Sand",
         "TODO: Improve - 1) Fix the coats to mathch the Sand AND Snow",
         "TODO: Improve - 2) New Type of Road - Snow Road (O[SNW]) and Sand Road (O[SND]) that look like snowy/sandy paths but have the same properties as normal roads",
@@ -28,7 +30,6 @@
         "TODO: Improve - Fix the bug where game doesnt pause in test map",
         "TODO: Improve - Put burn netherack under the Portals - so it will look like portals are burning the ground and i will solve the problem whit different terrains under portals",
         "TODO: Improve - Put the super duper looking life golden holy terrein udner trees - so it will look like holy ground and i will solve the problem whit different terrains under trees",
-        "TODO: Improve - Fix minimpap to show new terrains",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game",
         "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt apper for types of enemies that you will add during edditing - they add only when you import json"
       ]
