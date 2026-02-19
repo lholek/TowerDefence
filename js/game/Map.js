@@ -832,8 +832,28 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
                         return this.grid[row][col] !== 'W';
                     };
 
-                    ctx.fillStyle = "#4A8C46"; // Silnější stín pro hloubku
-                    if (isLand(r-1, c)) ctx.fillRect(x, y, ts, 8);      // Horní břeh
+                    let color;
+
+                    // Top Coast
+                    if (color = this.getCoastColor(r - 1, c)) {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x, y, ts, 8);
+                    }
+                    // Bottom Coast
+                    if (color = this.getCoastColor(r + 1, c)) {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x, y + ts - 8, ts, 8);
+                    }
+                    // Left Coast
+                    if (color = this.getCoastColor(r, c - 1)) {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x, y, 8, ts);
+                    }
+                    // Right Coast
+                    if (color = this.getCoastColor(r, c + 1)) {
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x + ts - 8, y, 8, ts);
+                    }
                     if (isLand(r+1, c)) ctx.fillRect(x, y+ts-8, ts, 8); // Dolní břeh
                     if (isLand(r, c-1)) ctx.fillRect(x, y, 8, ts);      // Levý břeh
                     if (isLand(r, c+1)) ctx.fillRect(x+ts-8, y, 8, ts); // Pravý břeh
@@ -841,6 +861,21 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
             }
         }
     }
+
+    getCoastColor = (row, col) => {
+        // 1. Bounds check
+        if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return null;
+        
+        const tile = String(this.grid[row][col] ?? '');
+        
+        // 2. Ignore if neighbor is also water
+        if (tile === 'W') return null;
+
+        // 3. Return color based on tile type
+        if (tile.includes('SNW') || tile === 'M') return "#A5B4C4"; // Snow/Mountain
+        if (tile.includes('SND')) return "#C2A35D";                // Sand
+        return "#4A8C46";                                         // Default (Grass)
+    };
     
     _prerenderGrass() {
         const ctx = this.grassLayer.getContext('2d');
