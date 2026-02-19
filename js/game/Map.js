@@ -455,24 +455,28 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
                     // 2. Connector Fog
                     if (p && (hasLeft || hasRight)) { 
                         ctx.save();
+
                         let fogAlpha;
                         if (hasLeft && hasRight) {
-                           fogAlpha = 0.6;
-                           // surrounded → darker fog
-                        } else if (hasLeft || hasRight) {
-                           fogAlpha = 0.5;
-                           // edge → medium fog
+                           // Deep between two mountains: Make it more visible/solid
+                           fogAlpha = 0.5; 
+                           ctx.globalCompositeOperation = "screen"; // Smooth brightening
                         } else {
-                           fogAlpha = 0.75;
-                           // isolated → lighter fog 
+                           // On the edge of a mountain range: Make it very subtle/faded
+                           fogAlpha = 0.3;
+                           ctx.globalCompositeOperation = "source-over"; // Normal blending for edges
                         }
                     
                         ctx.globalAlpha = fogAlpha;
-                        ctx.globalCompositeOperation = "lighter";
+                    
+                        // Create a clipping mask so fog doesn't bleed onto other tiles
                         ctx.beginPath();
                         ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
                         ctx.clip();
+                    
+                        // Draw the mountain background texture as the "fog"
                         ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
+
                         ctx.restore();
                     }
 
