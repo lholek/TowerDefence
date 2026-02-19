@@ -680,9 +680,9 @@ export default class Game {
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
             document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
-            if(placingAbilitesIds.includes(a.id)){
+            //if(placingAbilitesIds.includes(a.id)){
               card.classList.add('placing');
-            }
+            //aa}
           } else {
             this.logEvent(`${a.name} not ready`);
           }
