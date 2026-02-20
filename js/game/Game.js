@@ -613,12 +613,17 @@ export default class Game {
             0, 0, 120, 120              // Fill shop canvas
         );
 
+        const nameLength = type.name.length;
+        const fontSize = nameLength > 12 ? '13px' : '16px';
+
         item.innerHTML = `
             <div class="index">${index}</div>
             <div class="tower-card-main">
                 <img src="${zoomCanvas.toDataURL()}" class="shop-tower-img" />
                 <div class="tower-info">
-                    <div class="name">${type.name}</div>
+                    <div class="name" style="font-size: ${fontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${type.name}">
+                      ${type.name}
+                    </div>
                     <div class="price">🪙 ${type.price}</div>
                     <div class="sell-price">💰 Sell:  ${sellPrice}</div>
                     <div class="dps">💥DPS: ${dps}</div>

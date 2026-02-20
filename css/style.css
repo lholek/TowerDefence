@@ -360,6 +360,11 @@ canvas {
     font-weight: bold;
     font-size: 1.25em;          /* Larger name text */
     color: #f0c674;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%; /* Or a specific pixel width like 120px */
 }
 
 .tower-info .price {
