@@ -267,6 +267,8 @@ canvas {
     white-space: nowrap; 
     background: transparent;
     border-radius: 12px;
+    scrollbar-color: rgb(240, 198, 116) transparent;
+    scroll-behavior: smooth;
 }
 
 .shop-wrapper::-webkit-scrollbar {
@@ -274,7 +276,6 @@ canvas {
 }
 
 .shop-wrapper::-webkit-scrollbar-thumb {
-    background: #888;
     border-radius: 4px;
 }
 
@@ -321,7 +322,6 @@ canvas {
 .shop-item.active {
     box-shadow: 0 0 25px var(--tower-color);
     border-color: var(--tower-color);
-    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .shop-item .index {
@@ -404,13 +404,6 @@ canvas {
 
 .shop-item:hover .tower-stats-hover {
     opacity: 1;
-}
-
-
-/* Firefox scrollbar support */
-.shop-wrapper {
-    scrollbar-width: thin;
-    scrollbar-color: #888 transparent;
 }
 
 /* TOWERS SHOP CSS */
