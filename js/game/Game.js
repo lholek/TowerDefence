@@ -637,10 +637,22 @@ export default class Game {
 
         // 3. Selection logic (Crucial for number keys)
         item.onclick = () => {
+            // 1. Update the logical selection
             this.selectedTowerType = (this.selectedTowerType === key) ? null : key;
-            // Re-render shop to apply the 'active' class to the card
-            this.createTowerShop();
+                
+            // 2. Instead of rebuilding the whole shop, just toggle the 'active' class
+            const allItems = shopDiv.querySelectorAll('.shop-item');
+            allItems.forEach(el => {
+                if (el.dataset.key === key && this.selectedTowerType === key) {
+                    el.classList.add('active');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    el.classList.remove('active');
+                }
+            });
         };
+        // Add this right before shopDiv.appendChild(item) to make the cards searchable
+        item.dataset.key = key;
 
         shopDiv.appendChild(item);
     }
