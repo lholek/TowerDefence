@@ -633,9 +633,9 @@ export default class Game {
                 <div> 🪙 Price: ${type.price}</div>
                 <div>💥DPS: ${dps}</div>
                 <div>⚔️ Damage: ${type.damage}</div>
-                <div>🎯 Range: ${type.range}</div>
-                <div>⏱️ Fire  Rate: ${(type.fireRate/1000).toFixed(1)}s</div>
-                <div>🗲 speed: ${(type.range / this.map.tileSize).toFixed(1)}</div>
+                <div>🎯 Range: ${(type.range / this.map.tileSize).toFixed(1)}</div>
+                <div>⏱️ Fire  Rate: ${(type.fireRate)}ms</div>
+                <div>🗲 speed: ${(type.range / this.map.tileSize)}</div>
             </div>
         `;
 

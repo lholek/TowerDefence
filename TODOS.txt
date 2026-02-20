@@ -21,5 +21,6 @@ TODOS:
         "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
         "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
 
-'SND': 'Sand',   // Matching SaND
-'SNW': 'Snow',   // Matching SNoW
+0.1.6
+-----
+- Enemies that deal more deamge (Defined by enemy type)
