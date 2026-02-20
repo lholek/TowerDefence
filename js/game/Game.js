@@ -118,7 +118,6 @@ export default class Game {
         rawData = await res.json();
     } else if (typeof mapSource === 'object' && mapSource !== null) {
         // ZDROJ JE PŘÍMÝ JSON OBJEKT (pro nahraný soubor)
-        console.log('Načítání mapy z lokálního souboru (JSON objekt).');
         rawData = mapSource;
     } else {
         throw new Error("Neplatný zdroj mapy pro loadGameData. Očekáván string (URL) nebo objekt (JSON data).");
@@ -613,7 +612,7 @@ export default class Game {
             sx, sy, cropSize, cropSize, // Source window
             0, 0, 120, 120              // Fill shop canvas
         );
-        console.log(type);
+
         item.innerHTML = `
             <div class="index">${index}</div>
             <div class="tower-card-main">
@@ -639,7 +638,7 @@ export default class Game {
         item.onclick = () => {
             // 1. Update the logical selection
             this.selectedTowerType = (this.selectedTowerType === key) ? null : key;
-                
+
             // 2. Instead of rebuilding the whole shop, just toggle the 'active' class
             const allItems = shopDiv.querySelectorAll('.shop-item');
             allItems.forEach(el => {
@@ -881,8 +880,6 @@ export default class Game {
         
       if (isPlacingTower && !isPlacingAbility) {
           // TOWER MODE: Green on Grass, Snow, and Sand
-          console.log(status);
-
           const isBuildableTerrain = (status === 'X' || status === 'SNW' || status === 'SND');
           if (isBuildableTerrain && !hasTower) {
               color = 'rgba(0,255,0,0.25)'; // GREEN
@@ -892,9 +889,6 @@ export default class Game {
           // ABILITY MODE (Lava Floor): Green ONLY on roads
           const validRoadTokens = ['O', 'O[SNW]', 'O[SND]'];
           const isStartEndMarker = /^S\d+/i.test(status) || /^E\d+/i.test(status);
-          console.log(status);
-          console.log(validRoadTokens);
-          console.log(validRoadTokens.includes(status));
           if (validRoadTokens.includes(status) || isStartEndMarker) {
               color = 'rgba(0,255,0,0.25)'; // GREEN
           }

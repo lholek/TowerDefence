@@ -495,7 +495,6 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
             const tok = String(this.grid[r][c]);
             const bounds = this.getTileBounds(c, r);
             const ts = this.tileSize;
-            console.log()
             // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
             if (/^E\d+/.test(tok)) {
                 const actualImg = this.cachedTree;

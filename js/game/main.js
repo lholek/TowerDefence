@@ -372,7 +372,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         tile.classList.add('path');
       } else {
         // Use switch for specific string identifiers
-        console.log(`Processing tile at (${r},${c}): ${tileIdentifier}`);
         switch (tileIdentifier) {
           case '-':
             tile.classList.add('sky');
