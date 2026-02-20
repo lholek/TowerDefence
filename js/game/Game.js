@@ -578,40 +578,68 @@ export default class Game {
     this.progressBar.style.width = `${percent}%`;
   }
 
-  createTowerShop() {
+ createTowerShop() {
     const shopDiv = document.getElementById('towerShop');
     shopDiv.innerHTML = '';
-
+    
     let index = 0;
-    for (const [key, tower] of Object.entries(this.towerTypes)) {
-      index++;
-      const div = document.createElement('div');
-      let rangeInBlocks = (tower.range / this.map.tileSize).toFixed(1);
-      div.className = 'shop-item';
-      div.style.border = '5px solid transparent';
-      div.innerHTML = `
-        <div class="index">${index}</div>
-        <div class="name">${tower.name}</div>
-        <div>🪙 Price: ${tower.price}</div>
-        <div>⚔️ Damage: ${tower.damage}</div>
-        <div>🕐 Fire Rate: ${tower.fireRate} ms</div>
-        <div>💥 DPS: ${(tower.damage * 1000 / tower.fireRate).toFixed(2)}</div>
-        <div>🎯 Range: ${rangeInBlocks} tile</div>
-        <div>🗲 Speed: ${tower.speed}</div>
-        <div>💰 Sell Price: ${tower.sellPrice}</div>
-      `;
-      shopDiv.appendChild(div);
+    for (const [key, type] of Object.entries(this.towerTypes)) {
+        index++;
+        const item = document.createElement('div');
+        
+        // 1. Sync visual states
+        item.className = 'shop-item' + (this.selectedTowerType === key ? ' active' : '');
+        item.style.setProperty('--tower-color', type.color || '#fff');
 
-      div.addEventListener('click', () => {
-        if (this.selectedTowerType === key) {
-          this.selectedTowerType = null;
-          div.style.border = '5px solid transparent';
-        } else {
-          this.selectedTowerType = key;
-          shopDiv.querySelectorAll('.shop-item').forEach(i => i.style.border = '5px solid transparent');
-          div.style.border = `5px solid ${tower.color}`;
-        }
-      });
+        const dps = (type.damage * 1000 / type.fireRate).toFixed(1);
+        const sellPrice = type.sellPrice || Math.floor(type.price / 2);
+
+        // 2. Generate zoomed tower image
+        const tempTower = new Tower(this, this.map, 0, 0, type);
+        const src = tempTower.preRenderedImage;
+        
+        const zoomCanvas = document.createElement('canvas');
+        zoomCanvas.width = 120; 
+        zoomCanvas.height = 140;
+        const zCtx = zoomCanvas.getContext('2d');
+        
+        // CROP CALCULATION:
+        // We take a 45% window of the original image to make the tower appear large
+        const cropSize = src.width * 0.45; 
+        const sx = (src.width / 2.5) - (cropSize / 2); // Centers X relative to tower base
+        const sy = (src.height / 2) - (cropSize / 1.2); // Centers Y and shifts up for flag
+
+        zCtx.drawImage(src, 
+            sx, sy, cropSize, cropSize, // Source window
+            0, 0, 120, 120              // Fill shop canvas
+        );
+
+        item.innerHTML = `
+            <div class="index">${index}</div>
+            <div class="tower-card-main">
+                <img src="${zoomCanvas.toDataURL()}" class="shop-tower-img" />
+                <div class="tower-info">
+                    <div class="name">${type.name}</div>
+                    <div class="price">🪙 ${type.price}</div>
+                    <div class="sell-price">Sell: 🪙 ${sellPrice}</div>
+                    <div class="dps">DPS: ${dps}</div>
+                </div>
+            </div>
+            <div class="tower-stats-hover">
+                <div>⚔️ Dmg: ${type.damage}</div>
+                <div>⏱️ Rate: ${(type.fireRate/1000).toFixed(1)}s</div>
+                <div>📏 Range: ${(type.range / this.map.tileSize).toFixed(1)}</div>
+            </div>
+        `;
+
+        // 3. Selection logic (Crucial for number keys)
+        item.onclick = () => {
+            this.selectedTowerType = (this.selectedTowerType === key) ? null : key;
+            // Re-render shop to apply the 'active' class to the card
+            this.createTowerShop();
+        };
+
+        shopDiv.appendChild(item);
     }
   }
 

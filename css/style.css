@@ -255,101 +255,156 @@ canvas {
     display: block;
 }
 
+/* TOWERS SHOP CSS */
 /* tower shop wrapper */
 .shop-wrapper {
-    width: calc(4 * 294px + 3 * 12px); /* 4 items visible */
+    width: calc(4 * 290px + 3 * 12px); /* Adjusted for slightly larger cards */
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
     margin: 0 auto;
-    padding: 0; /* no extra padding */
-    white-space: nowrap; /* ensures items stay on one line if not using flex */
+    padding: 15px;
+    white-space: nowrap; 
     background: transparent;
     border-radius: 12px;
-    padding: 10px;
 }
 
 .shop-wrapper::-webkit-scrollbar {
-  height: 8px; /* show small horizontal scrollbar */
+    height: 8px;
 }
 
 .shop-wrapper::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+    background: #888;
+    border-radius: 4px;
 }
-
 
 /* flex row of shop items */
 .shop {
     display: flex;
-    flex-wrap: nowrap;       /* all items in one row */
-    gap: 12px;               /* space between items */
-    justify-content: flex-start; /* align first item to left */
+    flex-wrap: nowrap;
+    gap: 12px;
+    justify-content: flex-start;
     margin: 0;
     padding: 0;
     border-radius: 8px;
-    text-align: center;
+    text-align: left;
     color: #fff;
 }
 
 /* individual shop cards */
 .shop-item {
-    min-width: 250px;        /* width of each item */
+    position: relative;
+    min-width: 300px;           /* Increased card width */
     flex: 0 0 auto;
-    padding: 6px;
+    padding: 15px;              /* Increased padding for a larger feel */
     box-sizing: border-box;
-    border-radius: 8px;
-    transition: transform 0.2s, background 0.2s;
+    border-radius: 12px;
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
     color: #fff;
-    line-height: 18px;
     cursor: pointer;
     background: var(--main-bg-color);
+    border: 3px solid transparent;
+    overflow: hidden;
 }
 
-.shop-item .index{
-    position: relative;
-    float: left;
-}
-
-/* Hover & Active States */
+/* Hover State: Glows with the specific color of the tower */
 .shop-item:hover {
-  background-color: rgb(157, 80, 41);
-  transform: scale(1.03);
+    background-color: rgb(157, 80, 41);
+    transform: scale(1.05);
+    /* --tower-color is set dynamically in Game.js per tower type */
+    box-shadow: 0 0 20px var(--tower-color); 
+    border-color: var(--tower-color);
 }
 
-.shop .shop-item.active {
-    border-color: var(--tower-color, #fff);
-}
-
+/* Active State: Persistent glow when selected */
 .shop-item.active {
-  box-shadow: 0 0 12px var(--tower-color, #fff);
-  border-color: var(--tower-color, #fff);
+    box-shadow: 0 0 25px var(--tower-color);
+    border-color: var(--tower-color);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Internal Card Formatting */
-.shop-item .name {
-    grid-column: 1;           /* Name stays on left */
+.shop-item .index {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    font-size: 12px;
+    opacity: 0.7;
+    z-index: 2;
+}
+
+/* Main Card Layout */
+.tower-card-main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.shop-tower-img {
+    width: 90px;                /* Larger display size for the tower image */
+    height: 90px;
+    object-fit: contain;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 0px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+.tower-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tower-info .name {
+    font-weight: bold;
+    font-size: 1.25em;          /* Larger name text */
+    color: #f0c674;
+}
+
+.tower-info .price {
+    color: #ffd700;
     font-weight: bold;
     font-size: 1.1em;
 }
 
-/* hide any buttons inside shop-item */
-.shop .shop-item button {
-    display: none;
+.tower-info .sell-price, 
+.tower-info .dps {
+    font-size: 0.9em;
+    opacity: 0.9;
 }
 
-.shop-wrapper::-webkit-scrollbar {
-    height: 8px; /* horizontal scrollbar height */
+/* Hover Stats Panel - shows detailed info on hover */
+.tower-stats-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(40, 30, 20, 0.98);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;       /* Allow clicks to pass through to the item */
+    font-weight: bold;
+    color: var(--accent);
+    gap: 8px;
+    font-size: 1.1em;
 }
 
+.shop-item:hover .tower-stats-hover {
+    opacity: 1;
+}
 
-/* Firefox */
+/* Firefox scrollbar support */
 .shop-wrapper {
-    scrollbar-width: 20px;
-    scrollbar-color: rgb(240, 198, 116) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
 }
-/* tower shop */
 
+/* TOWERS SHOP CSS */
 /* overlays */
 .overlay-center,
 .overlay-full {
