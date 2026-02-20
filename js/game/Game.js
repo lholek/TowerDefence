@@ -613,7 +613,7 @@ export default class Game {
             sx, sy, cropSize, cropSize, // Source window
             0, 0, 120, 120              // Fill shop canvas
         );
-
+        console.log(type);
         item.innerHTML = `
             <div class="index">${index}</div>
             <div class="tower-card-main">
@@ -621,14 +621,17 @@ export default class Game {
                 <div class="tower-info">
                     <div class="name">${type.name}</div>
                     <div class="price">🪙 ${type.price}</div>
-                    <div class="sell-price">Sell: 🪙 ${sellPrice}</div>
-                    <div class="dps">DPS: ${dps}</div>
+                    <div class="sell-price">💰 Sell:  ${sellPrice}</div>
+                    <div class="dps">💥DPS: ${dps}</div>
                 </div>
             </div>
             <div class="tower-stats-hover">
-                <div>⚔️ Dmg: ${type.damage}</div>
-                <div>⏱️ Rate: ${(type.fireRate/1000).toFixed(1)}s</div>
-                <div>📏 Range: ${(type.range / this.map.tileSize).toFixed(1)}</div>
+                <div> 🪙 Price: ${type.price}</div>
+                <div>💥DPS: ${dps}</div>
+                <div>⚔️ Damage: ${type.damage}</div>
+                <div>🎯 Range: ${type.range}</div>
+                <div>⏱️ Fire  Rate: ${(type.fireRate/1000).toFixed(1)}s</div>
+                <div>🗲 speed: ${(type.range / this.map.tileSize).toFixed(1)}</div>
             </div>
         `;
 
