@@ -7,6 +7,7 @@
         "Improved - Gameplay - Added mountains that block all incoming arrows and towers dont see enemies trough them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
         "Improved - Gameplay - Minimap - added mountains, snow and sand to the minimap",
+        "Improved - Gameplay - redisined the tower selector to have image of the tower on the card, and basic stats. More stats on hover",
         "Improved - Map - New Terrain: Snow (SNW) added to the game including snow roads",
         "Improved - Map - New Terrain: Sand (SND) added to the game including sand roads",
         "Improved - Map - New Terrain: Burning Netherack added to the game under all portals",
@@ -24,7 +25,6 @@
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
         "Improved - Versions - Added updates of very old versions",
         "TODO: Improve - Gameplay - On ESC OR P OR Return to menu add info about how to resume the game and infromtaion about the map (name, description, difficulty, number of levels, Towers stats, Abilities stats, etc.)",
-        "TODO: Improve - Gameplay - redesing the tower selector to have image of the tower on the card and Name, Price, Sell price and DPS. FireRate, Damage, Range will show on hover",
         "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt appear for types of enemies that you will add during edditing - they add only when you import json",
         "TODO: Improve - Editor - fix max width on enemy type in select",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game"
