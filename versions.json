@@ -25,6 +25,7 @@
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
         "Improved - Versions - Added updates of very old versions",
         "TODO: Improve - Gameplay - On ESC OR P OR Return to menu add info about how to resume the game and infromtaion about the map (name, description, difficulty, number of levels, Towers stats, Abilities stats, etc.)",
+        "TODO: Improve - Gameplay - Redesigned the Ability selector to have betterlooks like  the tower cards, and basic stats. More stats on hover",        
         "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt appear for types of enemies that you will add during edditing - they add only when you import json",
         "TODO: Improve - Editor - fix max width on enemy type in select",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game"
