@@ -23,7 +23,6 @@
         "Improved - Editor - Map - New selector from map tile types",
         "Improved - Editor - Waves - Fixed bug of max width on enemy type in select",
         "Improved - Editor - Effects - Fixed bug where Enemy shake effect didn't appear on enemy types that you added during editing",
-        "Improved - Editor - Changed 'Test Map' button and added hover effect",
         "Improved - Editor - Fixed button hover on menu items",
         "Improved - Editor - Improved CSS",
         "Improved - Menu - Settings update: Use 'Sky Background' for better performance",
