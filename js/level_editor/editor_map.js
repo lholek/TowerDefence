@@ -436,7 +436,32 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
             // Draw tile text
             ctx.fillStyle = 'white';
             if (tileType === 'SNW' || tileType === 'SND') ctx.fillStyle = 'black';
-            ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
+            if (tileType.includes('[')) {
+                // 1. Split the string (e.g., "O[SND]" becomes ["O", "SND]"])
+                const parts = tileType.split('[');
+                const baseText = parts[0];
+                const variantText = '[' + parts[1];
+                        
+                // 2. Adjust font sizes
+                const mainFontSize = TILE_SIZE / 3;
+                const subFontSize = TILE_SIZE / 5; // Smaller for the second line
+                        
+                // 3. Draw Line 1 (The base type)
+                ctx.font = `${mainFontSize}px Arial`;
+                ctx.fillText(baseText, x + TILE_SIZE / 2, y + TILE_SIZE / 2 - 8);
+                        
+                // 4. Draw Line 2 (The bracketed variant)
+                ctx.font = `${subFontSize}px Arial`;
+                ctx.fillText(variantText, x + TILE_SIZE / 2, y + TILE_SIZE / 2 + 12);
+                        
+                // Reset font for next tile
+                ctx.font = `${mainFontSize}px Arial`;
+            } else {
+                // Standard single-line rendering for simple tiles
+                ctx.font = `${TILE_SIZE / 3}px Arial`;
+                ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
+            }
+          //  ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
         }
     }
 
@@ -526,7 +551,7 @@ function createTileKey() {
     // 3. Use sortedTiles instead of tileTypes
     sortedTiles.forEach(type => {
         const char = type.charAt(0);
-        const labelText = labels[char] || 'Unknown';
+        const labelText = labels[type] || 'Unknown';
         let baseType = type.replace(/[0-9]/g, '').toLowerCase() || '-';
         if (type === 'O[SNW]') {
             baseType = 'o-snw';
