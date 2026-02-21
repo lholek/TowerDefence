@@ -9,6 +9,7 @@
         "Improved - Gameplay - Minimap - added mountains, snow and sand to the minimap",
         "Improved - Gameplay - Redesigned the Tower selector to have image of the tower on the card, and basic stats. More stats on hover",
         "Improved - Gameplay - Redesigned the Ability selector to have image of the ability on the left, and all stats on right side of the card",
+        "Improved - Gameplay/Ediotr - Abilites icon is not set to max length of 1 character, older maps adapted to this rule",
         "Improved - Map - New Terrain: Snow (SNW) added to the game including snow roads",
         "Improved - Map - New Terrain: Sand (SND) added to the game including sand roads",
         "Improved - Map - New Terrain: Burning Netherack added to the game under all portals",

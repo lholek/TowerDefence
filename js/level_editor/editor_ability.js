@@ -89,7 +89,7 @@ export const abilityEditor = (() => {
                         <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
 
                         <label>Icon 
-                            <input type="text" data-key="ui.icon" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
+                            <input type="text" data-key="ui.icon" maxlength="1" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
                         </label>
 
                         <div class="ability-color-section">

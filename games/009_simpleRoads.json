@@ -15,7 +15,7 @@
           "difficulty": "⭐⭐⭐⭐",
           "map_size": "33x13",
           "tower types": 4,
-          "abilites": "Thunder's Fury🏹, Thunder's Fury II🏹🏹, Magma's Core🌋, Magma's Core II🌋🌋"
+          "abilites": "Thunder's Fury🏹, Thunder's Fury II🏹, Magma's Core🌋, Magma's Core II🌋"
         }
       ],
       "tileSize": 80,
@@ -61,7 +61,7 @@
           "effectDuration": 5000,
           "color": "rgba(56, 205, 255, 1)",
           "ui": {
-            "icon": "🏹🏹"
+            "icon": "🏹"
           },
           "modifiers": {
             "damage_mul": 3,
@@ -96,7 +96,7 @@
           "effectDuration": 5000,
           "color": "rgba(161, 33, 33, 0.5)",
           "ui": {
-            "icon": "🌋🌋"
+            "icon": "🌋"
           }
         }
       ],
