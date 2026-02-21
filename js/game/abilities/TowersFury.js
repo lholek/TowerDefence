@@ -32,11 +32,12 @@ export default class TowersFury extends Ability {
         }
       };
 
-      // Row 1: Damage
+      
+      // Row 1: Damage and Speed (Starts with Damage, includes Speed, then closes the div)
       const dmg = `<div class="stat-row">${formatStat(damage_mul)} <span class="stat-label">Damage</span></div>`;
-
-      // Row 2: Speed and Fire Rate (Starts with Speed, includes Fire Rate, then closes the div)
-      const speed = `<div class="stat-row">${formatStat(speed_mul)} <span class="stat-label">Speed</span> `;
+      
+      // Row 2: Fire Rate ( Fire Rate, then closes the div)
+      const speed = `<div class="stat-row">${formatStat(speed_mul)} <span class="stat-label">Speed </span>`;
       const rate = `${formatStat(fireRate_mul, true)} <span class="stat-label">Fire Rate</span></div>`;
 
       return `${dmg}${speed}${rate}`;

@@ -696,12 +696,17 @@ export default class Game {
           <div class="duration-timer" style="position:absolute; right:6px; top:6px; color:#4ade80; font-weight:bold; pointer-events:none; z-index:10; font-size:12px; text-shadow: 1px 1px 2px #000;"></div>
           
           <div class="index">${index}</div>
+          <div class="ability-name" 
+               style="font-size: ${a.name.length > 15 ? '12px' : '16px'};">
+            ${a.name}
+          </div>
           <div class="ability-icon">${a.ui?.icon || ''}</div>
           <div class="ability-info">
-            <div class="ability-name">${a.name}</div>
             <div class="ability-meta">
-              ${a.effectDuration ? `<span class="ability-duration">🕒 Duration: ${a.effectDuration/1000} s</span>` : ''}
-              <span class="ability-cooldown">⏳ Cooldown: ${a.cooldown/1000} s</span>
+              <div class="ability-times">
+                ${a.effectDuration ? `<span class="ability-duration">🕒 ${a.effectDuration/1000} s</span>` : ''}
+                <span class="ability-cooldown">⏳ ${a.cooldown/1000} s</span>
+              </div>
 
               <div class="ability-dmg">${a.dynamicDescription}</div>
 

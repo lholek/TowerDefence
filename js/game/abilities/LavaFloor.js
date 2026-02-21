@@ -11,7 +11,7 @@ export default class LavaFloor extends Ability {
 
   /* Getter dynamicDescription */
   get dynamicDescription() {
-    return `Damage - ${this.damage}dmg / ${this.damageEvery}ms`;
+    return `${this.damage} Damage / ${this.damageEvery} ms`;
   }
 
 /**
