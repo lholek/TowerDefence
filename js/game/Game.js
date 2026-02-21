@@ -43,7 +43,6 @@ export default class Game {
     this.coinsText = document.getElementById('coinsText');
     this.progressBar = document.getElementById('progressBar');
     this.gameOverlay = document.getElementById('gameOverlay');
-    this.overlayMessage = document.getElementById('overlayMessage');
     this.overlayContent = document.getElementById('overlayContent');
     this.eventsList = document.getElementById('eventsList');
 
@@ -192,20 +191,11 @@ export default class Game {
       if (!this.gameStarted) return; // only if game started
       this.paused = !this.paused;
       if (this.paused) {
-          this.showOverlayMessageHtml('<b class="cl-primary">PAUSED</b> - Press <b class="cl-primary">"P"</b> to continue');
+          returnPopup.style.display = 'flex';
       } else {
+          returnPopup.style.display = 'none';
           this.gameOverlay.style.display = 'none';
       }
-  }
-
-  showOverlayMessage(text) {
-    this.overlayMessage.textContent = text;
-    this.gameOverlay.style.display = 'flex';
-  }
-
-  showOverlayMessageHtml(html) {
-    this.overlayMessage.innerHTML = html;
-    this.gameOverlay.style.display = 'flex';
   }
 
   handleBuild(e) {

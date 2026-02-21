@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Logika pro klávesové zkratky (P = Pause) ---
     document.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'p') {
+        if ((e.key.toLowerCase() === 'p') || (e.key === 'Escape')) {
             if (game && game.gameStarted) {
                 game.togglePause();
             }

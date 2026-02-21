@@ -20,6 +20,25 @@
   max-width: 400px;
 }
 
+.return-content h3 {
+    color: #f0c674;
+    margin-top: 10px;
+    font-size: 32px;
+}
+
+.return-content h4 {
+    color: #f0c674;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.return-content p {
+    color: #ccc;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
 .return-buttons {
   display: flex;
   justify-content: space-evenly;
