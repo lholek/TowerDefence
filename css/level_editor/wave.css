@@ -111,6 +111,9 @@
     margin-top: 10px;
 }
 
+.input-enemy-type {
+    max-width: 181px;
+}
 .enemy-tag {
     position: relative;
     display: flex;

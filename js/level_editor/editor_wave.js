@@ -159,6 +159,7 @@ function addNewEnemyType() {
         newTypeInput.value = ""; // Clear input
         renderEnemyTypeTags(); // Refresh tags
         waveEditor.renderWaveRepeater(data.maps[0].levels); // Update dropdowns in waves
+        waveEditor.renderEffectsRepeater();
     }, `Added enemy type: ${value}`);
 }
 
@@ -577,6 +578,7 @@ export const waveEditor = (() => {
             data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);
             renderEnemyTypeTags(); // This function is accessible because it's in the outer scope
             waveEditor.renderWaveRepeater(data.maps[0].levels);
+            waveEditor.renderEffectsRepeater();
         }, `Removed enemy type: ${typeToRemove}`);
     };
 
@@ -644,6 +646,7 @@ export const waveEditor = (() => {
 
             renderEnemyTypeTags();
             waveEditor.renderWaveRepeater(data.maps[0].levels);
+            waveEditor.renderEffectsRepeater();
         }, `Reordered enemy types list.`);
 
         handleDragEnd();
@@ -707,6 +710,7 @@ export const waveEditor = (() => {
      * Renders the Effect Repeater (Type | Duration | Intensity)
      */
     const renderEffectsRepeater = () => {
+        const effectsContainer = document.getElementById('enemy-effects-repeater');
         if (!effectsContainer) return;
         
         const effects = getEffects();

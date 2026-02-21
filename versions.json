@@ -20,6 +20,8 @@
         "Improved - Editor - Map - New Terrain: Sand (SND) added to the editor",
         "Improved - Editor - Map - New Terrain: Snow (SNW) added to the editor",
         "Improved - Editor - Map - New selector from map tile types",
+        "Improved - Editor - Waves - Fixed bug of max width on enemy type in select",
+        "Improved - Editor - Effects - Fixed bug where Enemy shake effect didnt appear on enemy types that you added during edditing",
         "Improved - Editor - Changed 'Test Map' button and added hover effect",
         "Improved - Editor - Fixed button hover on menu items",
         "Improved - Editor - Improved css",
@@ -27,8 +29,6 @@
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
         "Improved - Versions - Added updates of very old versions",
         "TODO: Improve - Gameplay - On ESC OR P OR Return to menu add info about how to resume the game and infromtaion about the map (name, description, difficulty, number of levels, Towers stats, Abilities stats, etc.)",
-        "TODO: Improve - Editor - fix bug where Enemy shake effect doesnt appear for types of enemies that you will add during edditing - they add only when you import json",
-        "TODO: Improve - Editor - fix max width on enemy type in select",
         "TODO: Improve - Add 5th adventure map with Snow and Sand terrains to the game"
       ]
     },
