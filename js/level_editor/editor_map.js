@@ -211,10 +211,13 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
             if (oldTile !== tileToPlace) {
                 // Prevent overwriting a different S with an S, or E with an E
                 // This stops the "machine gun" effect even for big brushes
+                const isMarkerS = (t) => t.startsWith('S') && t !== 'SNW' && t !== 'SND';
+                const isMarkerE = (t) => t.startsWith('E');
+                            
                 const overwritingSameCategory = 
-                    (oldTile.startsWith('S') && tileToPlace.startsWith('S')) ||
-                    (oldTile.startsWith('E') && tileToPlace.startsWith('E'));
-                
+                    (isMarkerS(oldTile) && isMarkerS(tileToPlace)) ||
+                    (isMarkerE(oldTile) && isMarkerE(tileToPlace));
+                            
                 if (overwritingSameCategory) return;
 
                 layout[tile.r][tile.c] = tileToPlace;
