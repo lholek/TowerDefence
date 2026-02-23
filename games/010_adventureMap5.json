@@ -6,22 +6,22 @@
       "startingLifes": 100,
       "extraLife": true,
       "extraLifePrices": [
-        10,
         25,
         50,
         75,
         100,
+        0,
         150,
         200
       ],
       "description": [
         {
-          "descriptionText": "IN PROGRESS",
+          "descriptionText": "5th Adventure Map: Bigger than all previous maps, featuring mountains, new terrains, multiple towers, new abilities, dynamic gameplay and few surprices",
           "level count": 1,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x35",
           "tower types": 1,
-          "abilites": "Lava Floor🌋"
+          "abilites": "Lava Floor🌋, New lava_floor 2🌋, New lava_floor 3🌋, New lava_floor 4🌋"
         }
       ],
       "tileSize": 80,
@@ -78,6 +78,51 @@
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
           "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1771881085990",
+          "name": "New lava_floor 2",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 500,
+          "damage_every": 500,
+          "cooldown": 7000,
+          "effectDuration": 8000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1771881086678",
+          "name": "New lava_floor 3",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 500,
+          "damage_every": 500,
+          "cooldown": 7000,
+          "effectDuration": 8000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1771881087788",
+          "name": "New lava_floor 4",
+          "type": "targeted",
+          "selectionCount": 7,
+          "damage": 500,
+          "damage_every": 500,
+          "cooldown": 7000,
+          "effectDuration": 8000,
           "color": "rgba(245, 164, 66, 0.6)",
           "ui": {
             "icon": "🌋"
