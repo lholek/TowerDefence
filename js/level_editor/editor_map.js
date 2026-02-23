@@ -349,7 +349,7 @@ function handleMapHover(e) {
         clearTimeout(hoverTimer); // Reset the timer every time the mouse moves
         hoverTimer = setTimeout(() => {
             if (coordDisplay) {
-                coordDisplay.textContent = `W: ${col}, H: ${row}`;
+                coordDisplay.textContent = `X: ${col}, Y: ${row}`;
             }
         }, 25); 
 
@@ -726,27 +726,37 @@ export function checkMapValidity() {
 
 /**
  * Basic Breadth-First Search (BFS) to check for a path between two points.
+ * Updated to support SNW (Snow) and SND (Sand) path variants.
  */
 function findPath(layout, start, end) {
     const rows = layout.length;
     const cols = layout[0].length;
     
-    // The path is valid if we can move from S to E via 'O' tiles.
+    /** * Define valid walkable tiles based on editor_map.js labels.
+     * Note: O[SNW] and O[SND] do not use internal quotes in your layout logic.
+     */
+    const pathableTiles = new Set(['O', 'O[SNW]', 'O[SND]']); 
+    
+    /** * Add the specific Start and End tile strings (e.g., "S1" or "E1")
+     * to the set so the BFS can recognize them as valid nodes.
+     */
+    const startTile = layout[start.r][start.c];
     const endTile = layout[end.r][end.c];
-    // Pathable tiles include 'O', the end tile, and the start tile (to begin search)
-    const pathableTiles = new Set(['O', endTile, layout[start.r][start.c]]); 
+    pathableTiles.add(startTile);
+    pathableTiles.add(endTile);
 
     const queue = [{ r: start.r, c: start.c }];
     const visited = new Set();
     visited.add(`${start.r},${start.c}`);
 
-    const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]; // Right, Left, Down, Up
+    const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]; 
 
     while (queue.length > 0) {
         const current = queue.shift();
 
+        // Target reached: specific Start matches the specific End
         if (current.r === end.r && current.c === end.c) {
-            return true; // Path found
+            return true; 
         }
 
         for (const [dr, dc] of directions) {
@@ -757,7 +767,10 @@ function findPath(layout, start, end) {
             if (newR >= 0 && newR < rows && newC >= 0 && newC < cols) {
                 const nextTile = layout[newR][newC];
 
-                // Ensure the next tile is pathable (O or the End point itself) and not visited
+                /** * Validates if the tile is a road or the target marker.
+                 * This prevents the path from "walking through" unrelated markers 
+                 * (e.g., S1 cannot use E2 as a road to get to E1).
+                 */
                 if (pathableTiles.has(nextTile) && !visited.has(newPosKey)) {
                     visited.add(newPosKey);
                     queue.push({ r: newR, c: newC });
@@ -765,10 +778,8 @@ function findPath(layout, start, end) {
             }
         }
     }
-
-    return false;
+    return false; 
 }
-
 /**
  * Updates the map_size field in the map's description based on the current layout
  * AND updates the display elements with IDs 'mapWidth' and 'mapHeight'.

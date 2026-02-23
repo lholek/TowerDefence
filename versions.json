@@ -21,6 +21,7 @@
         "Improved - Editor - Map - New Terrain: Sand (SND) added to the editor",
         "Improved - Editor - Map - New Terrain: Snow (SNW) added to the editor",
         "Improved - Editor - Map - New selector from map tile types",
+        "Improved - Editor - Map - Fixed Bug where coordinates showed 'W and H' rather than 'X and Y'",
         "Improved - Editor - Waves - Fixed bug of max width on enemy type in select",
         "Improved - Editor - Effects - Fixed bug where Enemy shake effect didn't appear on enemy types that you added during editing",
         "Improved - Editor - Fixed button hover on menu items",
