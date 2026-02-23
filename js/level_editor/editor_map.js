@@ -673,112 +673,116 @@ export function toggleMapVisibility() {
 }
 
 /**
- * Performs JSON validation and path connectivity check.
+ * Performs validation for marker pairs and path connectivity.
+ * Matches game engine logic for O, O[SNW], O[SND], and S/E markers.
  */
 export function checkMapValidity() {
     const data = currentLevelData;
     const layout = data.maps[0].layout;
 
-    const starts = new Map(); // Store as { id: {r, c} }
+    const starts = new Map(); // Store as { id: {r, c, type} }
     const ends = new Map();
 
-    // 1. Collect all points
+    // 1. Collect all points using regex to support S1, S[SNW], E1, etc.
     for (let r = 0; r < layout.length; r++) {
         for (let c = 0; c < layout[r].length; c++) {
-            const tile = layout[r][c];
-            if (tile.startsWith('S')) starts.set(tile.substring(1), {r, c, type: tile});
-            if (tile.startsWith('E')) ends.set(tile.substring(1), {r, c, type: tile});
+            const tile = String(layout[r][c] ?? '');
+            
+            // Matches 'S' followed by anything, but excludes base SNW/SND tiles
+            if (/^S/.test(tile) && tile !== 'SNW' && tile !== 'SND') {
+                starts.set(tile.substring(1), { r, c, type: tile });
+            }
+            // Matches 'E' followed by anything (E1, E[SND], etc.)
+            if (/^E/.test(tile)) {
+                ends.set(tile.substring(1), { r, c, type: tile });
+            }
         }
     }
 
+    // 2. Initial check for missing markers
     if (starts.size === 0 || ends.size === 0) {
-        setStatus('Map Check: Needs at least one S and one E.', true);
+        const missingParts = [];
+        if (starts.size === 0) missingParts.push("Start (S*)");
+        if (ends.size === 0) missingParts.push("End (E*)");
+        setStatus(`Map Check: Missing ${missingParts.join(' and ')}.`, true);
         return;
     }
 
     let errors = [];
 
-    // 2. Check if every Start has a matching End
-    starts.forEach((pos, id) => {
+    // 3. Check if every Start has a matching End and a valid path
+    starts.forEach((startPos, id) => {
         if (!ends.has(id)) {
             errors.push(`Missing End (E${id}) for Start S${id}`);
         } else {
-            // 3. Check physical pathing
-            if (!findPath(layout, pos, ends.get(id))) {
+            const endPos = ends.get(id);
+            // Check physical pathing using the BFS function
+            if (!findPath(layout, startPos, endPos)) {
                 errors.push(`No path possible from S${id} to E${id}`);
             }
         }
     });
 
-    // 4. Check for "Dangling" ends (End with no Start)
+    // 4. Check for "Dangling" ends (End with no matching Start)
     ends.forEach((pos, id) => {
         if (!starts.has(id)) {
             errors.push(`End E${id} has no matching Start S${id}`);
         }
     });
 
+    // 5. Final Status Output
     if (errors.length === 0) {
-        setStatus(`Map Valid! Total paths: ${starts.size}`, false);
+        setStatus(`Map Valid! Total paths verified: ${starts.size}`, false);
     } else {
         setStatus(`Map Errors: ${errors.join(' | ')}`, true);
     }
 }
 
 /**
- * Basic Breadth-First Search (BFS) to check for a path between two points.
- * Updated to support SNW (Snow) and SND (Sand) path variants.
+ * BFS Pathfinding matching the game engine's logic.
+ * Treats O, O[SNW], O[SND], and any S# / E# markers as walkable.
  */
 function findPath(layout, start, end) {
     const rows = layout.length;
     const cols = layout[0].length;
     
-    /** * Define valid walkable tiles based on editor_map.js labels.
-     * Note: O[SNW] and O[SND] do not use internal quotes in your layout logic.
-     */
-    const pathableTiles = new Set(['O', 'O[SNW]', 'O[SND]']); 
-    
-    /** * Add the specific Start and End tile strings (e.g., "S1" or "E1")
-     * to the set so the BFS can recognize them as valid nodes.
-     */
-    const startTile = layout[start.r][start.c];
-    const endTile = layout[end.r][end.c];
-    pathableTiles.add(startTile);
-    pathableTiles.add(endTile);
+    const sr = start.r, sc = start.c;
+    const er = end.r, ec = end.c;
 
-    const queue = [{ r: start.r, c: start.c }];
-    const visited = new Set();
-    visited.add(`${start.r},${start.c}`);
+    const isWalkable = (r, c) => {
+        const tok = String(layout[r][c] ?? '');
+        // Regex from game engine: matches paths and markers
+        const walkablePattern = /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/;
+        return walkablePattern.test(tok);
+    };
 
-    const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]; 
+    const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]]; // up, down, left, right
+    const q = [{ r: sr, c: sc }];
+    const seen = Array.from({ length: rows }, () => Array(cols).fill(false));
 
-    while (queue.length > 0) {
-        const current = queue.shift();
+    seen[sr][sc] = true;
 
-        // Target reached: specific Start matches the specific End
-        if (current.r === end.r && current.c === end.c) {
-            return true; 
-        }
+    while (q.length > 0) {
+        const cur = q.shift();
 
-        for (const [dr, dc] of directions) {
-            const newR = current.r + dr;
-            const newC = current.c + dc;
-            const newPosKey = `${newR},${newC}`;
+        // Path found
+        if (cur.r === er && cur.c === ec) return true;
 
-            if (newR >= 0 && newR < rows && newC >= 0 && newC < cols) {
-                const nextTile = layout[newR][newC];
+        for (const [dc, dr] of dirs) {
+            const nr = cur.r + dr;
+            const nc = cur.c + dc;
 
-                /** * Validates if the tile is a road or the target marker.
-                 * This prevents the path from "walking through" unrelated markers 
-                 * (e.g., S1 cannot use E2 as a road to get to E1).
-                 */
-                if (pathableTiles.has(nextTile) && !visited.has(newPosKey)) {
-                    visited.add(newPosKey);
-                    queue.push({ r: newR, c: newC });
+            // Boundary and walkable checks
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !seen[nr][nc]) {
+                if (isWalkable(nr, nc)) {
+                    seen[nr][nc] = true;
+                    q.push({ r: nr, c: nc });
                 }
             }
         }
     }
-    return false; 
+
+    return false; // No path found
 }
 /**
  * Updates the map_size field in the map's description based on the current layout
