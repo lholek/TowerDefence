@@ -3,7 +3,7 @@
     {
       "name": "Adventure Map V (Seasons)",
       "startingCoins": 100,
-      "startingLifes": 100,
+      "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
         25,
@@ -20,8 +20,8 @@
           "level count": 1,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x35",
-          "tower types": 1,
-          "abilites": "Lava Floor🌋, New lava_floor 2🌋, New lava_floor 3🌋, New lava_floor 4🌋"
+          "tower types": 8,
+          "abilites": "Fire Floor🌋, Surtr's Floor🌋, Towers Fury🏹, Zeus Fury🏹"
         }
       ],
       "tileSize": 80,
@@ -67,78 +67,157 @@
           "_comment": "cooldown - 30000",
           "id": "lava_floor",
           "configId": "lava_floor",
-          "name": "Lava Floor",
+          "name": "Fire Floor",
           "description": "Damage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 7,
+          "selectionCount": 9,
           "__comment": "250dmg / 0.25s ",
           "damage": 250,
-          "damage_every": 250,
+          "damage_every": 100,
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
+          "cooldown": 25000,
           "effectDuration": 5000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "color": "rgba(145, 100, 24, 0.64)",
           "ui": {
             "icon": "🌋"
           }
         },
         {
+          "_comment": "cooldown - 30000",
           "id": "lava_floor",
-          "configId": "lava_floor_1771881085990",
-          "name": "New lava_floor 2",
+          "configId": "lava_floor_1771957734423",
+          "name": "Surtr's Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
           "type": "targeted",
-          "selectionCount": 7,
+          "selectionCount": 12,
+          "__comment": "250dmg / 0.25s ",
           "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "damage_every": 100,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 30000,
+          "effectDuration": 10000,
+          "color": "rgba(145, 100, 24, 0.64)",
           "ui": {
             "icon": "🌋"
           }
         },
         {
-          "id": "lava_floor",
-          "configId": "lava_floor_1771881086678",
-          "name": "New lava_floor 3",
-          "type": "targeted",
-          "selectionCount": 7,
-          "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "id": "towers_fury",
+          "configId": "towers_fury_1771957561347",
+          "name": "Towers Fury",
+          "type": "global",
+          "cooldown": 60000,
+          "effectDuration": 30000,
+          "color": "rgba(191, 165, 34, 1)",
           "ui": {
-            "icon": "🌋"
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 2,
+            "speed_mul": 2,
+            "fireRate_mul": 0.8
           }
         },
         {
-          "id": "lava_floor",
-          "configId": "lava_floor_1771881087788",
-          "name": "New lava_floor 4",
-          "type": "targeted",
-          "selectionCount": 7,
-          "damage": 500,
-          "damage_every": 500,
-          "cooldown": 7000,
-          "effectDuration": 8000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "id": "towers_fury",
+          "configId": "towers_fury_1771957765653",
+          "name": "Zeus Fury",
+          "type": "global",
+          "cooldown": 90000,
+          "effectDuration": 45000,
+          "color": "rgba(255, 255, 255, 1)",
           "ui": {
-            "icon": "🌋"
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 4,
+            "speed_mul": 4,
+            "fireRate_mul": 0.5
           }
         }
       ],
       "towerTypes": {
         "001": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 50,
-          "fireRate": 400,
-          "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
+          "name": "Ares Tower",
+          "price": 25,
+          "damage": 35,
+          "fireRate": 750,
+          "range": 400,
+          "color": "#4b0000",
+          "sellPrice": 20,
           "speed": 2
+        },
+        "002": {
+          "name": "Artemis Tower",
+          "price": 25,
+          "damage": 25,
+          "fireRate": 600,
+          "range": 500,
+          "color": "#434689",
+          "sellPrice": 20,
+          "speed": 2
+        },
+        "003": {
+          "name": "DemeterTower",
+          "price": 150,
+          "damage": 80,
+          "fireRate": 500,
+          "range": 650,
+          "color": "#725731",
+          "sellPrice": 75,
+          "speed": 2.5
+        },
+        "004": {
+          "name": "HephaestusTower",
+          "price": 300,
+          "damage": 150,
+          "fireRate": 500,
+          "range": 700,
+          "color": "#454040",
+          "sellPrice": 150,
+          "speed": 3
+        },
+        "005": {
+          "name": "ApolloTower",
+          "price": 750,
+          "damage": 350,
+          "fireRate": 400,
+          "range": 900,
+          "color": "#967d22",
+          "sellPrice": 250,
+          "speed": 4
+        },
+        "006": {
+          "name": "Hades Tower",
+          "price": 2000,
+          "damage": 1000,
+          "fireRate": 350,
+          "range": 1200,
+          "color": "#181816",
+          "sellPrice": 300,
+          "speed": 6
+        },
+        "007": {
+          "name": "Poseidon Tower",
+          "price": 3000,
+          "damage": 1500,
+          "fireRate": 250,
+          "range": 1600,
+          "color": "#24195d",
+          "sellPrice": 500,
+          "speed": 8
+        },
+        "008": {
+          "name": "Zeus Tower",
+          "price": 5000,
+          "damage": 3000,
+          "fireRate": 100,
+          "range": 3000,
+          "color": "#ffffff",
+          "sellPrice": 0,
+          "speed": 10
         }
       },
       "levels": [
@@ -188,7 +267,12 @@
           ]
         }
       ],
-      "enemyEffects": []
+      "enemyEffects": [],
+      "enemyTypes": [
+        "starter",
+        "faster",
+        "tanker"
+      ]
     }
   ]
 }
