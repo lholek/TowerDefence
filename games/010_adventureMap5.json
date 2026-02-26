@@ -164,7 +164,7 @@
           "speed": 2
         },
         "003": {
-          "name": "DemeterTower",
+          "name": "Demeter Tower",
           "price": 150,
           "damage": 80,
           "fireRate": 500,
@@ -174,7 +174,7 @@
           "speed": 2.5
         },
         "004": {
-          "name": "HephaestusTower",
+          "name": "Hephaestus Tower",
           "price": 300,
           "damage": 150,
           "fireRate": 500,
@@ -184,7 +184,7 @@
           "speed": 3
         },
         "005": {
-          "name": "ApolloTower",
+          "name": "Apollo Tower",
           "price": 750,
           "damage": 350,
           "fireRate": 400,
