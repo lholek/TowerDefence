@@ -491,7 +491,7 @@
               "path": "S1E4",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 8
+              "coinReward": 9
             },
             {
               "type": "basic",
@@ -501,7 +501,7 @@
               "path": "S2E3",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 8
+              "coinReward": 9
             },
             {
               "type": "basic",
@@ -511,7 +511,7 @@
               "path": "S3E2",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 8
+              "coinReward": 9
             },
             {
               "type": "basic",
@@ -521,7 +521,7 @@
               "path": "S4E1",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 8
+              "coinReward": 9
             },
             {
               "type": "faster",
@@ -676,7 +676,7 @@
               "path": "S1E4",
               "interval": 1000,
               "firstDelay": "10000",
-              "coinReward": 75
+              "coinReward": 100
             },
             {
               "type": "boss",
@@ -686,7 +686,7 @@
               "path": "S2E3",
               "interval": 1000,
               "firstDelay": "10000",
-              "coinReward": 75
+              "coinReward": 100
             },
             {
               "type": "boss",
@@ -696,7 +696,7 @@
               "path": "S3E2",
               "interval": 1000,
               "firstDelay": "10000",
-              "coinReward": 75
+              "coinReward": 100
             },
             {
               "type": "boss",
@@ -706,7 +706,7 @@
               "path": "S4E1",
               "interval": 1000,
               "firstDelay": "10000",
-              "coinReward": 75
+              "coinReward": 100
             }
           ]
         },
@@ -721,7 +721,7 @@
               "path": "S1E4",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 12
+              "coinReward": 14
             },
             {
               "type": "basic",
@@ -731,7 +731,7 @@
               "path": "S2E3",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 12
+              "coinReward": 14
             },
             {
               "type": "basic",
@@ -741,7 +741,7 @@
               "path": "S3E2",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 12
+              "coinReward": 14
             },
             {
               "type": "basic",
@@ -751,7 +751,7 @@
               "path": "S4E1",
               "interval": "900",
               "firstDelay": 0,
-              "coinReward": 12
+              "coinReward": 14
             },
             {
               "type": "tanker",
@@ -761,7 +761,7 @@
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "6000",
-              "coinReward": 16
+              "coinReward": 18
             },
             {
               "type": "tanker",
@@ -771,7 +771,7 @@
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": "6000",
-              "coinReward": 16
+              "coinReward": 18
             },
             {
               "type": "tanker",
@@ -781,7 +781,7 @@
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": "6000",
-              "coinReward": 16
+              "coinReward": 18
             },
             {
               "type": "tanker",
@@ -791,6 +791,16 @@
               "path": "S4E4",
               "interval": 1000,
               "firstDelay": "6000",
+              "coinReward": 18
+            },
+            {
+              "type": "double",
+              "count": 4,
+              "health": 4000,
+              "speed": 1.1,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": "11000",
               "coinReward": 16
             },
             {
@@ -801,17 +811,7 @@
               "path": "S1E3",
               "interval": 1000,
               "firstDelay": "11000",
-              "coinReward": 14
-            },
-            {
-              "type": "double",
-              "count": 4,
-              "health": 4000,
-              "speed": 1.1,
-              "path": "S1E3",
-              "interval": 1000,
-              "firstDelay": "11000",
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "double",
@@ -821,7 +821,7 @@
               "path": "S2E4",
               "interval": 1000,
               "firstDelay": "11000",
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "double",
@@ -831,7 +831,7 @@
               "path": "S2E4",
               "interval": 1000,
               "firstDelay": "11000",
-              "coinReward": 14
+              "coinReward": 16
             }
           ]
         },
@@ -846,7 +846,7 @@
               "path": "S1E2",
               "interval": "850",
               "firstDelay": 0,
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -856,7 +856,7 @@
               "path": "S2E1",
               "interval": "850",
               "firstDelay": 0,
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -866,7 +866,7 @@
               "path": "S3E4",
               "interval": "850",
               "firstDelay": 0,
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -876,7 +876,7 @@
               "path": "S4E3",
               "interval": "850",
               "firstDelay": 0,
-              "coinReward": 14
+              "coinReward": 16
             },
             {
               "type": "tanker",
@@ -951,7 +951,7 @@
               "path": "S1E4",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 15
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -961,7 +961,7 @@
               "path": "S2E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 15
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -971,7 +971,7 @@
               "path": "S3E4",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 15
+              "coinReward": 16
             },
             {
               "type": "basic",
@@ -981,7 +981,7 @@
               "path": "S4E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 15
+              "coinReward": 16
             },
             {
               "type": "double",
@@ -1052,41 +1052,41 @@
               "type": "basic",
               "count": 6,
               "health": 5000,
-              "speed": 1.25,
+              "speed": 1.2,
               "path": "S1E2",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 17
+              "coinReward": 18
             },
             {
               "type": "basic",
               "count": 6,
               "health": 5000,
-              "speed": 1.25,
+              "speed": 1.2,
               "path": "S2E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 17
+              "coinReward": 18
             },
             {
               "type": "basic",
               "count": 6,
               "health": 5000,
-              "speed": 1.25,
+              "speed": 1.2,
               "path": "S3E4",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 17
+              "coinReward": 18
             },
             {
               "type": "basic",
               "count": 6,
               "health": 5000,
-              "speed": 1.25,
+              "speed": 1.2,
               "path": "S4E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 17
+              "coinReward": 18
             },
             {
               "type": "faster",
@@ -1096,7 +1096,7 @@
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "faster",
@@ -1106,7 +1106,7 @@
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "faster",
@@ -1116,7 +1116,7 @@
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "faster",
@@ -1126,7 +1126,7 @@
               "path": "S4E4",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 18
+              "coinReward": 20
             }
           ]
         },
@@ -1136,47 +1136,47 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 7500,
-              "speed": 1.28,
+              "health": 5500,
+              "speed": 1.2,
               "path": "S1E4",
               "interval": "750",
               "firstDelay": "0",
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "basic",
               "count": 6,
-              "health": 7500,
-              "speed": 1.28,
+              "health": 5500,
+              "speed": 1.2,
               "path": "S2E3",
               "interval": "750",
               "firstDelay": "0",
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "basic",
               "count": 6,
-              "health": 7500,
-              "speed": 1.28,
+              "health": 5500,
+              "speed": 1.2,
               "path": "S3E2",
               "interval": "750",
               "firstDelay": "0",
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "basic",
               "count": 6,
-              "health": 7500,
-              "speed": 1.28,
+              "health": 5500,
+              "speed": 1.2,
               "path": "S4E1",
               "interval": "750",
               "firstDelay": "0",
-              "coinReward": 18
+              "coinReward": 20
             },
             {
               "type": "tanker",
               "count": 3,
-              "health": 14000,
+              "health": 10000,
               "speed": 0.8,
               "path": "S2E3",
               "interval": 1000,
@@ -1186,7 +1186,7 @@
             {
               "type": "tanker",
               "count": 3,
-              "health": 14000,
+              "health": 10000,
               "speed": 0.8,
               "path": "S3E2",
               "interval": 1000,
@@ -1196,7 +1196,7 @@
             {
               "type": "faster",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.7,
               "path": "S1E1",
               "interval": 1000,
@@ -1206,7 +1206,7 @@
             {
               "type": "faster",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.7,
               "path": "S4E1",
               "interval": 1000,
@@ -1216,42 +1216,42 @@
             {
               "type": "boss-lvl-10",
               "count": 1,
-              "health": 15000,
-              "speed": 1.3,
+              "health": 10000,
+              "speed": 1,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 250
+              "coinReward": 400
             },
             {
               "type": "boss-lvl-10",
               "count": 1,
-              "health": 15000,
-              "speed": 1.3,
+              "health": 10000,
+              "speed": 1,
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 250
+              "coinReward": 400
             },
             {
               "type": "boss-lvl-10",
               "count": 1,
-              "health": 15000,
-              "speed": 1.3,
+              "health": 10000,
+              "speed": 1,
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 250
+              "coinReward": 400
             },
             {
               "type": "boss-lvl-10",
               "count": 1,
-              "health": 15000,
-              "speed": 1.3,
+              "health": 10000,
+              "speed": 1,
               "path": "S4E4",
               "interval": 1000,
               "firstDelay": "12000",
-              "coinReward": 250
+              "coinReward": 400
             }
           ]
         },
