@@ -11,7 +11,11 @@
         75,
         100,
         0,
+        100,
+        100,
+        125,
         150,
+        0,
         200
       ],
       "description": [
@@ -942,7 +946,7 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 5000,
+              "health": 4500,
               "speed": 1.25,
               "path": "S1E4",
               "interval": 1000,
@@ -952,7 +956,7 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 5000,
+              "health": 4500,
               "speed": 1.25,
               "path": "S2E3",
               "interval": 1000,
@@ -962,7 +966,7 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 5000,
+              "health": 4500,
               "speed": 1.25,
               "path": "S3E4",
               "interval": 1000,
@@ -972,7 +976,7 @@
             {
               "type": "basic",
               "count": 5,
-              "health": 5000,
+              "health": 4500,
               "speed": 1.25,
               "path": "S4E3",
               "interval": 1000,
@@ -982,7 +986,7 @@
             {
               "type": "double",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.15,
               "path": "S1E1",
               "interval": "750",
@@ -992,7 +996,7 @@
             {
               "type": "double",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.15,
               "path": "S1E1",
               "interval": "750",
@@ -1002,7 +1006,7 @@
             {
               "type": "double",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.15,
               "path": "S4E4",
               "interval": "750",
@@ -1012,7 +1016,7 @@
             {
               "type": "double",
               "count": 3,
-              "health": 5000,
+              "health": 4000,
               "speed": 1.15,
               "path": "S4E4",
               "interval": "750",
@@ -1047,7 +1051,7 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 7000,
+              "health": 5000,
               "speed": 1.25,
               "path": "S1E2",
               "interval": 1000,
@@ -1057,7 +1061,7 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 7000,
+              "health": 5000,
               "speed": 1.25,
               "path": "S2E1",
               "interval": 1000,
@@ -1067,7 +1071,7 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 7000,
+              "health": 5000,
               "speed": 1.25,
               "path": "S3E4",
               "interval": 1000,
@@ -1077,7 +1081,7 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 7000,
+              "health": 5000,
               "speed": 1.25,
               "path": "S4E3",
               "interval": 1000,
