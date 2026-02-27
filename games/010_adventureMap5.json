@@ -1771,7 +1771,7 @@
               "path": "S4E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 45
+              "coinReward": 50
             },
             {
               "type": "super-tanker",
