@@ -21,11 +21,9 @@ TODOS:
   "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
 
-alpha 0.1.6
+Pre-beta I.
 -----
 - Enemies that deal more deamge (Defined by enemy type)
 - PERFORMANCE UPDATE (Mostly arrow calculations)
 - clean code and preapations for beta 1.0
-
-beta 1.0
------
+- more Lore Perhaps-some missions of first camping ??
