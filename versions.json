@@ -7,6 +7,7 @@
         "Improved - Gameplay - Added mountains that block all incoming arrows and towers don't see enemies through them",
         "Improved - Gameplay - Added hotkey indicators to Towers and Abilities",
         "Improved - Gameplay - Minimap - added mountains, snow and sand to the minimap",
+        "Improved - Gameplay - Added 5th adventure map with Snow and Sand terrains to the game",
         "Improved - Gameplay - Redesigned the Tower selector to have an image of the tower on the card, and basic stats. More stats on hover",
         "Improved - Gameplay - Redesigned the Ability selector to have an image of the ability on the left, and all stats on right side of the card",
         "Improved - Gameplay/Editor - Abilities icon are now set to max length of 1 character, older maps adapted to this rule",
@@ -28,8 +29,7 @@
         "Improved - Editor - Improved CSS",
         "Improved - Menu - Settings update: Use 'Sky Background' for better performance",
         "Improved - Menu - Added scrollbar for abilities and descriptions in map preview.",
-        "Improved - Versions - Added updates of very old versions",
-        "Improved - Add 5th adventure map with Snow and Sand terrains to the game"
+        "Improved - Versions - Added updates of very old versions"
       ]
     },
     {
