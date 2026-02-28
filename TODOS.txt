@@ -26,3 +26,6 @@ alpha 0.1.6
 - Enemies that deal more deamge (Defined by enemy type)
 - PERFORMANCE UPDATE (Mostly arrow calculations)
 - clean code and preapations for beta 1.0
+
+beta 1.0
+-----
