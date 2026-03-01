@@ -97,51 +97,112 @@
       <div id="settingsPopup" class="settings-popup hidden">
         <div class="settings-content">
           <h2 class="cl-primary">Settings</h2>
-          <!-- 🎨 UI & Close -->
+        
           <div class="settings-section">
-
             <h3 class="cl-primary">Graphics</h3>
-            
+
             <div class="settings-grid-container">
               <div class="settings-grid">
                 <label>
-                  <label for="backgroundSelect">Show FPS</label>
+                  <label for="showFpsCheckbox">Show FPS</label>
                   <input type="checkbox" id="showFpsCheckbox" class="settings-checkbox">
                 </label>
               </div>
+            
               <div class="settings-grid">
                 <div class="input-group">
                   <label for="backgroundSelect" class="settings-label">Background</label>
                   <select id="backgroundSelect" class="settings-styled-select">
                     <option value="sky">Sky (Default)</option>
-                    <option value="sea">Midnight Sky (Graphics - High)</option>
+                    <option value="sea">Midnight Sky</option>
                   </select>
                 </div>
               </div>
-              
-              <div class="settings-grid">
-                <div class="input-group">
-                  <label for="graphicsSelect" class="settings-label">Graphics</label>
-                  <select id="graphicsSelect" class="settings-styled-select">
-                    <option value="high">High</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
+            
+              <div class="bulk-actions mt-2 mb-2">
+                <button id="btnAllLow" class="btn btn-small">Switch All to Low</button>
+                <button id="btnAllHigh" class="btn btn-small">Switch All to High</button>
               </div>
+            
+              <div id="graphicsCustomList" class="graphics-custom-list">
+
+                <div class="graphics-row">
+                  <span>Trees of Life</span>
+                  <div class="segmented-control" data-setting="trees">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
               
+                <div class="graphics-row">
+                  <span>Portals</span>
+                  <div class="segmented-control" data-setting="portals">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Enemies</span>
+                  <div class="segmented-control" data-setting="enemies">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Towers</span>
+                  <div class="segmented-control" data-setting="towers">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Water</span>
+                  <div class="segmented-control" data-setting="water">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Grass & Terrain</span>
+                  <div class="segmented-control" data-setting="grass">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Roads & Paths</span>
+                  <div class="segmented-control" data-setting="roads">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+                <div class="graphics-row">
+                  <span>Mountains</span>
+                  <div class="segmented-control" data-setting="mountains">
+                    <button data-value="low">Low</button>
+                    <button data-value="high">High</button>
+                  </div>
+                </div>
+              
+              </div>
             </div>
           </div>
-          <!-- 🎨 UI & Close -->
+        
           <div class="fps-setting d-none">
             <label for="fpsRange">Target FPS:</label>
             <input type="range" id="fpsRange" min="30" max="144" step="1">
             <input type="number" id="fpsNumber" min="30" max="300" step="1">
           </div>
-
+        
           <div class="settings-buttons mt-4">
               <button id="closeSettingsBtn" class="btn">Close</button>
               <button id="saveSettingsBtn" class="btn">Save</button>
-          </div>
           </div>
         </div>
       </div>

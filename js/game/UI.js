@@ -15,7 +15,7 @@ cancelReturn.addEventListener('click', () => {
 
 confirmReturn.addEventListener('click', () => {
   returnPopup.style.display = 'none';
-  
+
   // Optional cleanup before returning
   if (window.game) {
     window.game.running = false;
@@ -90,18 +90,18 @@ const musicDropdown = document.getElementById('musicDropdown');
 
 if (musicBtn && musicDropdown) {
   musicBtn.addEventListener('click', (e) => {
-      // Prevent clicking the button from immediately triggering the "click outside" closer
-      e.stopPropagation();
+    // Prevent clicking the button from immediately triggering the "click outside" closer
+    e.stopPropagation();
 
-      const isVisible = musicDropdown.style.display === 'block';
-      musicDropdown.style.display = isVisible ? 'none' : 'block';
+    const isVisible = musicDropdown.style.display === 'block';
+    musicDropdown.style.display = isVisible ? 'none' : 'block';
   });
 
   // Close the music player if you click anywhere else on the screen
   document.addEventListener('click', (e) => {
-      if (musicDropdown.style.display === 'block' && !musicDropdown.contains(e.target)) {
-          musicDropdown.style.display = 'none';
-      }
+    if (musicDropdown.style.display === 'block' && !musicDropdown.contains(e.target)) {
+      musicDropdown.style.display = 'none';
+    }
   });
 }
 
@@ -111,22 +111,22 @@ const logPopup = document.getElementById('logPopup');
 const closeLogBtn = document.getElementById('closeLogBtn');
 
 if (gameLogBtn && logPopup && closeLogBtn) {
-    gameLogBtn.addEventListener('click', () => {
-        logPopup.style.display = 'flex';
-        // Pause game if it is running
-        if (window.game && window.game.gameStarted && !window.game.paused) {
-            window.game.togglePause();
-        }
-    });
+  gameLogBtn.addEventListener('click', () => {
+    logPopup.style.display = 'flex';
+    // Pause game if it is running
+    if (window.game && window.game.gameStarted && !window.game.paused) {
+      window.game.togglePause();
+    }
+  });
 
-    closeLogBtn.addEventListener('click', () => {
-        logPopup.style.display = 'none';
-        // Unpause game if it was paused (optional: keep it paused if you prefer)
-        // Here we toggle it back to running if it was running before
-        if (window.game && window.game.gameStarted && window.game.paused) {
-            window.game.togglePause();
-        }
-    });
+  closeLogBtn.addEventListener('click', () => {
+    logPopup.style.display = 'none';
+    // Unpause game if it was paused (optional: keep it paused if you prefer)
+    // Here we toggle it back to running if it was running before
+    if (window.game && window.game.gameStarted && window.game.paused) {
+      window.game.togglePause();
+    }
+  });
 }
 
 // --- Init settings ---
@@ -171,28 +171,34 @@ document.addEventListener("DOMContentLoaded", () => {
   closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
 
   // --- Save settings ---
+  // --- Save settings (Hledej cca řádek 145) ---
   saveBtn.addEventListener("click", () => {
+    // 1. Uložení FPS
     const targetFps = clampFps(fpsRange.value);
     settings = {
       showFps: showFpsCheckbox.checked,
       targetFps: targetFps
     };
-
-    // save to localStorage
     localStorage.setItem("data.fps", JSON.stringify(settings));
 
-    // apply visibility
+    // 2. Uložení Pozadí
+    const selectedBg = bgSelect.value;
+    localStorage.setItem('game_background', selectedBg);
+    applyBackground(selectedBg);
+
+    // 3. Uložení Nové Grafiky (Objekt currentGraphics)
+    localStorage.setItem('graphicsSettings', JSON.stringify(currentGraphics));
+
+    // 4. Aplikace viditelnosti FPS
     if (settings.showFps) {
       fpsDisplay.style.display = "block";
-      if (!fpsRunning) {
-        fpsRunning = true;
-        updateFPS();
-      }
+      if (!fpsRunning) { fpsRunning = true; updateFPS(); }
     } else {
       fpsDisplay.style.display = "none";
       fpsRunning = false;
     }
 
+    // 5. Zavření popupu
     popup.classList.add("hidden");
   });
 
@@ -206,65 +212,139 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Saving differt themes ---
   const savedBg = localStorage.getItem('game_background') || 'sky'; // 'sky' is the fallback
   if (bgSelect) {
-      bgSelect.value = savedBg;
+    bgSelect.value = savedBg;
   }
   applyBackground(savedBg);
+
+  /* --- Graphics --- */
+
+  /* --- Apply saved graphics settings immediately --- */
+  // 1. Define the current state (Load from storage or use defaults)
+  let currentGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {
+    trees: 'low',
+    portals: 'low',
+    enemies: 'low',
+    towers: 'low',
+    water: 'low',
+    grass: 'low',
+    roads: 'low',
+    mountains: 'low'
+  };
+
+  // 2. Function to refresh the UI buttons to match the state
+  function updateGraphicsUI() {
+    const rows = document.querySelectorAll('.segmented-control');
+    rows.forEach(control => {
+      const setting = control.dataset.setting;
+      const value = currentGraphics[setting];
+
+      control.querySelectorAll('button').forEach(btn => {
+        if (btn.dataset.value === value) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    });
+  }
+
+  const list = document.getElementById('graphicsCustomList');
+  if (!list) return;
+
+  // Handle individual clicks
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    // Zabráníme tomu, aby tlačítko dělalo něco jiného (např. submit formy)
+    e.preventDefault(); 
+
+    const control = btn.closest('.segmented-control');
+    const setting = control.dataset.setting;
+    const value = btn.dataset.value;
+
+    // OKAMŽITÁ vizuální změna v UI
+    currentGraphics[setting] = value;
+    updateGraphicsUI();
+  });
+
+  // Bulk Buttons
+  document.getElementById('btnAllLow')?.addEventListener('click', () => {
+    Object.keys(currentGraphics).forEach(k => currentGraphics[k] = 'low');
+    updateGraphicsUI();
+  });
+
+  document.getElementById('btnAllHigh')?.addEventListener('click', () => {
+    Object.keys(currentGraphics).forEach(k => currentGraphics[k] = 'high');
+    updateGraphicsUI();
+  });
+
+  // Save Button
+  document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
+    localStorage.setItem('graphicsSettings', JSON.stringify(currentGraphics));
+    // Here you would trigger the actual game engine to update visuals
+  });
+
+  // Initial sync
+  updateGraphicsUI();
+
+  /* --- Graphics --- */
 
 });
 
 // Titles
 // --- Title Typing Effect ---
 function typeTitle() {
-    const titleEl = document.querySelector('.title');
-    if (!titleEl) return;
-    
-    const fullText = "The CZSrna's Tower Defence";
-    // Temporarily store the full text and clear the display
-    titleEl.dataset.fullText = fullText;
-    titleEl.textContent = "";
+  const titleEl = document.querySelector('.title');
+  if (!titleEl) return;
 
-    const characters = fullText.split('');
-    let charIndex = 0;
-    const intervalTime = 50; // 50ms delay between characters
+  const fullText = "The CZSrna's Tower Defence";
+  // Temporarily store the full text and clear the display
+  titleEl.dataset.fullText = fullText;
+  titleEl.textContent = "";
 
-    const timer = setInterval(() => {
-        if (charIndex < characters.length) {
-            titleEl.textContent += characters[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(timer);
-        }
-    }, intervalTime);
+  const characters = fullText.split('');
+  let charIndex = 0;
+  const intervalTime = 50; // 50ms delay between characters
+
+  const timer = setInterval(() => {
+    if (charIndex < characters.length) {
+      titleEl.textContent += characters[charIndex];
+      charIndex++;
+    } else {
+      clearInterval(timer);
+    }
+  }, intervalTime);
 }
 document.addEventListener("DOMContentLoaded", typeTitle);
 
 //  --- Title Laod Versions --- 
 async function loadVersion() {
-    try {
-        const res = await fetch('versions.json');
-        if (!res.ok) throw new Error(`Failed to load versions.json: ${res.status}`);
-        const data = await res.json();
-        
-        const firstVersion = data.versions && data.versions[0];
-        if (firstVersion && firstVersion.version) {
-            const versionString = firstVersion.version;
-            
-            // Update title
-            document.title = `The CZSrna's Tower Defence – ${versionString}`;
-            
-            // Update subtitle-bottom-left element
-            const subtitleEl = document.querySelector('.subtitle-bottom-left');
-            if (subtitleEl) {
-                subtitleEl.textContent = versionString;
-            } else {
-                console.warn('Element with class "subtitle-bottom-left" not found.');
-            }
-        } else {
-            console.warn('versions.json structure invalid or empty.');
-        }
-    } catch (err) {
-        console.error("Error loading version data:", err);
+  try {
+    const res = await fetch('versions.json');
+    if (!res.ok) throw new Error(`Failed to load versions.json: ${res.status}`);
+    const data = await res.json();
+
+    const firstVersion = data.versions && data.versions[0];
+    if (firstVersion && firstVersion.version) {
+      const versionString = firstVersion.version;
+
+      // Update title
+      document.title = `The CZSrna's Tower Defence – ${versionString}`;
+
+      // Update subtitle-bottom-left element
+      const subtitleEl = document.querySelector('.subtitle-bottom-left');
+      if (subtitleEl) {
+        subtitleEl.textContent = versionString;
+      } else {
+        console.warn('Element with class "subtitle-bottom-left" not found.');
+      }
+    } else {
+      console.warn('versions.json structure invalid or empty.');
     }
+  } catch (err) {
+    console.error("Error loading version data:", err);
+  }
 }
 
 // Execute the function when the DOM is loaded
@@ -276,48 +356,21 @@ const bgSelect = document.getElementById('backgroundSelect');
 const gameContainer = document.getElementById('gameContainer');
 
 function applyBackground(type) {
-    const clouds = document.getElementById('cloudsLayer');
-    if (!clouds) return;
+  const clouds = document.getElementById('cloudsLayer');
+  if (!clouds) return;
 
-    // Remove classes to reset animations
-    clouds.classList.remove('bg-sky', 'bg-sea');
-    
-    // Force a tiny reflow to restart animations if needed
-    void clouds.offsetWidth; 
+  // Remove classes to reset animations
+  clouds.classList.remove('bg-sky', 'bg-sea');
 
-    clouds.classList.add(`bg-${type}`);
+  // Force a tiny reflow to restart animations if needed
+  void clouds.offsetWidth;
+
+  clouds.classList.add(`bg-${type}`);
 }
 
 // When saving settings:
 saveSettingsBtn.addEventListener('click', () => {
-    const selectedBg = bgSelect.value;
-    applyBackground(selectedBg);
-    localStorage.setItem('game_background', selectedBg); // Save preference
+  const selectedBg = bgSelect.value;
+  applyBackground(selectedBg);
+  localStorage.setItem('game_background', selectedBg); // Save preference
 });
-
-// -- Graphics Local Storage
-const graphicsSelect = document.getElementById('graphicsSelect');
-const savedGraphics = localStorage.getItem('graphicsSetting') || 'high';
-graphicsSelect.value = savedGraphics;
-
-saveSettingsBtn.addEventListener('click', () => {
-    const selectedBg = bgSelect.value;
-    const selectedGraphics = graphicsSelect.value; // Add this line
-
-    applyBackground(selectedBg);
-
-    localStorage.setItem('game_background', selectedBg);
-    localStorage.setItem('graphicsSetting', selectedGraphics); // Add this line
-});
-/*
-// Example: Inside your rendering or object creation logic
-const quality = localStorage.getItem('graphicsSetting') || 'high';
-
-if (quality === 'low') {
-    // Spawn fewer particles
-    // Disable expensive shadows
-    // Use lower resolution textures
-} else {
-    // Run at full beauty
-}
-*/
