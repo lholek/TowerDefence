@@ -13,803 +13,803 @@ M - Mountain (impassable, non-buildable, non-shootable)
 - - Air(impassable, non-buildable, shootable)
 */
 export default class Map {
-  constructor(canvas, layout, tileSize = 80) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    constructor(canvas, layout, tileSize = 80) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
 
-    // 1. NORMALIZE GRID (Basics first)
-    this.grid = this.normalizeLayout(layout);
-    this.rows = this.grid.length;
-    this.cols = this.grid[0].length;
-    this.tileSize = tileSize;
+        // 1. NORMALIZE GRID (Basics first)
+        this.grid = this.normalizeLayout(layout);
+        this.rows = this.grid.length;
+        this.cols = this.grid[0].length;
+        this.tileSize = tileSize;
 
-    // 2. TERRAIN VARIATION (Required for visuals)
-    // We do this BEFORE the road so the road knows what grass is underneath it
-    this.terrainIndices = [];
-    for (let r = 0; r < this.rows; r++) {
-        this.terrainIndices[r] = [];
-        for (let c = 0; c < this.cols; c++) {
-            this.terrainIndices[r][c] = Math.floor(Math.random() * 10);
+        // 2. TERRAIN VARIATION (Required for visuals)
+        // We do this BEFORE the road so the road knows what grass is underneath it
+        this.terrainIndices = [];
+        for (let r = 0; r < this.rows; r++) {
+            this.terrainIndices[r] = [];
+            for (let c = 0; c < this.cols; c++) {
+                this.terrainIndices[r][c] = Math.floor(Math.random() * 10);
+            }
         }
-    }
 
-    // 3. GENERATE VISUAL ASSETS
-    // CRITICAL FIX: Generate the actual grass images BEFORE calling _prerenderRoad
-    this._generateGrassTiles();
+        // 3. GENERATE VISUAL ASSETS
+        // CRITICAL FIX: Generate the actual grass images BEFORE calling _prerenderRoad
+        this._generateGrassTiles();
 
-    // 4. DETECT SPECIAL TILES
-    this.starts = {}; 
-    this.ends = {};
-    for (let r = 0; r < this.rows; r++) {
-        for (let c = 0; c < this.cols; c++) {
-            const t = String(this.grid[r][c] ?? '');
-            if (/^S/i.test(t)) this.starts[t] = { row: r, col: c };
-            if (/^E/i.test(t)) this.ends[t] = { row: r, col: c };
+        // 4. DETECT SPECIAL TILES
+        this.starts = {}; 
+        this.ends = {};
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const t = String(this.grid[r][c] ?? '');
+                if (/^S/i.test(t)) this.starts[t] = { row: r, col: c };
+                if (/^E/i.test(t)) this.ends[t] = { row: r, col: c };
+            }
         }
-    }
 
-    // 5. PATHS & CAMERA
-    this.paths = this.generatePaths();
-    this.camera = {
-        x: (this.canvas.width - (this.cols * this.tileSize)) / 2, // Center horizontally
-        y: (this.canvas.height - (this.rows * this.tileSize)) / 2, // Center vertically
-        zoom: 1, 
-        dragging: false, 
-        lastX: 0, 
-        lastY: 0,
-        minZoom: 0.3, 
-        maxZoom: 1.7
-    };
+        // 5. PATHS & CAMERA
+        this.paths = this.generatePaths();
+        this.camera = {
+            x: (this.canvas.width - (this.cols * this.tileSize)) / 2, // Center horizontally
+            y: (this.canvas.height - (this.rows * this.tileSize)) / 2, // Center vertically
+            zoom: 1, 
+            dragging: false, 
+            lastX: 0, 
+            lastY: 0,
+            minZoom: 0.3, 
+            maxZoom: 1.7
+        };
 
-    // 6. INITIALIZE AAA ROAD SYSTEM (Prerendering)
-    this.roadLayer = document.createElement('canvas');
-    this.roadLayer.width = this.cols * this.tileSize;
-    this.roadLayer.height = this.rows * this.tileSize;
+        // 6. INITIALIZE AAA ROAD SYSTEM (Prerendering)
+        this.roadLayer = document.createElement('canvas');
+        this.roadLayer.width = this.cols * this.tileSize;
+        this.roadLayer.height = this.rows * this.tileSize;
 
-    // 6b. Initialize Water Layer
-    this.waterLayer = document.createElement('canvas');
-    this.waterLayer.width = this.cols * this.tileSize;
-    this.waterLayer.height = this.rows * this.tileSize;
-    this._prerenderWater();
+        // 6b. Initialize Water Layer
+        this.waterLayer = document.createElement('canvas');
+        this.waterLayer.width = this.cols * this.tileSize;
+        this.waterLayer.height = this.rows * this.tileSize;
+        this._prerenderWater();
 
-    // 6c. Initialize Grass Layer
-    this.grassLayer = document.createElement('canvas');
-    this.grassLayer.width = this.cols * this.tileSize;
-    this.grassLayer.height = this.rows * this.tileSize;
-    this._prerenderGrass();
-    
-    // AAA Atmosphere settings
-    this.sunDir = { x: 1, y: 1 }; 
-    this.shadowOpacity = 0.4;
+        // 6c. Initialize Grass Layer
+        this.grassLayer = document.createElement('canvas');
+        this.grassLayer.width = this.cols * this.tileSize;
+        this.grassLayer.height = this.rows * this.tileSize;
+        this._prerenderGrass();
 
-    // BAKE THE ROAD (Now safe because grass images exist)
-    this._prerenderRoad();
+        // AAA Atmosphere settings
+        this.sunDir = { x: 1, y: 1 }; 
+        this.shadowOpacity = 0.4;
 
-    // 7. INPUTS & FINAL SETUP
-    this.canvas.addEventListener('mousedown', e => this.startDrag(e));
-    this.canvas.addEventListener('mousemove', e => this.drag(e));
-    this.canvas.addEventListener('mouseup', e => this.stopDrag());
-    this.canvas.addEventListener('mouseleave', e => this.stopDrag());
-    this.canvas.addEventListener('wheel', e => this.handleZoom(e));
-    this.canvas.style.cursor = 'grab';
+        // BAKE THE ROAD (Now safe because grass images exist)
+        this._prerenderRoad();
 
-    // Getting quailty from local storage
-    this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
-    const treeQuality = this.graphicsSettings.trees || 'low';
-    if (treeQuality === 'low') {
-        this.cachedTree = this._preRenderTreeLow(this.tileSize);
-    } else {
-        this.cachedTree = this._preRenderTreeHigh(this.tileSize);
-    }
+        // 7. INPUTS & FINAL SETUP
+        this.canvas.addEventListener('mousedown', e => this.startDrag(e));
+        this.canvas.addEventListener('mousemove', e => this.drag(e));
+        this.canvas.addEventListener('mouseup', e => this.stopDrag());
+        this.canvas.addEventListener('mouseleave', e => this.stopDrag());
+        this.canvas.addEventListener('wheel', e => this.handleZoom(e));
+        this.canvas.style.cursor = 'grab';
 
-    this.clampCamera();
-
-    this.snowTexture = this._preRenderSnow(this.tileSize);
-    this.sandTexture = this._preRenderSand(this.tileSize);
-
-    // 9. GAME QUALITY
-    this.quality = localStorage.getItem('graphicsSetting') || 'low';
-}
-
-  // Normalize: expects layout already as array-of-arrays
-  normalizeLayout(layout) {
-    if (!Array.isArray(layout) || layout.length === 0) {
-      throw new Error("Invalid layout format — expect array of rows");
-    }
-    // If rows are strings, convert to single-char tokens (not recommended now)
-    if (typeof layout[0] === 'string') {
-      return layout.map(row => row.split('').map(ch => ch));
-    }
-    // If rows are arrays already - copy them
-    if (Array.isArray(layout[0])) {
-      return layout.map(row => row.slice());
-    }
-    throw new Error('Unsupported layout row format');
-  }
-
-  // Simple BFS pathfinder (grid, 4-neighbors) => returns array of {col,row} or null
-  findPathBFS(start, end) {
-    const sr = start.row, sc = start.col;
-    const er = end.row, ec = end.col;
-
-    const inBounds = (r,c) => r>=0 && r<this.rows && c>=0 && c<this.cols;
-    const isWalkable = (r, c) => {
-      const tok = String(this.grid[r][c] ?? '');
-
-      // Regex breakdown:
-      // ^(O|L)$      -> Matches exactly "O"
-      // ^[SET]\d+$   -> Matches S, E
-      const walkablePattern = /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/;
-
-      return walkablePattern.test(tok);
-    };
-
-    const dirs = [[0,-1],[0,1],[-1,0],[1,0]]; // up,down,left,right
-    const q = [];
-    const prev = Array.from({length:this.rows}, ()=>Array(this.cols).fill(null));
-    const seen = Array.from({length:this.rows}, ()=>Array(this.cols).fill(false));
-
-    q.push({r:sr,c:sc});
-    seen[sr][sc] = true;
-
-    while (q.length) {
-      const cur = q.shift();
-      if (cur.r === er && cur.c === ec) break;
-
-      for (const d of dirs) {
-        const nr = cur.r + d[1];
-        const nc = cur.c + d[0];
-        if (!inBounds(nr,nc)) continue;
-        if (seen[nr][nc]) continue;
-        if (!isWalkable(nr,nc)) continue;
-        seen[nr][nc] = true;
-        prev[nr][nc] = cur;
-        q.push({r: nr, c: nc});
-      }
-    }
-
-    // if end not reached
-    if (!seen[er][ec]) return null;
-
-    // reconstruct path from end -> start
-    const path = [];
-    let cur = {r: er, c: ec};
-    while (cur) {
-      path.push({col: cur.c, row: cur.r});
-      const p = prev[cur.r][cur.c];
-      cur = p;
-    }
-    path.reverse();
-    return path;
-  }
-
-  // Generate paths for all matching S# -> E# (S1 -> E1, S2->E2)
-  generatePaths() {
-    const paths = {};
-    
-    // Loop through every Start point (S1, S2...)
-    for (const [startKey, startCoords] of Object.entries(this.starts)) {
-      
-      // Loop through every End point (E1, E2...)
-      for (const [endKey, endCoords] of Object.entries(this.ends)) {
-        
-        // Create a unique key like "S1E2"
-        const pathKey = startKey + endKey;
-        
-        // Calculate path specifically between these two points
-        const path = this.findPathBFS(startCoords, endCoords);
-        
-        if (path && path.length > 0) {
-          paths[pathKey] = path;
+        // Getting quailty from local storage
+        this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+        const treeQuality = this.graphicsSettings.trees || 'low';
+        if (treeQuality === 'low') {
+            this.cachedTree = this._preRenderTreeLow(this.tileSize);
         } else {
-          paths[pathKey] = []; // Empty array if no path possible
+            this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+        }
+
+        this.clampCamera();
+
+        this.snowTexture = this._preRenderSnow(this.tileSize);
+        this.sandTexture = this._preRenderSand(this.tileSize);
+
+        // 9. GAME QUALITY
+        this.quality = localStorage.getItem('graphicsSetting') || 'low';
+    }
+
+    // Normalize: expects layout already as array-of-arrays
+    normalizeLayout(layout) {
+      if (!Array.isArray(layout) || layout.length === 0) {
+        throw new Error("Invalid layout format — expect array of rows");
+      }
+      // If rows are strings, convert to single-char tokens (not recommended now)
+      if (typeof layout[0] === 'string') {
+        return layout.map(row => row.split('').map(ch => ch));
+      }
+      // If rows are arrays already - copy them
+      if (Array.isArray(layout[0])) {
+        return layout.map(row => row.slice());
+      }
+      throw new Error('Unsupported layout row format');
+    }
+
+    // Simple BFS pathfinder (grid, 4-neighbors) => returns array of {col,row} or null
+    findPathBFS(start, end) {
+      const sr = start.row, sc = start.col;
+      const er = end.row, ec = end.col;
+
+      const inBounds = (r,c) => r>=0 && r<this.rows && c>=0 && c<this.cols;
+      const isWalkable = (r, c) => {
+        const tok = String(this.grid[r][c] ?? '');
+
+        // Regex breakdown:
+        // ^(O|L)$      -> Matches exactly "O"
+        // ^[SET]\d+$   -> Matches S, E
+        const walkablePattern = /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/;
+
+        return walkablePattern.test(tok);
+      };
+
+      const dirs = [[0,-1],[0,1],[-1,0],[1,0]]; // up,down,left,right
+      const q = [];
+      const prev = Array.from({length:this.rows}, ()=>Array(this.cols).fill(null));
+      const seen = Array.from({length:this.rows}, ()=>Array(this.cols).fill(false));
+
+      q.push({r:sr,c:sc});
+      seen[sr][sc] = true;
+
+      while (q.length) {
+        const cur = q.shift();
+        if (cur.r === er && cur.c === ec) break;
+
+        for (const d of dirs) {
+          const nr = cur.r + d[1];
+          const nc = cur.c + d[0];
+          if (!inBounds(nr,nc)) continue;
+          if (seen[nr][nc]) continue;
+          if (!isWalkable(nr,nc)) continue;
+          seen[nr][nc] = true;
+          prev[nr][nc] = cur;
+          q.push({r: nr, c: nc});
         }
       }
+
+      // if end not reached
+      if (!seen[er][ec]) return null;
+
+      // reconstruct path from end -> start
+      const path = [];
+      let cur = {r: er, c: ec};
+      while (cur) {
+        path.push({col: cur.c, row: cur.r});
+        const p = prev[cur.r][cur.c];
+        cur = p;
+      }
+      path.reverse();
+      return path;
     }
-    return paths;
-  }
 
-  _generateGrassTiles() {
-    this.grassVariants = [];
-    const baseColors = ['#3f7d3c', '#376d35', '#4a8c46'];
+    // Generate paths for all matching S# -> E# (S1 -> E1, S2->E2)
+    generatePaths() {
+      const paths = {};
 
-    for (let i = 0; i < 10; i++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.tileSize;
-        canvas.height = this.tileSize;
-        const tctx = canvas.getContext('2d');
+      // Loop through every Start point (S1, S2...)
+      for (const [startKey, startCoords] of Object.entries(this.starts)) {
+        
+        // Loop through every End point (E1, E2...)
+        for (const [endKey, endCoords] of Object.entries(this.ends)) {
 
-        // 1. Base Layer: Gradient for subtle lighting depth
-        tctx.fillStyle = baseColors[i % baseColors.length];
-        tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+          // Create a unique key like "S1E2"
+          const pathKey = startKey + endKey;
 
-        // 2. Flora Layer: Natural distribution
-        // Reduced to 45 iterations to keep it "clean" but detailed
-        for (let j = 0; j < 3; j++) {
-            const lx = Math.random() * this.tileSize;
-            const ly = Math.random() * this.tileSize;
-            tctx.save();
-            tctx.translate(lx, ly);
-            tctx.rotate(Math.random() * Math.PI);
-            
-            const roll = Math.random();
+          // Calculate path specifically between these two points
+          const path = this.findPathBFS(startCoords, endCoords);
 
-            if (roll < 0.015) { 
-                // VERY RARE: Red flower
-                this._drawNaturalFlower(tctx, "#e11d48");
-            } 
-            else if (roll < 0.03) { 
-                // VERY RARE: Pink flower
-                this._drawNaturalFlower(tctx, "#f472b6");
-            } 
-            else if (roll < 0.045) { 
-                // VERY RARE: Blue flower
-                this._drawNaturalFlower(tctx, "#3b82f6");
-            } 
-            else if (roll < 0.10) { 
-                // RARE: Yellow flower
-                this._drawNaturalFlower(tctx, "#facc15");
-            } 
-            else if (roll < 0.25) { 
-                // UNCOMMON: Dry brown leaf
-                tctx.fillStyle = "#8a5a23";
-                tctx.beginPath();
-                tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
-                tctx.fill();
-            }
-            else if (roll < 0.60) { 
-                // COMMON: Dark green leaf
-                tctx.fillStyle = "#14532d"; 
-                tctx.beginPath();
-                tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                tctx.fill();
-            } 
-            else { 
-                // COMMON: Light green leaf
-                tctx.fillStyle = "#1a9c4d";
-                tctx.beginPath();
-                tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                tctx.fill();
-            }
-            
-            tctx.restore();
+          if (path && path.length > 0) {
+            paths[pathKey] = path;
+          } else {
+            paths[pathKey] = []; // Empty array if no path possible
+          }
         }
-        this.grassVariants.push(canvas);
+      }
+      return paths;
     }
-  }
 
-  _drawNaturalFlower(ctx, color) {
-    // 1. Organic Ground Shadow (Soft and slightly offset)
-    ctx.fillStyle = "rgba(0,0,0,0.2)";
-    ctx.beginPath();
-    ctx.ellipse(0.8, 0.8, 2.8, 2.2, Math.PI/4, 0, Math.PI * 2);
-    ctx.fill();
+    _generateGrassTiles() {
+      this.grassVariants = [];
+      const baseColors = ['#3f7d3c', '#376d35', '#4a8c46'];
 
-    // 2. Petal Layers
-    for(let k = 0; k < 5; k++) {
+      for (let i = 0; i < 10; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+
+          // 1. Base Layer: Gradient for subtle lighting depth
+          tctx.fillStyle = baseColors[i % baseColors.length];
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          // 2. Flora Layer: Natural distribution
+          // Reduced to 45 iterations to keep it "clean" but detailed
+          for (let j = 0; j < 3; j++) {
+              const lx = Math.random() * this.tileSize;
+              const ly = Math.random() * this.tileSize;
+              tctx.save();
+              tctx.translate(lx, ly);
+              tctx.rotate(Math.random() * Math.PI);
+
+              const roll = Math.random();
+
+              if (roll < 0.015) { 
+                  // VERY RARE: Red flower
+                  this._drawNaturalFlower(tctx, "#e11d48");
+              } 
+              else if (roll < 0.03) { 
+                  // VERY RARE: Pink flower
+                  this._drawNaturalFlower(tctx, "#f472b6");
+              } 
+              else if (roll < 0.045) { 
+                  // VERY RARE: Blue flower
+                  this._drawNaturalFlower(tctx, "#3b82f6");
+              } 
+              else if (roll < 0.10) { 
+                  // RARE: Yellow flower
+                  this._drawNaturalFlower(tctx, "#facc15");
+              } 
+              else if (roll < 0.25) { 
+                  // UNCOMMON: Dry brown leaf
+                  tctx.fillStyle = "#8a5a23";
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+              else if (roll < 0.60) { 
+                  // COMMON: Dark green leaf
+                  tctx.fillStyle = "#14532d"; 
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              } 
+              else { 
+                  // COMMON: Light green leaf
+                  tctx.fillStyle = "#1a9c4d";
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+
+              tctx.restore();
+          }
+          this.grassVariants.push(canvas);
+      }
+    }
+
+    _drawNaturalFlower(ctx, color) {
+      // 1. Organic Ground Shadow (Soft and slightly offset)
+      ctx.fillStyle = "rgba(0,0,0,0.2)";
+      ctx.beginPath();
+      ctx.ellipse(0.8, 0.8, 2.8, 2.2, Math.PI/4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 2. Petal Layers
+      for(let k = 0; k < 5; k++) {
+          ctx.save();
+          ctx.rotate((Math.PI * 2) / 5 * k);
+
+          // A. Petal Gradient (Darker at the base, brighter at the tip)
+          const pGrad = ctx.createRadialGradient(0, 0, 0, 2, 0, 3);
+          pGrad.addColorStop(0, this._adjustColor(color, -20)); // Deep center
+          pGrad.addColorStop(1, color); // Bright edge
+
+          ctx.fillStyle = pGrad;
+          ctx.beginPath();
+          // Use an irregular ellipse for more natural look
+          ctx.ellipse(1.8, 0, 2.0, 1.4, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+
+          // B. Subtle Petal Vein (Small highlight line)
+          ctx.strokeStyle = "rgba(255,255,255,0.2)";
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(0.5, 0);
+          ctx.lineTo(2.5, 0);
+          ctx.stroke();
+
+          ctx.restore();
+      }
+
+      // 3. 3D Flower Center (Pollen Core)
+      // Dark base for depth
+      ctx.fillStyle = "#854d0e"; 
+      ctx.beginPath();
+      ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bright Pollen dots
+      ctx.fillStyle = "#fef08a"; 
+      ctx.beginPath();
+      ctx.arc(-0.3, -0.3, 1.1, 0, Math.PI * 2); // Slightly offset for light source
+      ctx.fill();
+
+      // Tiny detail dots
+      ctx.fillStyle = "#ca8a04";
+      ctx.fillRect(0.2, 0.2, 0.6, 0.6);
+      ctx.fillRect(-0.5, 0.4, 0.5, 0.5);
+    }
+
+    // Helper to make petal bases darker automatically
+    _adjustColor(hex, amt) {
+        let usePound = false;
+        if (hex[0] == "#") { hex = hex.slice(1); usePound = true; }
+        let num = parseInt(hex, 16);
+        let r = (num >> 16) + amt;
+        let g = (num >> 8 & 0x00FF) + amt;
+        let b = (num & 0x0000FF) + amt;
+        r = Math.max(Math.min(255, r), 0);
+        g = Math.max(Math.min(255, g), 0);
+        b = Math.max(Math.min(255, b), 0);
+        return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+    }
+
+    // --- RENDER (keeps your original render but uses tokens) ---
+    // In Map.js
+
+    render(ctx, playerLifes = 0, towers = [], enemies = []) {
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         ctx.save();
-        ctx.rotate((Math.PI * 2) / 5 * k);
-        
-        // A. Petal Gradient (Darker at the base, brighter at the tip)
-        const pGrad = ctx.createRadialGradient(0, 0, 0, 2, 0, 3);
-        pGrad.addColorStop(0, this._adjustColor(color, -20)); // Deep center
-        pGrad.addColorStop(1, color); // Bright edge
-        
-        ctx.fillStyle = pGrad;
-        ctx.beginPath();
-        // Use an irregular ellipse for more natural look
-        ctx.ellipse(1.8, 0, 2.0, 1.4, 0.1, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.translate(this.camera.x, this.camera.y);
+        ctx.scale(this.camera.zoom, this.camera.zoom);
 
-        // B. Subtle Petal Vein (Small highlight line)
-        ctx.strokeStyle = "rgba(255,255,255,0.2)";
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.moveTo(0.5, 0);
-        ctx.lineTo(2.5, 0);
-        ctx.stroke();
-        
-        ctx.restore();
-    }
+        // 1. Visible Area calculation
+        const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
+        const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
+        const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
+        const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
 
-    // 3. 3D Flower Center (Pollen Core)
-    // Dark base for depth
-    ctx.fillStyle = "#854d0e"; 
-    ctx.beginPath();
-    ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
-    ctx.fill();
+        const sX = startCol * this.tileSize;
+        const sY = startRow * this.tileSize;
+        const sW = (endCol - startCol) * this.tileSize;
+        const sH = (endRow - startRow) * this.tileSize;
 
-    // Bright Pollen dots
-    ctx.fillStyle = "#fef08a"; 
-    ctx.beginPath();
-    ctx.arc(-0.3, -0.3, 1.1, 0, Math.PI * 2); // Slightly offset for light source
-    ctx.fill();
-    
-    // Tiny detail dots
-    ctx.fillStyle = "#ca8a04";
-    ctx.fillRect(0.2, 0.2, 0.6, 0.6);
-    ctx.fillRect(-0.5, 0.4, 0.5, 0.5);
-  }
-
-  // Helper to make petal bases darker automatically
-  _adjustColor(hex, amt) {
-      let usePound = false;
-      if (hex[0] == "#") { hex = hex.slice(1); usePound = true; }
-      let num = parseInt(hex, 16);
-      let r = (num >> 16) + amt;
-      let g = (num >> 8 & 0x00FF) + amt;
-      let b = (num & 0x0000FF) + amt;
-      r = Math.max(Math.min(255, r), 0);
-      g = Math.max(Math.min(255, g), 0);
-      b = Math.max(Math.min(255, b), 0);
-      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
-  }
-
-  // --- RENDER (keeps your original render but uses tokens) ---
-  // In Map.js
-
-render(ctx, playerLifes = 0, towers = [], enemies = []) {
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    ctx.save();
-    ctx.translate(this.camera.x, this.camera.y);
-    ctx.scale(this.camera.zoom, this.camera.zoom);
-
-    // 1. Visible Area calculation
-    const startCol = Math.max(0, Math.floor(-this.camera.x / (this.tileSize * this.camera.zoom)));
-    const endCol = Math.min(this.cols, Math.ceil((this.canvas.width - this.camera.x) / (this.tileSize * this.camera.zoom)));
-    const startRow = Math.max(0, Math.floor(-this.camera.y / (this.tileSize * this.camera.zoom)));
-    const endRow = Math.min(this.rows, Math.ceil((this.canvas.height - this.camera.y) / (this.tileSize * this.camera.zoom)));
-
-    const sX = startCol * this.tileSize;
-    const sY = startRow * this.tileSize;
-    const sW = (endCol - startCol) * this.tileSize;
-    const sH = (endRow - startRow) * this.tileSize;
-
-    // 2. PASS: BACKGROUND (Floor)
-    ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
-    for (let r = startRow; r < endRow; r++) {
-        for (let c = startCol; c < endCol; c++) {
-            const tok = String(this.grid[r][c]);
-            const bounds = this.getTileBounds(c, r);
-        
-            if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
-                if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
-                ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-            } 
-            else if (tok === 'SND' || tok === 'O[SND]') {
-                if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
-                ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
+        // 2. PASS: BACKGROUND (Floor)
+        ctx.drawImage(this.grassLayer, sX, sY, sW, sH, sX, sY, sW, sH);
+        for (let r = startRow; r < endRow; r++) {
+            for (let c = startCol; c < endCol; c++) {
+                const tok = String(this.grid[r][c]);
+                const bounds = this.getTileBounds(c, r);
+            
+                if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
+                    if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
+                    ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
+                } 
+                else if (tok === 'SND' || tok === 'O[SND]') {
+                    if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
+                    ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
+                }
             }
         }
-    }
 
-    if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
-    ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
+        if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
+        ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
-    // --- HELPER: Sort dynamic entities into rows for performance ---
-    // This allows us to draw them inside the row loop without searching arrays every time
-    const rowTowers = new Array(this.rows).fill(null).map(() => []);
-    const rowEnemies = new Array(this.rows).fill(null).map(() => []);
+        // --- HELPER: Sort dynamic entities into rows for performance ---
+        // This allows us to draw them inside the row loop without searching arrays every time
+        const rowTowers = new Array(this.rows).fill(null).map(() => []);
+        const rowEnemies = new Array(this.rows).fill(null).map(() => []);
 
-    // Organize Towers
-    towers.forEach(t => {
-        if(t.row >= startRow && t.row < endRow) {
-            rowTowers[t.row].push(t);
-        }
-    });
+        // Organize Towers
+        towers.forEach(t => {
+            if(t.row >= startRow && t.row < endRow) {
+                rowTowers[t.row].push(t);
+            }
+        });
 
-    // Organize Enemies (Using fuzzy Y to determine visual row if they are moving)
-    enemies.forEach(e => {
-        // Calculate visual row based on Y position (center of entity)
-        // Enemies might be between tiles, so we use their world Y to slot them correctly
-        const r = Math.floor((e.y + this.tileSize * 0.2) / this.tileSize); 
-        if(r >= startRow && r < endRow) {
-            rowEnemies[r].push(e);
-        }
-    });
+        // Organize Enemies (Using fuzzy Y to determine visual row if they are moving)
+        enemies.forEach(e => {
+            // Calculate visual row based on Y position (center of entity)
+            // Enemies might be between tiles, so we use their world Y to slot them correctly
+            const r = Math.floor((e.y + this.tileSize * 0.2) / this.tileSize); 
+            if(r >= startRow && r < endRow) {
+                rowEnemies[r].push(e);
+            }
+        });
 
 
-    // 3. PASS: THE WORLD (Y-Sorted Row-by-Row)
-    for (let r = startRow; r < endRow; r++) {
-        
-        // LAYER 1: ENEMIES (Bottom)
-        // Draw enemies belonging to this row
-        for (const enemy of rowEnemies[r]) {
-            enemy.render(ctx, this);
-        }
+        // 3. PASS: THE WORLD (Y-Sorted Row-by-Row)
+        for (let r = startRow; r < endRow; r++) {
 
-        // LAYER 2: TOWERS (Middle)
-        // Draw towers belonging to this row
-        // Because this happens BEFORE mountains in the same loop, 
-        // a Mountain at this row will draw OVER this tower (hiding it behind).
-        for (const tower of rowTowers[r]) {
-            tower.render(ctx, this);
-        }
+            // LAYER 1: ENEMIES (Bottom)
+            // Draw enemies belonging to this row
+            for (const enemy of rowEnemies[r]) {
+                enemy.render(ctx, this);
+            }
 
-        // LAYER 3: MOUNTAINS & FOG (High)
-        for (let c = startCol; c < endCol; c++) {
-            const tok = String(this.grid[r][c]);
-            const bounds = this.getTileBounds(c, r);
-            const ts = this.tileSize;
+            // LAYER 2: TOWERS (Middle)
+            // Draw towers belonging to this row
+            // Because this happens BEFORE mountains in the same loop, 
+            // a Mountain at this row will draw OVER this tower (hiding it behind).
+            for (const tower of rowTowers[r]) {
+                tower.render(ctx, this);
+            }
 
-            if (tok === 'M') {
-                const yOff = (ts * 1.6) - ts;
-                const mountainQuality = this.graphicsSettings.mountains || 'low';
-                if (mountainQuality === 'low') {
-                    if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
-                    ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
-                } else {
-                    if (!this.mountainSet) this.mountainSet = this._preRenderMountainSet(ts);
-                    const seed = Math.abs(r * 7 + c * 3) % this.mountainSet.length;
-                    const p = this.mountainSet[seed];
-                    const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
-                    const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
+            // LAYER 3: MOUNTAINS & FOG (High)
+            for (let c = startCol; c < endCol; c++) {
+                const tok = String(this.grid[r][c]);
+                const bounds = this.getTileBounds(c, r);
+                const ts = this.tileSize;
 
-                    // 1. Foundation
-                    ctx.fillStyle = "#242c3d";
-                    if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
-                    else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
-                    else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
+                if (tok === 'M') {
+                    const yOff = (ts * 1.6) - ts;
+                    const mountainQuality = this.graphicsSettings.mountains || 'low';
+                    if (mountainQuality === 'low') {
+                        if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
+                        ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
+                    } else {
+                        if (!this.mountainSet) this.mountainSet = this._preRenderMountainSet(ts);
+                        const seed = Math.abs(r * 7 + c * 3) % this.mountainSet.length;
+                        const p = this.mountainSet[seed];
+                        const hasLeft = (c > 0 && String(this.grid[r][c - 1]) === 'M');
+                        const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
 
-                    // 2. Connector Fog
-                    if (p && (hasLeft || hasRight)) { 
-                        ctx.save();
+                        // 1. Foundation
+                        ctx.fillStyle = "#242c3d";
+                        if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
+                        else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
+                        else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
 
-                        let fogAlpha;
-                        if (hasLeft && hasRight) {
-                           // Deep between two mountains: Make it more visible/solid
-                           fogAlpha = 0.5; 
-                           ctx.globalCompositeOperation = "screen"; // Smooth brightening
-                        } else {
-                           // On the edge of a mountain range: Make it very subtle/faded
-                           fogAlpha = 0.3;
-                           ctx.globalCompositeOperation = "source-over"; // Normal blending for edges
+                        // 2. Connector Fog
+                        if (p && (hasLeft || hasRight)) { 
+                            ctx.save();
+
+                            let fogAlpha;
+                            if (hasLeft && hasRight) {
+                               // Deep between two mountains: Make it more visible/solid
+                               fogAlpha = 0.5; 
+                               ctx.globalCompositeOperation = "screen"; // Smooth brightening
+                            } else {
+                               // On the edge of a mountain range: Make it very subtle/faded
+                               fogAlpha = 0.3;
+                               ctx.globalCompositeOperation = "source-over"; // Normal blending for edges
+                            }
+                        
+                            ctx.globalAlpha = fogAlpha;
+                        
+                            // Create a clipping mask so fog doesn't bleed onto other tiles
+                            ctx.beginPath();
+                            ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
+                            ctx.clip();
+                        
+                            // Draw the mountain background texture as the "fog"
+                            ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
+
+                            ctx.restore();
                         }
-                    
-                        ctx.globalAlpha = fogAlpha;
-                    
-                        // Create a clipping mask so fog doesn't bleed onto other tiles
-                        ctx.beginPath();
-                        ctx.rect(bounds.x - 1, bounds.y - yOff, ts + 2, ts * 1.6);
-                        ctx.clip();
-                    
-                        // Draw the mountain background texture as the "fog"
-                        ctx.drawImage(p.bg, bounds.x, bounds.y - yOff);
 
-                        ctx.restore();
+                        // 3. Peaks
+                        if (p) {
+                            if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
+                            if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
+                            ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
+                        }
                     }
+                }
+            }
 
-                    // 3. Peaks
-                    if (p) {
-                        if (hasLeft) ctx.drawImage(p.left, bounds.x, bounds.y - yOff);
-                        if (hasRight) ctx.drawImage(p.right, bounds.x, bounds.y - yOff);
-                        ctx.drawImage(p.main, bounds.x, bounds.y - yOff);
+            // LAYER 4: TREES & PORTALS (Top)
+            for (let c = startCol; c < endCol; c++) {
+                const tok = String(this.grid[r][c]);
+                const bounds = this.getTileBounds(c, r);
+                const ts = this.tileSize;
+                // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
+                if (/^E\d+/.test(tok)) {
+                    const actualImg = this.cachedTree;
+                    // If High quality tree is missing (init logic order), simple fallback or ensure init
+
+                    if (actualImg) {
+                        const scale = 1.2; 
+                        const h = actualImg.height * scale;
+                        const w = actualImg.width * scale;
+                        ctx.drawImage(actualImg, 
+                            bounds.x - (w - ts) / 2, 
+                            bounds.y - (h - ts), 
+                            w, h
+                        );
+                    }
+                }
+
+                // This will ignore "SNW" and "SND" because they have letters after S, not numbers
+                if (/^S\d+/.test(tok)) {
+                    const portalX = bounds.x + ts/2;
+                    const portalY = bounds.y + ts/2;
+                    const time = performance.now();
+
+                    // 1. Get the quality from your new settings object
+                    const portalSetting = this.graphicsSettings.portals || 'low';
+
+                    // 2. Call the animation function (Passes 'time' so it still moves!)
+                    if (portalSetting === 'low') {
+                        this._drawMagicPortalLow(ctx, portalX, portalY, time);
+                    } else {
+                        this._drawMagicPortalHigh(ctx, portalX, portalY, time);
                     }
                 }
             }
         }
 
-        // LAYER 4: TREES & PORTALS (Top)
-        for (let c = startCol; c < endCol; c++) {
-            const tok = String(this.grid[r][c]);
-            const bounds = this.getTileBounds(c, r);
-            const ts = this.tileSize;
-            // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
-            if (/^E\d+/.test(tok)) {
-                const actualImg = this.cachedTree;
-                // If High quality tree is missing (init logic order), simple fallback or ensure init
+        ctx.restore();
 
-                if (actualImg) {
-                    const scale = 1.2; 
-                    const h = actualImg.height * scale;
-                    const w = actualImg.width * scale;
-                    ctx.drawImage(actualImg, 
-                        bounds.x - (w - ts) / 2, 
-                        bounds.y - (h - ts), 
-                        w, h
-                    );
-                }
-            }
-
-            // This will ignore "SNW" and "SND" because they have letters after S, not numbers
-            if (/^S\d+/.test(tok)) {
-                const portalX = bounds.x + ts/2;
-                const portalY = bounds.y + ts/2;
-                const time = performance.now();
-                        
-                // 1. Get the quality from your new settings object
-                const portalSetting = this.graphicsSettings.portals || 'low';
-                        
-                // 2. Call the animation function (Passes 'time' so it still moves!)
-                if (portalSetting === 'low') {
-                    this._drawMagicPortalLow(ctx, portalX, portalY, time);
-                } else {
-                    this._drawMagicPortalHigh(ctx, portalX, portalY, time);
-                }
-            }
-        }
+        // 4. PASS: VIGNETTE
+        const vGrad = ctx.createRadialGradient(
+            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.3,
+            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.8
+        );
+        vGrad.addColorStop(0, 'transparent');
+        vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
+        ctx.fillStyle = vGrad;
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    ctx.restore();
+    // --- TILE / COORD conversions ---
+    tileToWorld(col, row) {
+      return {
+        x: col * this.tileSize + this.tileSize / 2,
+        y: row * this.tileSize + this.tileSize / 2
+      };
+    }
 
-    // 4. PASS: VIGNETTE
-    const vGrad = ctx.createRadialGradient(
-        this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.3,
-        this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.8
-    );
-    vGrad.addColorStop(0, 'transparent');
-    vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
-    ctx.fillStyle = vGrad;
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-}
+    worldToTile(x, y) {
+      return {
+        col: Math.floor(x / this.tileSize),
+        row: Math.floor(y / this.tileSize)
+      };
+    }
 
-  // --- TILE / COORD conversions ---
-  tileToWorld(col, row) {
-    return {
-      x: col * this.tileSize + this.tileSize / 2,
-      y: row * this.tileSize + this.tileSize / 2
-    };
-  }
+    screenToWorld(screenX, screenY) {
+      const rect = this.canvas.getBoundingClientRect();
+      const worldX = (screenX - rect.left - this.camera.x) / this.camera.zoom;
+      const worldY = (screenY - rect.top - this.camera.y) / this.camera.zoom;
+      return { x: worldX, y: worldY };
+    }
 
-  worldToTile(x, y) {
-    return {
-      col: Math.floor(x / this.tileSize),
-      row: Math.floor(y / this.tileSize)
-    };
-  }
+    getTileFromCoords(worldX, worldY) {
+      const t = this.worldToTile(worldX, worldY);
+      return {
+        col: Math.max(0, Math.min(this.cols - 1, t.col)),
+        row: Math.max(0, Math.min(this.rows - 1, t.row))
+      };
+    }
 
-  screenToWorld(screenX, screenY) {
-    const rect = this.canvas.getBoundingClientRect();
-    const worldX = (screenX - rect.left - this.camera.x) / this.camera.zoom;
-    const worldY = (screenY - rect.top - this.camera.y) / this.camera.zoom;
-    return { x: worldX, y: worldY };
-  }
+    isBuildableTile(col, row) {
+      // bounds check
+      if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return false;
+    
+      const tok = String(this.grid[row][col] ?? '');
+    
+      // Block paths and special start/end tiles
+      if (tok === 'M') return false;
+      if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') return false; // path
+      if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
+      if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
+      if (tok === '-') return false;        // blocked tiles
+      if (tok === 'W') return false;        // blocked tiles
+    
+      // everything else (X, B, L, etc.) is buildable
+      return true;
+    }
 
-  getTileFromCoords(worldX, worldY) {
-    const t = this.worldToTile(worldX, worldY);
-    return {
-      col: Math.max(0, Math.min(this.cols - 1, t.col)),
-      row: Math.max(0, Math.min(this.rows - 1, t.row))
-    };
-  }
+    getTileStatus(col, row) {
+      if (col < 0 || col >= this.cols) return '!';
+      if (row < 0 || row >= this.rows) return '!';
+      return String(this.grid[row][col] ?? '');
+    }
 
-  isBuildableTile(col, row) {
-    // bounds check
-    if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return false;
-  
-    const tok = String(this.grid[row][col] ?? '');
-  
-    // Block paths and special start/end tiles
-    if (tok === 'M') return false;
-    if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') return false; // path
-    if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
-    if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
-    if (tok === '-') return false;        // blocked tiles
-    if (tok === 'W') return false;        // blocked tiles
-  
-    // everything else (X, B, L, etc.) is buildable
-    return true;
-  }
+    // --- DRAG & ZOOM (keep your existing functions) ---
+    startDrag(e) {
+      if (e.button !== 1) return;
+      this.camera.dragging = true;
+      this.camera.lastX = e.clientX;
+      this.camera.lastY = e.clientY;
+      this.canvas.style.cursor = 'grabbing';
+    }
 
-  getTileStatus(col, row) {
-    if (col < 0 || col >= this.cols) return '!';
-    if (row < 0 || row >= this.rows) return '!';
-    return String(this.grid[row][col] ?? '');
-  }
-
-  // --- DRAG & ZOOM (keep your existing functions) ---
-  startDrag(e) {
-    if (e.button !== 1) return;
-    this.camera.dragging = true;
-    this.camera.lastX = e.clientX;
-    this.camera.lastY = e.clientY;
-    this.canvas.style.cursor = 'grabbing';
-  }
-
-  drag(e) {
-    if (!this.camera.dragging) return;
-    const dx = e.clientX - this.camera.lastX;
-    const dy = e.clientY - this.camera.lastY;
-    this.camera.x += dx;
-    this.camera.y += dy;
-    this.camera.lastX = e.clientX;
-    this.camera.lastY = e.clientY;
-    this.clampCamera();
-  }
-
-  stopDrag() {
-    if (this.camera.dragging) {
-      this.camera.dragging = false;
-      this.canvas.style.cursor = 'grab';
+    drag(e) {
+      if (!this.camera.dragging) return;
+      const dx = e.clientX - this.camera.lastX;
+      const dy = e.clientY - this.camera.lastY;
+      this.camera.x += dx;
+      this.camera.y += dy;
+      this.camera.lastX = e.clientX;
+      this.camera.lastY = e.clientY;
       this.clampCamera();
     }
-  }
-  
-  handleZoom(e) {
-    e.preventDefault();
-    const zoomFactor = 1.05;
-    const screenX = e.clientX;
-    const screenY = e.clientY;
-    const before = this.screenToWorld(screenX, screenY);
-    if (e.deltaY < 0) this.camera.zoom *= zoomFactor;
-    else this.camera.zoom /= zoomFactor;
-    this.camera.zoom = Math.max(this.camera.minZoom, Math.min(this.camera.zoom, this.camera.maxZoom));
-    const rect = this.canvas.getBoundingClientRect();
-    this.camera.x = screenX - rect.left - before.x * this.camera.zoom;
-    this.camera.y = screenY - rect.top - before.y * this.camera.zoom;
-    this.clampCamera();
-  }
 
-  applyCameraTransform(ctx) { ctx.save(); ctx.translate(this.camera.x, this.camera.y); ctx.scale(this.camera.zoom, this.camera.zoom); }
-  resetTransform(ctx) { ctx.restore(); }
-
-  clampCamera() {
-    const rect = this.canvas.getBoundingClientRect();
-    const canvasWidth = rect.width;
-    const canvasHeight = rect.height;
-    const mapWidth = this.cols * this.tileSize * this.camera.zoom;
-    const mapHeight = this.rows * this.tileSize * this.camera.zoom;
-
-    if (mapWidth <= canvasWidth) this.camera.x = (canvasWidth - mapWidth) / 2;
-    else { const minX = canvasWidth - mapWidth; const maxX = 0; this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x)); }
-
-    if (mapHeight <= canvasHeight) this.camera.y = (canvasHeight - mapHeight) / 2;
-    else { const minY = canvasHeight - mapHeight; const maxY = 0; this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y)); }
-  }
-
-  isInsideMap(worldX, worldY) {
-    const mapWidth = this.cols * this.tileSize;
-    const mapHeight = this.rows * this.tileSize;
-    return worldX >= 0 && worldX < mapWidth && worldY >= 0 && worldY < mapHeight;
-  }
-
-  getTileBounds(col, row) {
-    return {
-        x: Math.round(col * this.tileSize), // Use Math.round to prevent sub-pixel gaps
-        y: Math.round(row * this.tileSize),
-        width: this.tileSize,
-        height: this.tileSize
-    };
-  }
-
-
-  roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    if (fill) ctx.fill();
-    if (stroke) ctx.stroke();
-  }
-
-  _seededRandom(seed) {
-      const x = Math.sin(seed) * 10000;
-      return x - Math.floor(x);
-  }
-
-  _drawMarker(ctx, x, y, color, label, subtext = "") {
-    const size = this.tileSize * 0.6;
-    ctx.save();
-    ctx.translate(x, y);
-
-    // 1. Outer Glow/Shadow
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = color;
-
-    // 2. Stone Plate (3D look)
-    ctx.fillStyle = "#334155"; // Dark stone base
-    this.roundRect(ctx, -size/2, -size/2, size, size, 8, true, false);
-    
-    // 3. Colored Inset
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = color;
-    ctx.globalAlpha = 0.8;
-    this.roundRect(ctx, -size/2 + 4, -size/2 + 4, size - 8, size - 8, 4, true, false);
-    ctx.globalAlpha = 1.0;
-
-    // 4. Text Labels
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.font = `bold ${this.tileSize * 0.18}px Arial`;
-    ctx.fillText(label, 0, 5);
-    
-    if (subtext) {
-        ctx.font = `${this.tileSize * 0.12}px Arial`;
-        ctx.fillText(subtext, 0, 18);
+    stopDrag() {
+      if (this.camera.dragging) {
+        this.camera.dragging = false;
+        this.canvas.style.cursor = 'grab';
+        this.clampCamera();
+      }
     }
 
-    ctx.restore();
-  }
+    handleZoom(e) {
+      e.preventDefault();
+      const zoomFactor = 1.05;
+      const screenX = e.clientX;
+      const screenY = e.clientY;
+      const before = this.screenToWorld(screenX, screenY);
+      if (e.deltaY < 0) this.camera.zoom *= zoomFactor;
+      else this.camera.zoom /= zoomFactor;
+      this.camera.zoom = Math.max(this.camera.minZoom, Math.min(this.camera.zoom, this.camera.maxZoom));
+      const rect = this.canvas.getBoundingClientRect();
+      this.camera.x = screenX - rect.left - before.x * this.camera.zoom;
+      this.camera.y = screenY - rect.top - before.y * this.camera.zoom;
+      this.clampCamera();
+    }
 
-  _prerenderRoad() {
-    const ctx = this.roadLayer.getContext('2d');
-    const ts = this.tileSize;
-    const stoneColors = ["#57534e", "#78716c", "#44403c", "#a8a29e"];
+    applyCameraTransform(ctx) { ctx.save(); ctx.translate(this.camera.x, this.camera.y); ctx.scale(this.camera.zoom, this.camera.zoom); }
+    resetTransform(ctx) { ctx.restore(); }
 
-    for (let r = 0; r < this.rows; r++) {
-        for (let c = 0; c < this.cols; c++) {
-            const tok = String(this.grid[r][c] ?? '');
-            const worldX = c * ts;
-            const worldY = r * ts;
+    clampCamera() {
+      const rect = this.canvas.getBoundingClientRect();
+      const canvasWidth = rect.width;
+      const canvasHeight = rect.height;
+      const mapWidth = this.cols * this.tileSize * this.camera.zoom;
+      const mapHeight = this.rows * this.tileSize * this.camera.zoom;
 
-            // --- STROM (E) ---
-            if (/^E/i.test(tok)) {
-                // Pod stromem vykreslíme jen trávu (bez cesty)
-                //const grassIdx = this.terrainIndices[r][c];
-                //ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
-                this._drawHolyGround(ctx, worldX, worldY);
-                // Přidáme bílé náběhy kořenů přímo do roadLayer, aby byly pod stromem
-               // this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
-                continue; // Přeskočíme kreslení kamenů
-            }
+      if (mapWidth <= canvasWidth) this.camera.x = (canvasWidth - mapWidth) / 2;
+      else { const minX = canvasWidth - mapWidth; const maxX = 0; this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x)); }
 
-            // --- PORTÁL (S) ---
-            if (/^S\d+/.test(tok)) {
-                // Pod portálem vykreslíme spálenou zem
-                this._drawBurnedGround(ctx, worldX, worldY);
-                continue; // Přeskočíme kreslení kamenů
-            }
+      if (mapHeight <= canvasHeight) this.camera.y = (canvasHeight - mapHeight) / 2;
+      else { const minY = canvasHeight - mapHeight; const maxY = 0; this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y)); }
+    }
 
-            // --- KLASICKÁ CESTA (O) ---
-            if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') {
-                // Kameny (tvůj stávající kód pro kameny...)
-                const density = 4;
-                const step = ts / density;
-                for (let i = 0; i < density; i++) {
-                    for (let j = 0; j < density; j++) {
-                        const gX = c * density + j;
-                        const gY = r * density + i;
-                        const seed = (gX * 1234) ^ (gY * 5678);
-                        const rand = (s) => (Math.abs(Math.sin(s) * 10000) % 1);
+    isInsideMap(worldX, worldY) {
+      const mapWidth = this.cols * this.tileSize;
+      const mapHeight = this.rows * this.tileSize;
+      return worldX >= 0 && worldX < mapWidth && worldY >= 0 && worldY < mapHeight;
+    }
 
-                        const x = worldX + (j * step) + (rand(seed) * (step * 0.6));
-                        const y = worldY + (i * step) + (rand(seed + 1) * (step * 0.6));
-                        const size = step * (0.6 + rand(seed + 2) * 0.5);
-                        const rot = rand(seed + 3) * Math.PI;
-                        const color = stoneColors[Math.floor(rand(seed + 4) * stoneColors.length)];
+    getTileBounds(col, row) {
+      return {
+          x: Math.round(col * this.tileSize), // Use Math.round to prevent sub-pixel gaps
+          y: Math.round(row * this.tileSize),
+          width: this.tileSize,
+          height: this.tileSize
+      };
+    }
 
-                        this._drawAAAStone(ctx, x, y, size, rot, color, rand(seed + 5));
+
+    roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    _seededRandom(seed) {
+        const x = Math.sin(seed) * 10000;
+        return x - Math.floor(x);
+    }
+
+    _drawMarker(ctx, x, y, color, label, subtext = "") {
+      const size = this.tileSize * 0.6;
+      ctx.save();
+      ctx.translate(x, y);
+
+      // 1. Outer Glow/Shadow
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = color;
+
+      // 2. Stone Plate (3D look)
+      ctx.fillStyle = "#334155"; // Dark stone base
+      this.roundRect(ctx, -size/2, -size/2, size, size, 8, true, false);
+
+      // 3. Colored Inset
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.8;
+      this.roundRect(ctx, -size/2 + 4, -size/2 + 4, size - 8, size - 8, 4, true, false);
+      ctx.globalAlpha = 1.0;
+
+      // 4. Text Labels
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.font = `bold ${this.tileSize * 0.18}px Arial`;
+      ctx.fillText(label, 0, 5);
+
+      if (subtext) {
+          ctx.font = `${this.tileSize * 0.12}px Arial`;
+          ctx.fillText(subtext, 0, 18);
+      }
+
+      ctx.restore();
+    }
+
+    _prerenderRoad() {
+        const ctx = this.roadLayer.getContext('2d');
+        const ts = this.tileSize;
+        const stoneColors = ["#57534e", "#78716c", "#44403c", "#a8a29e"];
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const tok = String(this.grid[r][c] ?? '');
+                const worldX = c * ts;
+                const worldY = r * ts;
+
+                // --- STROM (E) ---
+                if (/^E/i.test(tok)) {
+                    // Pod stromem vykreslíme jen trávu (bez cesty)
+                    //const grassIdx = this.terrainIndices[r][c];
+                    //ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
+                    this._drawHolyGround(ctx, worldX, worldY);
+                    // Přidáme bílé náběhy kořenů přímo do roadLayer, aby byly pod stromem
+                   // this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
+                    continue; // Přeskočíme kreslení kamenů
+                }
+
+                // --- PORTÁL (S) ---
+                if (/^S\d+/.test(tok)) {
+                    // Pod portálem vykreslíme spálenou zem
+                    this._drawBurnedGround(ctx, worldX, worldY);
+                    continue; // Přeskočíme kreslení kamenů
+                }
+
+                // --- KLASICKÁ CESTA (O) ---
+                if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') {
+                    // Kameny (tvůj stávající kód pro kameny...)
+                    const density = 4;
+                    const step = ts / density;
+                    for (let i = 0; i < density; i++) {
+                        for (let j = 0; j < density; j++) {
+                            const gX = c * density + j;
+                            const gY = r * density + i;
+                            const seed = (gX * 1234) ^ (gY * 5678);
+                            const rand = (s) => (Math.abs(Math.sin(s) * 10000) % 1);
+
+                            const x = worldX + (j * step) + (rand(seed) * (step * 0.6));
+                            const y = worldY + (i * step) + (rand(seed + 1) * (step * 0.6));
+                            const size = step * (0.6 + rand(seed + 2) * 0.5);
+                            const rot = rand(seed + 3) * Math.PI;
+                            const color = stoneColors[Math.floor(rand(seed + 4) * stoneColors.length)];
+
+                            this._drawAAAStone(ctx, x, y, size, rot, color, rand(seed + 5));
+                        }
                     }
                 }
             }
         }
     }
-  }
 
-  _drawAAAStone(ctx, x, y, size, rotation, color, variation) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(rotation);
+    _drawAAAStone(ctx, x, y, size, rotation, color, variation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation);
 
-    const w = size;
-    const h = size * 0.8;
+        const w = size;
+        const h = size * 0.8;
 
-    // 1. SHADOW (Grounds the stone)
-    ctx.fillStyle = "rgba(0,0,0,0.4)";
-    this.roundRect(ctx, -w/2 + 2, -h/2 + 2, w, h, 4, true);
+        // 1. SHADOW (Grounds the stone)
+        ctx.fillStyle = "rgba(0,0,0,0.4)";
+        this.roundRect(ctx, -w/2 + 2, -h/2 + 2, w, h, 4, true);
 
-    // 2. STONE
-    ctx.fillStyle = color;
-    this.roundRect(ctx, -w/2, -h/2, w, h, 4, true);
+        // 2. STONE
+        ctx.fillStyle = color;
+        this.roundRect(ctx, -w/2, -h/2, w, h, 4, true);
 
-    // 3. AAA SHARP HIGHLIGHT (The "Pro" Look)
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(-w/2 + 4, -h/2 + 1);
-    ctx.lineTo(w/2 - 4, -h/2 + 1);
-    ctx.stroke();
+        // 3. AAA SHARP HIGHLIGHT (The "Pro" Look)
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-w/2 + 4, -h/2 + 1);
+        ctx.lineTo(w/2 - 4, -h/2 + 1);
+        ctx.stroke();
 
-    ctx.restore();
-  }
+        ctx.restore();
+    }
 
     _prerenderWater() {
         const ctx = this.waterLayer.getContext('2d');
