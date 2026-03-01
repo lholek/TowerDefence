@@ -27,7 +27,8 @@ export default class Enemy {
     } 
 
     // Getting quailty from local storage
-    this.quality = localStorage.getItem('graphicsSetting') || 'low';
+    const settings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+    this.quality = settings.enemies || 'low';
 
     // Generování grafiky do cache
     this.cachedCanvas = this._preRenderEnemy(this.size);
