@@ -4,6 +4,7 @@
       "version": "Pre-beta I.",
       "release": "-",
       "changes": [
+        "Improved - Graphics - Trees of Lifes are slighlty bigger",
         "TODO: Improve - Gameplay - Add enemy types that deal more damage to the Trees of Life",
         "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
         "TODO: Improve - Code - Clean up code and add comments",

@@ -501,8 +501,7 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
                 // If High quality tree is missing (init logic order), simple fallback or ensure init
 
                 if (actualImg) {
-                    const isLife = (tok === 'L');
-                    const scale = isLife ? 1.6 : 1.0; 
+                    const scale = 1.2; 
                     const h = actualImg.height * scale;
                     const w = actualImg.width * scale;
                     ctx.drawImage(actualImg, 
@@ -518,8 +517,16 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
                 const portalX = bounds.x + ts/2;
                 const portalY = bounds.y + ts/2;
                 const time = performance.now();
-                if (this.quality === 'low') this._drawMagicPortalLow(ctx, portalX, portalY, time);
-                else this._drawMagicPortalHigh(ctx, portalX, portalY, time);
+                        
+                // 1. Get the quality from your new settings object
+                const portalSetting = this.graphicsSettings.portals || 'low';
+                        
+                // 2. Call the animation function (Passes 'time' so it still moves!)
+                if (portalSetting === 'low') {
+                    this._drawMagicPortalLow(ctx, portalX, portalY, time);
+                } else {
+                    this._drawMagicPortalHigh(ctx, portalX, portalY, time);
+                }
             }
         }
     }
