@@ -9,6 +9,7 @@
         "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
         "TODO: Improve - Code - Clean up code and add comments",
         "TODO: Improve - Graphics - New custom settings for graphics (Low, High) - you can set High and Low settings for different elements of the game (enemies, towers, map, etc.) separately",
+        "TODO: Improve - Graphics - Towers are diminished on Low settings",
         "TODO: Improve - Graphics - More background and also rework Settings to table - use switcher",
         "TODO: Improve - Graphics - Trees of Life [ Low / High]",
         "TODO: Improve - Graphics - Portals [ Low / High]",

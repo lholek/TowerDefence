@@ -27,7 +27,13 @@ export default class Tower {
         this.lastShot = 0;
         this.bullets = [];
 
-        this.preRenderedImage = this._preRenderTower(this.map.tileSize);
+        this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+        const towerQuality = this.graphicsSettings.towers || 'low';
+        if (towerQuality === 'low') {
+            this.preRenderedImage = this._preRenderTowerLow(this.map.tileSize);
+        } else {
+            this.preRenderedImage = this._preRenderTowerHigh(this.map.tileSize);
+        }
     }
 
     clone(col, row) {
@@ -41,7 +47,7 @@ export default class Tower {
         });
     }
 
-    _preRenderTower(tileSize) {
+    _preRenderTowerHigh(tileSize) {
         const size = Math.round(tileSize * TOWER_SIZE);
 
         const offCanvas = document.createElement("canvas");
@@ -190,6 +196,76 @@ export default class Tower {
         ctx.lineTo(poleX + flagW * 0.85, poleTopY + flagH/2);
         ctx.lineTo(poleX + flagW, poleTopY + flagH);
         ctx.bezierCurveTo(poleX + flagW*0.6, poleTopY + flagH + 5, poleX + flagW*0.4, poleTopY + flagH - 5, poleX, poleTopY + flagH);
+        ctx.fill();
+
+        return offCanvas;
+    }
+
+    _preRenderTowerLow(tileSize) {
+        const size = Math.round(tileSize * TOWER_SIZE);
+        const offCanvas = document.createElement("canvas");
+        const canvasSize = tileSize * 2.5; 
+        offCanvas.width = canvasSize;
+        offCanvas.height = canvasSize;
+        const ctx = offCanvas.getContext("2d");
+
+        // Keep these identical to High version so it stays centered
+        const cx = canvasSize / 2.5;
+        const cy = canvasSize / 2; 
+
+        // 1. BASE
+        const baseW = size * 1.0;
+        const baseH = size * 0.32;
+        const baseX = cx - baseW / 2;
+        const baseY = cy - baseH * 0.3;
+        ctx.fillStyle = '#444'; // Flat color instead of gradient
+        roundRect(ctx, baseX, baseY, baseW, baseH, 6, true, true);
+
+        // 2. MAIN BODY
+        const bodyW = size * 0.9;
+        const bodyH = size * 1.4; 
+        const bodyX = cx - bodyW / 2;
+        const bodyY = baseY - bodyH + 8; 
+        ctx.fillStyle = '#5a6069'; // Flat color instead of 3D gradient
+        roundRect(ctx, bodyX, bodyY, bodyW, bodyH, 5, true, true);
+
+        // 4. BANNER
+        const bannerW = bodyW * 0.25;
+        const bannerH = bodyH * 0.45;
+        ctx.fillStyle = this.color || '#b22222';
+        ctx.fillRect(bodyX + (bodyW * 0.08), bodyY, bannerW, bannerH); // Simple rect banner
+
+        // 5. WINDOW (No shadowBlur/Glow)
+        const winW = size * 0.2;
+        const winH = size * 0.28;
+        ctx.fillStyle = '#bfb782';
+        roundRect(ctx, cx - winW / 2, bodyY + bodyH * 0.25, winW, winH, 4, true, false);
+
+        // 6. SIMPLE DOOR (No plank lines)
+        const doorW = size * 0.22;
+        const doorH = size * 0.35;
+        ctx.fillStyle = '#5d3a1a'; 
+        roundRect(ctx, cx - doorW / 2, (bodyY + bodyH) - doorH, doorW, doorH, 2, true, false);
+
+        // 7. ROOF BATTLEMENTS (Single bar instead of loop)
+        ctx.fillStyle = '#333';
+        ctx.fillRect(cx - (bodyW + 8) / 2, bodyY - (size * 0.16) + 2, bodyW + 8, size * 0.16);
+
+        // 8. FLAG (Simple triangle instead of bezier curves)
+        const poleX = cx + (bodyW * 0.4); 
+        const poleTopY = bodyY - (size * 0.35); 
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(poleX, bodyY);
+        ctx.lineTo(poleX, poleTopY);
+        ctx.stroke();
+
+        ctx.fillStyle = this.color || '#b22222';
+        ctx.beginPath();
+        ctx.moveTo(poleX, poleTopY);
+        ctx.lineTo(poleX + size * 0.4, poleTopY + size * 0.12);
+        ctx.lineTo(poleX, poleTopY + size * 0.25);
         ctx.fill();
 
         return offCanvas;
