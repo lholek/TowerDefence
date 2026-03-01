@@ -94,13 +94,12 @@ export default class Map {
     this.canvas.style.cursor = 'grab';
 
     // Getting quailty from local storage
-    this.quality = localStorage.getItem('graphicsSetting') || 'low';
-    if (this.quality === 'low') {
+    this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+    const treeQuality = this.graphicsSettings.trees || 'low';
+    if (treeQuality === 'low') {
         this.cachedTree = this._preRenderTreeLow(this.tileSize);
-        this.cachedMountainLow = this._preRenderMountainLow(this.tileSize);
     } else {
         this.cachedTree = this._preRenderTreeHigh(this.tileSize);
-        this.mountainSet = this._preRenderMountainSet(this.tileSize);
     }
 
     this.clampCamera();
@@ -436,7 +435,8 @@ render(ctx, playerLifes = 0, towers = [], enemies = []) {
 
             if (tok === 'M') {
                 const yOff = (ts * 1.6) - ts;
-                if (this.quality === 'low') {
+                const mountainQuality = this.graphicsSettings.mountains || 'low';
+                if (mountainQuality === 'low') {
                     if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(ts);
                     ctx.drawImage(this.cachedMountainLow, bounds.x, bounds.y - yOff);
                 } else {

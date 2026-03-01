@@ -374,3 +374,16 @@ saveSettingsBtn.addEventListener('click', () => {
   applyBackground(selectedBg);
   localStorage.setItem('game_background', selectedBg); // Save preference
 });
+
+/**
+ * Vrátí aktuální nastavení konkrétního grafického prvku
+ * @param {string} key - např. 'trees', 'water', 'enemies'
+ * @returns {string} - 'low' nebo 'high'
+ */
+export function getGraphicsQuality(key) {
+    const saved = localStorage.getItem('graphicsSettings');
+    if (!saved) return 'low'; // Fallback
+    
+    const settings = JSON.parse(saved);
+    return settings[key] || 'low';
+}

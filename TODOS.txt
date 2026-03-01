@@ -20,3 +20,22 @@ TODOS:
   "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
   "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
+
+
+
+
+  graphicsSettings
+
+
+  let currentGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {
+    trees: 'low',
+    portals: 'low',
+    enemies: 'low',
+    towers: 'low',
+    water: 'low',
+    grass: 'low',
+    roads: 'low',
+    mountains: 'low'
+  };
+etc.
+  getGraphicsQuality(trees)
