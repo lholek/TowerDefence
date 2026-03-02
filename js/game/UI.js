@@ -228,7 +228,8 @@ document.addEventListener("DOMContentLoaded", () => {
     water: 'low',
     grass: 'low',
     roads: 'low',
-    mountains: 'low'
+    mountains: 'low',
+    lava_floor: 'low'
   };
 
   // 2. Function to refresh the UI buttons to match the state

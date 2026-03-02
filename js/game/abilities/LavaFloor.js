@@ -174,38 +174,35 @@ _getCenteredPathTiles(centerTile, count) {
   }
 
   render(ctx) {
-    if (this.activeInstances.length === 0 && !this.isPlacing && this.pendingSelections.length === 0) return;
+  if (this.activeInstances.length === 0 && !this.isPlacing && this.pendingSelections.length === 0) return;
 
-    const time = performance.now() * 0.001;
-    const ts = this.game.map.tileSize;
+  const time = performance.now() * 0.001;
+  const ts = this.game.map.tileSize;
 
-    const drawLavaTile = (col, row, isPending = false) => {
-      const center = this.game.map.tileToWorld(col, row);
-      const x = center.x - ts / 2;
-      const y = center.y - ts / 2;
+  const drawLavaTile = (col, row, isPending = false) => {
+    const quality = this.game.map.graphicsSettings.lava_floor || 'low';
+    const center = this.game.map.tileToWorld(col, row);
+    const x = center.x - ts / 2;
+    const y = center.y - ts / 2;
 
-      // --- 1. BARVY ---
-      const baseColor = this.color || '#ff5000';
-      const colorObj = this._parseToRGB(baseColor);
-      
-      // Tmavě žlutá pro hloubku (okrová/zlatavá)
-      const darkYellow = { r: 180, g: 130, b: 0 }; 
-      
-      const formatRGBA = (rgb, a) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
+    // --- 1. COLORS ---
+    const baseColor = this.color || '#ff5000';
+    const colorObj = this._parseToRGB(baseColor);
+    const darkYellow = { r: 180, g: 130, b: 0 }; 
+    const formatRGBA = (rgb, a) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
 
-      ctx.save();
-      
-      // Větší transparentnost pro "skleněný/tekutý" vzhled
-      ctx.globalAlpha = isPending ? 0.3 : 0.65;
+    ctx.save();
+    ctx.globalAlpha = isPending ? 0.3 : 0.65;
 
-      // --- 2. PROPOJENÍ (Mírný přesah pro slití políček) ---
-      // Kreslíme trochu větší obdélník s velmi malým zaoblením (ne ovál)
-      ctx.fillStyle = formatRGBA(this._adjustRGB(colorObj, -40), 0.8);
-      ctx.beginPath();
-      ctx.roundRect(x - 2, y - 2, ts + 4, ts + 4, 4); 
-      ctx.fill();
+    // --- 2. BASE RECTANGLE (Shared for both Low and High) ---
+    // Background layer
+    ctx.fillStyle = formatRGBA(this._adjustRGB(colorObj, -40), 0.8);
+    ctx.beginPath();
+    ctx.roundRect(x - 2, y - 2, ts + 4, ts + 4, 4); 
+    ctx.fill();
 
-      // --- 3. BUBALJÍCÍ VRSTVA (Přelévání tmavě žluté a hlavní barvy) ---
+    if (quality === 'high') {
+      // --- 3. FLOWING LAYER (High Only) ---
       const flow = Math.sin(time * 0.5 + col * 0.2 + row * 0.3);
       const grad = ctx.createLinearGradient(x, y, x + ts, y + ts);
       grad.addColorStop(0, formatRGBA(darkYellow, 0.4));
@@ -215,55 +212,51 @@ _getCenteredPathTiles(centerTile, count) {
       ctx.fillStyle = grad;
       ctx.fillRect(x, y, ts, ts);
 
-      // --- 4. SKUTEČNÉ BUBLINY ---
-      // Každé políčko má své vlastní bubliny, které se nafukují
+      // --- 4. BUBBLES (High Only) ---
       for (let i = 0; i < 3; i++) {
         const seed = (col * 13 + row * 7 + i);
-        // Rychlost a velikost bubliny
         const bTime = (time + seed) % 4; 
-        if (bTime < 2) { // Bublina existuje jen polovinu cyklu
-          const progress = bTime / 2; // 0 až 1
+        if (bTime < 2) {
+          const progress = bTime / 2;
           const bx = x + ts * 0.2 + ((seed * 557) % (ts * 0.6));
           const by = y + ts * 0.2 + ((seed * 821) % (ts * 0.6));
           const radius = Math.sin(progress * Math.PI) * (ts * 0.15);
 
-          // Stínování bubliny (tmavě žlutý okraj, světlý střed)
           const bGrad = ctx.createRadialGradient(bx - radius*0.3, by - radius*0.3, 0, bx, by, radius);
-          bGrad.addColorStop(0, "rgba(255, 255, 200, 0.8)"); // Odlesk
+          bGrad.addColorStop(0, "rgba(255, 255, 200, 0.8)");
           bGrad.addColorStop(0.4, formatRGBA(colorObj, 0.6));
-          bGrad.addColorStop(1, formatRGBA(darkYellow, 0.9)); // Tmavě žlutý stín bubliny
+          bGrad.addColorStop(1, formatRGBA(darkYellow, 0.9));
 
           ctx.beginPath();
           ctx.arc(bx, by, radius, 0, Math.PI * 2);
           ctx.fillStyle = bGrad;
           ctx.fill();
           
-          // Jemný odlesk na povrchu bubliny
           ctx.strokeStyle = "rgba(255,255,255,0.2)";
           ctx.lineWidth = 1;
           ctx.stroke();
         }
       }
 
-      // --- 5. ŽHAVÉ RÝHY (Propojení) ---
+      // --- 5. HOT RIDGES / MOVING LINE (High Only) ---
       ctx.globalCompositeOperation = 'screen';
       ctx.strokeStyle = formatRGBA(this._adjustRGB(colorObj, 20), 0.3);
       ctx.lineWidth = 2;
       ctx.beginPath();
-      // Náhodná čára přes políčko simulující proudění
       ctx.moveTo(x, y + ts * 0.5 + Math.sin(time + col) * 10);
       ctx.lineTo(x + ts, y + ts * 0.5 + Math.cos(time + row) * 10);
       ctx.stroke();
-
-      ctx.restore();
-    };
-
-    // Vykreslení instancí
-    for (const inst of this.activeInstances) drawLavaTile(inst.tile.col, inst.tile.row);
-    if (this.isPlacing && this.pendingSelections.length) {
-      for (const t of this.pendingSelections) drawLavaTile(t.col, t.row, true);
     }
+
+    ctx.restore();
+  };
+
+  // Render Instances
+  for (const inst of this.activeInstances) drawLavaTile(inst.tile.col, inst.tile.row);
+  if (this.isPlacing && this.pendingSelections.length) {
+    for (const t of this.pendingSelections) drawLavaTile(t.col, t.row, true);
   }
+}
 
   // Nezapomeň mít ve třídě tyto pomocné metody z předchozího kroku:
   _parseToRGB(color) {
