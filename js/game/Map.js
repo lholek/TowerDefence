@@ -70,7 +70,14 @@ export default class Map {
         this.waterLayer = document.createElement('canvas');
         this.waterLayer.width = this.cols * this.tileSize;
         this.waterLayer.height = this.rows * this.tileSize;
-        this._prerenderWater();
+
+        const settings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+        this.quality = settings.water || 'low';
+        if (this.quality === 'low') {
+            this._prerenderWater();
+        } else {
+            this._prerenderWaterHigh();
+        }
 
         // 6c. Initialize Grass Layer
         this.grassLayer = document.createElement('canvas');
@@ -819,55 +826,120 @@ export default class Map {
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
-                if (this.grid[r][c] === 'W') {
-                    const x = c * ts;
-                    const y = r * ts;
+                if (this.grid[r][c] !== 'W') continue;
 
-                    // 1. ZÁKLAD: Temný, hluboký oceán
-                    ctx.fillStyle = "#0b3a5e"; 
-                    ctx.fillRect(x, y, ts, ts);
+                const x = c * ts;
+                const y = r * ts;
 
-                    // 2. ŠANCE 10% NA ZÁŘI (To, co jsi chtěl)
-                    if (Math.random() < 0.1) {
-                        const grad = ctx.createRadialGradient(x+ts/2, y+ts/2, 2, x+ts/2, y+ts/2, ts*0.8);
-                        grad.addColorStop(0, "rgba(14, 165, 233, 0.15)");
-                        grad.addColorStop(1, "transparent");
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(x, y, ts, ts);
-                    }
+                // Base dark water
+                ctx.fillStyle = "#0b3a5e";
+                ctx.fillRect(x, y, ts, ts);
+            }
+        }
+    }
 
-                    // 3. STÍNY BŘEHU (Zakončení trávy - aby voda nelezla pod ni)
-                    const isLand = (row, col) => {
-                        if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return false;
-                        return this.grid[row][col] !== 'W';
-                    };
 
-                    let color;
+    _prerenderWaterHigh() {
+        const w = this.waterLayer.width;
+        const h = this.waterLayer.height;
+        const ts = this.tileSize;
 
-                    // Top Coast
-                    if (color = this.getCoastColor(r - 1, c)) {
-                        ctx.fillStyle = color;
-                        ctx.fillRect(x, y, ts, 8);
-                    }
-                    // Bottom Coast
-                    if (color = this.getCoastColor(r + 1, c)) {
-                        ctx.fillStyle = color;
-                        ctx.fillRect(x, y + ts - 8, ts, 8);
-                    }
-                    // Left Coast
-                    if (color = this.getCoastColor(r, c - 1)) {
-                        ctx.fillStyle = color;
-                        ctx.fillRect(x, y, 8, ts);
-                    }
-                    // Right Coast
-                    if (color = this.getCoastColor(r, c + 1)) {
-                        ctx.fillStyle = color;
-                        ctx.fillRect(x + ts - 8, y, 8, ts);
-                    }
-                    if (isLand(r+1, c)) ctx.fillRect(x, y+ts-8, ts, 8); // Dolní břeh
-                    if (isLand(r, c-1)) ctx.fillRect(x, y, 8, ts);      // Levý břeh
-                    if (isLand(r, c+1)) ctx.fillRect(x+ts-8, y, 8, ts); // Pravý břeh
+        const ctx = this.waterLayer.getContext("2d");
+        ctx.clearRect(0, 0, w, h);
+
+        // 1) OFFSCREEN WATER TEXTURE
+        const waterTex = document.createElement("canvas");
+        waterTex.width = w;
+        waterTex.height = h;
+        const wctx = waterTex.getContext("2d");
+
+        // Deep gradient
+        const grad = wctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, "#0a3d5f");
+        grad.addColorStop(1, "#062a44");
+        wctx.fillStyle = grad;
+        wctx.fillRect(0, 0, w, h);
+
+        // Global noise
+        for (let y = 0; y < h; y += 4) {
+            for (let x = 0; x < w; x += 4) {
+                const n = (Math.sin(x * 0.015) + Math.cos(y * 0.02)) * 0.04 + 0.05;
+                wctx.fillStyle = `rgba(255,255,255,${n})`;
+                wctx.fillRect(x, y, 4, 4);
+            }
+        }
+
+        // Global waves
+        for (let y = 0; y < h; y += 2) {
+            for (let x = 0; x < w; x += 2) {
+                const wave = (Math.sin(x * 0.03 + y * 0.015) + 1) * 0.03;
+                wctx.fillStyle = `rgba(120,180,255,${wave})`;
+                wctx.fillRect(x, y, 2, 2);
+            }
+        }
+
+        // Global highlight
+        const light = wctx.createLinearGradient(0, 0, w, 0);
+        light.addColorStop(0, "rgba(255,255,255,0.12)");
+        light.addColorStop(0.4, "rgba(255,255,255,0.04)");
+        light.addColorStop(1, "transparent");
+        wctx.fillStyle = light;
+        wctx.fillRect(0, 0, w, h);
+
+        // 2) MASK (only W tiles)
+        const mask = document.createElement("canvas");
+        mask.width = w;
+        mask.height = h;
+        const mctx = mask.getContext("2d");
+
+        mctx.fillStyle = "black";
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] === "W") {
+                    mctx.fillRect(c * ts, r * ts, ts, ts);
                 }
+            }
+        }
+
+        // 3) APPLY MASK
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.drawImage(mask, 0, 0);
+
+        ctx.globalCompositeOperation = "source-in";
+        ctx.drawImage(waterTex, 0, 0);
+        ctx.restore();
+
+        // Reset state
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+
+        // 4) COAST SHADING
+        const isLand = (r, c) =>
+            r >= 0 && r < this.rows && c >= 0 && c < this.cols && this.grid[r][c] !== "W";
+
+        const cs = Math.floor(ts * 0.12);
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] !== "W") continue;
+
+                const x = c * ts;
+                const y = r * ts;
+
+                const drawCoast = (rr, cc, dx, dy, w2, h2) => {
+                    if (!isLand(rr, cc)) return;
+                    const color = this.getCoastColor(rr, cc);
+                    if (!color) return;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x + dx, y + dy, w2, h2);
+                };
+
+                drawCoast(r - 1, c, 0, 0, ts, cs);
+                drawCoast(r + 1, c, 0, ts - cs, ts, cs);
+                drawCoast(r, c - 1, 0, 0, cs, ts);
+                drawCoast(r, c + 1, ts - cs, 0, cs, ts);
             }
         }
     }

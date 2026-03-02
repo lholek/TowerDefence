@@ -7,6 +7,8 @@
         "Improved - Graphics - New custom settings for graphics (Low, High) - you can set High and Low settings for different elements of the game (enemies, towers, map, etc.) separately",
         "Improved - Graphics - Trees of Life are slightly bigger on Low and High settings",
         "Improved - Graphics - Towers are diminished on Low settings",
+        "TODO: FIX RANDOM GENERATING PATERN OF WATER",
+        "TODO: Improve - Gameplay - Fix that game is not running on background and that it will always reset if you go back to main menu",
         "TODO: Improve - Graphics - Diminish Water on Low settings",
         "TODO: Improve - Graphics - Diminish Terrains on Low settings",
         "TODO: Improve - Graphics - Diminish Roads on Low settings",
