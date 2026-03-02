@@ -4,10 +4,10 @@
       "version": "Pre-beta I.",
       "release": "-",
       "changes": [
+        "Improved - Performace - Game is now destoring itself when player goes back to main menu, and creating new instance of the game when player starts a new game. This should improve performance in another games and prevent memory leaks",
         "Improved - Graphics - New custom settings for graphics (Low, High) - you can set High and Low settings for different elements of the game (enemies, towers, map, etc.) separately",
         "Improved - Graphics - Trees of Life are slightly bigger on Low and High settings",
         "Improved - Graphics - Towers are diminished on Low settings",
-        "!!!!! HUGE TODO: CONTINUE AND FINISH FIXING DESTORYING THE GAME OBJECT FROM THE BACKGROUND (WHEN YOU GO BACK TO MAIN MENU) - IT CAUSES BUGS AND PERFORMANCE ISSUES",
         "TODO: FIX RANDOM GENERATING PATERN OF WATER",
         "TODO: Improve - Gameplay - Fix that game is not running on background and that it will always reset if you go back to main menu",
         "TODO: Improve - Graphics - Diminish Water on Low settings",
