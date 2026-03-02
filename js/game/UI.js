@@ -4,28 +4,40 @@ const confirmReturn = document.getElementById('confirmReturn');
 const cancelReturn = document.getElementById('cancelReturn');
 
 returnButton.addEventListener('click', () => {
-  returnPopup.style.display = 'flex';
-  if (window.game && !window.game.paused) window.game.togglePause();
+    returnPopup.style.display = 'flex';
+    // Only pause if the game is NOT already paused
+    if (window.game && !window.game.paused) {
+        window.game.togglePause();
+    }
 });
 
 cancelReturn.addEventListener('click', () => {
-  returnPopup.style.display = 'none';
-  if (window.game && window.game.paused) window.game.togglePause();
+    returnPopup.style.display = 'none';
+    // Only unpause if the game WAS paused (and we are resuming)
+    if (window.game && window.game.paused) {
+        window.game.togglePause();
+    }
 });
 
 confirmReturn.addEventListener('click', () => {
-  returnPopup.style.display = 'none';
-
-  // Optional cleanup before returning
-  if (window.game) {
-    window.game.running = false;
-    window.game.paused = true;
+  // 1. Kill the game logic completely
+  if (game) {
+    game.destroy(); 
+    game = null; // Important: Clear the reference
   }
 
-  // Use your built-in function to return to menu
-  if (window.game && typeof window.game.resetGameToMenu === 'function') {
-    window.game.resetGameToMenu();
-  }
+  // 2. Hide all Game UIs
+  document.getElementById('returnPopup').style.display = 'none';
+  document.getElementById('mainContainer').style.display = 'none'; // The game area
+  
+  // 3. Show the Menu UIs
+  document.getElementById('startOverlay').style.display = 'flex';
+  document.getElementById('title').style.display = 'block';
+  document.getElementById('subtitle').style.display = 'block';
+
+  // 4. Reset Speed UI to 1x
+  const gameSpeedSelect = document.getElementById('gameSpeedSelect');
+  if (gameSpeedSelect) gameSpeedSelect.value = "1";
 });
 
 // === BUILD MODE SWITCHER ===

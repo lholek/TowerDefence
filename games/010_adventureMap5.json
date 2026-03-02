@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Adventure Map V (Seasons)",
-      "startingCoins": 100,
+      "startingCoins": 100000000000,
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [

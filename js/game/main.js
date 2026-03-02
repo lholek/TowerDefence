@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mapSelect = document.getElementById('mapSelect');
     const mapFileInput = document.getElementById('mapFileInput');
     const startBtn = document.getElementById('startButton');
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const mapSelectArea = document.getElementById('mapSelectionArea');
     const fileUploadArea = document.getElementById('fileUploadArea');
     const modeSelectBtn = document.getElementById('modeSelectBtn');
@@ -177,62 +178,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Logika tlačítka Start Game (s podporou souboru) ---
     startBtn.addEventListener('click', async () => {
-
-        // Forcing setting GameSpeed to 1x at start
-        if (gameSpeedSelect) {
-            gameSpeedSelect.value = "1";
-        }
-
+        // 1. Get the map data (preset or file)
         const isFileModeActive = modeFileBtn.classList.contains('active-mode');
-        let mapSource;
+        let mapSource = isFileModeActive ? await loadMapDataFromFile(mapFileInput.files[0]) : mapSelect.value;
+        if (!mapSource) return;
 
-        if (isFileModeActive) {
-            // --- REŽIM NAČÍTÁNÍ ZE SOUBORU ---
-            if (mapFileInput.files.length === 0) {
-                return;
-            }
-            
-            try {
-                // mapSource bude přímo JSON objekt
-                mapSource = await loadMapDataFromFile(mapFileInput.files[0]);
-            } catch (error) {
-                console.error("Chyba při načítání lokální mapy:", error);
-                alert("Nepodařilo se načíst mapu ze souboru. Zkontrolujte konzoli.");
-                return;
-            }
-
-        } else {
-            // --- REŽIM VÝBĚRU PŘEDNASTAVENÉ MAPY ---
-            mapSource = mapSelect.value;
-            if (!mapSource) {
-                alert("Prosím, vyberte mapu.");
-                return;
-            }
-        }
-
-        // Skrýt start overlay
+        // 2. Show loading
+        loadingOverlay.style.display = 'flex';
         document.getElementById('startOverlay').style.display = 'none';
-        document.getElementById('title').style.display = 'none';
-        document.getElementById('subtitle').style.display = 'none';
-        
-        // Vytvořit instanci hry
-        game = new Game(canvas);
 
-        game.setSpeed(1);
-        
-        try {
-            // loadGameData nyní musí akceptovat URL nebo JSON objekt
-            await game.loadGameData(mapSource); 
-            window.game = game; // Expozice pro debug
-            
-            // Switch back to towers
-            document.getElementById('towerModeBtn')?.click();            
-            game.start();
-            game.logEvent("New game <b class='cl-primary'>"+game.levelData.name+"</b> started");
-        } catch (err) {
-            console.error("Failed to load game data:", err);
-            alert("Nepodařilo se načíst vybranou mapu. Zkontrolujte konzoli.");
-        }
+        setTimeout(async () => {
+            try {
+                // 3. Kill the old game (this replaces the canvas)
+                if (game) {
+                    game.destroy(); 
+                }
+
+                // 4. FIND THE FRESH CANVAS (The one created by destroy)
+                const freshCanvas = document.getElementById('gameCanvas');
+
+                // 5. Start the NEW game on the NEW canvas
+                game = new Game(freshCanvas);
+                window.game = game; // Essential for UI.js to work
+
+                await game.loadGameData(mapSource);
+                game.start();
+                document.getElementById('mainContainer').style.display = 'block'; // The game area
+
+                loadingOverlay.style.display = 'none';
+            } catch (error) {
+                console.error("Game start failed:", error);
+                loadingOverlay.style.display = 'none';
+            }
+        }, 50);
     });
 
     // --- Existující funkce pro pauzu ---

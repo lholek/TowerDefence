@@ -82,7 +82,8 @@ export default class Game {
     this.shakeIntensity = 0;
 
     // Hot keys
-    window.addEventListener('keydown', e => this.handleKeyDown(e));
+    this.boundKeyDown = (e) => this.handleKeyDown(e);
+    window.addEventListener('keydown', this.boundKeyDown);
   
     // Towers Hovering
     this.keys = {};
@@ -262,6 +263,8 @@ export default class Game {
   }
 
   loop(now) {
+    if (!this.gameStarted) return; // Exit the loop entirely
+
     // Calculate raw deltaTime
     const rawDeltaTime = now - (this.lastTime || now);
     this.lastTime = now;
@@ -1150,5 +1153,39 @@ export default class Game {
     this.ctx.strokeStyle = color.replace('0.2', '0.5'); // Slightly darker border
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
+  }
+
+  destroy() {
+    this.gameStarted = false;
+    this.paused = true;
+
+    // 1. Kill timers
+    if (this.abilityTimerInterval) clearInterval(this.abilityTimerInterval);
+    
+    // 2. Kill keyboard listeners
+    window.removeEventListener('keydown', this.boundKeyDown);
+
+    // 3. Remove the canvas from the website entirely
+    if (this.canvas && this.canvas.parentNode) {
+        const parent = this.canvas.parentNode;
+        const oldId = this.canvas.id;
+        
+        // Remove old one
+        this.canvas.remove();
+        
+        // Create a brand new HTML element
+        const newCanvas = document.createElement('canvas');
+        newCanvas.id = oldId;
+        newCanvas.width = 1230;  // Match your original width
+        newCanvas.height = 600; // Match your original height
+        newCanvas.style.width = '1230px';
+        newCanvas.style.height = '600px';
+        
+        parent.appendChild(newCanvas);
+        // Put it back in the DOM
+    }
+
+    this.ctx = null;
+    this.canvas = null;
   }
 }
