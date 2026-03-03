@@ -693,7 +693,13 @@
 }
 
 .menu-container{
-  display:flex; flex-direction:column; gap:12px; align-items:center;
+  display:flex; 
+  flex-direction:column; 
+  gap:12px; 
+  align-items:center;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 3rem;
+  border-radius: 2rem;
 }
 
 #menuMusicDropdown{

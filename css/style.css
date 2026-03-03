@@ -413,20 +413,37 @@ canvas {
 
 /* TOWERS SHOP CSS */
 /* overlays */
+.overlay-center::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1); /* Tvůj filtr */
+    z-index: -1; /* Posune filtr za text, ale nad obrázek pozadí */
+}
+
 .overlay-center,
 .overlay-full {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw; /* Use viewport width */
+    height: 100vh; /* Use viewport height */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
+    background: url('../assets/images/image_bg_final.png') center/cover no-repeat !important;
+    background-position: center center !important;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-size: cover !important;
+    image-rendering: -webkit-optimize-contrast; /* Pro Chrome/Safari */
+    image-rendering: crisp-edges;               /* Pro Firefox */
 }
 .overlay-center {
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(30, 30, 30, 0.95);
 }
 .overlay-full {
     background: rgba(0, 0, 0, 0.6);
