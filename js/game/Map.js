@@ -838,7 +838,6 @@ export default class Map {
         }
     }
 
-
     _prerenderWaterHigh() {
         const w = this.waterLayer.width;
         const h = this.waterLayer.height;
@@ -847,44 +846,45 @@ export default class Map {
         const ctx = this.waterLayer.getContext("2d");
         ctx.clearRect(0, 0, w, h);
 
-        // 1) OFFSCREEN WATER TEXTURE
+        // OFFSCREEN WATER TEXTURE
         const waterTex = document.createElement("canvas");
         waterTex.width = w;
         waterTex.height = h;
         const wctx = waterTex.getContext("2d");
 
-        // Deep gradient
+        // Deep background gradient
         const grad = wctx.createLinearGradient(0, 0, 0, h);
         grad.addColorStop(0, "#0a3d5f");
         grad.addColorStop(1, "#062a44");
         wctx.fillStyle = grad;
         wctx.fillRect(0, 0, w, h);
 
-        // Global noise
-        for (let y = 0; y < h; y += 4) {
-            for (let x = 0; x < w; x += 4) {
-                const n = (Math.sin(x * 0.015) + Math.cos(y * 0.02)) * 0.04 + 0.05;
-                wctx.fillStyle = `rgba(255,255,255,${n})`;
-                wctx.fillRect(x, y, 4, 4);
+        // RANDOM FOG PATCHES
+        // Instead of one big gradient, we stamp 10 random "clouds"
+        let rows = this.rows;
+        let cols = this.cols;
+
+        let waterTileCount = 0;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (this.grid[r][c] === "W") waterTileCount++;
             }
         }
 
-        // Global waves
-        for (let y = 0; y < h; y += 2) {
-            for (let x = 0; x < w; x += 2) {
-                const wave = (Math.sin(x * 0.03 + y * 0.015) + 1) * 0.03;
-                wctx.fillStyle = `rgba(120,180,255,${wave})`;
-                wctx.fillRect(x, y, 2, 2);
-            }
-        }
+        const fogPatches = Math.max(3, Math.floor(waterTileCount / 10));
+        for (let i = 0; i < fogPatches; i++) {
+            const randX = Math.random() * w;
+            const randY = Math.random() * h;
+            const radius = (Math.random() * ts * 5) + ts; // 1 to 5 tiles wide
 
-        // Global highlight
-        const light = wctx.createLinearGradient(0, 0, w, 0);
-        light.addColorStop(0, "rgba(255,255,255,0.12)");
-        light.addColorStop(0.4, "rgba(255,255,255,0.04)");
-        light.addColorStop(1, "transparent");
-        wctx.fillStyle = light;
-        wctx.fillRect(0, 0, w, h);
+            const fog = wctx.createRadialGradient(randX, randY, 0, randX, randY, radius);
+            fog.addColorStop(0, "rgba(255,255,255,0.12)");   // Soft center
+            fog.addColorStop(0.5, "rgba(255,255,255,0.04)"); // Fading
+            fog.addColorStop(1, "transparent");             // Edge
+
+            wctx.fillStyle = fog;
+            wctx.fillRect(0, 0, w, h);
+        }
 
         // 2) MASK (only W tiles)
         const mask = document.createElement("canvas");
@@ -910,7 +910,7 @@ export default class Map {
         ctx.drawImage(waterTex, 0, 0);
         ctx.restore();
 
-        // Reset state
+        // Reset state for coast shading
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = 1;
         ctx.beginPath();
