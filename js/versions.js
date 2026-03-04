@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventsBoxSubtitle.textContent = currentVersion;
         }
 
+        const subtitleTag = document.getElementById('subtitle-tag');
+        if (subtitleTag) {
+            subtitleTag.textContent = currentVersion;
+        }
+
     } catch (err) {
         console.error('Failed to load version:', err);
     }

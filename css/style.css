@@ -429,18 +429,34 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Use viewport width */
-    height: 100vh; /* Use viewport height */
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
-    background: url('../assets/images/image_bg_final.png') center/cover no-repeat !important;
-    background-position: center center !important;
     background-color: rgba(0, 0, 0, 0.8);
+    
+    /* Společné nastavení pozadí */
+    background-repeat: no-repeat !important;
     background-size: cover !important;
-    image-rendering: -webkit-optimize-contrast; /* Pro Chrome/Safari */
-    image-rendering: crisp-edges;               /* Pro Firefox */
+    background-position: center center !important;
+    
+    /* Výchozí obrázek (pro 16:9 a užší) */
+    background-image: url('../assets/images/menu_background_16_9.png') !important;
+
+    /* Renderování */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Detekce UltraWide monitoru (poměr stran širší než 2:1) */
+@media (min-aspect-ratio: 2/1) {
+    .overlay-center,
+    .overlay-full {
+        /* Cesta k širší verzi obrázku */
+        background-image: url('../assets/images/menu_background_21_9.png') !important;
+    }
 }
 .overlay-center {
     background: rgba(30, 30, 30, 0.95);
