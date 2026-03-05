@@ -836,12 +836,11 @@ export default class Map {
 
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
-                    // Pod stromem vykreslíme jen trávu (bez cesty)
-                    //const grassIdx = this.terrainIndices[r][c];
-                    //ctx.drawImage(this.grassVariants[grassIdx], worldX, worldY);
-                    this._drawHolyGround(ctx, worldX, worldY);
-                    // Přidáme bílé náběhy kořenů přímo do roadLayer, aby byly pod stromem
-                   // this._drawRootBase(ctx, worldX + ts/2, worldY + ts/2);
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawHolyGroundLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawHolyGround(ctx, worldX, worldY);
+                    }
                     continue; // Přeskočíme kreslení kamenů
                 }
 
@@ -2161,7 +2160,6 @@ _drawBurnedGroundLow(ctx, x, y) {
     }
 }
 
-
 _drawHolyGround(ctx, x, y) {
     const ts = this.tileSize;
     ctx.save();
@@ -2231,5 +2229,38 @@ _drawHolyGround(ctx, x, y) {
     }
 
     ctx.restore();
+}
+
+_drawHolyGroundLow(ctx, x, y) {
+    const ts = this.tileSize;
+
+    // 0. Pozadí – jemná zlatohnědá
+    ctx.fillStyle = "#5a3a0a"; 
+    ctx.fillRect(x, y, ts, ts);
+
+    // 1. Jemný "svatý" flek uprostřed
+    const grad = ctx.createRadialGradient(
+        x + ts/2, y + ts/2,
+        ts * 0.1,
+        x + ts/2, y + ts/2,
+        ts * 0.55
+    );
+
+    grad.addColorStop(0, "rgba(255, 230, 120, 0.45)"); // světlý střed
+    grad.addColorStop(0.5, "rgba(255, 200, 80, 0.15)"); // jemný přechod
+    grad.addColorStop(1, "rgba(0,0,0,0)"); // zmizí do pozadí
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, ts, ts);
+
+    // 2. Pár jemných "světelných teček"
+    ctx.fillStyle = "rgba(255,255,200,0.6)";
+    for (let i = 0; i < 6; i++) {
+        const px = x + Math.random() * ts;
+        const py = y + Math.random() * ts;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.random() * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
 }
 }
