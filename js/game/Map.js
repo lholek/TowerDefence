@@ -14,6 +14,8 @@ M - Mountain (impassable, non-buildable, non-shootable)
 */
 export default class Map {
     constructor(canvas, layout, tileSize = 80) {
+        this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
@@ -71,19 +73,24 @@ export default class Map {
         this.waterLayer.width = this.cols * this.tileSize;
         this.waterLayer.height = this.rows * this.tileSize;
 
-        const settings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
-        this.quality = settings.water || 'low';
-        if (this.quality === 'low') {
+        this.qualityWater = this.graphicsSettings.water || 'low';
+        if (this.qualityWater === 'low') {
             this._prerenderWater();
         } else {
             this._prerenderWaterHigh();
         }
 
-        // 6c. Initialize Grass Layer
+        console.log("quality:", this.graphicsSettings);
+        // 6c. Initialize Grass, Sand and Snow Layers
         this.grassLayer = document.createElement('canvas');
         this.grassLayer.width = this.cols * this.tileSize;
         this.grassLayer.height = this.rows * this.tileSize;
-        this._prerenderGrass();
+
+        if (this.graphicsSettings.terrain === 'low') {
+            this._prerenderGrassHigh();
+        } else{
+            this._prerenderGrassHigh();
+        }
 
         // AAA Atmosphere settings
         this.sunDir = { x: 1, y: 1 }; 
@@ -101,7 +108,6 @@ export default class Map {
         this.canvas.style.cursor = 'grab';
 
         // Getting quailty from local storage
-        this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
         const treeQuality = this.graphicsSettings.trees || 'low';
         if (treeQuality === 'low') {
             this.cachedTree = this._preRenderTreeLow(this.tileSize);
@@ -110,9 +116,6 @@ export default class Map {
         }
 
         this.clampCamera();
-
-        this.snowTexture = this._preRenderSnow(this.tileSize);
-        this.sandTexture = this._preRenderSand(this.tileSize);
 
         // 9. GAME QUALITY
         this.quality = localStorage.getItem('graphicsSetting') || 'low';
@@ -381,11 +384,20 @@ export default class Map {
                 const bounds = this.getTileBounds(c, r);
             
                 if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
-                    if (!this.snowTexture) this.snowTexture = this._preRenderSnow(this.tileSize);
+                    if (!this.snowTexture)
+                        this.snowTexture = (
+                            this.graphicsSettings.terrain === 'low'
+                                ? this._preRenderSnowLow(this.tileSize)
+                                : this._preRenderSnowHigh(this.tileSize)
+                        );
                     ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-                } 
-                else if (tok === 'SND' || tok === 'O[SND]') {
-                    if (!this.sandTexture) this.sandTexture = this._preRenderSand(this.tileSize);
+                } else if (tok === 'SND' || tok === 'O[SND]') {
+                    if (!this.sandTexture)
+                        this.sandTexture = (
+                            this.graphicsSettings.terrain === 'low'
+                                ? this._preRenderSandLow(this.tileSize)
+                                : this._preRenderSandHigh(this.tileSize)
+                    );
                     ctx.drawImage(this.sandTexture, bounds.x, bounds.y);
                 }
             }
@@ -959,7 +971,7 @@ export default class Map {
         return "#4A8C46";                                         // Default (Grass)
     };
     
-    _prerenderGrass() {
+    _prerenderGrassHigh() {
         const ctx = this.grassLayer.getContext('2d');
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
@@ -1791,7 +1803,72 @@ _createNoisePattern() {
     return ctx.createPattern(canvas, 'repeat');
 }
 
-_preRenderSnow(tileSize) {
+_preRenderSnowLow(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. ZÁKLAD – necháváme
+    ctx.fillStyle = '#b8c9d9';
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. TEXTURA – méně bodů, žádná bílá
+    for (let i = 0; i < 120; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        ctx.fillStyle = Math.random() > 0.6
+            ? 'rgba(200, 215, 230, 0.25)'
+            : 'rgba(70, 100, 130, 0.20)';
+
+        ctx.fillRect(x, y, 1, 1);
+    }
+
+    // 3A. STÍN – pravý dolní roh (původní, ale jemnější)
+    const shadowBR = ctx.createRadialGradient(
+        tileSize, tileSize, 0,
+        tileSize, tileSize, tileSize
+    );
+    shadowBR.addColorStop(0, 'rgba(0, 40, 80, 0.10)');
+    shadowBR.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowBR;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 3B. STÍN – nový levý horní roh (jemný, aby nepálil)
+    const shadowTL = ctx.createRadialGradient(
+        0, 0, 0,
+        0, 0, tileSize * 0.9
+    );
+    shadowTL.addColorStop(0, 'rgba(0, 30, 60, 0.08)');
+    shadowTL.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowTL;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. KRYSTALY – méně, žádná čistá bílá
+    for (let i = 0; i < 10; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        ctx.fillStyle = 'rgba(230, 240, 255, 0.7)';
+        ctx.fillRect(x, y, 1, 1);
+
+        if (Math.random() > 0.8) {
+            ctx.fillStyle = 'rgba(0, 100, 255, 0.15)';
+            ctx.fillRect(x - 1, y, 3, 1);
+            ctx.fillRect(x, y - 1, 1, 3);
+        }
+    }
+
+    // 5. HRANA – jemnější
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
+
+    return offCanvas;
+}
+
+_preRenderSnowHigh(tileSize) {
     const offCanvas = document.createElement("canvas");
     offCanvas.width = tileSize;
     offCanvas.height = tileSize;
@@ -1848,7 +1925,41 @@ _preRenderSnow(tileSize) {
     return offCanvas;
 }
 
-_preRenderSand(tileSize) {
+_preRenderSandLow(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. Jednoduchý základ – tlumená písková
+    ctx.fillStyle = '#d8c27a'; // méně sytá, méně pěkná
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. Velmi řídká textura – jen pár zrnek
+    for (let i = 0; i < 40; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        const opacity = 0.05 + Math.random() * 0.08;
+        ctx.fillStyle = Math.random() > 0.7
+            ? `rgba(140, 110, 60, ${opacity})`
+            : `rgba(255, 255, 255, ${opacity * 0.4})`;
+
+        ctx.fillRect(x, y, 1.2, 1.2);
+    }
+
+    // 3. Žádné duny – jen velmi slabý náznak
+    const dune = ctx.createLinearGradient(0, 0, tileSize, tileSize);
+    dune.addColorStop(0, 'rgba(0,0,0,0)');
+    dune.addColorStop(1, 'rgba(0,0,0,0.08)');
+    ctx.fillStyle = dune;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. Žádné AO, žádné hrany – opravdu low quality
+    return offCanvas;
+}
+
+_preRenderSandHigh(tileSize) {
     const offCanvas = document.createElement("canvas");
     offCanvas.width = tileSize;
     offCanvas.height = tileSize;

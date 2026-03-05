@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     enemies: 'low',
     towers: 'low',
     water: 'low',
-    grass: 'low',
+    terrain: 'low',
     roads: 'low',
     mountains: 'low',
     lava_floor: 'low'
