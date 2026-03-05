@@ -31,13 +31,19 @@ export default class Map {
         for (let r = 0; r < this.rows; r++) {
             this.terrainIndices[r] = [];
             for (let c = 0; c < this.cols; c++) {
-                this.terrainIndices[r][c] = Math.floor(Math.random() * 10);
+                const maxVariants = (this.graphicsSettings.terrain === 'low') ? 3 : 10;
+                this.terrainIndices[r][c] = Math.floor(Math.random() * maxVariants);
             }
         }
 
         // 3. GENERATE VISUAL ASSETS
         // CRITICAL FIX: Generate the actual grass images BEFORE calling _prerenderRoad
-        this._generateGrassTiles();
+
+        if (this.graphicsSettings.terrain === 'low') {
+            this._generateGrassTilesLow();
+        } else {
+            this._generateGrassTiles();
+        }
 
         // 4. DETECT SPECIAL TILES
         this.starts = {}; 
@@ -87,9 +93,9 @@ export default class Map {
         this.grassLayer.height = this.rows * this.tileSize;
 
         if (this.graphicsSettings.terrain === 'low') {
-            this._prerenderGrassHigh();
+            this._prerenderGrass();
         } else{
-            this._prerenderGrassHigh();
+            this._prerenderGrass();
         }
 
         // AAA Atmosphere settings
@@ -236,6 +242,75 @@ export default class Map {
           // 2. Flora Layer: Natural distribution
           // Reduced to 45 iterations to keep it "clean" but detailed
           for (let j = 0; j < 3; j++) {
+              const lx = Math.random() * this.tileSize;
+              const ly = Math.random() * this.tileSize;
+              tctx.save();
+              tctx.translate(lx, ly);
+              tctx.rotate(Math.random() * Math.PI);
+
+              const roll = Math.random();
+
+              if (roll < 0.015) { 
+                  // VERY RARE: Red flower
+                  this._drawNaturalFlower(tctx, "#e11d48");
+              } 
+              else if (roll < 0.03) { 
+                  // VERY RARE: Pink flower
+                  this._drawNaturalFlower(tctx, "#f472b6");
+              } 
+              else if (roll < 0.045) { 
+                  // VERY RARE: Blue flower
+                  this._drawNaturalFlower(tctx, "#3b82f6");
+              } 
+              else if (roll < 0.10) { 
+                  // RARE: Yellow flower
+                  this._drawNaturalFlower(tctx, "#facc15");
+              } 
+              else if (roll < 0.25) { 
+                  // UNCOMMON: Dry brown leaf
+                  tctx.fillStyle = "#8a5a23";
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+              else if (roll < 0.60) { 
+                  // COMMON: Dark green leaf
+                  tctx.fillStyle = "#14532d"; 
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              } 
+              else { 
+                  // COMMON: Light green leaf
+                  tctx.fillStyle = "#1a9c4d";
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+
+              tctx.restore();
+          }
+          this.grassVariants.push(canvas);
+      }
+    }
+
+    _generateGrassTilesLow() {
+      this.grassVariants = [];
+      const baseColors = ['#3f7d3c', '#376d35'];
+
+      for (let i = 0; i < 3; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+
+          // 1. Base Layer: Gradient for subtle lighting depth
+          tctx.fillStyle = baseColors[i % baseColors.length];
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          // 2. Flora Layer: Natural distribution
+          // Reduced to 45 iterations to keep it "clean" but detailed
+          for (let j = 0; j < 2; j++) {
               const lx = Math.random() * this.tileSize;
               const ly = Math.random() * this.tileSize;
               tctx.save();
@@ -773,7 +848,11 @@ export default class Map {
                 // --- PORTÁL (S) ---
                 if (/^S\d+/.test(tok)) {
                     // Pod portálem vykreslíme spálenou zem
-                    this._drawBurnedGround(ctx, worldX, worldY);
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawBurnedGroundLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawBurnedGround(ctx, worldX, worldY);
+                    }
                     continue; // Přeskočíme kreslení kamenů
                 }
 
@@ -971,7 +1050,7 @@ export default class Map {
         return "#4A8C46";                                         // Default (Grass)
     };
     
-    _prerenderGrassHigh() {
+    _prerenderGrass() {
         const ctx = this.grassLayer.getContext('2d');
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
@@ -1486,28 +1565,6 @@ _drawMagicPortalHigh(ctx, x, y, time) {
         ctx.restore();
     }
     ctx.restore();
-  }
-
-  _drawBurnedGround(ctx, x, y) {
-    const ts = this.tileSize;
-    // Základní tmavý flek
-    const grad = ctx.createRadialGradient(x + ts/2, y + ts/2, ts * 0.1, x + ts/2, y + ts/2, ts * 0.6);
-    grad.addColorStop(0, "#1a1a1a"); // Skoro černá uprostřed
-    grad.addColorStop(0.6, "#422006"); // Tmavě hnědá
-    grad.addColorStop(1, "rgba(20, 83, 45, 0)"); // Ztrácí se v trávě
-
-    ctx.fillStyle = grad;
-    ctx.fillRect(x, y, ts, ts);
-
-    // Detaily popela a sazí (náhodné tečky)
-    ctx.fillStyle = "#000000";
-    for (let i = 0; i < 20; i++) {
-        const px = x + Math.random() * ts;
-        const py = y + Math.random() * ts;
-        ctx.beginPath();
-        ctx.arc(px, py, Math.random() * 3, 0, Math.PI * 2);
-        ctx.fill();
-    }
   }
 
   _preRenderMountainSet(ts) {
@@ -2069,6 +2126,41 @@ _drawBurnedGround(ctx, x, y) {
 
     ctx.restore();
 }
+
+_drawBurnedGroundLow(ctx, x, y) {
+    const ts = this.tileSize;
+
+    // 0. Pozadí – jednolitá hnědá (#422006)
+    ctx.fillStyle = "#422006";
+    ctx.fillRect(x, y, ts, ts);
+
+    // 1. Jemný spálený flek (tmavý uprostřed, mizí do hnědé)
+    const grad = ctx.createRadialGradient(
+        x + ts/2, y + ts/2,
+        ts * 0.1,
+        x + ts/2, y + ts/2,
+        ts * 0.55
+    );
+
+    grad.addColorStop(0, "rgba(20,20,20,0.9)");   // tmavý střed
+    grad.addColorStop(0.6, "rgba(0,0,0,0.35)");   // jemný přechod
+    grad.addColorStop(1, "rgba(0,0,0,0)");        // plynulé zmizení
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, ts, ts);
+
+    // 2. Jemné saze – malé, nenápadné
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    for (let i = 0; i < 10; i++) {
+        const px = x + Math.random() * ts;
+        const py = y + Math.random() * ts;
+        const r = Math.random() * 1.5;
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
 
 _drawHolyGround(ctx, x, y) {
     const ts = this.tileSize;
