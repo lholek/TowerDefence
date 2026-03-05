@@ -22,3 +22,9 @@ TODOS:
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
 
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
+
+Pre-beta II.:
+  "TODO: Improve - Graphics - More backgrounds for maps",
+  "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta II ??]",
+
+
