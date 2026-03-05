@@ -857,8 +857,12 @@ export default class Map {
 
                 // --- KLASICKÁ CESTA (O) ---
                 if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') {
-                    // Kameny (tvůj stávající kód pro kameny...)
-                    const density = 4;
+                    // number of stones
+                    let density = 4;
+                    // LOW verze – jednoduchá šedá cesta uprostřed, ne přes celý blok
+                    if (this.graphicsSettings.roads === 'low') {
+                        density = 2;
+                    }
                     const step = ts / density;
                     for (let i = 0; i < density; i++) {
                         for (let j = 0; j < density; j++) {
