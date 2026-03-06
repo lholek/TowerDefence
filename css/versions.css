@@ -65,7 +65,7 @@
      Line is 2px wide. Dot is 12px wide + 4px border = 16px.
      Calculation: -(16/2) + (2/2) = -8px + 1px = -7px.
   */
-  left: -9px; /* Tweaked slightly to account for browser sub-pixel rendering */
+  left: -8px; /* Tweaked slightly to account for browser sub-pixel rendering */
   
   /* Alignment to text: 
      Using 'px' here is more stable than 'em' for fixed-size balls. 
