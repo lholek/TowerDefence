@@ -19,4 +19,4 @@ window.onclick = function(event) {
   }
 }*/
 
-new PopupController('openLoreBtn', 'lorePopup', true);
+new PopupController('openLoreBtn', 'lorePopup');

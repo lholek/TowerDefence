@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/ui.css" />
   <link rel="stylesheet" href="css/ui_lore.css" />
   <link rel="stylesheet" href="css/settings.css" />
+  <link rel="stylesheet" href="css/popups.css" />
 </head>
 <body id="gameContainer">
 
@@ -221,8 +222,6 @@
               
               
           <div class="parchment-body">
-            <span id="closeLore" class="close-parchment">&times;</span>
-            
             <div class="parchment-content">
               <h2 class="lore-header">The Ember Decree</h2>
                       
@@ -402,13 +401,10 @@
   </div>
 
   <!-- Version History Popup -->
-  <div id="versionPopup" class="overlay-full" style="display:none;">
-    <div id="versionPopupContent">
+  <div id="versionPopup">
+    <div id="versionPopupContent" class="popup-content">
       <h2 class="text-center text-center cl-primary">Version History</h2>
       <div id="versionList"></div>
-      <div class="w-100 text-center">
-        <button id="closeVersionPopup" class="btn">Close</button>
-      </div>
     </div>
   </div>
   

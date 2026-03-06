@@ -2,10 +2,6 @@
 const versionButtons = document.querySelectorAll('.versionButton');
 const versionPopup = document.getElementById('versionPopup');
 const versionList = document.getElementById('versionList');
-const closeVersionPopup = document.getElementById('closeVersionPopup');
-
-// Track if we paused the game
-let wasGamePausedByUs = false;
 
 function formatVersionDate(dateStr) {
     if (!dateStr) return "";
@@ -15,7 +11,11 @@ function formatVersionDate(dateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Fetch current version from versions.json
+    
+    // 1. Initialize our Global Controller (Pass null for button because we have multiple buttons)
+    const versionController = new PopupController(null, 'versionPopup');
+
+    // 2. Fetch current version from versions.json for the main page
     try {
         const res = await fetch('versions.json');
         const data = await res.json();
@@ -27,9 +27,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         
         // Update page title
-        document.title = `The CZSrna's Tower Defence – ${currentVersion}`;
-
-
         document.title = `The CZSrna's Tower Defence – ${currentVersion}`;
 
         // Update events box subtitle
@@ -47,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Failed to load version:', err);
     }
 
+    // 3. Handle clicking the version buttons
     versionButtons.forEach(versionButton => {
       versionButton.addEventListener('click', async () => {
         try {
@@ -87,13 +85,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             versionList.appendChild(vDiv);
           });
 
-          versionPopup.style.display = 'flex';
-
-          // Pause game if it's running
-          if (window.game && !window.game.paused) {
-            window.game.togglePause();
-            wasGamePausedByUs = true;
-          }
+          // 4. Use the Controller to open the popup and handle game pausing!
+          versionController.open();
 
         } catch (err) {
           console.error('Failed to load version history:', err);
@@ -101,40 +94,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     });
-
-    const closePopup = () => {
-      versionPopup.style.display = 'none';
-      
-      // Only unpause if we were the ones who paused it
-      if (window.game && window.game.paused && wasGamePausedByUs) {
-        window.game.togglePause();
-        wasGamePausedByUs = false;
-      }
-    };
-
-    // Wire up close button
-    if (closeVersionPopup) {
-      closeVersionPopup.addEventListener('click', closePopup);
-    }
-
-    // Close popup with ESC
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && versionPopup.style.display === 'flex') {
-        closePopup();
-      }
-    });
-
-    // Add click outside handler
-    document.addEventListener('mousedown', (e) => {
-      // Check if version popup is visible
-      if (versionPopup.style.display === 'flex') {
-        // Get the popup content div
-        const popupContent = document.getElementById('versionPopupContent');
-        
-        // If click is outside popup content, close it
-        if (!popupContent.contains(e.target)) {
-          closePopup();
-        }
-      }
-    });
+    
+    // NOTE: All the close logic, ESC logic, and Unpause logic is now handled automatically by versionController!
 });
