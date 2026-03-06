@@ -19,12 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         currentPage = 0;
         updateUI();
-        tutorialPopup.style.display = 'flex';
+        tutorialController.open();
     }
 
     function setupControls() {
-        document.getElementById('closeTutorial').onclick = () => tutorialPopup.style.display = 'none';
-        
         document.getElementById('nextPage').onclick = () => {
             if (currentPage < totalPages - 1) {
                 currentPage++;
@@ -72,5 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (openBtn) openBtn.onclick = loadAndOpen;
+    const tutorialController = new PopupController(null, 'tutorialPopup');
+    
+    if (openBtn) {
+        openBtn.addEventListener('click', loadAndOpen);
+    }    
 });

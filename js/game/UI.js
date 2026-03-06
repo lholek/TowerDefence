@@ -144,8 +144,6 @@ if (gameLogBtn && logPopup && closeLogBtn) {
 // --- Init settings ---
 document.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("settingsPopup");
-  const openBtn = document.getElementById("openSettingsBtn");
-  const closeBtn = document.getElementById("closeSettingsBtn");
   const saveBtn = document.getElementById("saveSettingsBtn");
   const showFpsCheckbox = document.getElementById("showFpsCheckbox");
   const fpsRange = document.getElementById("fpsRange");
@@ -178,12 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
     fpsRange.value = clampFps(fpsNumber.value);
   });
 
-  // --- Open / Close popup ---
-  openBtn.addEventListener("click", () => popup.classList.remove("hidden"));
-  closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
-
+  const settingsController = new PopupController('openSettingsBtn', 'settingsPopup');
   // --- Save settings ---
-  // --- Save settings (Hledej cca řádek 145) ---
   saveBtn.addEventListener("click", () => {
     // 1. Uložení FPS
     const targetFps = clampFps(fpsRange.value);
@@ -211,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 5. Zavření popupu
-    popup.classList.add("hidden");
+    settingsController.close();
   });
 
   // --- Apply saved visibility immediately ---

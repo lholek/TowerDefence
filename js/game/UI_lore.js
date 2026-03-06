@@ -1,4 +1,4 @@
-const loreBtn = document.getElementById('openLoreBtn');
+/*const loreBtn = document.getElementById('openLoreBtn');
 const lorePopup = document.getElementById('lorePopup');
 const closeLore = document.getElementById('closeLore');
 
@@ -17,4 +17,6 @@ window.onclick = function(event) {
   if (event.target == lorePopup) {
     lorePopup.style.display = 'none';
   }
-}
+}*/
+
+new PopupController('openLoreBtn', 'lorePopup', true);
