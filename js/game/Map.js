@@ -58,10 +58,16 @@ export default class Map {
 
         // 5. PATHS & CAMERA
         this.paths = this.generatePaths();
+
+        const initialZoom = 1;
+        // Calculate the center based on the actual map size vs canvas size
+        const startX = (this.canvas.width - (this.cols * this.tileSize * initialZoom)) / 2;
+        const startY = (this.canvas.height - (this.rows * this.tileSize * initialZoom)) / 2;
+
         this.camera = {
-            x: (this.canvas.width - (this.cols * this.tileSize)) / 2, // Center horizontally
-            y: (this.canvas.height - (this.rows * this.tileSize)) / 2, // Center vertically
-            zoom: 1, 
+            x: startX, 
+            y: startY,
+            zoom: initialZoom, 
             dragging: false, 
             lastX: 0, 
             lastY: 0,
@@ -739,17 +745,35 @@ export default class Map {
     resetTransform(ctx) { ctx.restore(); }
 
     clampCamera() {
-      const rect = this.canvas.getBoundingClientRect();
-      const canvasWidth = rect.width;
-      const canvasHeight = rect.height;
-      const mapWidth = this.cols * this.tileSize * this.camera.zoom;
-      const mapHeight = this.rows * this.tileSize * this.camera.zoom;
-
-      if (mapWidth <= canvasWidth) this.camera.x = (canvasWidth - mapWidth) / 2;
-      else { const minX = canvasWidth - mapWidth; const maxX = 0; this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x)); }
-
-      if (mapHeight <= canvasHeight) this.camera.y = (canvasHeight - mapHeight) / 2;
-      else { const minY = canvasHeight - mapHeight; const maxY = 0; this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y)); }
+        // Use the actual internal pixel width/height of the canvas
+        const canvasWidth = this.canvas.width;
+        const canvasHeight = this.canvas.height;
+        
+        // Always calculate map size including the current zoom
+        const mapWidth = this.cols * this.tileSize * this.camera.zoom;
+        const mapHeight = this.rows * this.tileSize * this.camera.zoom;
+        
+        // --- X Axis ---
+        if (mapWidth <= canvasWidth) {
+            // Map is smaller: Force it to stay in the middle
+            this.camera.x = (canvasWidth - mapWidth) / 2;
+        } else {
+            // Map is larger: Clamp between 0 and the negative offset
+            const minX = canvasWidth - mapWidth;
+            const maxX = 0;
+            this.camera.x = Math.min(maxX, Math.max(minX, this.camera.x));
+        }
+    
+        // --- Y Axis ---
+        if (mapHeight <= canvasHeight) {
+            // Map is smaller: Force it to stay in the middle
+            this.camera.y = (canvasHeight - mapHeight) / 2;
+        } else {
+            // Map is larger: Clamp between 0 and the negative offset
+            const minY = canvasHeight - mapHeight;
+            const maxY = 0;
+            this.camera.y = Math.min(maxY, Math.max(minY, this.camera.y));
+        }
     }
 
     isInsideMap(worldX, worldY) {
