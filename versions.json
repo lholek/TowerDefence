@@ -1,7 +1,7 @@
 {
   "versions": [
     {
-      "version": "Pre-beta I.",
+      "version": "Pre-Beta I.",
       "release": "-",
       "changes": [
         "Improved - Performace - Game is now destoring itself when player goes back to main menu, and creating new instance of the game when player starts a new game. This should improve performance in another games and prevent memory leaks",
@@ -11,7 +11,8 @@
         "Improved - Menu - New background image in the menu",
         "Improved - Menu - New Lore button whit fiery looks",
         "Improved - Menu - Added author and version to the left corner of menu",
-        "Improved - UX: Unified the behavior of 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now share a standardized controller, allowing them to be closed by clicking the overlay or pressing the ESC key.",
+        "Improved - UX - Unified the behavior of 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now share a standardized controller, allowing them to be closed by clicking the overlay or pressing the ESC key.",
+        "Improved - UI - Slightly updated text in pause",
         "-----------------------------------------------------------------------------",
         "TODO: Improve - !!Gameplay - Add enemy types that deal more damage to the Trees of Life",
         "TODO: Improve - Code - Clean up code and add comments",
