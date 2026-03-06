@@ -814,6 +814,7 @@
 }
 
 .bulk-actions {
+  justify-content: space-around;
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
@@ -852,7 +853,7 @@
 /* Aktivní stav - High/Low */
 .btn-small {
   padding: 5px 10px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
