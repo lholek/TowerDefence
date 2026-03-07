@@ -92,7 +92,6 @@ export default class Map {
             this._prerenderWaterHigh();
         }
 
-        console.log("quality:", this.graphicsSettings);
         // 6c. Initialize Grass, Sand and Snow Layers
         this.grassLayer = document.createElement('canvas');
         this.grassLayer.width = this.cols * this.tileSize;

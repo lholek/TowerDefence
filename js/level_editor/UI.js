@@ -1,14 +1,32 @@
 // This block replaces both of your original DOMContentLoaded blocks.
 import { currentLevelData } from './level_data.js';
 
-document.getElementById('testMapBtn').addEventListener('click', () => {
-    // 1. Save the current state of the editor to localStorage
-    const mapString = JSON.stringify(currentLevelData);
-    localStorage.setItem('test_map_data', mapString);
+// Inside UI.js
+document.getElementById('testMapBtn').addEventListener('click', async () => {
+    try {
+        const jsonString = JSON.stringify(currentLevelData);
+        
+        // 1. Compress using Gzip
+        const blob = new Blob([jsonString]);
+        const compressionStream = blob.stream().pipeThrough(new CompressionStream('gzip'));
+        const compressedResponse = new Response(compressionStream);
+        const compressedBuffer = await compressedResponse.arrayBuffer();
 
-    // 2. Open the game in a new tab/window
-    // The 'test=true' query param tells the game to look in localStorage
-    window.open('index.html?mapEditorTest=true', '_blank');
+        // 2. Convert Buffer to Base64 (URL Safe)
+        const base64String = btoa(String.fromCharCode(...new Uint8Array(compressedBuffer)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+
+        // 3. Open index.html with the customMap parameter
+        // This reuses your existing shared link logic in main.js
+        const testUrl = `index.html?customMap=${base64String}`;
+        window.open(testUrl, '_blank');
+        
+    } catch (err) {
+        console.error("Failed to generate test link:", err);
+        alert("Error launching test map. Check console.");
+    }
 });
 
 document.addEventListener('DOMContentLoaded', async () => {

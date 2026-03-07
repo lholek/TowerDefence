@@ -408,41 +408,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateMapPreview()
 
     const urlParams = new URLSearchParams(window.location.search);
-    const isTestMode = urlParams.get('mapEditorTest') === 'true';
-
-    if (isTestMode) {
-        const rawData = localStorage.getItem('test_map_data');
-        if (rawData) {
-            try {
-                const testMapData = JSON.parse(rawData);
-                
-                // Hide overlays immediately
-                document.getElementById('startOverlay').style.display = 'none';
-                document.getElementById('title').style.display = 'none';
-                document.getElementById('subtitle').style.display = 'none';
-
-                // Initialize Game
-                game = new Game(canvas);
-                game.setSpeed(1);
-                
-                // Load the JSON object directly
-                await game.loadGameData(testMapData);
-                
-                window.game = game;
-                game.start();
-                
-                // Force UI to tower mode
-                document.getElementById('towerModeBtn')?.click();
-                game.logEvent("<b>Test Mode:</b> Map imported from Editor");
-
-            } catch (err) {
-                console.error("Test Map Load Failed:", err);
-                alert("Failed to load test map. Check console.");
-            }
-        }
-    }
     /* ------------------------------------------ */
-    /* ------------ SHARE LINK LOGIC ------------ */
+    /* ------------ SHARE LINK / TEST MAP LOGIC ------------ */
     /* ------------------------------------------ */
     // New function for Hashes
     async function loadMapFromHash(hash) {
@@ -465,29 +432,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- Check for Shared Custom Map in URL ---
+    // --- Check for Shared Custom Map in URL ---
     const customMapHash = urlParams.get('customMap');
 
     if (customMapHash) {
         const importedData = await loadMapFromHash(customMapHash);
 
         if (importedData) {
-            // Hide UI and start game exactly like your Test Mode
+            // 1. UI Cleanup: Hide overlays and titles
             document.getElementById('startOverlay').style.display = 'none';
             if(document.getElementById('title')) document.getElementById('title').style.display = 'none';
+            if(document.getElementById('subtitle')) document.getElementById('subtitle').style.display = 'none';
 
-            game = new Game(canvas);
+            // 2. Kill old game if it exists (replaces the canvas)
+            if (game) {
+                game.destroy(); 
+            }
+
+            // 3. Get the FRESH canvas created by destroy()
+            const freshCanvas = document.getElementById('gameCanvas');
+
+            // 4. Initialize Game properly
+            game = new Game(freshCanvas);
+            window.game = game; // Essential for UI.js and global pause listeners
             game.setSpeed(1);
+
             await game.loadGameData(importedData);
-            window.game = game;
             game.start();
 
-            if(document.getElementById('mainContainer')) document.getElementById('mainContainer').style.display = 'block';
-            console.log("Playing shared custom map.");
+            // 5. Show the game container and force UI state
+            document.getElementById('mainContainer').style.display = 'block';
+
+            // This ensures the shop/abilities buttons are responsive
+            document.getElementById('showTowersBtn')?.click(); 
         } else {
             alert("The shared map link is invalid or corrupted.");
         }
     }
     /* ------------------------------------------ */
-    /* ------------ SHARE LINK LOGIC ------------ */
+    /* ------------ SHARE LINK / TEST MAP LOGIC ------------ */
     /* ------------------------------------------ */
 });
