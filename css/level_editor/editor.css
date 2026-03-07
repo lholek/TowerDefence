@@ -470,6 +470,7 @@ hr {
 /* --- Editor Tabs --- */
 .editor-tabs {
     margin-bottom: 20px;
+    z-index: 10;
     display: flex;
     gap: 10px;
     justify-content: center; /* Center the buttons */
