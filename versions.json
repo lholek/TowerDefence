@@ -1,7 +1,7 @@
 {
   "versions": [
     {
-      "version": "Pre-Beta",
+      "version": "Beta Prelude I",
       "release": "-",
       "changes": [
         "Improved - Performance - The game now destroys its instance when returning to the main menu and creates a fresh instance when starting a new game. This prevents memory leaks and improves performance for subsequent sessions",
