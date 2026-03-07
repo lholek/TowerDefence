@@ -467,6 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // This ensures the shop/abilities buttons are responsive
             document.getElementById('showTowersBtn')?.click(); 
         } else {
+            window.history.replaceState({}, document.title, window.location.pathname);
             errorPopupController.open();
         }
     }
