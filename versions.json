@@ -1,7 +1,7 @@
 {
   "versions": [
     {
-      "version": "Pre-Beta I",
+      "version": "Pre-Beta I.",
       "release": "-",
       "changes": [
         "Improved - Performance - The game now destroys its instance when returning to the main menu and creates a fresh instance when starting a new game. This prevents memory leaks and improves performance for subsequent sessions",
@@ -14,8 +14,10 @@
         "Improved - Menu - Added author name and version number to the bottom-left corner of the menu",
         "Improved - UX - Unified the behavior of 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now share a standardized controller, allowing them to be closed by clicking the overlay or pressing the ESC key",
         "Improved - UI - Slightly updated the text in the Pause Menu",
-        "Improve - Add ShareMap via #shared-map - 1) Minify, Gzip, (deflate), pak #base64",
-        "Improve - Remove localstorage of test map and used this #string"
+        "Improved - Editor - New 'ShareMap' button you can easily copy url and get map link of your map",
+        "TODO: Improve - Remove localstorage of test use same logic as in sharing maps",
+        "TODO: Improve - Upgrade the game for smaller devices minimum of 1920x1080 - whit 150%",
+        "TODO: Improve - Add black screen to the samller devices that will say : Supported resolution - 1280x720 - HD, 1920x1080 - Full HD, 2560x1440 - QHD, 3440x1440 - Ultrawide, 3840x2160 - 4k"
       ]
     },
     {

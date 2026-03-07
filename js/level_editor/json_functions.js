@@ -555,3 +555,40 @@ export function getAvailablePaths() {
 
     return paths;
 }
+
+/* ------------------------------------------ */
+/* ------------ SHARE LINK LOGIC ------------ */
+/* ------------------------------------------ */
+/**
+ * Hashes the current map data: Minify -> Gzip -> Base64
+ */
+export async function generateShareLink() {
+    try {
+        const jsonString = JSON.stringify(currentLevelData);
+        
+        // 1. Compress using Gzip (Deflate)
+        const blob = new Blob([jsonString]);
+        const compressionStream = blob.stream().pipeThrough(new CompressionStream('gzip'));
+        const compressedResponse = new Response(compressionStream);
+        const compressedBuffer = await compressedResponse.arrayBuffer();
+
+        // 2. Convert Buffer to Base64 (URL Safe)
+        const base64String = btoa(String.fromCharCode(...new Uint8Array(compressedBuffer)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+
+        // 3. Create URL and copy to clipboard
+        const shareUrl = `${window.location.origin}${window.location.pathname.replace('level_editor.html', 'index.html')}?customMap=${base64String}`;
+        
+        await navigator.clipboard.writeText(shareUrl);
+        modules.setStatus("Share link copied to clipboard!");
+        
+    } catch (err) {
+        console.error("Hashing failed:", err);
+        modules.setStatus("Failed to generate link.", true);
+    }
+}
+/* ------------------------------------------ */
+/* ------------ SHARE LINK LOGIC ------------ */
+/* ------------------------------------------ */

@@ -297,6 +297,18 @@ hr {
     border: none;
 }
 
+.btn-blue {
+    background-color: #244669 !important; 
+    box-shadow: none;
+    border: none;
+    margin: 0 auto;
+}
+
+.btn-blue:hover {
+    background-color: #2f5c8a !important; 
+    box-shadow: none;
+    border: none;
+}
 .cl-green{
     background-color: #3F7D3C !important; 
     box-shadow: none;

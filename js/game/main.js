@@ -441,4 +441,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
+    /* ------------------------------------------ */
+    /* ------------ SHARE LINK LOGIC ------------ */
+    /* ------------------------------------------ */
+    // New function for Hashes
+    async function loadMapFromHash(hash) {
+        try {
+            // 1. Restore Base64 padding and characters
+            const base64 = hash.replace(/-/g, '+').replace(/_/g, '/');
+            const binaryString = atob(base64);
+            const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+        
+            // 2. Decompress Gzip
+            const decompressionStream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+            const decompressedResponse = new Response(decompressionStream);
+            const jsonString = await decompressedResponse.text();
+            
+            return JSON.parse(jsonString);
+        } catch (err) {
+            console.error("Failed to unpack custom map:", err);
+            return null;
+        }
+    }
+
+    // --- Check for Shared Custom Map in URL ---
+    const customMapHash = urlParams.get('customMap');
+
+    if (customMapHash) {
+        const importedData = await loadMapFromHash(customMapHash);
+
+        if (importedData) {
+            // Hide UI and start game exactly like your Test Mode
+            document.getElementById('startOverlay').style.display = 'none';
+            if(document.getElementById('title')) document.getElementById('title').style.display = 'none';
+
+            game = new Game(canvas);
+            game.setSpeed(1);
+            await game.loadGameData(importedData);
+            window.game = game;
+            game.start();
+
+            if(document.getElementById('mainContainer')) document.getElementById('mainContainer').style.display = 'block';
+            console.log("Playing shared custom map.");
+        } else {
+            alert("The shared map link is invalid or corrupted.");
+        }
+    }
+    /* ------------------------------------------ */
+    /* ------------ SHARE LINK LOGIC ------------ */
+    /* ------------------------------------------ */
 });
