@@ -434,6 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Check for Shared Custom Map in URL ---
     // --- Check for Shared Custom Map in URL ---
     const customMapHash = urlParams.get('customMap');
+    const errorPopupController = new PopupController(null, 'errorPopup');
 
     if (customMapHash) {
         const importedData = await loadMapFromHash(customMapHash);
@@ -466,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // This ensures the shop/abilities buttons are responsive
             document.getElementById('showTowersBtn')?.click(); 
         } else {
-            alert("The shared map link is invalid or corrupted.");
+            errorPopupController.open();
         }
     }
     /* ------------------------------------------ */

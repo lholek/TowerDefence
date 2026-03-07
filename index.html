@@ -403,7 +403,7 @@
   <!-- Version History Popup -->
   <div id="versionPopup">
     <div id="versionPopupContent" class="popup-content">
-      <h2 class="text-center text-center cl-primary">Version History</h2>
+      <h2 class="text-center cl-primary">Version History</h2>
       <div id="versionList"></div>
     </div>
   </div>
@@ -436,6 +436,14 @@
       <style>
           @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
       </style>
+  </div>
+
+  <div id="errorPopup" class="error-overlay" class="popup-content" >
+    <div class="error-overlay-content">
+        <h2 id="errorTitle" class="error-overlay-title text-center cl-primary">Map Error</h2>
+        <p id="errorMessage" class="error-overlay-message">The shared map link is invalid or corrupted.</p>
+        <button class="close-btn btn btn-primary">Understood</button>
+    </div>
   </div>
 
   <script type="module" src="js/game/main.js"></script>

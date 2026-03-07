@@ -15,9 +15,8 @@
         "Improved - UX - Unified the behavior of 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now share a standardized controller, allowing them to be closed by clicking the overlay or pressing the ESC key",
         "Improved - UI - Slightly updated the text in the Pause Menu",
         "Improved - Editor - New 'ShareMap' button you can easily copy url and get map link of your map",
-        "!!!TDOO: Improve - When URL is wrong or user click Start Game and the json is malformed it should show warning popup 'The file is incomplete or corrupted'",
         "TODO: Improve - Upgrade the game for smaller devices minimum of 1920x1080 - whit 150%",
-        "TODO: Improve - Add black screen to the samller devices that will say : Supported resolution - 1280x720 - HD, 1920x1080 - Full HD, 2560x1440 - QHD, 3440x1440 - Ultrawide, 3840x2160 - 4k"
+        "TODO: Improve - Add black screen to the smaller devices that will say : Supported resolution - 1280x720 - HD, 1920x1080 - Full HD, 2560x1440 - QHD, 3440x1440 - Ultrawide, 3840x2160 - 4k"
       ]
     },
     {
