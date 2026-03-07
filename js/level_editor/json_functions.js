@@ -44,7 +44,6 @@ if (confirmPopup) {
     });
 }
 
-
 /**
  * Shows a custom confirmation dialog.
  * @param {string} title - The title for the popup.

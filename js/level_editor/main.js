@@ -80,4 +80,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -- call FinalJSON rewrite on reaload
     jsonFunctions.modifyJson(()=>{});
+
+    /* Share button */
+    const shareBtn = document.getElementById('shareMapBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            // Zavolá funkci z importovaného modulu jsonFunctions
+            await jsonFunctions.generateShareLink();
+            
+            // Malý bonus: vizuální změna tlačítka
+            const originalText = shareBtn.textContent;
+            shareBtn.textContent = "Copied!";
+            
+            setTimeout(() => {
+                shareBtn.textContent = originalText;
+            }, 2000);
+        });
+    }
+    /* Share button */
 });
