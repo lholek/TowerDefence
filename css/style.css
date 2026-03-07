@@ -16,7 +16,7 @@
 
 html{
   background-color: var(--bg-color);
-  background-size: cover;
+  height: 100%;
 }
 /* body */
 body {
@@ -441,6 +441,7 @@ canvas {
     background-repeat: no-repeat !important;
     background-size: cover !important;
     background-position: center center !important;
+    background-attachment: fixed;
     
     /* Výchozí obrázek (pro 16:9 a užší) */
     background-image: url('../assets/images/menu_background_16_9.png') !important;
@@ -456,6 +457,9 @@ canvas {
     .overlay-full {
         /* Cesta k širší verzi obrázku */
         background-image: url('../assets/images/menu_background_21_9.png') !important;
+        width: 100vw;
+        height: 100vh;
+        background-size: cover;
     }
 }
 .overlay-center {
