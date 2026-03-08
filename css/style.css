@@ -48,6 +48,11 @@ h3 {
     position: relative;
     z-index: 101;
 }
+@media screen and (max-height: 1200px) {
+    .title {
+        padding: 0rem;
+    }
+}
 
 .subtitle {
     text-align: center;
@@ -67,6 +72,12 @@ h3 {
     transition: background 0.2s;
 }
 
+@media screen and (max-height: 1200px) {
+    .title-select-map {
+        display: none !important;
+    }
+}
+
 .titles{
     display: flex;
     flex-direction: column;
@@ -76,6 +87,18 @@ h3 {
     top: 0;
     position: absolute;
 }
+@media screen and (max-height: 1200px) {
+    .main-title{
+        margin-top: 3px !important;
+    }
+}
+
+@media screen and (max-height: 1200px) {
+    .titles  {
+        gap: 2px;
+    }
+}
+
 
 .title, .subtitle {
     display: block;
@@ -142,6 +165,11 @@ h3 {
     outline: none;
 }
 
+@media screen and (max-height: 1200px) {
+    .btn {
+        padding: 9px;
+    }
+}
 /* Hover: The button glows slightly */
 .btn:hover {
     background-color: #a0522d; /* Slightly lighter brown */
@@ -209,6 +237,13 @@ margin: 0.25rem;
   border-radius: 6px;
   width: 1200px;
 }
+
+@media screen and (max-height: 1200px) {
+    .top-ui {
+        padding: 5px 16px;
+    }
+}
+
 .top-ui div {
   margin: 0 8px;
 }
@@ -307,6 +342,12 @@ canvas {
     background: var(--main-bg-color);
     border: 3px solid transparent;
     overflow: hidden;
+}
+
+@media screen and (max-height: 800px) {
+    .shop-item {
+        padding: 3px;
+    }
 }
 
 /* Hover State: Glows with the specific color of the tower */
