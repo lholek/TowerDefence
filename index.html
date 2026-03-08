@@ -66,7 +66,7 @@
 
       <h2 class="title">Select map</h2>
       <!-- Styled select on its own row -->
-      <div id="mapSelectionArea" class="map-mode">
+      <div id="mapSelectionArea">
         <select id="mapSelect" class="styled-select">
           <option value="./games/00X_test.json">Test Map</option>
           <option value="./games/001_basicGame.json">Basic</option>
@@ -86,7 +86,7 @@
         <input type="file" id="mapFileInput" accept=".json">
       </div>
       
-      <div class="map-mode-toggle">
+      <div>
           <button id="modeSelectBtn" class="btn active-mode">Standart Maps</button>
           <button id="modeFileBtn" class="btn">Custom maps</button>
       </div>
@@ -430,6 +430,7 @@
     </div>
   </div>
 
+  <!-- Loading Overlay -->
   <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; flex-direction: column; justify-content: center; align-items: center; color: white;">
       <div class="loader-spinner" style="border: 6px solid #f3f3f3; border-top: 6px solid #e74c3c; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite;"></div>
       <h2 style="margin-top: 20px; font-family: 'MedievalSharp', cursive, sans-serif; letter-spacing: 2px;">Creating Game...</h2>
@@ -438,6 +439,7 @@
       </style>
   </div>
 
+  <!-- Map Error Popup -->
   <div id="errorPopup" class="error-overlay" class="popup-content" >
     <div class="error-overlay-content">
         <h2 id="errorTitle" class="error-overlay-title text-center cl-primary">Map Error</h2>
@@ -446,6 +448,21 @@
     </div>
   </div>
 
+  <!-- Resolution Blocker -->
+  <div id="resolution-blocker">
+    <div class="blocker-content">
+        <div class="warning-icon">⚠️</div>
+        <h2>Unsupported Resolution</h2>
+        <p>This game requires a larger screen to display the battlefield correctly.</p>
+        <hr>
+        <p class="supported-list">
+            <strong>Supported Resolutions:</strong><br>
+            1280x720 (HD) | 1920x1080 (Full HD)<br>
+            2560x1440 (QHD) | 3440x1440 (Ultrawide)<br>
+            3840x2160 (4K)
+        </p>
+    </div>
+</div>
   <script type="module" src="js/game/main.js"></script>
   <script type="module" src="js/versions.js"></script>
   <script type="module" src="js/PopupController.js"></script>
