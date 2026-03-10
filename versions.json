@@ -4,19 +4,19 @@
       "version": "Pre-Beta I.",
       "release": "-",
       "changes": [
-        "Improved - Performance - The game now destroys its instance when returning to the main menu and creates a fresh instance when starting a new game. This prevents memory leaks and improves performance for subsequent sessions",
-        "Improved - Graphics - Expanded graphics settings (Low, High). You can now set the quality for specific elements (enemies, towers, map, etc.) individually",
+        "Improved - Performance - The game now destroys its instance when returning to the main menu and creates a fresh one when starting a new game; this prevents memory leaks and improves performance for subsequent sessions",
+        "Improved - Graphics - Expanded graphics settings (Low, High). Quality can now be set individually for specific elements (enemies, towers, map, etc.)",
         "Improved - Graphics - Trees of Life are slightly larger on both Low and High settings",
-        "Improved - Graphics - Towers, Lava Floor, Terrains, Roads, and Water are simplified on Low settings",
+        "Improved - Graphics - Towers, Lava Floor, Terrains, Roads, and Water assets are simplified on Low settings",
         "Improved - Menu - Updated the main menu with a new background image",
         "Improved - Menu - Added a new 'Lore' button with a fiery visual effect",
-        "Improved - Menu - Improved 'How to play' (Tutorial / Guide) section",
-        "Improved - Menu - Added author name and version number to the bottom-left corner of the menu",
-        "Improved - UX - Unified the behavior of 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now share a standardized controller, allowing them to be closed by clicking the overlay or pressing the ESC key",
-        "Improved - UI - Slightly updated the text in the Pause Menu",
-        "Improved - Editor - New 'ShareMap' button you can easily copy url and get map link of your map",
-        "Improved - Upgrade the game for smaller devices (minimum of 1920x1080)",
-        "Improved - Add black screen to the smaller devices that will say : Supported resolution - 1280x720 - HD, 1920x1080 - Full HD, 2560x1440 - QHD, 3440x1440 - Ultrawide, 3840x2160 - 4k"
+        "Improved - Menu - Enhanced 'How to Play' (Tutorial / Guide) section",
+        "Improved - Menu - Added author name and version number to the bottom-left corner",
+        "Improved - UX - Unified behavior for 'Settings', 'How to Play', 'Lore', and 'Versions' sections. All popups now use a standardized controller, allowing them to be closed by clicking the overlay or pressing ESC",
+        "Improved - UI - Refined text in the Pause Menu",
+        "Improved - Editor - Added 'ShareMap' button to easily copy the URL and share map links",
+        "Improved - Compatibility - Optimized the game for different screen sizes (minimum recommended: 1280x720)",
+        "Improved - UI - Added an overlay for unsupported resolutions, listing compatible formats: - 1280x720 - HD, Full HD, QHD, Ultrawide and 4K"
       ]
     },
     {
