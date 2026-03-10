@@ -167,7 +167,7 @@ h3 {
 
 @media screen and (max-height: 1200px) {
     .btn {
-        padding: 9px;
+        padding: 11px;
     }
 }
 /* Hover: The button glows slightly */
@@ -299,6 +299,7 @@ canvas {
     scroll-behavior: smooth;
     margin: 0 auto;
     padding: 15px;
+    padding-top: 8px;
     white-space: nowrap; 
     background: transparent;
     border-radius: 12px;
