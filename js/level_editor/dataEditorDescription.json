@@ -1,10 +1,13 @@
 {
   "map-settings": {
+    "map-title": {
+      "description": "The name of the map"
+    },
     "starting-coins": {
-      "description": "The amount of gold the player starts with to build their first towers."
+      "description": "The amount of gold the player starts with"
     },
     "game-lifes": {
-      "description": "Indicates the starting health of the player at the beginning of the match."
+      "description": "Indicates the starting health of the player at the beginning of the game"
     }
 
   },

@@ -18,7 +18,6 @@ TODOS:
   "???TODO: New Ability - 'Freeze'",
 
 Sometime:
-  "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 
 Pre-beta II.:
