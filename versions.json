@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Pre-Beta I.",
-      "release": "-",
+      "release": "2026-03-13",
       "changes": [
         "Improved - Performance - The game now destroys its instance when returning to the main menu and creates a fresh one when starting a new game; this prevents memory leaks and improves performance for subsequent sessions",
         "Improved - Graphics - Expanded graphics settings (Low, High). Quality can now be set individually for specific elements (enemies, towers, map, etc.)",
