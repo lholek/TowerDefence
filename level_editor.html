@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/level_editor/wave.css" /> 
     <link rel="stylesheet" href="css/level_editor/ability.css" /> 
     <link rel="stylesheet" href="css/helpers.css" /> 
+    <link rel="stylesheet" href="css/level_editor/tooltipController.css" /> 
 </head>
 <body class="editor-body">
     <div class="editor-container box">
@@ -89,7 +90,7 @@
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', parseInt(this.value))">
                         </div>
                         <div class="input-group mt-4">
-                            <label for="startingLifesInput">❤️ Starting Lifes</label>
+                            <label for="startingLifesInput">❤️ Starting Lifes<i class="info-icon" data-tooltip="game-lifes">i</i></label>
                             <input type="number" id="startingLifesInput" value="1" min="1"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', parseInt(this.value))">
                         </div>
@@ -222,5 +223,6 @@
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
+    <script type="module" src="js/level_editor/TooltipController.js"></script>
 </body>
 </html>

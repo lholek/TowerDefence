@@ -1,0 +1,45 @@
+/* Styl pro informační ikonku 'i' */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background-color: #f0c674;
+    color: black;
+    border-radius: 50%; /* Udělá kroužek */
+    font-size: 12px;
+    font-style: italic;
+    font-family: serif;
+    cursor: pointer;
+    margin-left: 8px;
+    vertical-align: middle;
+    transition: background-color 0.2s;
+}
+
+.info-icon:hover {
+    background-color: #ffaa00; /* Barva při najetí */
+}
+
+/* Úprava tooltipu pro lepší čitelnost nad kurzorem */
+#dynamic-tooltip {
+    background: rgba(20, 20, 25, 0.98);
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #2e261d; /* Přidán barevný okraj */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    max-width: 250px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center; /* Vycentrovat text v tooltipu */
+    transition: opacity 0.15s ease-out; /* Jemný efekt */
+}
+
+.tooltip-title {
+    font-weight: bold;
+    color: #ffaa00;
+    margin-bottom: 5px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 170, 0, 0.2);
+    padding-bottom: 3px;
+}

@@ -1,0 +1,5 @@
+{
+  "game-lifes": {
+    "description": "Indicates starting lives of Player"
+  }
+}

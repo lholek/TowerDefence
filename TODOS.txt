@@ -18,15 +18,15 @@ TODOS:
   "???TODO: New Ability - 'Freeze'",
 
 Sometime:
-  "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
-  "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
   "TODO: Improve - Editor - Give some Guide that will exmplain basic behaviour of the Editor",
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 
 Pre-beta II.:
+  "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
   "TODO: Improve - Graphics - More backgrounds for maps",
   "TODO: Improve - !!Gameplay - Add enemy types that deal more damage to the Trees of Life",
   "TODO: Improve - Code - Clean up code and add comments",
+  "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
 Pre-beta III.:
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta III ??]",
 
