@@ -53,16 +53,31 @@ class TooltipController {
         });
     }
 
-    show(key, event) {
-        const item = this.tooltipData[key];
-        if (!item) return;
+    show(path, event) {
+        if (!path.includes('.')) {
+            console.warn(`Path "${path}" is missing a dot (format: section.item)`);
+            return;
+        }
+    
+        const parts = path.split('.');
+        const sectionKey = parts[0];
+        const itemKey = parts[1];
+    
+        // Zbytek tvého kódu je v pořádku...
+        const item = (this.tooltipData[sectionKey] && this.tooltipData[sectionKey][itemKey]) 
+                 ? this.tooltipData[sectionKey][itemKey] 
+                 : null;
 
-        // Build the HTML content
+        if (!item) {
+            console.warn(`Tooltip not found for path: ${path}`);
+            return;
+        }
+
         this.tooltipElement.innerHTML = `
             <div class="tooltip-desc">${item.description}</div>
             ${item.category ? `<div class="tooltip-cat">${item.category}</div>` : ''}
         `;
-        
+
         this.tooltipElement.style.display = 'block';
         this.position(event);
     }
@@ -70,20 +85,20 @@ class TooltipController {
     position(e) {
         const offsetX = 0; // Střed
         const offsetY = 20; // Mezera nad kurzorem
-        
+
         // Získáme rozměry tooltipu
         const tooltipWidth = this.tooltipElement.offsetWidth;
         const tooltipHeight = this.tooltipElement.offsetHeight;
-        
+
         // Výpočet: Pozice kurzoru - polovina šířky tooltipu (pro vycentrování)
         let left = e.clientX - (tooltipWidth / 2);
         // Výpočet: Pozice kurzoru - výška tooltipu - mezera (pro umístění nad)
         let top = e.clientY - tooltipHeight - offsetY;
-        
+
         // Prevence přetečení mimo obrazovku (dobrovolné)
         if (left < 10) left = 10;
         if (top < 10) top = e.clientY + 20; // Pokud je nahoře málo místa, skočí pod kurzor
-        
+
         this.tooltipElement.style.left = `${left}px`;
         this.tooltipElement.style.top = `${top}px`;
     }

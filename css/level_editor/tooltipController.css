@@ -34,12 +34,3 @@
     text-align: center; /* Vycentrovat text v tooltipu */
     transition: opacity 0.15s ease-out; /* Jemný efekt */
 }
-
-.tooltip-title {
-    font-weight: bold;
-    color: #ffaa00;
-    margin-bottom: 5px;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(255, 170, 0, 0.2);
-    padding-bottom: 3px;
-}

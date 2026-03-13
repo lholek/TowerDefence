@@ -1,5 +1,20 @@
 {
-  "game-lifes": {
-    "description": "Indicates starting lives of Player"
+  "map-settings": {
+    "game-lifes": {
+      "description": "Indicates the starting health of the player at the beginning of the match."
+    },
+    "starting-coins": {
+      "description": "The amount of gold the player starts with to build their first towers."
+    }
+  },
+  "tower-editor": {
+    "fire-tower": {
+      "description": "ddd"
+    }
+  },
+  "waves": {
+    "wave-delay": {
+      "description": "ddd"
+    }
   }
 }
