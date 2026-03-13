@@ -22,7 +22,6 @@ Sometime:
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 
 Pre-beta II.:
-  "TODO: Improve - Editor - Add info ('i') to editor 'How to Build' section.",
   "TODO: Improve - Graphics - More backgrounds for maps",
   "TODO: Improve - !!Gameplay - Add enemy types that deal more damage to the Trees of Life",
   "TODO: Improve - Code - Clean up code and add comments",
