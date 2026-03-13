@@ -170,6 +170,11 @@ h3 {
         padding: 11px;
     }
 }
+@media screen and (max-height: 900px) {
+    .btn {
+        padding: 9px;
+    }
+}
 /* Hover: The button glows slightly */
 .btn:hover {
     background-color: #a0522d; /* Slightly lighter brown */
@@ -223,6 +228,11 @@ margin: 0.25rem;
     flex-direction: column;
     gap: 8px;
 }
+@media screen and (max-height: 900px) {
+    #gameArea {
+        gap: 5px;
+    }
+}
 
 /* top UI */
 .top-ui {
@@ -243,6 +253,13 @@ margin: 0.25rem;
         padding: 5px 16px;
     }
 }
+@media screen and (max-height: 900px) {
+    .top-ui {
+        padding: 5px 16px;
+        margin-top: -20px;
+    }
+}
+
 
 .top-ui div {
   margin: 0 8px;
@@ -345,7 +362,7 @@ canvas {
     overflow: hidden;
 }
 
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 900px) {
     .shop-item {
         padding: 3px;
     }

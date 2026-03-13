@@ -314,6 +314,12 @@
     margin-left: 5px;
 }
 
+@media screen and (max-height: 900px) {
+    .ability-card {
+        padding: 3px;
+    }
+}
+
 .ability-card:hover {
   transform: scale(1.05);
   cursor: pointer;
@@ -367,6 +373,12 @@
 .ability-dmg {
   line-height: 1.5;
 }
+@media screen and (max-height: 900px) {
+    .ability-dmg {
+        padding: 1px;
+    }
+}
+
 
 /* The numbers (+500%) */
 .stat-value {
@@ -445,6 +457,12 @@
   gap: 2px;
   flex-direction: column;
   text-align: center;
+}
+
+@media screen and (max-height: 900px) {
+    .ability-meta {
+        font-size: 14px;
+    }
 }
 
 .ability-timer {
@@ -705,6 +723,12 @@
 @media screen and (max-height: 1200px) {
     .menu-container {
         gap: 8px;
+    }
+}
+
+@media screen and (max-height: 900px) {
+    .menu-container {
+        gap: 6px;
     }
 }
 
