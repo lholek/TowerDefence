@@ -1,4 +1,4 @@
-TODOS:
+LONG TODOS:
 + price or time or level to unlock towers
 + UI music
 + Teleports
@@ -16,15 +16,16 @@ TODOS:
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
   "???TODO: New Ability - 'Freeze'",
-
 Sometime:
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
-
+---------------------------------------------------------------------------------------------
 Pre-beta II.:
   "TODO: Improve - Graphics - More backgrounds for maps",
   "TODO: Improve - !!Gameplay - Add enemy types that deal more damage to the Trees of Life",
   "TODO: Improve - Code - Clean up code and add comments",
-  "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
+  "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]"
+  
 Pre-beta III.:
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta III ??]",
 
+Beta 1.0
