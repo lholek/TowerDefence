@@ -1,28 +1,28 @@
 {
   "map-settings": {
     "map-title": {
-      "description": "The name of the map"
+      "description": "The display name of the level."
     },
     "starting-coins": {
-      "description": "The amount of gold the player starts with"
+      "description": "The amount of gold the player starts with."
     },
     "starting-lifes": {
-      "description": "Indicates the starting health of the player at the beginning of the game"
+      "description": "The amount of lives the player starts with."
     },
     "extra-lifes": {
-      "description": "Enables the 'Extra Life' button in-game"
+      "description": "A toggle to enable or disable the 'Extra Life' purchase button."
     },
     "extra-lifes-prices": {
-      "description": "Comma-separated prices for extra lives. Leave blank to use default settings."
+      "description": "The price progression for extra lives. Leave blank for default settings."
     },
     "description-text": {
-      "description": "A short story or overview of the map displayed to the player before starting."
+      "description": "A brief overview or lore of the map shown before the game starts."
     },
     "tile-size": {
-      "description": "The fixed pixel size of a single map tile. This value is constant and cannot be changed."
+      "description": "The fixed pixel dimensions of each map tile. This value is read-only."
     },
     "difficulty": {
-      "description": "Represents the map's challenge level, typically indicated by star icons or difficulty names."
+      "description": "The challenge level of the map, usually represented by stars."
     }
   },
   "tower-editor": {
