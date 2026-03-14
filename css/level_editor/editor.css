@@ -678,3 +678,45 @@ hr {
     color: #f0c674;
     padding-left: 10px;
 }
+
+.extraLifeCheckbox {
+    appearance: none; /* Odstraní výchozí vzhled prohlížeče */
+    -webkit-appearance: none;
+    width: 20px;      /* Šířka */
+    height: 20px;     /* Výška */
+    background-color: #2a2a2a; /* Barva pozadí (tmavá jako tvůj editor) */
+    border: 2px solid #4a4a4a; /* Okraj */
+    border-radius: 4px;        /* Zaoblení rohů */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Styl při najetí myší */
+#extraLifeCheckbox:hover {
+    border-color: #f0c674; /* Zvýraznění okrajem */
+}
+
+/* Styl když je checkbox ZAŠKRTNUTÝ */
+#extraLifeCheckbox:checked {
+    background-color: #f0c674; /* Pozadí se změní na tvou hlavní barvu */
+    border-color: #f0c674;
+}
+
+/* Vykreslení fajfky (symbolu) pomocí pseudo-elementu */
+#extraLifeCheckbox:checked::after {
+    content: '✔'; /* Symbol fajfky */
+    color: #000;  /* Barva fajfky */
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Fokus (když se na něj dostaneš tabulátorem) */
+#extraLifeCheckbox:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
+}
