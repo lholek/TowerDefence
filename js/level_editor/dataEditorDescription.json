@@ -1,4 +1,15 @@
 {
+  "map-editor": {
+    "map-dimensions": {
+      "description": "The total number of tiles in the map grid. Resize Map - Applies the new dimensions to the map. Warning: Shrinking the map may erase existing tiles."
+    },
+    "tile-types": {
+      "description": "The type of terrain surface selected for drawing on the map."
+    },
+    "brush-settings": {
+      "description": "The shape and diameter of the brush size used for drawing tiles."
+    }
+  },
   "map-settings": {
     "map-title": {
       "description": "The display name of the level."

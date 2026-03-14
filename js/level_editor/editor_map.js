@@ -538,6 +538,7 @@ function createTileKey() {
         <p>
             <strong>Selected:</strong> <span id="currentTileDisplay" class="current-tile-display"></span> 
             | <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
+            <i class="info-icon" data-tooltip="map-editor.tile-types">i</i>
         </p>
         
         <div class="tile-grid-main" style="

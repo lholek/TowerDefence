@@ -34,20 +34,18 @@
             <div id="mapEditorPanel" class="editor-panel map-layout-wrapper"> 
                 <h2>Map</h2>
                 <div class="map-size-controls">
-                    <label for="mapWidth">Width:</label>
+                    <label for="mapWidth">Width</label>
                     <input type="number" id="mapWidth" min="3" value="11" class="input-small">
-                    
-                    <label for="mapHeight">Height:</label>
+                    <label for="mapHeight">Height</label>
                     <input type="number" id="mapHeight" min="3" value="3" class="input-small">
-
                     <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
+                    <i class="info-icon" data-tooltip="map-editor.map-dimensions">i</i>
                 </div>
                 
                 <div id="mapCanvasContainer" class="map-canvas-container">
                     <canvas id="mapCanvas"></canvas>
                     <div id="cloudsLayer" class="cloudsLayer"></div>
                 </div>       
-                
                 <div id="tileDrawingPanel" class="tileDrawingPanel">
                     <div>
                         <div id="tileKey" class="tile-key-container editor-key-container"></div>
@@ -56,6 +54,7 @@
                     <div>
                         <div class="control-group brush-key-container editor-key-container mt-0">
                             <label>Brush Settings</label>
+                            <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
                             <div class="brush-toolbar brush-options">
                                 <button id="btn-brush-square" class="btn-brush active" 
                                 onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
