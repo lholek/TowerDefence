@@ -33,7 +33,7 @@
       "description": "The fixed pixel dimensions of each map tile. This value is read-only."
     },
     "difficulty": {
-      "description": "The challenge level of the map, usually represented by stars."
+      "description": "The challenge level of the map, usually represented by ⭐."
     }
   },
   "tower-editor": {
