@@ -126,7 +126,7 @@ export const abilityEditor = (() => {
                             </div>
                         ` : `
                             <label>Damage <input type="number" data-key="damage" value="${ability.damage || 0}"></label>
-                            <label>Damage Freq <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
+                            <label>Damage Frequency <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
                             <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}"></label>
                         `}
                     </div>
