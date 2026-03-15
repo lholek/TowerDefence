@@ -366,12 +366,10 @@ function applyBackground(type) {
   const clouds = document.getElementById('cloudsLayer');
   if (!clouds) return;
 
-  // Remove classes to reset animations
-  clouds.classList.remove('bg-sky', 'bg-sea');
+  // Odstraní všechny předchozí třídy pozadí
+  clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
 
-  // Force a tiny reflow to restart animations if needed
-  void clouds.offsetWidth;
-
+  void clouds.offsetWidth; // Restart animací
   clouds.classList.add(`bg-${type}`);
 }
 
