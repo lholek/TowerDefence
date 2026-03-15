@@ -27,7 +27,7 @@
       "description": "The price progression for extra lives. The last price will repeat indefinitely. Leave blank for default settings."
     },
     "description-text": {
-      "description": "A brief overview or lore of the map shown before the game starts."
+      "description": "A brief overview or lore of the map shown in the menu as description."
     },
     "tile-size": {
       "description": "The fixed pixel dimensions of each map tile. This value is read-only."
@@ -38,7 +38,25 @@
   },
   "tower-editor": {
     "price": {
-      "description": "ddd"
+      "description": "The gold cost required to build the tower."
+    },
+    "damage": {
+      "description": "The amount of health removed from an enemy with each hit."
+    },
+    "fire-rate": {
+      "description": "The interval between shots measured in milliseconds (e.g., 400ms)."
+    },
+    "range": {      
+      "description": "The detection radius where the tower first targets an enemy."
+    },
+    "speed": {
+      "description": "The travel velocity of the tower's projectiles."
+    },
+    "sell-price": {
+      "description": "The amount of gold returned when the tower is sold."
+    },
+    "color": {
+      "description": "The color of the flags on the tower's building."
     }
   },
   "waves": {

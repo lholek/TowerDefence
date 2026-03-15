@@ -96,16 +96,43 @@ export const towerEditor = (() => {
                     </div>
                     
                     <div class="card-body">
-                        <label>🪙 Price <input type="number" name="price" data-key="price" value="${tower.price}" min="0"></label>
-                        <label>⚔️ Damage <input type="number" name="damage" data-key="damage" value="${tower.damage}" min="0"></label>
-                        <label>🕐 Fire Rate (ms) <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1"></label>
-                        <label>🎯 Range  
-                            <input type="number" name="range" data-key="range" value="${tower.range}" min="1">
-                            <span class="range-tile-info">(${rangeInTiles} tiles)</span>
+                        <label class="editor-row">
+                            <span class="label-text">🪙 Price <i class="info-icon" data-tooltip="tower-editor.price">i</i></span>
+                            <input type="number" name="price" data-key="price" value="${tower.price}" min="0">
                         </label>
-                        <label>🗲 Speed <input type="number" name="speed" data-key="speed" value="${tower.speed}" min="1"></label>
-                        <label>💰 Sell Price <input type="number" name="sell_price" data-key="sellPrice" value="${tower.sellPrice}" min="0"></label>
-                        <label class="card-body-tower-color">Color <input type="color" name="color" data-key="color" value="${tower.color}"></label>
+
+                        <label class="editor-row">
+                            <span class="label-text">⚔️ Damage <i class="info-icon" data-tooltip="tower-editor.damage">i</i></span>
+                            <input type="number" name="damage" data-key="damage" value="${tower.damage}" min="0">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">🕐 Fire Rate <i class="info-icon" data-tooltip="tower-editor.fire-rate">i</i></span>
+                            <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">🎯 Range <i class="info-icon" data-tooltip="tower-editor.range">i</i></span>
+                            <div class="input-group">
+                                <input type="number" name="range" data-key="range" value="${tower.range}" min="1">
+                                <span class="range-tile-info">(${rangeInTiles} tiles)</span>
+                            </div>
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="tower-editor.speed">i</i></span>
+                            <input type="number" name="speed" data-key="speed" value="${tower.speed}" min="1">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">💰 Sell Price <i class="info-icon" data-tooltip="tower-editor.sell-price">i</i></span>
+                            <input type="number" name="sell_price" data-key="sellPrice" value="${tower.sellPrice}" min="0">
+                        </label>
+
+                        <label class="editor-row card-body-tower-color">
+                            <span class="label-text">🎨 Color <i class="info-icon" data-tooltip="tower-editor.color">i</i></span>
+                            <input type="color" name="color" data-key="color" value="${tower.color}">
+                        </label>
                     </div>
                 </div>
             `;
