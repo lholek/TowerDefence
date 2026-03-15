@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - Gameplay - Fixed bug that towers were not slected on the start of the game",
+        "Improved - Graphics - New 'Map Style': The Nebula",
         "Improved - Editor - Improved Styles",
         "TODO: Improve - Editor - Added informational tooltips to input fields to explain specific functionalities",
         "TODO: Improve - Editor descriptions - MAP - OK",
@@ -305,7 +306,6 @@
         "Added third tower to the map",
         "Creating basics of the game",
         "Extra life moved to cards"
-
       ]
     },
     {
