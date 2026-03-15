@@ -356,7 +356,7 @@ export const waveEditor = (() => {
                             ${enemiesHtml}
                         </div>
                         </div>
-                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add">Add Enemy Group</button>
+                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add btn-green">Add Enemy Group</button>
                 </div>
             `;
         });
@@ -734,21 +734,21 @@ export const waveEditor = (() => {
         effectsContainer.innerHTML = effects.map((effect, index) => `
             <div class="effect-row">
     
-                <div style="flex: 1;">
-                    <label style="font-size: 0.8em; display:block;">Enemy Type</label>
+                <div class="flex-1">
+                    <label>Enemy Type</label>
                     <select onchange="window.app.waveEditor.updateEffect(${index}, 'type', this.value)" class="input-enemy-effect-type" style="width: 100%;">
                         ${buildOptions(effect.type)}
                     </select>
                 </div>
     
-                <div style="flex: 1;">
-                    <label style="font-size: 0.8em; display:block;">Shake Duration (ms)</label>
+                <div class="flex-1">
+                    <label>Shake Duration (ms)</label>
                     <input type="number" value="${effect.shakeDuration || 0}" step="100" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
                 </div>
     
-                <div style="flex: 1;">
-                    <label style="font-size: 0.8em; display:block;">Shake Intensity (px)</label>
+                <div class="flex-1">
+                    <label>Shake Intensity (px)</label>
                     <input type="number" value="${effect.shakeIntensity || 0}" step="0.5" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
                 </div>
