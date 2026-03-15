@@ -26,5 +26,6 @@ Pre-beta II.:
   
 Pre-beta III.:
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta III ??]",
+        "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
 
 Beta 1.0
