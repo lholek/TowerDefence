@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - Editor - Improved Styles",
+        "Improved - Gameplay - Fixed bug that towers were not slected on the start of the game",
         "TODO: Improve - Editor - Added informational tooltips to input fields to explain specific functionalities",
         "TODO: Improve - Editor descriptions - MAP - OK",
         "TODO: Improve - Editor descriptions - MAP SETTINGS - OK",

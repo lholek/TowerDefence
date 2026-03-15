@@ -204,7 +204,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await game.loadGameData(mapSource);
                 game.start();
                 document.getElementById('mainContainer').style.display = 'block'; // The game area
+               
+                const towerBtn = document.getElementById('towerModeBtn');
+                const abilityBtn = document.getElementById('abilityModeBtn');
 
+                towerBtn?.click();
+
+                towerBtn?.classList.add('active');
+                abilityBtn?.classList.remove('active');
+                
                 loadingOverlay.style.display = 'none';
             } catch (error) {
                 console.error("Game start failed:", error);
