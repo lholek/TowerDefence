@@ -17,6 +17,10 @@
     transition: background-color 0.2s;
 }
 
+.hide-help .info-icon {
+    display: none;
+}
+
 .info-icon:hover {
     background-color: #ffaa00; /* Barva při najetí */
 }

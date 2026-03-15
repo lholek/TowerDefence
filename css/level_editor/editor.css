@@ -309,6 +309,37 @@ hr {
     box-shadow: none;
     border: none;
 }
+
+.btn-help {
+    /* Základní barvy pro Help verzi */
+    background-color: #7b241c;
+    border: none;
+    color: rgb(243, 229, 171);
+    box-shadow: none;
+    /* Převzato z tvého .btn stylu */
+    font-family: Cinzel, serif;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    transition: 0.1s ease-in-out;
+    display: inline-block;
+}
+
+.btn-help:hover {
+    background-color: #922b21;
+    border: none;
+
+    /* Tvůj požadovaný box-shadow efekt (přizpůsobený barvě tlačítka) */
+    box-shadow: rgba(86, 25, 19, 0.5) 0px 10px 20px, #561913 0px -3px 0px inset;
+    transform: translateY(-2px); /* Lehké nadzvednutí pro umocnění efektu stínu */
+}
+
+.btn-help:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
 .cl-green{
     background-color: #3F7D3C !important; 
     box-shadow: none;

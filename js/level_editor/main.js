@@ -98,4 +98,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     /* Share button */
+    /* Toggle Help Button */
+    const helpBtn = document.getElementById('toggleHelp');
+    
+    // --- 1. Inicializace stavu při načtení ---
+    const isHidden = localStorage.getItem('editorHelpHidden') === 'true';
+    
+    if (isHidden) {
+        document.body.classList.add('hide-help');
+        if (helpBtn) helpBtn.innerText = 'Help: OFF';
+    }
+
+    // --- 2. Event Listener pro kliknutí ---
+    if (helpBtn) {
+        helpBtn.addEventListener('click', () => {
+            // Přepne třídu na body
+            const nowHidden = document.body.classList.toggle('hide-help');
+            
+            // Aktualizuje text tlačítka
+            helpBtn.innerText = nowHidden ? 'Help: OFF' : 'Help: ON';
+            
+            // Uloží stav do paměti
+            localStorage.setItem('editorHelpHidden', nowHidden);
+        });
+    }
+    /* Toggle Help Button */
 });
