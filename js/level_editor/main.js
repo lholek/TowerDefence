@@ -123,4 +123,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     /* Toggle Help Button */
+
+    // Inside your DOMContentLoaded listener:
+    const editorBgSelect = document.getElementById('backgroundSelect');
+    const clouds = document.getElementById('cloudsLayer');
+    
+    editorBgSelect.addEventListener('change', (e) => {
+    const theme = e.target.value;
+    
+    // Remove old classes
+    clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
+    
+    // Force a tiny reflow to restart animations (optional but cleaner)
+    void clouds.offsetWidth; 
+    
+    // Add new class
+    clouds.classList.add(`bg-${theme}`);
+});
 });
