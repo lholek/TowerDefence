@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         helpBtn.addEventListener('click', () => {
             // Přepne třídu na body
             const nowHidden = document.body.classList.toggle('hide-help');
-            
+
             // Aktualizuje text tlačítka
             helpBtn.innerText = nowHidden ? 'Help: OFF' : 'Help: ON';
             
