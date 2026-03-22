@@ -59,9 +59,41 @@
       "description": "The color of the flags on the tower's building."
     }
   },
-  "waves": {
-    "type": {
-      "description": "ddd"
+  "shake-effects": {
+    "enemy-type": {
+      "description": "Specifies which enemy type triggers the shake effect."
+    },
+    "shake-duration": {
+      "description": "How long the shake effect lasts once activated."
+    },
+    "shake-intensity": {
+      "description": "The strength of the shake effect during its duration."
+    }
+  },
+  "wave-editor": {
+    "type": { 
+      "description": "Identifies the enemy type. Certain game effects may interact with specific types." 
+    },
+    "count": { 
+      "description": "The number of enemies in this spawn group." 
+    },
+    "health": { 
+      "description": "The health value of each individual enemy in this group." 
+    },
+    "speed": { 
+      "description": "The movement speed of enemies in this group." 
+    },
+    "path": { 
+      "description": "The route enemies follow. Example: S1→E1 means they move from Start 1 to Exit 1." 
+    },
+    "interval": { 
+      "description": "The time interval between spawning each enemy in the group." 
+    },
+    "first-delay": { 
+      "description": "The delay before the first enemy of this group appears." 
+    },
+    "coin-reward": { 
+      "description": "The amount of gold awarded for defeating one enemy from this group." 
     }
   },
   "ability": {

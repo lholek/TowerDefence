@@ -172,37 +172,71 @@ export const waveEditor = (() => {
     /**
      * Renders the HTML structure for a single enemy spawn group within a wave.
      */
-       const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
-    return `
-        <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
-            <div class="card-controls">
-                <button class="btn btn-copy btn-small" onclick="window.app.waveEditor.copyEnemyGroup(${waveIndex}, ${enemyIndex})">📋</button>
-                <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
-            </div>
-            <div class="card-header-inner">
-                    <label>Type 
-                        <select data-key="type" class="input-enemy-type">
-                            ${getEnemyTypeOptions(enemy.type)}
-                        </select>
-                    </label>
+    const renderEnemyCard = (enemy, waveIndex, enemyIndex) => {
+        return `
+            <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
+                
+                <div class="card-controls">
+                    <button class="btn btn-copy btn-small" onclick="window.app.waveEditor.copyEnemyGroup(${waveIndex}, ${enemyIndex})">📋</button>
+                    <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
                 </div>
+    
+                <label class="editor-row mt-1">
+                    <span class="label-text">
+                        Type
+                        <i class="info-icon" data-tooltip="wave-editor.type">i</i>
+                    </span>
+
+                    <select data-key="type" class="input-enemy-type">
+                        ${getEnemyTypeOptions(enemy.type)}
+                    </select>
+                </label>
+
+    
                 <div class="card-body-inner">
-                    <label>⭐ Count <input type="number" data-key="count" value="${enemy.count}" min="1"></label>
-                    <label>❤️ Health <input type="number" data-key="health" value="${enemy.health}" min="1"></label>
-                    <label>🗲 Speed <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01"></label>
-                    <label>Path 
-                        <div class="path-input-container">
-                            <input type="text" 
-                                   data-key="path" 
-                                   class="path-suggest-input" 
-                                   value="${enemy.path}" 
+    
+                    <label class="editor-row">
+                        <span class="label-text">⭐ Count <i class="info-icon" data-tooltip="wave-editor.count">i</i></span>
+                        <input type="number" data-key="count" value="${enemy.count}" min="1">
+                    </label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">❤️ Health <i class="info-icon" data-tooltip="wave-editor.health">i</i></span>
+                        <input type="number" data-key="health" value="${enemy.health}" min="1">
+                    </label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="wave-editor.speed">i</i></span>
+                        <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01">
+                    </label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">⤐ Path <i class="info-icon" data-tooltip="wave-editor.path">i</i></span>
+                        <div class="path-input-container input-group">
+                            <input type="text"
+                                   data-key="path"
+                                   class="path-suggest-input"
+                                   value="${enemy.path}"
                                    autocomplete="off">
                             <div class="custom-path-dropdown" style="display:none;"></div>
                         </div>
                     </label>
-                    <label>Interval <input type="text" data-key="interval" value="${enemy.interval}"></label>
-                    <label>FirstDelay <input type="text" data-key="firstDelay" value="${enemy.firstDelay}"></label>
-                    <label>🪙 Coin Reward <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0"></label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">🕒 Interval <i class="info-icon" data-tooltip="wave-editor.interval">i</i></span>
+                        <input type="text" data-key="interval" value="${enemy.interval}">
+                    </label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">⏳ First Delay <i class="info-icon" data-tooltip="wave-editor.first-delay">i</i></span>
+                        <input type="text" data-key="firstDelay" value="${enemy.firstDelay}">
+                    </label>
+    
+                    <label class="editor-row">
+                        <span class="label-text">🪙 Coin Reward <i class="info-icon" data-tooltip="wave-editor.coin-reward">i</i></span>
+                        <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0">
+                    </label>
+    
                 </div>
             </div>
         `;
@@ -735,20 +769,20 @@ export const waveEditor = (() => {
             <div class="effect-row">
     
                 <div class="flex-1">
-                    <label>Enemy Type</label>
+                    <label>Enemy Type <i class="info-icon" data-tooltip="shake-effects.enemy-type">i</i></label>
                     <select onchange="window.app.waveEditor.updateEffect(${index}, 'type', this.value)" class="input-enemy-effect-type" style="width: 100%;">
                         ${buildOptions(effect.type)}
                     </select>
                 </div>
     
                 <div class="flex-1">
-                    <label>Shake Duration (ms)</label>
+                    <label>Shake Duration (ms) <i class="info-icon" data-tooltip="shake-effects.shake-duration">i</i></label>
                     <input type="number" value="${effect.shakeDuration || 0}" step="100" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
                 </div>
     
                 <div class="flex-1">
-                    <label>Shake Intensity (px)</label>
+                    <label>Shake Intensity (px) <i class="info-icon" data-tooltip="shake-effects.shake-intensity">i</i></label>
                     <input type="number" value="${effect.shakeIntensity || 0}" step="0.5" 
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
                 </div>
