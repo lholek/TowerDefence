@@ -354,7 +354,7 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
+              "count": 1,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
@@ -364,7 +364,7 @@
             },
             {
               "type": "tank",
-              "count": 5000,
+              "count": 1,
               "health": 100,
               "speed": 1,
               "path": "S2E1",

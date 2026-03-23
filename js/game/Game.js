@@ -478,6 +478,8 @@ export default class Game {
     // Main Menu
     document.getElementById('btnContinueToMenu').onclick = () => {
         overlay.classList.add('d-none');
+        const gameSpeedSelect = document.getElementById('gameSpeedSelect');
+        if (gameSpeedSelect) gameSpeedSelect.value = "1";
         this.resetGameToMenu(); 
     };
   }
