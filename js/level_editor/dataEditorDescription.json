@@ -97,8 +97,38 @@
     }
   },
   "ability": {
-    "type": {
-      "description": "ddd"
+    "name": {
+      "description": "The display name of the ability shown in the player's UI."
+    },
+    "icon": {
+      "description": "The graphical icon or sprite used to represent the ability on the hotbar."
+    },
+    "colors_opacity": {
+      "description": "The primary/secondary colors and transparency level (0 to 1.0) for the ability's visual effects and UI elements."
+    },
+    "cooldown": {
+      "description": "The time in seconds required for the ability to recharge. Note: Recharge begins immediately upon activation, running concurrently with the duration."
+    },
+    "duration": {
+      "description": "The total time the ability's effect remains active on the battlefield."
+    },
+    "lava-floor-damage": {
+      "description": "The amount of health removed from enemies at each interval defined by the damage frequency."
+    },
+    "lava-floor-damage-frequency": {
+      "description": "The time interval (e.g., 500ms) at which the damage value is applied to enemies standing on the lava."
+    },
+    "lava-floor-selection-count": {
+      "description": "The maximum number of map tiles or path segments the player can transform into lava."
+    },
+    "towers-fury-damage-multiplier": {
+      "description": "The coefficient applied to tower damage (e.g., 2.0 for double damage)."
+    },
+    "towers-fury-speed-multiplier": {
+      "description": "The projectile velocity modifier. 1.0 = 0% bonus, 3.0 = +200% speed. Warning: Must be greater than 0 to prevent projectiles from moving backward or breaking."
+    },
+    "towers-fury-fire-rate": {
+      "description": "The shot interval modifier. Values below 1.0 increase speed (e.g., 0.85 = +15% faster). Values above 1.0 increase delay (e.g., 1.15 = 15% slower). Warning: Must be greater than 0."
     }
   }
 }

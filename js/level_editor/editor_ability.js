@@ -75,7 +75,7 @@ export const abilityEditor = (() => {
         <div class="ability-card box" data-ability-index="${index}">
             <div class="card-header">
                 <div class="level-label item-title">Ability ${index + 1}</div>
-                <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
+                <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled></label> 
                 <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
                 <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
                 <div class="header-actions">
@@ -129,33 +129,33 @@ export const abilityEditor = (() => {
                         <p style="font-weight: bold; font-size: 0.8em; margin: 5px 0;">MODIFIERS (1.0 = 0% Bonus)</p>
                         
                         <label class="editor-row">
-                            <span class="label-text">Dmg Mul <i class="info-icon" data-tooltip="ability.towers-fury.damage-multiplier">i</i></span>
-                            <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}">
+                            <span class="label-text">Dmg Mul <i class="info-icon" data-tooltip="ability.towers-fury-damage-multiplier">i</i></span>
+                            <input type="number" step="0.1" min="1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}">
                         </label>
 
                         <label class="editor-row">
-                            <span class="label-text">Speed Mul <i class="info-icon" data-tooltip="ability.towers-fury.speed-multiplier">i</i></span>
-                            <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}" min="0.1">
+                            <span class="label-text">Speed Mul <i class="info-icon" data-tooltip="ability.towers-fury-speed-multiplier">i</i></span>
+                            <input type="number" step="0.1" min="1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}" min="0.1">
                         </label>
 
                         <label class="editor-row">
-                            <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury.fire-rate">i</i></span>
+                            <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury-fire-rate">i</i></span>
                             <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}" min="0.01">
                         </label>
                     </div>
                 ` : `
                     <label class="editor-row">
-                        <span class="label-text">Damage <i class="info-icon" data-tooltip="ability.lava-floor.damage">i</i></span>
+                        <span class="label-text">Damage <i class="info-icon" data-tooltip="ability.lava-floor-damage">i</i></span>
                         <input type="number" data-key="damage" value="${ability.damage || 0}">
                     </label>
 
                     <label class="editor-row">
-                        <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor.damage-frequency">i</i></span>
+                        <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor-damage-frequency">i</i></span>
                         <input type="number" data-key="damage_every" value="${ability.damage_every || 0}">
                     </label>
 
                     <label class="editor-row">
-                        <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.lava-floor.selection-count">i</i></span>
+                        <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.lava-floor-selection-count">i</i></span>
                         <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}">
                     </label>
                 `}
