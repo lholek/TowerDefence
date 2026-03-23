@@ -10,17 +10,9 @@
         "Improved - Editor - Added Map backgrounds for edding (Sky, Sea, Nebula)",
         "Improved - UI - Slightly updated Ability Bar",
         "Improved - Fixed bug - Speed selector now resets vissually after win/lose of the game to default x1",
-        "TODO: Improve - Editor - Added informational tooltips to all input fields to explain specific functionalities",
-        "TODO: Improve - Editor descriptions - MAP - OK",
-        "TODO: Improve - Editor descriptions - MAP SETTINGS - OK",
-        "TODO: Improve - Editor descriptions - TOWERS - OK",
-        "TODO: Improve - Editor descriptions - WAVES - OK",
-        "TODO: Improve - Editor descriptions - ABILITES",
-        "TODO: Improve - Editor descriptions - FINAL JSON - OK",
-        "TODO: Improve - UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES",
-        "TODO: Improve - UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES",
-        "TODO: Improve - UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES",
-        "TODO: Improve - UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES UPDATES"
+        "Improved - Editor - Added informational tooltips to ALL input fields to explain specific functionalities",
+        "TODO: Improve - Gameplay - Add enemy types that deal more damage to the Trees of Life",
+        "TODO: Improve - Editor - Add enemy types that deal more damage to the Trees of Life"
       ]
     },
     {
