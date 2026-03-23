@@ -69,70 +69,100 @@ export const abilityEditor = (() => {
         let html = '';
 
         abilities.forEach((ability, index) => {
-            // Replace the internal part of abilities.forEach starting at line ~82:
-            const isFury = ability.id === 'towers_fury';
+    const isFury = ability.id === 'towers_fury';
 
-            html += `
-                <div class="ability-card box" data-ability-index="${index}">
-                    <div class="card-header">
-                        <div class="level-label item-title">Ability ${index + 1}</div>
-                        <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
-                        <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
-                        <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
-                        <div class="header-actions">
-                            <button class="btn btn-copy btn-copy-ability" data-ability-index="${index}" title="Copy Ability">📋</button>
-                            <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
+    html += `
+        <div class="ability-card box" data-ability-index="${index}">
+            <div class="card-header">
+                <div class="level-label item-title">Ability ${index + 1}</div>
+                <label>Class ID <input type="text" class="input-medium" value="${ability.id}" disabled title="Edit in Final JSON"></label> 
+                <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
+                <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
+                <div class="header-actions">
+                    <button class="btn btn-copy btn-copy-ability" data-ability-index="${index}" title="Copy Ability">📋</button>
+                    <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <label class="editor-row">
+                    <span class="label-text">Name <i class="info-icon" data-tooltip="ability.name">i</i></span>
+                    <input type="text" data-key="name" value="${ability.name}">
+                </label>
+
+                <label class="editor-row">
+                    <span class="label-text">Icon <i class="info-icon" data-tooltip="ability.icon">i</i></span>
+                    <input type="text" data-key="ui.icon" maxlength="1" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
+                </label>
+
+                <div class="ability-color-section editor-row">
+                    <span class="label-text">Color&Opacity <i class="info-icon" data-tooltip="ability.colors_opacity">i</i></span>
+                    <div class="color-controls-stack">
+                        <div class="color-controls-picker">
+                            <input type="color" class="ability-color-base" value="${extractHex(ability.color)}">
+                            <span class="opacity-label">${extractAlpha(ability.color).toFixed(2)}</span>
                         </div>
-                    </div>
-
-                    <div class="card-body">
-                        <label>Name <input type="text" data-key="name" value="${ability.name}"></label>
-
-                        <label>Icon 
-                            <input type="text" data-key="ui.icon" maxlength="1" value="${ability.ui ? ability.ui.icon : '✨'}" placeholder="e.g. 🌋">
-                        </label>
-
-                        <div class="ability-color-section">
-                            <label class="ability-label">Color & Opacity</label>
-                            <div class="color-controls-stack">
-                                <div class="color-controls-picker">
-                                    <input type="color" class="ability-color-base" 
-                                           value="${extractHex(ability.color)}">
-                                    <span class="opacity-label">
-                                        ${extractAlpha(ability.color).toFixed(2)}
-                                    </span>
-                                </div>
-                                <input type="range" class="ability-opacity-slider" min="0" max="1" step="0.01" value="${extractAlpha(ability.color)}">
-                                <input type="hidden" data-key="color" value="${ability.color}">
-                            </div>
-                        </div>
-
-                        <label>Cooldown (ms) <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000"></label>
-                        <label>Duration (ms) <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0"></label>
-
-                        ${isFury ? `
-                            <div class="ability-fury-modifiers">
-                                <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                                    <div class="stat-row">${formatStat(ability.modifiers?.damage_mul || 1)} <span class="stat-label">Damage</span></div>
-                                    <div class="stat-row">
-                                        ${formatStat(ability.modifiers?.speed_mul || 1)} <span class="stat-label">Speed</span> | 
-                                        ${formatStat(ability.modifiers?.fireRate_mul || 1, true)} <span class="stat-label">Fire Rate</span>
-                                    </div>
-                                </div>
-                                <p>MODIFIERS (1 = 100%)</p>
-                                <label>Dmg Mul <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}"></label>
-                                <label>Speed Mul <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}"></label>
-                                <label>Fire Rate <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}"></label>
-                            </div>
-                        ` : `
-                            <label>Damage <input type="number" data-key="damage" value="${ability.damage || 0}"></label>
-                            <label>Damage Frequency <input type="number" data-key="damage_every" value="${ability.damage_every || 0}"></label>
-                            <label>Selection Count <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}"></label>
-                        `}
+                        <input type="range" class="ability-opacity-slider" min="0" max="1" step="0.01" value="${extractAlpha(ability.color)}">
+                        <input type="hidden" data-key="color" value="${ability.color}">
                     </div>
                 </div>
-            `;
-        });
+
+                <label class="editor-row">
+                    <span class="label-text">Cooldown (ms) <i class="info-icon" data-tooltip="ability.cooldown">i</i></span>
+                    <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000">
+                </label>
+
+                <label class="editor-row">
+                    <span class="label-text">Duration (ms) <i class="info-icon" data-tooltip="ability.duration">i</i></span>
+                    <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0">
+                </label>
+
+                ${isFury ? `
+                    <div class="ability-fury-modifiers">
+                        <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+                            <div class="stat-row">${formatStat(ability.modifiers?.damage_mul || 1)} <span class="stat-label">Damage</span></div>
+                            <div class="stat-row">
+                                ${formatStat(ability.modifiers?.speed_mul || 1)} <span class="stat-label">Speed</span> | 
+                                ${formatStat(ability.modifiers?.fireRate_mul || 1, true)} <span class="stat-label">Fire Rate</span>
+                            </div>
+                        </div>
+                        <p style="font-weight: bold; font-size: 0.8em; margin: 5px 0;">MODIFIERS (1.0 = 0% Bonus)</p>
+                        
+                        <label class="editor-row">
+                            <span class="label-text">Dmg Mul <i class="info-icon" data-tooltip="ability.towers-fury.damage-multiplier">i</i></span>
+                            <input type="number" step="0.1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">Speed Mul <i class="info-icon" data-tooltip="ability.towers-fury.speed-multiplier">i</i></span>
+                            <input type="number" step="0.1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}" min="0.1">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury.fire-rate">i</i></span>
+                            <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}" min="0.01">
+                        </label>
+                    </div>
+                ` : `
+                    <label class="editor-row">
+                        <span class="label-text">Damage <i class="info-icon" data-tooltip="ability.lava-floor.damage">i</i></span>
+                        <input type="number" data-key="damage" value="${ability.damage || 0}">
+                    </label>
+
+                    <label class="editor-row">
+                        <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor.damage-frequency">i</i></span>
+                        <input type="number" data-key="damage_every" value="${ability.damage_every || 0}">
+                    </label>
+
+                    <label class="editor-row">
+                        <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.lava-floor.selection-count">i</i></span>
+                        <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}">
+                    </label>
+                `}
+            </div>
+        </div>
+    `;
+});
         
         contentContainer.innerHTML = html;
         attachChangeListeners();
