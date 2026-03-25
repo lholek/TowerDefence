@@ -360,7 +360,7 @@
               "path": "S1E1",
               "interval": "2000",
               "coinReward": 1,
-              "firstDelay": "0"
+              "firstDelay": "10000"
             },
             {
               "type": "tank",
