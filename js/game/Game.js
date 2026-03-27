@@ -731,6 +731,7 @@ export default class Game {
         if (this.abilityManager.activeAbility === a && a.isPlacing) {
           this.abilityManager.cancelActivePlacement();
           card.classList.remove('placing');
+          this.updateSelectionUI();
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
             document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
