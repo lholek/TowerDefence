@@ -6,13 +6,13 @@
       "changes": [
         "Improved - Gameplay - Fixed bug that towers were not slected on the start of the game",
         "Improved - Gameplay - Fixed bug that speed selector now resets vissually after win/lose of the game to default x1",
+        "Improved - Gameplay - Fixed bug where players were unable to build towers while an ability was selected and switch back to towers",
         "Improved - Graphics - New 'Map Style': The Nebula",
         "Improved - Editor - Improved Styles",
         "Improved - Editor - Added Map backgrounds for edding (Sky, Sea, Nebula)",
         "Improved - Editor - Added informational tooltips to ALL input fields to explain specific functionalities",
         "Improved - UI - Slightly updated Ability Bar",
-        "Improved - UI - Added dynamic indicator showing the currently selected tower or ability",
-        "Improved - Fixed bug - Fixed an issue where players were unable to build towers while an ability was selected and switch back to towers"
+        "Improved - UI - Added dynamic indicator showing the currently selected tower or ability"
       ]
     },
     {
