@@ -1206,26 +1206,24 @@ export default class Game {
 
     let displayTitle = "None";
 
-    // 1. Zjistíme, jestli v HTML "svítí" nějaká abilita
+    // 1. Zjistíme, jestli fyzicky na stránce existuje karta s 'placing'
     const activeAbilityCard = document.querySelector('.ability-card.placing');
     
-    // 2. Zjistíme, jestli v HTML "svítí" nějaká věž
-    const activeShopItem = document.querySelector('.shop-item.active');
-
-    // --- LOGIKA PRIORIT ---
-
-    if (activeAbilityCard && this.abilityManager && this.abilityManager.activeAbility) {
-        // Pokud svítí abilita, vezmeme její jméno z objektu
-        displayTitle = this.abilityManager.activeAbility.name || "Ability";
+    if (activeAbilityCard && this.abilityManager.activeAbility) {
+        // Pokud ano, vezmeme jméno té vybrané ability
+        displayTitle = this.abilityManager.activeAbility.name;
     } 
-    else if (activeShopItem && this.selectedTowerType) {
-        // Pokud nesvítí abilita, ale svítí věž, vezmeme jméno z towerTypes
-        const towerData = this.towerTypes[this.selectedTowerType];
-        displayTitle = towerData?.name || this.selectedTowerType;
+    // 2. Pokud abilita nesvítí, zkusíme jestli svítí věž v shopu
+    else {
+        const activeShopItem = document.querySelector('.shop-item.active');
+        if (activeShopItem && this.selectedTowerType) {
+            // Pokud svítí věž, vezmeme její jméno z dat
+            displayTitle = this.towerTypes[this.selectedTowerType]?.name || this.selectedTowerType;
+        }
     }
 
-    // Nastavení výsledného textu do UI
+    // Nastavení textu (už to nebude psát jen "Tower" nebo "Ability", ale "Archer Tower" atd.)
     this.uiSelectionText.textContent = displayTitle;
     this.uiSelectionBox.style.display = "block";
-}
+  }
 }
