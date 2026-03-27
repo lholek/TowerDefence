@@ -89,6 +89,10 @@ export default class Game {
     this.keys = {};
     this.hoveredTower = null;
 
+    // Selection box
+    this.uiSelectionBox = document.getElementById('selectionIndicator');
+    this.uiSelectionText = document.getElementById('selectionName');
+
     window.addEventListener('keydown', e => this.keys[e.code] = true);
     window.addEventListener('keyup', e => this.keys[e.code] = false);
   }
@@ -185,6 +189,7 @@ export default class Game {
     this.gameStarted = true;
     this.paused = false;
     this.lastTime = performance.now();
+    this.updateSelectionUI();
     requestAnimationFrame(this.loop.bind(this));
   }
 
@@ -649,6 +654,8 @@ export default class Game {
                     el.classList.remove('active');
                 }
             });
+
+            this.updateSelectionUI();
         };
         // Add this right before shopDiv.appendChild(item) to make the cards searchable
         item.dataset.key = key;
@@ -727,9 +734,8 @@ export default class Game {
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
             document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
-            //if(placingAbilitesIds.includes(a.id)){
-              card.classList.add('placing');
-            //aa}
+            card.classList.add('placing');
+            this.updateSelectionUI();
           } else {
             this.logEvent(`${a.name} not ready`);
           }
@@ -1029,6 +1035,9 @@ export default class Game {
     if (this.levelData) {
       this.loadMap(this.levelData.layout);
     }
+
+    // hide selectionIndicator div
+    document.getElementById("selectionIndicator").style.display = "none";
   }
 
   handleHover(e) {
@@ -1189,5 +1198,29 @@ export default class Game {
 
     this.ctx = null;
     this.canvas = null;
+    document.getElementById('selectionIndicator').style.display = 'none';
+  }
+
+  updateSelectionUI() {
+    if (!this.gameStarted || !this.uiSelectionBox) return;
+
+    let displayTitle = "None"; // Výchozí stav
+
+    // 1. Nejvyšší priorita: Právě probíhající umisťování ability (např. Lava Floor)
+    if (this.abilityManager && this.abilityManager.activeAbility) {
+        const ab = this.abilityManager.activeAbility;
+        // Zobrazíme jen pokud to není okamžitá (global) abilita
+        if (ab.type !== 'global') {
+            displayTitle = ab.name;
+        }
+    } 
+    // 2. Druhá priorita: Pokud není abilita, ukaž vybranou věž
+    else if (this.selectedTowerType) {
+        displayTitle = this.towerTypes[this.selectedTowerType]?.name || this.selectedTowerType;
+    }
+
+    // Aktualizace textu v HTML
+    this.uiSelectionText.textContent = displayTitle;
+    this.uiSelectionBox.style.display = "block";
   }
 }

@@ -126,6 +126,12 @@ _getCenteredPathTiles(centerTile, count) {
 
       this.activate(tiles); 
       this.isPlacing = false;
+
+      if (this.game.abilityManager) {
+        this.game.abilityManager.activeAbility = null;
+      }
+    
+      this.game.updateSelectionUI();
       return true;
   }
 

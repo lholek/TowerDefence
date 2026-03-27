@@ -204,7 +204,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await game.loadGameData(mapSource);
                 game.start();
                 document.getElementById('mainContainer').style.display = 'block'; // The game area
-               
+                document.getElementById('selectionIndicator').style.display = 'block';
+
                 const towerBtn = document.getElementById('towerModeBtn');
                 const abilityBtn = document.getElementById('abilityModeBtn');
 
@@ -471,6 +472,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 5. Show the game container and force UI state
             document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('selectionIndicator').style.display =  'block';
 
             // This ensures the shop/abilities buttons are responsive
             document.getElementById('showTowersBtn')?.click(); 

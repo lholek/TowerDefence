@@ -29,6 +29,8 @@ confirmReturn.addEventListener('click', () => {
   // 2. Hide all Game UIs
   document.getElementById('returnPopup').style.display = 'none';
   document.getElementById('mainContainer').style.display = 'none'; // The game area
+  document.getElementById('selectionIndicator').style.display =  'none';
+
   
   // 3. Show the Menu UIs
   document.getElementById('startOverlay').style.display = 'flex';

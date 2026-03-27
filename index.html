@@ -370,7 +370,13 @@
         <div id="cloudsLayer"></div>
 
         <!-- Canvas -->
-        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        <div id="gameContainer">
+          <canvas id="gameCanvas" width="1000" height="600"></canvas>
+
+          <div id="selectionIndicator" class="selection-box">
+              Placing: <span id="selectionName">None</span>
+          </div>
+        </div>
       </div>
       <!-- Tower shop / Ability shop switcher -->
       <div id="buildModeSwitcher" class="build-mode-switcher">

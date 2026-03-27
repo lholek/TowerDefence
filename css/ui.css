@@ -1153,3 +1153,28 @@
         display: flex;
     }
 }
+
+.selection-box {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    border: 2px solid #f0c674; /* Zlatý okraj */
+    border-radius: 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none; /* Kliknutí projdou skrz na canvas */
+    display: none;        /* Výchozí stav je skrytý */
+    z-index: 10;          /* Aby byl vždy nad canvasem */
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 10000;
+    display: none;
+}
+
+.selection-box span {
+    color: #f0c674; /* Barva samotného názvu */
+    margin-left: 5px;
+}

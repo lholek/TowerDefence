@@ -14,6 +14,9 @@ export default class AbilityManager {
     this.abilities = []; // instantiated ability objects (one per config)
     this.activeAbility = null; // currently selected ability instance for placing
     this.previewTiles = [];
+    if (this.game.updateSelectionUI) {
+      this.game.updateSelectionUI(); 
+    }
   }
 
   loadFromConfigs(configArray = []) {
@@ -37,20 +40,23 @@ export default class AbilityManager {
     // 2. Find the HTML element for this specific ability
     const card = document.getElementById(inst.id);
 
+    if (inst.type === 'global') {
+        inst.startPlacing(); 
+        // Tady updateSelectionUI volat nemusíme, protože výběr hned skončí
+        return true;
+    }
+
     // 3. Start the logic
     if (inst.startPlacing()) {
-        if (!inst.isPlacing) {
-            // This is for Global abilities (Towers Fury)
-            // It triggers the cooldown on the card immediately
-            this.notifyAbilityUsed(inst, card); 
-            this.activeAbility = null;
-        } else {
-            // This is for Targeted abilities (Lava Floor)
-            this.activeAbility = inst;
-            if (card) card.classList.add("placing");
-        }
+        this.activeAbility = inst;
+        document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
+        if (card) card.classList.add('placing');
+
+        // AKTUALIZACE: Zavoláme update v Game
+        this.game.updateSelectionUI();
+        return true;
     }
-    return true;
+    return false;
   }
 
   cancelActivePlacement() {
