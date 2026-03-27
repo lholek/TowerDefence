@@ -596,6 +596,7 @@ export default class Game {
         // 2. Generate zoomed tower image
         const tempTower = new Tower(this, this.map, 0, 0, type);
         const src = tempTower.preRenderedImage;
+        this.towerTypes[key].cachedImage = src; // Uložíme plný obrázek pro náhled při stavbě
         
         const zoomCanvas = document.createElement('canvas');
         zoomCanvas.width = 120; 
@@ -901,11 +902,24 @@ export default class Game {
       const isPlacingAbility = (this.abilityManager.activeAbility != null);
       const isPlacingTower = (this.selectedTowerType != null);
         
+      const center = this.map.tileToWorld(col, row);
+
       if (isPlacingTower && !isPlacingAbility) {
           // TOWER MODE: Green on Grass, Snow, and Sand
           const isBuildableTerrain = (status === 'X' || status === 'SNW' || status === 'SND');
           if (isBuildableTerrain && !hasTower) {
-              color = 'rgba(0,255,0,0.25)'; // GREEN
+              color = 'rgba(0,0,0,0)'; // GREEN
+          }
+
+          // --- VYKRESLENÍ DUCHA VĚŽE ---
+          const towerData = this.towerTypes[this.selectedTowerType];
+          if (towerData && towerData.cachedImage) {
+              // Už jsme v bloku map.applyCameraTransform, takže kreslíme přímo v souřadnicích světa
+              this.ctx.globalAlpha = 0.75; // Průhlednost pro efekt "ducha"
+              
+              // Musíme použít stejný offset jako v Tower.js (center.x - tileSize)
+              this.ctx.drawImage(towerData.cachedImage, center.x - this.map.tileSize, center.y - this.map.tileSize);
+              this.ctx.globalAlpha = 1.0; // Resetujeme průhlednost pro další kreslení
           }
       } 
       else if (isPlacingAbility) {
@@ -919,7 +933,6 @@ export default class Game {
       }
       
       this.ctx.fillStyle = color;
-      const center = this.map.tileToWorld(col, row);
       const calculatedX = center.x - this.map.tileSize / 2;
       const calculatedY = center.y - this.map.tileSize / 2;
       this.ctx.fillRect(calculatedX, calculatedY, this.map.tileSize, this.map.tileSize);
