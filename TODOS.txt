@@ -19,7 +19,9 @@ LONG TODOS:
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 ---------------------------------------------------------------------------------------------
 Pre-beta III.:
-  "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta III ??]",
+  "TODO: Improve - Gameplay - Add enemy types that deal more damage to the Trees of Life",
+  "TODO: Improve - Editor - Add enemy types that deal more damage to the Trees of Life"
+Pre-beta IV.:
+  "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta IV ??]",
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
-
 Beta 1.0
