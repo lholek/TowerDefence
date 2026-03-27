@@ -642,6 +642,17 @@ export default class Game {
         // 3. Selection logic (Crucial for number keys)
         item.onclick = () => {
             // 1. Update the logical selection
+            if (this.abilityManager && this.abilityManager.activeAbility) {
+                // Zastavíme logiku v objektu
+                this.abilityManager.activeAbility.isPlacing = false;
+
+                // Fyzicky smažeme třídu 'placing' z HTML karet v DOMu
+                document.querySelectorAll('.ability-card').forEach(card => card.classList.remove('placing'));
+
+                // Vynulujeme referenci v manažerovi
+                this.abilityManager.activeAbility = null;
+            }
+
             this.selectedTowerType = (this.selectedTowerType === key) ? null : key;
 
             // 2. Instead of rebuilding the whole shop, just toggle the 'active' class

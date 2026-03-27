@@ -12,9 +12,9 @@
         "Improved - Editor - Added informational tooltips to ALL input fields to explain specific functionalities",
         "Improved - UI - Slightly updated Ability Bar",
         "Improved - UI - Added dynamic indicator showing the currently selected tower or ability",
+        "Fixed bug - Gameplay - Fixed an issue where players were unable to build towers while an ability was selected and switch back to towers",
         "TODO: Improve - Gameplay - Add enemy types that deal more damage to the Trees of Life",
-        "TODO: Improve - Editor - Add enemy types that deal more damage to the Trees of Life",
-        "TODO: Fix bug - Gameplay - Fixed an issue where players were unable to build towers while an ability was selected and switch back to towers"
+        "TODO: Improve - Editor - Add enemy types that deal more damage to the Trees of Life"
       ]
     },
     {
