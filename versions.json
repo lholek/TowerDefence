@@ -13,7 +13,7 @@
         "Improved - Editor - Added informational tooltips to ALL input fields to explain specific functionalities",
         "Improved - UI - Rather then seeing green tile you see tower that you will build there but in bit tranparent",
         "Improved - UI - Slightly updated Ability Bar",
-        "Improved - UI - Added dynamic indicator showing the currently selected tower or ability"
+        "Improved - UI - Replaced system cursor with a custom 'Magic Wand' that reacts to building mode"
       ]
     },
     {
