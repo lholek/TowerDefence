@@ -33,26 +33,29 @@ export default class AbilityManager {
   }
 
   selectAbilityById(id) {
-    // 1. Find the specific instance by its unique ID (e.g., 'towers_fury_1')
     const inst = this.abilities.find(a => a.id === id);
     if (!inst || !inst.available()) return false;
 
-    // 2. Find the HTML element for this specific ability
     const card = document.getElementById(inst.id);
 
-    if (inst.type === 'global') {
-        inst.startPlacing(); 
-        // Tady updateSelectionUI volat nemusíme, protože výběr hned skončí
+    // POKUD UŽ JE VYBRANÁ (Toggle off)
+    if (this.activeAbility === inst) {
+        this.activeAbility = null;
+        inst.isPlacing = false;
+        if (card) card.classList.remove('placing');
+        this.game.updateSelectionUI(); // Teď tvá funkce uvidí null a skočí na věž
         return true;
     }
 
-    // 3. Start the logic
+    // POKUD VYBÍRÁŠ NOVOU
+    if (inst.type === 'global') {
+        return inst.startPlacing(); 
+    }
+
     if (inst.startPlacing()) {
         this.activeAbility = inst;
         document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
         if (card) card.classList.add('placing');
-
-        // AKTUALIZACE: Zavoláme update v Game
         this.game.updateSelectionUI();
         return true;
     }

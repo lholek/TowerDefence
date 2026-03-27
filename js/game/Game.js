@@ -1204,23 +1204,28 @@ export default class Game {
   updateSelectionUI() {
     if (!this.gameStarted || !this.uiSelectionBox) return;
 
-    let displayTitle = "None"; // Výchozí stav
+    let displayTitle = "None";
 
-    // 1. Nejvyšší priorita: Právě probíhající umisťování ability (např. Lava Floor)
-    if (this.abilityManager && this.abilityManager.activeAbility) {
-        const ab = this.abilityManager.activeAbility;
-        // Zobrazíme jen pokud to není okamžitá (global) abilita
-        if (ab.type !== 'global') {
-            displayTitle = ab.name;
-        }
+    // 1. Zjistíme, jestli v HTML "svítí" nějaká abilita
+    const activeAbilityCard = document.querySelector('.ability-card.placing');
+    
+    // 2. Zjistíme, jestli v HTML "svítí" nějaká věž
+    const activeShopItem = document.querySelector('.shop-item.active');
+
+    // --- LOGIKA PRIORIT ---
+
+    if (activeAbilityCard && this.abilityManager && this.abilityManager.activeAbility) {
+        // Pokud svítí abilita, vezmeme její jméno z objektu
+        displayTitle = this.abilityManager.activeAbility.name || "Ability";
     } 
-    // 2. Druhá priorita: Pokud není abilita, ukaž vybranou věž
-    else if (this.selectedTowerType) {
-        displayTitle = this.towerTypes[this.selectedTowerType]?.name || this.selectedTowerType;
+    else if (activeShopItem && this.selectedTowerType) {
+        // Pokud nesvítí abilita, ale svítí věž, vezmeme jméno z towerTypes
+        const towerData = this.towerTypes[this.selectedTowerType];
+        displayTitle = towerData?.name || this.selectedTowerType;
     }
 
-    // Aktualizace textu v HTML
+    // Nastavení výsledného textu do UI
     this.uiSelectionText.textContent = displayTitle;
     this.uiSelectionBox.style.display = "block";
-  }
+}
 }

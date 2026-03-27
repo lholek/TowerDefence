@@ -14,7 +14,7 @@
         "Improved - Fixed bug - Speed selector now resets vissually after win/lose of the game to default x1",
         "TODO: Improve - Gameplay - Add enemy types that deal more damage to the Trees of Life",
         "TODO: Improve - Editor - Add enemy types that deal more damage to the Trees of Life",
-        "TODO: Fix bug - Gameplay - Fixed an issue where players were unable to build towers while an ability was selected and switch back to tpwers"
+        "TODO: Fix bug - Gameplay - Fixed an issue where players were unable to build towers while an ability was selected and switch back to towers"
       ]
     },
     {

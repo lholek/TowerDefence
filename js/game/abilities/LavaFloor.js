@@ -127,6 +127,11 @@ _getCenteredPathTiles(centerTile, count) {
       this.activate(tiles); 
       this.isPlacing = false;
 
+      const card = document.getElementById(this.id);
+    if (card) {
+        card.classList.remove('placing');
+    }
+
       if (this.game.abilityManager) {
         this.game.abilityManager.activeAbility = null;
       }
