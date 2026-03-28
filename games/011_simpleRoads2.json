@@ -3,7 +3,7 @@
     {
       "name": "Simple Roads II - needs test",
       "startingCoins": 50,
-      "startingLifes": 100,
+      "startingLifes": 1,
       "extraLife": false,
       "extraLifePrices": [
         10,
@@ -552,32 +552,32 @@
             {
               "type": "basic",
               "count": 6,
-              "health": 4250,
+              "health": 3750,
               "speed": 2.25,
               "path": "S1E1",
               "interval": "700",
               "firstDelay": 0,
-              "coinReward": 9
+              "coinReward": 10
             },
             {
               "type": "basic",
               "count": 6,
-              "health": 4250,
+              "health": 3750,
               "speed": 2.25,
               "path": "S2E2",
               "interval": "700",
               "firstDelay": 0,
-              "coinReward": 9
+              "coinReward": 10
             },
             {
               "type": "basic",
               "count": 6,
-              "health": 4250,
+              "health": 3750,
               "speed": 2.25,
               "path": "S3E1",
               "interval": "700",
               "firstDelay": 0,
-              "coinReward": 9
+              "coinReward": 10
             },
             {
               "type": "fast",
@@ -587,7 +587,7 @@
               "path": "S1E2",
               "interval": 1000,
               "firstDelay": "5000",
-              "coinReward": 11
+              "coinReward": 12
             },
             {
               "type": "fast",
@@ -597,7 +597,7 @@
               "path": "S2E1",
               "interval": 1000,
               "firstDelay": "5000",
-              "coinReward": 11
+              "coinReward": 12
             },
             {
               "type": "shaker-hard",
@@ -612,22 +612,22 @@
             {
               "type": "basic",
               "count": 4,
-              "health": 4250,
+              "health": 3750,
               "speed": 2.25,
               "path": "S1E2",
               "interval": "700",
               "firstDelay": "9000",
-              "coinReward": 9
+              "coinReward": 10
             },
             {
               "type": "basic",
               "count": 4,
-              "health": 4250,
+              "health": 3750,
               "speed": 2.25,
               "path": "S2E1",
               "interval": "700",
               "firstDelay": "9000",
-              "coinReward": 9
+              "coinReward": 10
             }
           ]
         },
