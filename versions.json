@@ -12,6 +12,7 @@
         "Improved - Editor - Added new map backgrounds for editing: Sky, Sea and Nebula",
         "Improved - Editor - Added informational tooltips to all input fields to explain specific functionalities",
         "Improved - UI - Replaced the green placement tile with a semi-transparent ghost model of the tower being built",
+        "Improved - UI - Added a spark cursor when nothing is selected",
         "Improved - UI - Added a dedicated building hammer cursor when placing towers",
         "Improved - UI - Added a Lava Cube visual indicator when placing a Lava Floor",
         "Improved - UI - Slightly updated Ability Bar"

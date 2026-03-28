@@ -1327,13 +1327,39 @@ export default class Game {
       ctx.fillStyle = '#1C2E2E'; 
       ctx.fillRect(-10, -5.5, 3, 10); 
       ctx.fillRect(7, -5.5, 3, 10);    
-    }
+    } else {
+        const time = Date.now();
+        ctx.translate(x, y);
 
-    // --- DEFAULT: MAGIC WAND ---
-    else if (this.wandImage) {
-        ctx.drawImage(this.wandImage, x - 24, y - 12);
-    }
+        // Subtle, slower breathing effect
+        // Now only moves by 1px instead of 2.5px
+        const subtlePulse = Math.sin(time / 400) * 1; 
 
+        // 1. Core Size (Increased by another ~10% for better visibility)
+        const baseRadius = 8; 
+        const coreRadius = baseRadius + subtlePulse;
+        
+        // --- 2. THE GLOW EFFECT (Pure White & Cyan mix) ---
+        // Intense glow that breathes slightly with the core
+        ctx.shadowBlur = 20 + (subtlePulse * 3);
+        ctx.shadowColor = 'rgba(0, 255, 255, 0.9)'; // Cyan aura
+        
+        // Draw the pure white core
+        ctx.fillStyle = '#FFFFFF'; 
+        ctx.beginPath();
+        ctx.arc(0, 0, coreRadius, 0, Math.PI * 2); 
+        ctx.fill();
+
+        // Secondary glow layer for extra "pop"
+        ctx.shadowBlur = 12 + (subtlePulse * 2);
+        ctx.shadowColor = '#FFFFFF'; // White inner glow
+        ctx.beginPath();
+        ctx.arc(0, 0, coreRadius * 0.7, 0, Math.PI * 2); 
+        ctx.fill();
+
+        // Reset shadow for performance
+        ctx.shadowBlur = 0;
+    }
     ctx.restore();
   }
 }
