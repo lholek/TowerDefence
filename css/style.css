@@ -325,6 +325,7 @@ canvas {
     border-radius: 12px;
     scrollbar-color: rgb(240, 198, 116) transparent;
     scroll-behavior: smooth;
+    justify-content: space-evenly;
 }
 
 .shop-wrapper::-webkit-scrollbar {
