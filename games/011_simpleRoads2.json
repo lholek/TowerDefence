@@ -1,0 +1,99 @@
+{
+  "maps": [
+    {
+      "name": "Simple Roads II",
+      "startingCoins": 100,
+      "startingLifes": 1,
+      "extraLife": false,
+      "extraLifePrices": [
+        10,
+        25,
+        50,
+        75,
+        100,
+        150,
+        200
+      ],
+      "description": [
+        {
+          "descriptionText": "Hard Short Map with no extra life! Remeber Pause is CHEAT :D\n",
+          "level count": 1,
+          "difficulty": "⭐⭐⭐⭐",
+          "map_size": "35x15",
+          "tower types": 1,
+          "abilites": "Lava Floor🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["W","W","SND","SND","SND","W","W","W","W","W","W","W","W","W","W","SNW","W","W","W","SNW","W","W","W","W","W","W","W","W","W","W","SND","SND","SND","W","W"],
+              ["W","SND","SND","SND","SND","SND","W","W","W","W","W","W","W","W","SNW","E1","SNW","W","SNW","E2","SNW","W","W","W","W","W","W","W","W","SND","SND","SND","SND","SND","W"],
+              ["SND","SND","S1","SND","SND","SND","SND","W","W","W","W","W","W","SNW","SNW","O[SNW]","SNW","W","SNW","O[SNW]","SNW","SNW","W","W","W","W","W","W","SND","SND","SND","SND","S2","SND","SND"],
+              ["SND","SND","O[SNW]","O[SNW]","O[SNW]","SND","SND","SND","W","W","W","W","W","SNW","SNW","O[SNW]","SNW","SNW","SNW","O[SNW]","SNW","SNW","W","W","W","W","W","SND","SND","SND","O[SNW]","O[SNW]","O[SNW]","SND","SND"],
+              ["SND","SND","SND","SND","O[SNW]","O[SNW]","SND","SND","W","W","W","W","W","W","M","O[SNW]","O[SNW]","SNW","O[SNW]","O[SNW]","M","W","W","W","W","W","W","SND","SND","O[SNW]","O[SNW]","SND","SND","SND","SND"],
+              ["W","SND","SND","SND","SND","O[SNW]","O[SNW]","X","W","W","W","W","W","W","M","M","O[SNW]","SNW","O[SNW]","M","M","W","W","W","W","W","W","X","O[SNW]","O[SNW]","SND","SND","SND","SND","W"],
+              ["W","W","SND","SND","SND","SND","O[SNW]","X","X","X","X","W","W","M","M","SNW","O[SNW]","O[SNW]","O[SNW]","SNW","M","M","W","W","X","X","X","X","O[SNW]","SND","SND","SND","SND","W","W"],
+              ["W","W","W","SND","SND","X","O","O","O","X","X","X","M","M","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","M","M","X","X","X","O","O","O","X","SND","SND","W","W","W"],
+              ["W","W","W","W","W","X","X","X","O","O","O","O","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","O[SNW]","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O","O","O","O","X","X","X","W","W","W","W","W"],
+              ["W","W","W","W","W","W","X","X","X","X","X","X","M","M","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","M","M","X","X","X","X","X","X","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","X","X","X","M","M","M","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","M","M","M","X","X","X","W","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","W","W","M","M","SNW","SNW","SNW","SNW","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","M","M","W","W","W","W","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","W","M","M","SNW","SNW","S3","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","M","M","W","W","W","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","M","M","SNW","SNW","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW","SNW","M","M","W","W","W","W","W","W","W","W","W"],
+              ["W","W","W","W","W","W","W","W","W","M","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","M","W","W","W","W","W","W","W","W","W"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            }
+          ]
+        }
+      ],
+      "enemyEffects": []
+    }
+  ]
+}
