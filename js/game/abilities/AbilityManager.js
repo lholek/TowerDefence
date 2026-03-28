@@ -33,6 +33,7 @@ export default class AbilityManager {
   }
 
   selectAbilityById(id) {
+    this.deselectCurrent();
     const inst = this.abilities.find(a => a.id === id);
     if (!inst || !inst.available()) return false;
 
@@ -226,5 +227,42 @@ export default class AbilityManager {
         overlay.style.height = '0%';
       });
     }
+  }
+
+  deselectAbility() {
+    if (this.activeAbility) {
+        // Nastavíme schopnosti, že už se nepokládá
+        this.activeAbility.isPlacing = false;
+        this.activeAbility.pendingSelections = []; // Tohle vymaže ty zaseknuté tily
+        
+        // Odstraníme vizuální označení z UI karty
+        const card = document.getElementById(this.activeAbility.id);
+        if (card) {
+            card.classList.remove('selected');
+            card.classList.remove('placing');
+        }
+    }
+    this.activeAbility = null;
+    this.previewTiles = []; // Vyčistí i náhled v manageru
+  }
+
+  deselectCurrent() {
+    if (this.activeAbility) {
+        // Zavoláme stopPlacing, pokud ji schopnost má (což LavaFloor má)
+        if (typeof this.activeAbility.stopPlacing === 'function') {
+            this.activeAbility.stopPlacing();
+        } else {
+            // Pojistka pro ostatní schopnosti
+            this.activeAbility.isPlacing = false;
+            this.activeAbility.pendingSelections = [];
+        }
+    }
+    this.activeAbility = null;
+    this.previewTiles = [];
+    
+    // Odstraníme 'selected' třídu ze všech karet v UI
+    document.querySelectorAll('.ability-card').forEach(card => {
+        card.classList.remove('selected', 'placing');
+    });
   }
 }

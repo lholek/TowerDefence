@@ -1135,6 +1135,9 @@ export default class Game {
     // --- 1. Panel Switching (T, A) ---
     // Only switch if the toggle buttons themselves are visible
     if (key === 't') {
+      if (this.abilityManager) {
+          this.abilityManager.deselectAbility(); 
+      }
         const btn = document.getElementById('towerModeBtn');
         if (isVisible(btn)) btn.click();
         return;

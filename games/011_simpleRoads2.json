@@ -3,7 +3,7 @@
     {
       "name": "Simple Roads II - needs test",
       "startingCoins": 50,
-      "startingLifes": 1,
+      "startingLifes": 100,
       "extraLife": false,
       "extraLifePrices": [
         10,
