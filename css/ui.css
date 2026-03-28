@@ -222,6 +222,7 @@
   margin: 0px 0;
   gap: 8px;
   z-index: 2;
+  width: 1230px;
 }
 :root {
   /* Default theme (Classic) */
