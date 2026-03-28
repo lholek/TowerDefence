@@ -95,6 +95,13 @@ export default class Game {
 
     window.addEventListener('keydown', e => this.keys[e.code] = true);
     window.addEventListener('keyup', e => this.keys[e.code] = false);
+  
+    // Custom cursor
+    this.canvas.addEventListener('mousemove', (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      this.mouseX = e.clientX - rect.left;
+      this.mouseY = e.clientY - rect.top;
+    });
   }
 
   /**
@@ -993,6 +1000,7 @@ export default class Game {
     if (this.shakeDuration > 0) {
       this.ctx.restore(); 
     }
+    this.renderCustomCursor();
   }
 
   logEvent(htmlString) {
@@ -1250,5 +1258,82 @@ export default class Game {
     // Nastavení textu (už to nebude psát jen "Tower" nebo "Ability", ale "Archer Tower" atd.)
     this.uiSelectionText.textContent = displayTitle;
     this.uiSelectionBox.style.display = "block";
+  }
+
+  // custom cursors
+  renderCustomCursor() {
+    const ctx = this.ctx;
+    const x = this.mouseX;
+    const y = this.mouseY;
+
+    ctx.save();
+    // Reset transformation to ensure the cursor size doesn't change with map zoom
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // --- PRIORITY 1: ABILITY (Takes precedence over tower placement) ---
+    if (this.abilityManager && this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
+        
+        const time = Date.now();
+        
+        // --- DESIGN: MAGMATIC TARGETER ---
+        // Outer rotating ring (visualizing a ritual/spell effect)
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#FF4500';
+        ctx.setLineDash([5, 10]); // Dashed line effect
+        ctx.arc(x, y, 18, time / 200, (time / 200) + Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
+
+        // Pulsating glowing core
+        const pulse = Math.sin(time / 150) * 3;
+        const innerGrad = ctx.createRadialGradient(x, y, 0, x, y, 10 + pulse);
+        innerGrad.addColorStop(0, '#FFFFFF'); // White (hottest point)
+        innerGrad.addColorStop(0.2, '#FFFF00'); // Yellow
+        innerGrad.addColorStop(0.5, '#FF8C00'); // Orange
+        innerGrad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(x, y, 12 + pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+    } 
+    // --- PRIORITY 2: TOWER (HAMMER) ---
+    else if (this.selectedTowerType) {
+    
+      ctx.translate(x, y);
+      ctx.rotate(-Math.PI / 4);
+
+      // --- HAMMER DESIGN (Refined head, dark metal, deep wood) ---
+      // Handle (Wood) - Using a richer, darker wood tone
+      ctx.fillStyle = '#8B4513'; // Deep Mahogany / Saddle Brown
+      ctx.fillRect(-2, 0, 4, 22); 
+      
+      // Subtle wood grain detail (Optional AAA touch)
+      ctx.fillStyle = '#5D2906'; 
+      ctx.fillRect(-0.5, 4, 1, 14);
+
+      // Hammer head (Steel)
+      // Main body
+      ctx.fillStyle = '#36454F'; // Dark Graphite
+      ctx.fillRect(-10, -5.5, 20, 10);
+      
+      // Top highlight
+      ctx.fillStyle = '#546E7A'; 
+      ctx.fillRect(-10, -5.5, 20, 3);
+
+      // Impact surfaces
+      ctx.fillStyle = '#1C2E2E'; 
+      ctx.fillRect(-10, -5.5, 3, 10); 
+      ctx.fillRect(7, -5.5, 3, 10);    
+    }
+
+    // --- DEFAULT: MAGIC WAND ---
+    else if (this.wandImage) {
+        ctx.drawImage(this.wandImage, x - 24, y - 12);
+    }
+
+    ctx.restore();
   }
 }

@@ -12,6 +12,8 @@
         "Improved - Editor - Added Map backgrounds for edding (Sky, Sea, Nebula)",
         "Improved - Editor - Added informational tooltips to ALL input fields to explain specific functionalities",
         "Improved - UI - Rather then seeing green tile you see tower that you will build there but in bit tranparent",
+        "Improved - UI - Added builing hammer cursor when building a tower",
+        "Improved - UI - Added a Lava cube when placing a lava floor",
         "Improved - UI - Slightly updated Ability Bar"
       ]
     },

@@ -26,6 +26,10 @@ body {
     color: #eee;
 }
 
+canvas {
+    cursor: none !important;
+}
+
 /* h */ 
 h3 {
   margin: 0;
