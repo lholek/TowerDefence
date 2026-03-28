@@ -4,6 +4,7 @@
       "version": "Pre-Beta II.",
       "release": "-",
       "changes": [
+        "Improved - Gameplay - Added map 'Simple Roads II'",
         "Improved - Gameplay - Fixed an issue where towers were not correctly selected at the start of the game",
         "Improved - Gameplay - Fixed a bug where the speed selector did not visually reset to the default x1 after a win or loss",
         "Improved - Gameplay - Fixed a bug where players were unable to build towers after switching back from an active ability selection",
@@ -17,8 +18,7 @@
         "Improved - UI - Added a Lava Cube visual indicator when placing a Lava Floor",
         "Improved - UI - Slightly updated Ability Bar",
         "Improved - UI - Fixed description of 'Simple Roads'",
-        "Improved - UI - Added information about selected Ability or Tower (whit price) to the corner of the map",
-        "TDOO: Improve - Game - Added map 'Simple Roads II'"
+        "Improved - UI - Added information about selected Ability or Tower (whit price) to the corner of the map"
       ]
     },
     {
