@@ -17,7 +17,7 @@
       "description": [
         {
           "descriptionText": "Hard Short Map with no extra life! Remeber Pause is CHEAT :D\n",
-          "level count": 9,
+          "level count": 10,
           "difficulty": "⭐⭐⭐⭐",
           "map_size": "35x15",
           "tower types": 5,
@@ -642,7 +642,7 @@
               "path": "S1E1",
               "interval": "700",
               "firstDelay": 0,
-              "coinReward": 16
+              "coinReward": 18
             },
             {
               "type": "basic",
@@ -652,7 +652,7 @@
               "path": "S2E2",
               "interval": "700",
               "firstDelay": 0,
-              "coinReward": 16
+              "coinReward": 18
             },
             {
               "type": "fast",
@@ -662,7 +662,7 @@
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "4000",
-              "coinReward": 20
+              "coinReward": 22
             },
             {
               "type": "fast",
@@ -672,7 +672,7 @@
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": "4000",
-              "coinReward": 20
+              "coinReward": 22
             },
             {
               "type": "tank",
@@ -682,7 +682,7 @@
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": "8000",
-              "coinReward": 22
+              "coinReward": 26
             },
             {
               "type": "tank",
@@ -692,7 +692,7 @@
               "path": "S2E2",
               "interval": 1000,
               "firstDelay": "8000",
-              "coinReward": 22
+              "coinReward": 26
             },
             {
               "type": "tank",
@@ -702,7 +702,7 @@
               "path": "S3E3",
               "interval": 1000,
               "firstDelay": "8000",
-              "coinReward": 22
+              "coinReward": 26
             }
           ]
         },
@@ -710,16 +710,102 @@
           "level": 9,
           "enemies": [
             {
-              "type": "basic",
-              "count": 10000,
+              "type": "shaker-hard",
+              "count": 1,
               "health": 5500,
               "speed": 1.5,
               "path": "S1E1",
-              "interval": 1000,
+              "interval": "700",
               "firstDelay": 0,
-              "coinReward": 20
+              "coinReward": 25
+            },
+            {
+              "type": "money-buffer",
+              "count": 1,
+              "health": 5500,
+              "speed": 1.85,
+              "path": "S1E1",
+              "interval": "700",
+              "firstDelay": "700",
+              "coinReward": 700
+            },
+            {
+              "type": "money-buffer",
+              "count": 1,
+              "health": 5500,
+              "speed": 1.85,
+              "path": "S2E2",
+              "interval": "700",
+              "firstDelay": "700",
+              "coinReward": 700
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 8500,
+              "speed": 0.85,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "1400",
+              "coinReward": 25
+            },
+            {
+              "type": "tank",
+              "count": 4,
+              "health": 8500,
+              "speed": 0.85,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": "1400",
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 6000,
+              "speed": 1.9,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": "7500",
+              "coinReward": 25
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 6000,
+              "speed": 1.9,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": "7500",
+              "coinReward": 25
             }
           ]
+        },
+        {
+          "level": 10,
+          "enemies": [
+            {
+              "type": "final-boss",
+              "count": 1,
+              "health": 50000,
+              "speed": 0.7,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 0
+            },
+            {
+              "type": "final-boss",
+              "count": 1,
+              "health": 50000,
+              "speed": 0.7,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 0
+            }
+          ],
+          "_comment": "FINAL WAVE"
         }
       ],
       "enemyEffects": [
@@ -737,6 +823,11 @@
           "type": "shaker-hard",
           "shakeDuration": 5000,
           "shakeIntensity": 35
+        },
+        {
+          "type": "final-boss",
+          "shakeDuration": 5000,
+          "shakeIntensity": 45
         }
       ],
       "enemyTypes": [
@@ -746,7 +837,9 @@
         "shaker",
         "shaker-medium",
         "shaker-hard",
-        "boss"
+        "money-buffer",
+        "boss",
+        "final-boss"
       ]
     }
   ]
