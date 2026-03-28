@@ -1238,6 +1238,7 @@ export default class Game {
     if (!this.gameStarted || !this.uiSelectionBox) return;
 
     let displayTitle = "None";
+    let displayPrice = 0;
 
     // 1. Zjistíme, jestli fyzicky na stránce existuje karta s 'placing'
     const activeAbilityCard = document.querySelector('.ability-card.placing');
@@ -1252,11 +1253,16 @@ export default class Game {
         if (activeShopItem && this.selectedTowerType) {
             // Pokud svítí věž, vezmeme její jméno z dat
             displayTitle = this.towerTypes[this.selectedTowerType]?.name || this.selectedTowerType;
+            displayPrice = this.towerTypes[this.selectedTowerType]?.price || this.price;
         }
     }
 
     // Nastavení textu (už to nebude psát jen "Tower" nebo "Ability", ale "Archer Tower" atd.)
-    this.uiSelectionText.textContent = displayTitle;
+    if(displayPrice){
+      this.uiSelectionText.textContent = displayTitle+"(🪙"+displayPrice+" )";
+    } else {
+      this.uiSelectionText.textContent = displayTitle;
+    }
     this.uiSelectionBox.style.display = "block";
   }
 
