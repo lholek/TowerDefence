@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Simple Roads II",
-      "startingCoins": 100,
+      "startingCoins": 50,
       "startingLifes": 1,
       "extraLife": false,
       "extraLifePrices": [
@@ -17,11 +17,11 @@
       "description": [
         {
           "descriptionText": "Hard Short Map with no extra life! Remeber Pause is CHEAT :D\n",
-          "level count": 1,
+          "level count": 2,
           "difficulty": "⭐⭐⭐⭐",
           "map_size": "35x15",
-          "tower types": 1,
-          "abilites": "Lava Floor🌋"
+          "tower types": 5,
+          "abilites": "Supernova Fire🌋, Supernova Fire🌋, Cosmic Overdrive🏹, Celestial Wrath🏹"
         }
       ],
       "tileSize": 80,
@@ -47,33 +47,122 @@
           "_comment": "cooldown - 30000",
           "id": "lava_floor",
           "configId": "lava_floor",
-          "name": "Lava Floor",
+          "name": "Supernova Fire",
           "description": "Damage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
           "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
-          "damage_every": 250,
+          "damage": 500,
+          "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
+          "cooldown": 15000,
           "effectDuration": 5000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "color": "rgba(255, 140, 0, 0.75)",
           "ui": {
             "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1774708358760",
+          "name": "Supernova Fire",
+          "type": "targeted",
+          "selectionCount": 9,
+          "damage": 700,
+          "damage_every": 500,
+          "cooldown": 20000,
+          "effectDuration": 5000,
+          "color": "rgba(173, 26, 26, 0.75)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1774708360835",
+          "name": "Cosmic Overdrive",
+          "type": "global",
+          "cooldown": 15000,
+          "effectDuration": 5000,
+          "color": "#rgba(255, 255, 255, 0.75)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 3,
+            "speed_mul": 2,
+            "fireRate_mul": 0.5
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1774708361942",
+          "name": "Celestial Wrath",
+          "type": "global",
+          "cooldown": 25000,
+          "effectDuration": 5000,
+          "color": "rgba(255, 255, 255, 1)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 4,
+            "speed_mul": 3,
+            "fireRate_mul": 0.25
           }
         }
       ],
       "towerTypes": {
         "001": {
-          "name": "Basic Tower",
-          "price": 1,
+          "name": "Astrology Tower",
+          "price": 10,
           "damage": 50,
+          "fireRate": 1000,
+          "range": 400,
+          "color": "#483d8b",
+          "sellPrice": 6,
+          "speed": 3
+        },
+        "002": {
+          "name": "Meteor Tower",
+          "price": 40,
+          "damage": 75,
+          "fireRate": 600,
+          "range": 600,
+          "color": "#90251d",
+          "sellPrice": 20,
+          "speed": 4
+        },
+        "003": {
+          "name": "Orion Tower",
+          "price": 100,
+          "damage": 150,
+          "fireRate": 500,
+          "range": 800,
+          "color": "#1e90ff",
+          "sellPrice": 50,
+          "speed": 6
+        },
+        "004": {
+          "name": "Nebula Tower",
+          "price": 250,
+          "damage": 300,
           "fireRate": 400,
-          "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
-          "speed": 2
+          "range": 800,
+          "color": "#00ced1",
+          "sellPrice": 100,
+          "speed": 7
+        },
+        "005": {
+          "name": "Galaxy Tower",
+          "price": 500,
+          "damage": 500,
+          "fireRate": 250,
+          "range": 1000,
+          "color": "#0b0b0b",
+          "sellPrice": 0,
+          "speed": 8
         }
       },
       "levels": [
@@ -82,18 +171,96 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
+              "count": 6,
+              "health": 200,
+              "speed": 1.4,
+              "path": "S1E1",
+              "interval": "750",
+              "coinReward": 5,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 200,
+              "speed": 1.4,
+              "path": "S2E2",
+              "interval": "750",
+              "coinReward": 5,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 200,
+              "speed": 1.4,
+              "path": "S3E1",
+              "interval": "500",
+              "coinReward": 5,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 200,
+              "speed": 1.4,
+              "path": "S3E1",
+              "interval": "500",
+              "coinReward": 5,
+              "firstDelay": "500"
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 250,
+              "speed": 1.5,
+              "path": "S1E2",
+              "interval": "750",
+              "firstDelay": "5000",
+              "coinReward": 5
+            },
+            {
+              "type": "basic",
+              "count": 3,
+              "health": 250,
+              "speed": 1.5,
+              "path": "S2E1",
+              "interval": "750",
+              "firstDelay": "5000",
+              "coinReward": 5
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 200,
+              "speed": 1.5,
               "path": "S1E1",
               "interval": 1000,
-              "coinReward": 1,
-              "firstDelay": 0
+              "firstDelay": 0,
+              "coinReward": 2
             }
           ]
         }
       ],
-      "enemyEffects": []
+      "enemyEffects": [
+        {
+          "type": "shaker",
+          "shakeDuration": 5000,
+          "shakeIntensity": 15
+        }
+      ],
+      "enemyTypes": [
+        "basic",
+        "tank",
+        "fast",
+        "shaker",
+        "boss"
+      ]
     }
   ]
 }
