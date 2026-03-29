@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Pre-Beta II.",
-      "release": "-",
+      "release": "2026-03-29",
       "changes": [
         "Improved - Gameplay - Added map 'Simple Roads II'",
         "Improved - Gameplay - Fixed an issue where towers were not correctly selected at the start of the game",
@@ -16,9 +16,9 @@
         "Improved - UI - Added a spark cursor when nothing is selected",
         "Improved - UI - Added a dedicated building hammer cursor when placing towers",
         "Improved - UI - Added a Lava Cube visual indicator when placing a Lava Floor",
-        "Improved - UI - Slightly updated Ability Bar",
-        "Improved - UI - Fixed description of 'Simple Roads'",
-        "Improved - UI - Added information about selected Ability or Tower (whit price) to the corner of the map"
+        "Improved - UI - Slightly updated the Ability Bar",
+        "Improved - UI - Fixed the description of 'Simple Roads'",
+        "Improved - UI - Added information about selected Ability or Tower (with price) to the corner of the map"
       ]
     },
     {
