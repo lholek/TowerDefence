@@ -143,9 +143,12 @@
     color: #eee;
 }
 
+.map-info-table tr {
+    border-bottom: 1px solid rgba(240, 198, 116, 0.1);
+}
+
 .map-info-table td {
     padding: 8px 4px;
-    border-bottom: 1px solid rgba(240, 198, 116, 0.1);
 }
 
 .map-info-table td:first-child {
