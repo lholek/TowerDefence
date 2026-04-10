@@ -1,5 +1,5 @@
 export default class Enemy {
-  constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1) {
+  constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1, type='basic', damage = 1) {
     this.map = map;
     this.path = path;
     this.offsetX = offsetX;
@@ -9,6 +9,8 @@ export default class Enemy {
     this.health = health;
     this.coinReward = coinReward;
     this.currentIndex = 0;
+    this.type = type;
+    this.damage = damage;
 
     const startTile = path[0];
     const pos = this.map.tileToWorld(startTile.col, startTile.row);
@@ -77,13 +79,25 @@ export default class Enemy {
 
   _preRenderEnemy(size) {
     const isLow = this.quality === 'low';
+    let canvas;
     if (this.type === 'GOLEM') {
-        return isLow ? this._drawInfernalGolemLow(size) : this._drawInfernalGolemHigh(size);
+        canvas = isLow ? this._drawInfernalGolemLow(size) : this._drawInfernalGolemHigh(size);
+    } else if (this.type === 'EYE') {
+        canvas = isLow ? this._drawInfernalEyeLow(size) : this._drawInfernalEyeHigh(size);
+    } else {
+        canvas = this._drawInfernalEyeLow(size);
     }
+    const ctx = canvas.getContext("2d");
 
-    if (this.type === 'EYE') {
-        return isLow ? this._drawInfernalEyeLow(size) : this._drawInfernalEyeHigh(size);
-    }
+    // Draw damage indicator inside the prerendered sprite
+    this._drawDamageIndicator(
+        ctx,
+        canvas.width / 2,
+        canvas.height * 0.7,
+        size,
+        true // <‑‑ prerender mode
+    );
+    return canvas;
   }
 
   _drawInfernalGolemHigh(tileSize) {
@@ -400,6 +414,48 @@ export default class Enemy {
     ctx.fillRect(this.x - hbW/2, hby, hbW * pct, 4);
   }
 
+  _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false) {
+    if (this.damage <= 1) return;
+
+    const time = Date.now();
+    const bob = Math.sin(time / 300) * 10;
+
+    ctx.save();
+
+    if (isPre) {
+        // Use local canvas coordinates
+        ctx.translate(x, y);
+    } else {
+        // Use world coordinates (normal rendering)
+        ctx.translate(this.x, this.y - this.size * 3.5 + bob);
+    }
+
+    // Glow
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#dc2626';
+
+    // Text
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 80px "Segoe UI", Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Outline
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 4;
+    ctx.strokeText(this.damage, 0, 0);
+
+    // Fill
+    ctx.fillText(this.damage, 0, 0);
+
+    // Icon spacing
+    const w = ctx.measureText(this.damage).width;
+    ctx.font = '80px Arial';
+    ctx.fillText("⚔️", w + 25, 0);
+
+    ctx.restore();
+  }
+  
   render(ctx) {
     const time = Date.now() * 0.015;
     ctx.save();

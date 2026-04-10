@@ -70,7 +70,7 @@ export default class Game {
         goldSpent: 0,
         towersBuilt: 0,
         towersSold: 0,
-        leaks: 0,
+        lifeLost: 0,
         abilitiesUsed: 0,
         extraLifeBought: 0
     };
@@ -387,13 +387,12 @@ export default class Game {
         }
       
         if (e.currentIndex >= e.path.length - 1) {
-            this.playerLifes--;
-            this.stats.leaks++;
+            this.playerLifes -= e.damage;
+            this.stats.lifeLost += e.damage;
             this.updateUI();
         
             if (this.playerLifes <= 0) {
                 this.gameStarted = false;
-                // CHANGE: Remove setTimeout, add a button-based overlay
                 this.showFinalScoreOverlay(`L`);
             }
             return false; 
@@ -474,7 +473,7 @@ export default class Game {
               <div style="color: #94a3b8;">🏚️ Sold <span class="stats-detail">${fmt(this.stats.towersSold)}</span></div>
               
               <div style="color: #a855f7;">✨ Abilities <span class="stats-detail">${fmt(this.stats.abilitiesUsed)}</span></div>
-              <div style="color: #f87171;">💔 Life lost <span class="stats-detail">${fmt(this.stats.leaks)}</span></div>
+              <div style="color: #f87171;">💔 Life lost <span class="stats-detail">${fmt(this.stats.lifeLost)}</span></div>
               
               <div class="final-status-time">
                   ⏱️ Time Elapsed: ${timeString}
@@ -509,6 +508,15 @@ export default class Game {
         this.shakeIntensity = effect.shakeIntensity;
     }
 
+    // Get custom damage if set
+    let customDamage = 1;
+    if (this.levelData.enemyDamage) {
+        const damageConfig = this.levelData.enemyDamage.find(d => d.type === config.type);
+        if (damageConfig) {
+            customDamage = damageConfig.damage;
+        }
+    }
+
     if (path && path.length > 0) {
       // Create enemy with the specific path for this group
       this.enemies.push(new Enemy(
@@ -517,7 +525,9 @@ export default class Game {
         0, 0, 
         config.speed, 
         config.health, 
-        config.coinReward
+        config.coinReward,
+        config.type, 
+        customDamage
       ));
     } else {
       // Warn only if we expected a path but didn't find one
@@ -1036,7 +1046,7 @@ export default class Game {
         goldSpent: 0,
         towersBuilt: 0,
         towersSold: 0,
-        leaks: 0,
+        lifeLost: 0,
         abilitiesUsed: 0
     };
 
