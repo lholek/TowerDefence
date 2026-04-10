@@ -173,6 +173,7 @@ _getCenteredPathTiles(centerTile, count) {
         };
         this.activeInstances.push(inst);
     }
+    this.game.abilityManager.notifyAbilityUsed(this); // Notify manager of activation
   }
 
   update(deltaTime) {

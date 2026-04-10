@@ -59,6 +59,7 @@ export default class TowersFury extends Ability {
 
         // IMPORTANT: We let AbilityManager handle the UI cooldown timer 
         // through its notifyAbilityUsed call.
+        this.game.abilityManager.notifyAbilityUsed(this); // Notify manager of activation
         return true;
     }
 

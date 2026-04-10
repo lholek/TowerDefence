@@ -73,12 +73,9 @@ export default class AbilityManager {
   // Call this when an ability actually activates (placement finished or instant ability effect runs).
   // This ensures cooldown visuals only start when the player used the ability.
   // Add 'card' as a parameter
-  notifyAbilityUsed(ability, card = null) {
+  notifyAbilityUsed(ability ) {
     if (!ability) return;
     
-    // If card wasn't passed, try to find it
-    if (!card) card = document.getElementById(ability.id);
-
     if (this.game && this.game.stats) {
         this.game.stats.abilitiesUsed++;
     }
@@ -88,7 +85,6 @@ export default class AbilityManager {
    // if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
     if (this.game) {
       this.game.logEvent(`Player used ability <b>${ability.name}</b>`);
-      //this.startAbilityCooldownTimer(ability, card);
     }
 }
 
@@ -98,19 +94,6 @@ export default class AbilityManager {
 
     const world = this.game.map.screenToWorld(screenX, screenY);
     this.activeAbility.handleCanvasClick(world.x, world.y);
-
-    if (!this.activeAbility.isPlacing) {
-      const used = this.activeAbility;
-      const card = document.getElementById(used.id); // Find card
-      if (card) card.classList.remove("placing");
-      
-      this.notifyAbilityUsed(used, card); // Pass card
-
-      this.previewTiles = [];
-      /*const towerModeBtn = document.getElementById('towerModeBtn');
-      if (towerModeBtn) towerModeBtn.click();*/
-      this.activeAbility = null;
-    }
     return true;
   }
 
