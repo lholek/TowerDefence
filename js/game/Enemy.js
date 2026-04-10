@@ -407,26 +407,51 @@ export default class Enemy {
   }
 
   _drawHealthBar(ctx) {
-    const hbW = this.size;
+    const hbW = this.size * 1.1; // Mírně širší než samotný nepřítel
+    const hbH = 6;               // Výška baru (původně 4)
     const pct = Math.max(0, this.health / this.maxHealth);
-    const hby = this.y - this.size * 1.8;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(this.x - hbW/2, hby, hbW, 4);
-    ctx.fillStyle = pct > 0.5 ? '#a855f7' : '#ef4444';
-    ctx.fillRect(this.x - hbW/2, hby, hbW * pct, 4);
+    
+    // Pozice barva nad nepřítelem
+    const hbx = this.x - hbW / 2;
+    const hby = this.y - this.size * 1.8; // Trochu výše, aby to dejchalo
+
+    // 1. Pozadí (Background / Border)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Poloprůhledná černá vypadá lépe
+    ctx.fillRect(hbx, hby, hbW, hbH);
+
+    // 2. Samotný život (Fill)
+    // Používám #22c55e (sytá zelená) vs #ef4444 (červená)
+    ctx.fillStyle = pct > 0.5 ? '#e3d914' : '#b91c1c';
+    ctx.fillRect(hbx, hby, hbW * pct, hbH);
+    
+    // 3. Volitelný detail: Jemný vnitřní lesk (aby to nebylo ploché)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(hbx, hby, hbW * pct, hbH / 2);
   }
 
   _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, type = "GOLEM", quality = "low") {
     if (this.damage <= 1) return;
     
     let indicatorSize = 1;
+    let indicatorPostionX = 10;
+    let indicatorPostionY = 10;
 
     if (quality == "low") {
-      if (type === 'GOLEM') indicatorSize = 1.5;
+      // size low
+      if (type === 'GOLEM') indicatorSize = 0.8;
       else if (type === 'EYE') indicatorSize = 0.3;
+
+      // position low
+      if (type === 'GOLEM') { indicatorPostionX = 80; indicatorPostionY = -50; }
+      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = -20; }
     } else {
-      if (type === 'GOLEM') indicatorSize = 1.5;
+      // size high
+      if (type === 'GOLEM') indicatorSize = 1.4;
       else if (type === 'EYE') indicatorSize = 0.3;
+
+      // position high
+      if (type === 'GOLEM') { indicatorPostionX = 60; indicatorPostionY = -100; }
+      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = -20; }
     }
 
     const time = Date.now();
@@ -435,29 +460,29 @@ export default class Enemy {
     ctx.save();
 
     if (isPre) {
-        ctx.translate(x + 10, y - 20);
+        ctx.translate(x + indicatorPostionX, y + indicatorPostionY);
         ctx.scale(indicatorSize, indicatorSize);   // <‑‑ FIXED
     } else {
         ctx.translate(this.x, this.y - this.size * 3.5 + bob);
     }
 
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#e3d914';
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#ffffff';
 
-    ctx.fillStyle = '#e3d914';
+    ctx.fillStyle = '#facc15';      // Výrazná žlutá (vypadá skvěle s černým obrysem)
     ctx.font = 'bold 80px "Segoe UI", Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 10;
     ctx.strokeText(this.damage, 0, 0);
 
     ctx.fillText(this.damage, 0, 0);
 
     const w = ctx.measureText(this.damage).width;
     ctx.font = '80px Arial';
-    ctx.fillText("⚔️", w + 25, 0);
+    ctx.fillText("⚔️", w + 50, 0);
 
     ctx.restore();
   }
