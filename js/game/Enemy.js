@@ -79,11 +79,13 @@ export default class Enemy {
 
   _preRenderEnemy(size) {
     const isLow = this.quality === 'low';
-    let canvas;
+    let canvas, indicatorSize;
     if (this.type === 'GOLEM') {
         canvas = isLow ? this._drawInfernalGolemLow(size) : this._drawInfernalGolemHigh(size);
+        indicatorSize = 1.5; // Bigger indicator for high quality
     } else if (this.type === 'EYE') {
         canvas = isLow ? this._drawInfernalEyeLow(size) : this._drawInfernalEyeHigh(size);
+        indicatorSize = 0.3;
     } else {
         canvas = this._drawInfernalEyeLow(size);
     }
@@ -94,8 +96,9 @@ export default class Enemy {
         ctx,
         canvas.width / 2,
         canvas.height * 0.7,
-        size,
-        true // <‑‑ prerender mode
+        30, // default size
+        true, // prerender mode
+        indicatorSize // scale
     );
     return canvas;
   }
@@ -414,7 +417,7 @@ export default class Enemy {
     ctx.fillRect(this.x - hbW/2, hby, hbW * pct, 4);
   }
 
-  _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false) {
+  _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, scale = 1) {
     if (this.damage <= 1) return;
 
     const time = Date.now();
@@ -423,39 +426,33 @@ export default class Enemy {
     ctx.save();
 
     if (isPre) {
-        // Use local canvas coordinates
-        ctx.translate(x, y);
+        ctx.translate(x + 10, y - 20);
+        ctx.scale(scale, scale);
     } else {
-        // Use world coordinates (normal rendering)
         ctx.translate(this.x, this.y - this.size * 3.5 + bob);
     }
 
-    // Glow
     ctx.shadowBlur = 15;
     ctx.shadowColor = '#dc2626';
 
-    // Text
     ctx.fillStyle = '#dc2626';
     ctx.font = 'bold 80px "Segoe UI", Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Outline
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 4;
     ctx.strokeText(this.damage, 0, 0);
 
-    // Fill
     ctx.fillText(this.damage, 0, 0);
 
-    // Icon spacing
     const w = ctx.measureText(this.damage).width;
     ctx.font = '80px Arial';
     ctx.fillText("⚔️", w + 25, 0);
 
     ctx.restore();
   }
-  
+
   render(ctx) {
     const time = Date.now() * 0.015;
     ctx.save();

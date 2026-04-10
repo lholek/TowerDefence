@@ -101,12 +101,12 @@
           "level": 1,
           "enemies": [
             {
-              "type": "basic",
+              "type": "tank",
               "count": 1000,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
-              "interval": "3000",
+              "interval": "1000",
               "coinReward": 1,
               "firstDelay": "10"
             }
