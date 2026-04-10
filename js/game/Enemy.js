@@ -79,13 +79,11 @@ export default class Enemy {
 
   _preRenderEnemy(size) {
     const isLow = this.quality === 'low';
-    let canvas, indicatorSize;
+    let canvas;
     if (this.type === 'GOLEM') {
         canvas = isLow ? this._drawInfernalGolemLow(size) : this._drawInfernalGolemHigh(size);
-        indicatorSize = 1.5; // Bigger indicator for high quality
     } else if (this.type === 'EYE') {
         canvas = isLow ? this._drawInfernalEyeLow(size) : this._drawInfernalEyeHigh(size);
-        indicatorSize = 0.3;
     } else {
         canvas = this._drawInfernalEyeLow(size);
     }
@@ -98,7 +96,8 @@ export default class Enemy {
         canvas.height * 0.7,
         30, // default size
         true, // prerender mode
-        indicatorSize // scale
+        this.type,
+        this.quality
     );
     return canvas;
   }
@@ -417,8 +416,18 @@ export default class Enemy {
     ctx.fillRect(this.x - hbW/2, hby, hbW * pct, 4);
   }
 
-  _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, scale = 1) {
+  _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, type = "GOLEM", quality = "low") {
     if (this.damage <= 1) return;
+    
+    let indicatorSize = 1;
+
+    if (quality == "low") {
+      if (type === 'GOLEM') indicatorSize = 1.5;
+      else if (type === 'EYE') indicatorSize = 0.3;
+    } else {
+      if (type === 'GOLEM') indicatorSize = 1.5;
+      else if (type === 'EYE') indicatorSize = 0.3;
+    }
 
     const time = Date.now();
     const bob = Math.sin(time / 300) * 10;
@@ -427,7 +436,7 @@ export default class Enemy {
 
     if (isPre) {
         ctx.translate(x + 10, y - 20);
-        ctx.scale(scale, scale);
+        ctx.scale(indicatorSize, indicatorSize);   // <‑‑ FIXED
     } else {
         ctx.translate(this.x, this.y - this.size * 3.5 + bob);
     }
