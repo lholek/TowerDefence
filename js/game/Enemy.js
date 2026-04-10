@@ -442,9 +442,9 @@ export default class Enemy {
     }
 
     ctx.shadowBlur = 15;
-    ctx.shadowColor = '#dc2626';
+    ctx.shadowColor = '#e3d914';
 
-    ctx.fillStyle = '#dc2626';
+    ctx.fillStyle = '#e3d914';
     ctx.font = 'bold 80px "Segoe UI", Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

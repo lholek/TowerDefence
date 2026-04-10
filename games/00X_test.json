@@ -31,14 +31,14 @@
               ["SND","SND","X","S1","O","O","M","SNW","M","O","X","X","X","M","M","M","X","M","M","M"],
               ["SND","X","-","-","-","O","SNW","SNW","SNW","O","X","X","M","M","M","X","X","X","X","X"],
               ["SND","SND","X","S2","O","O","SNW","SNW","SNW","O","X","X","M","M","M","X","E1","X","X","X"],
-              ["W","SND","SND","X","O","O","O","O","O","O","O","O","O","O","O","O","O","X","SND","W"],
+              ["W","SND","SND","X","O","O","O","O","O","O","-","O","O","O","O","O","O","X","SND","W"],
               ["W","W","SND","X","X","X","X","X","O","SNW","SND","O[SND]","SND","X","X","X","SND","SND","SND","W"],
               ["W","W","W","X","X","X","M","SNW","O[SNW]","SNW","SND","O[SND]","SND","SND","SND","SND","SND","W","W","W"],
               ["W","W","W","W","X","M","SNW","SNW","O[SNW]","SNW","SND","O[SND]","SND","SNW","W","W","W","W","W","W"],
-              ["W","W","W","W","M","M","SNW","O[SNW]","O[SNW]","SNW","SNW","O[SNW]","O[SNW]","SNW","SNW","W","W","W","W","W"],
-              ["W","W","W","M","M","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","W","W","W","W"],
-              ["W","W","M","M","M","SNW","M","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","W","W","W"],
-              ["W","W","M","M","M","SNW","M","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","M","M","M","W","W","W"],
+              ["W","W","W","W","M","M","SNW","O[SND]","O[SNW]","SNW","SNW","O[SNW]","O[SNW]","SNW","SNW","W","W","W","W","W"],
+              ["W","W","W","M","M","SNW","SNW","O[SND]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","W","W","W","W"],
+              ["W","W","M","M","M","SNW","M","O[SND]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","W","W","W"],
+              ["W","W","M","M","M","SNW","M","O[SND]","O[SND]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","M","M","M","W","W","W"],
               ["W","W","W","M","M","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","M","M","W","W","W","W"],
               ["W","W","W","W","M","M","M","M","SNW","SNW","SNW","SNW","M","M","M","W","W","W","W","W"],
               ["W","W","W","W","W","M","M","M","W","W","SNW","SNW","M","M","W","W","W","W","W","W"],
@@ -113,8 +113,7 @@
           ]
         }
       ],
-      "enemyEffects": [
-      ],
+      "enemyEffects": [],
       "enemyDamage": [
         {
           "type": "basic",
