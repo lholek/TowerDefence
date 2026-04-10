@@ -409,7 +409,7 @@ export default class Enemy {
   _drawHealthBar(ctx) {
     const hbW = this.size;
     const pct = Math.max(0, this.health / this.maxHealth);
-    const hby = this.y - this.size * 2.6;
+    const hby = this.y - this.size * 1.8;
     ctx.fillStyle = '#000';
     ctx.fillRect(this.x - hbW/2, hby, hbW, 4);
     ctx.fillStyle = pct > 0.5 ? '#a855f7' : '#ef4444';
