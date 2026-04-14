@@ -33,7 +33,8 @@ export default class Enemy {
     this.quality = settings.enemies || 'low';
 
     // Generování grafiky do cache
-    this.cachedCanvas = this._preRenderEnemy(this.size);
+    this.cachedBody = this._preRenderEnemy(this.size);
+    this.cachedIndicator = this._preRenderIndicatorCache();
   }
 
   update(deltaTime) {
@@ -89,16 +90,6 @@ export default class Enemy {
     }
     const ctx = canvas.getContext("2d");
 
-    // Draw damage indicator inside the prerendered sprite
-    this._drawDamageIndicator(
-        ctx,
-        canvas.width / 2,
-        canvas.height * 0.7,
-        30, // default size
-        true, // prerender mode
-        this.type,
-        this.quality
-    );
     return canvas;
   }
 
@@ -438,20 +429,20 @@ export default class Enemy {
 
     if (quality == "low") {
       // size low
-      if (type === 'GOLEM') indicatorSize = 0.8;
+      if (type === 'GOLEM') indicatorSize = 0.3;
       else if (type === 'EYE') indicatorSize = 0.3;
 
       // position low
-      if (type === 'GOLEM') { indicatorPostionX = 80; indicatorPostionY = -50; }
-      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = -20; }
+      if (type === 'GOLEM') { indicatorPostionX = 50; indicatorPostionY = -50; }
+      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = 20; }
     } else {
       // size high
-      if (type === 'GOLEM') indicatorSize = 1.4;
+      if (type === 'GOLEM') indicatorSize = 0.3;
       else if (type === 'EYE') indicatorSize = 0.3;
 
       // position high
-      if (type === 'GOLEM') { indicatorPostionX = 60; indicatorPostionY = -100; }
-      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = -20; }
+      if (type === 'GOLEM') { indicatorPostionX = -90; indicatorPostionY = -70; }
+      else if (type === 'EYE') { indicatorPostionX = -90; indicatorPostionY = -70; }
     }
 
     const time = Date.now();
@@ -487,6 +478,22 @@ export default class Enemy {
     ctx.restore();
   }
 
+  _preRenderIndicatorCache() {
+    if (this.damage <= 1) return null;
+
+    const canvas = document.createElement("canvas");
+    // 300x200 bohatě stačí pro text s mečem
+    canvas.width = 200; 
+    canvas.height = 100;
+    const ctx = canvas.getContext("2d");
+
+    // Vykreslíme indikátor na střed (150, 100)
+    // isPre nastavíme na true, aby se použily tvoje specifické offsety pro Golema/Eye
+    this._drawDamageIndicator(ctx, 100, 100, 30, true, this.type, this.quality);
+
+    return canvas;
+  }
+
   render(ctx) {
     const time = Date.now() * 0.015;
     ctx.save();
@@ -500,11 +507,24 @@ export default class Enemy {
     // Zmenšení pro měřítko tvých věží
     ctx.scale(0.65, 0.65); 
 
-    if (this.cachedCanvas) {
-        ctx.drawImage(this.cachedCanvas, -this.size * 2, -this.size * 4, this.size * 4, this.size * 5);
+    if (this.cachedBody) {
+        ctx.drawImage(this.cachedBody, -this.size * 2, -this.size * 4, this.size * 4, this.size * 5);
     }
     
     ctx.restore();
+    if (this.cachedIndicator) {
+        ctx.save();
+        // Pozicujeme indikátor nad nepřítele - NEZÁVISLE na scale těla
+        // (bob * 0.5) zajistí, že se indikátor hýbe s ním, ale jemněji
+        ctx.translate(this.x, this.y - this.size * 2 + (bob * 0.5));
+        
+        // Vykreslíme předpřipravený indikátor (vycentrovaný)
+        // Měřítko 0.5 je tu proto, že v cache máš 80px font, což je hodně velké
+        ctx.scale(1, 1); 
+        ctx.drawImage(this.cachedIndicator, 20, 0); 
+        ctx.restore();
+    }
+
     this._drawHealthBar(ctx);
   }
 }

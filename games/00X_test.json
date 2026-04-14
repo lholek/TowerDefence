@@ -3,7 +3,7 @@
     {
       "name": "EDIT TITLE",
       "startingCoins": 10000,
-      "startingLifes": 10,
+      "startingLifes": 1000,
       "extraLife": true,
       "extraLifePrices": [
         10,
