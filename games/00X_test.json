@@ -117,7 +117,7 @@
       "enemyDamage": [
         {
           "type": "basic",
-          "damage": 100
+          "damage": 10
         },
         {
           "type": "tank",
