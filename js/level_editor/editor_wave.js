@@ -84,6 +84,15 @@ export const initialize = (refs) => {
         // Attach the public function to the button
         addWaveButton.addEventListener('click', waveEditor.addWave);
     } 
+
+    // Inside initialize function...
+    const addDamageBtn = document.getElementById('add-damage-btn');
+    if (addDamageBtn) {
+        addDamageBtn.addEventListener('click', waveEditor.addEnemyDamage);
+    }
+
+    // Ensure this is called when the wave editor opens
+    waveEditor.renderDamageRepeater();
 };
 
 // --- Utility Functions ---
@@ -839,7 +848,74 @@ export const waveEditor = (() => {
             data.maps[0].enemyEffects.splice(index, 1);
             renderEffectsRepeater();
         }, "Deleted enemy effect.");
-    };    
+    };
+
+    /* Custom Enemy Damage */
+    /**
+     * Gets the enemy damage array, initializing it if missing.
+     */
+    const getEnemyDamage = () => {
+        const map = getCurrentMap();
+        if (!map.enemyDamage) {
+            map.enemyDamage = []; 
+        }
+        return map.enemyDamage;
+    };
+
+    /**
+     * Renders the Custom Damage Repeater (Type | Damage)
+     */
+    // Add these functions inside the waveEditor module
+    const renderDamageRepeater = () => {
+        const container = document.getElementById('enemy-damage-repeater');
+        const map = getCurrentMap();
+        const damageList = map.enemyDamage || [];
+        const enemyTypes = getEnemyTypes(); // Helper to get existing enemy types
+
+        container.innerHTML = damageList.map((entry, index) => `
+            <div class="effect-row flex items-center gap-2 mb-2">
+                <div class="flex-1">
+                    <label class="block text-xs">Enemy Type</label>
+                    <select class="enemy-custom-damage-row" onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'type', this.value)">
+                        ${enemyTypes.map(type => `<option value="${type}" ${type === entry.type ? 'selected' : ''}>${type}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs">Damage</label>
+                    <input type="number" class="w-full p-1" value="${entry.damage || 1}" min="1" 
+                           onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'damage', this.value)">
+                </div>
+                <button class="btn btn-delete bg-red-500 p-1 text-white" onclick="window.app.waveEditor.deleteEnemyDamage(${index})">X</button>
+            </div>
+        `).join('');
+        if (damageList.length === 0) {
+            container.innerHTML = '<p style="color:#888;">No custom damage rules defined. Click "Add Custom Damage" to start.</p>';
+            return; // Now it updates the UI before returning
+        }
+    };
+
+    const addEnemyDamage = () => {
+        modifyJson((data) => {
+            if (!data.maps[0].enemyDamage) data.maps[0].enemyDamage = [];
+            data.maps[0].enemyDamage.push({ type: "basic", damage: 1 });
+        }, "Added custom enemy damage rule");
+        renderDamageRepeater();
+    };
+
+    const updateEnemyDamage = (index, key, value) => {
+        modifyJson((data) => {
+            const val = key === 'damage' ? parseInt(value) : value;
+            data.maps[0].enemyDamage[index][key] = val;
+        }, `Updated enemy damage ${key}`);
+    };
+
+    const deleteEnemyDamage = (index) => {
+        modifyJson((data) => {
+            data.maps[0].enemyDamage.splice(index, 1);
+        }, "Deleted enemy damage rule");
+        renderDamageRepeater();
+    };
+    /* Custom Enemy Damage */
 
     return {
         renderWaveRepeater,
@@ -860,6 +936,10 @@ export const waveEditor = (() => {
         handleDrop,
         addEffect,
         updateEffect,
-        deleteEffect
+        deleteEffect,
+        renderDamageRepeater,
+        addEnemyDamage,
+        updateEnemyDamage,
+        deleteEnemyDamage
     };
 })();

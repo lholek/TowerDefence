@@ -214,3 +214,16 @@
     padding: 10px;
     font-size: 0.9rem;
 }
+
+.enemy-custom-damage-row{
+    background: #967456;
+    color: #ffffff;
+    border: 1px solid #555;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
