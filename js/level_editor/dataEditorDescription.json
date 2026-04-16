@@ -70,6 +70,14 @@
       "description": "The strength of the shake effect during its duration."
     }
   },
+  "custom-enemy-damage": {
+    "enemy-type": {
+      "description": "Specifies which enemy type receives the custom damage."
+    },
+    "damage": {
+      "description": "The amount of health removed from the specified enemy type when it reaches the tree."
+    }
+  },
   "wave-editor": {
     "type": { 
       "description": "Identifies the enemy type. Certain game effects may interact with specific types." 

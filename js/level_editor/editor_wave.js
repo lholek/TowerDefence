@@ -882,13 +882,13 @@ export const waveEditor = (() => {
         container.innerHTML = damageList.map((entry, index) => `
             <div class="effect-row flex items-center gap-2 mb-2">
                 <div class="flex-1">
-                    <label class="block text-xs">Enemy Type</label>
+                    <label class="block text-xs">Enemy Type <i class="info-icon" data-tooltip="custom-enemy-damage.enemy-type">i</i></label>
                     <select class="enemy-custom-damage-row" onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'type', this.value)">
                         ${enemyTypes.map(type => `<option value="${type}" ${type === entry.type ? 'selected' : ''}>${type}</option>`).join('')}
                     </select>
                 </div>
                 <div class="flex-1">
-                    <label class="block text-xs">Damage</label>
+                    <label class="block text-xs">Damage <i class="info-icon" data-tooltip="custom-enemy-damage.damage">i</i></label>
                     <input type="number" class="w-full p-1" value="${entry.damage || 1}" min="1" 
                            onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'damage', this.value)">
                 </div>

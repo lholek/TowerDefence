@@ -102,13 +102,23 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 1000,
+              "count": 5,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
               "interval": "1000",
               "coinReward": 1,
-              "firstDelay": "10"
+              "firstDelay": "0"
+            },
+            {
+              "type": "tank",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": "1000",
+              "coinReward": 1,
+              "firstDelay": "500"
             }
           ]
         }
@@ -133,14 +143,6 @@
         {
           "type": "tank",
           "damage": 50
-        },
-        {
-          "type": "basic",
-          "damage": 1
-        },
-        {
-          "type": "basic",
-          "damage": 1
         }
       ]
     }
