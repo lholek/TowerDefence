@@ -6,6 +6,7 @@
       "changes": [
         "Improved - Gameplay - Fixed bug that game doesnt count abilites in final stats",
         "Improved - Gameplay - Enemies now can have custom damage that takes more hearts to the Trees of Life",
+        "Improved - Gameplay - Updated Game speed - Player can increase Game speed (x1, x1.5, x2, x2.5, x3, x4, x5)",
         "Improved - Menu - Updated 'How to Play' (Tutorial / Guide) section",
         "Improved - UI - Updated css (Map info)",
         "Improve - Updates Updates Updates Updates Updates Updates Updates Updates",
