@@ -433,8 +433,8 @@ export default class Enemy {
       else if (type === 'EYE') indicatorSize = 0.3;
 
       // position low
-      if (type === 'GOLEM') { indicatorPostionX = 50; indicatorPostionY = -50; }
-      else if (type === 'EYE') { indicatorPostionX = 10; indicatorPostionY = 20; }
+      if (type === 'GOLEM') { indicatorPostionX = -80; indicatorPostionY = -75; }
+      else if (type === 'EYE') { indicatorPostionX = -80; indicatorPostionY = -70; }
     } else {
       // size high
       if (type === 'GOLEM') indicatorSize = 0.3;
@@ -457,7 +457,7 @@ export default class Enemy {
         ctx.translate(this.x, this.y - this.size * 3.5 + bob);
     }
 
-    ctx.shadowBlur = 20;
+    ctx.shadowBlur = 0;
     ctx.shadowColor = '#ffffff';
 
     ctx.fillStyle = '#facc15';      // Výrazná žlutá (vypadá skvěle s černým obrysem)
@@ -473,7 +473,7 @@ export default class Enemy {
 
     const w = ctx.measureText(this.damage).width;
     ctx.font = '80px Arial';
-    ctx.fillText("⚔️", w + 50, 0);
+    ctx.fillText("⚔️", w + 10, 0);
 
     ctx.restore();
   }
