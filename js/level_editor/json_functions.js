@@ -209,6 +209,10 @@ export function updateMapFromEditor() {
             if (typeof modules.waveEditor.renderEffectsRepeater === 'function') {
                 modules.waveEditor.renderEffectsRepeater();
             }
+            
+            if (typeof modules.waveEditor.renderDamageRepeater === 'function') {
+                modules.waveEditor.renderDamageRepeater();
+            }
         }
         
         // D. Ability Editor

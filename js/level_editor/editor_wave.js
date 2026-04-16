@@ -76,6 +76,7 @@ export const initialize = (refs) => {
         renderEnemyTypeTags(); // Render tags on load
 
         waveEditor.renderEffectsRepeater();
+        waveEditor.renderDamageRepeater();
     }
 
     // Attach event listener for the main Add Wave button
@@ -88,10 +89,11 @@ export const initialize = (refs) => {
     // Inside initialize function...
     const addDamageBtn = document.getElementById('add-damage-btn');
     if (addDamageBtn) {
+        addDamageBtn.removeEventListener('click', waveEditor.addEnemyDamage); // Prevence duplicit
         addDamageBtn.addEventListener('click', waveEditor.addEnemyDamage);
     }
 
-    // Ensure this is called when the wave editor opens
+    // Tohle vynutí vykreslení hned při startu
     waveEditor.renderDamageRepeater();
 };
 
@@ -872,6 +874,11 @@ export const waveEditor = (() => {
         const damageList = map.enemyDamage || [];
         const enemyTypes = getEnemyTypes(); // Helper to get existing enemy types
 
+        if (damageList.length === 0) {
+            container.innerHTML = '<p style="color:#888; padding: 10px;">No custom damage rules defined.</p>';
+            return;
+        }
+
         container.innerHTML = damageList.map((entry, index) => `
             <div class="effect-row flex items-center gap-2 mb-2">
                 <div class="flex-1">
@@ -904,8 +911,11 @@ export const waveEditor = (() => {
 
     const updateEnemyDamage = (index, key, value) => {
         modifyJson((data) => {
+            if (!data.maps[0].enemyDamage) return;
             const val = key === 'damage' ? parseInt(value) : value;
             data.maps[0].enemyDamage[index][key] = val;
+            
+            renderDamageRepeater();
         }, `Updated enemy damage ${key}`);
     };
 
