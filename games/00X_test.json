@@ -123,26 +123,15 @@
           ]
         }
       ],
-      "enemyEffects": [
-        {
-          "type": "basic",
-          "shakeDuration": 1000,
-          "shakeIntensity": 5
-        },
-        {
-          "type": "basic",
-          "shakeDuration": 1000,
-          "shakeIntensity": 5
-        }
-      ],
+      "enemyEffects": [],
       "enemyDamage": [
         {
           "type": "basic",
-          "damage": 10
+          "damage": 5
         },
         {
           "type": "tank",
-          "damage": 50
+          "damage": 100
         }
       ]
     }

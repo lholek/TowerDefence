@@ -433,16 +433,16 @@ export default class Enemy {
       else if (type === 'EYE') indicatorSize = 0.3;
 
       // position low
-      if (type === 'GOLEM') { indicatorPostionX = -80; indicatorPostionY = -75; }
-      else if (type === 'EYE') { indicatorPostionX = -80; indicatorPostionY = -70; }
+      if (type === 'GOLEM') { indicatorPostionX = -75; indicatorPostionY = -75; }
+      else if (type === 'EYE') { indicatorPostionX = -75; indicatorPostionY = -70; }
     } else {
       // size high
       if (type === 'GOLEM') indicatorSize = 0.3;
       else if (type === 'EYE') indicatorSize = 0.3;
 
       // position high
-      if (type === 'GOLEM') { indicatorPostionX = -90; indicatorPostionY = -70; }
-      else if (type === 'EYE') { indicatorPostionX = -90; indicatorPostionY = -70; }
+      if (type === 'GOLEM') { indicatorPostionX = -85; indicatorPostionY = -70; }
+      else if (type === 'EYE') { indicatorPostionX = -85; indicatorPostionY = -70; }
     }
 
     const time = Date.now();
@@ -467,13 +467,35 @@ export default class Enemy {
 
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 10;
-    ctx.strokeText(this.damage, 0, 0);
+    
+    // damge text
+    const damageText = this.damage > 99
+    ? { base: "99", sup: "+" }
+    : { base: String(this.damage), sup: "" };
 
-    ctx.fillText(this.damage, 0, 0);
+    // hlavní text
+    ctx.strokeText(damageText.base, 0, 0);
+    ctx.fillText(damageText.base, 0, 0);
 
-    const w = ctx.measureText(this.damage).width;
+    // horní index
+    if (damageText.sup) {
+        ctx.font = 'bold 50px "Segoe UI", Arial'; // menší font pro superscript
+        const offsetX = ctx.measureText(damageText.base).width + 5;
+        const offsetY = -35;
+    
+        ctx.strokeText(damageText.sup, offsetX, offsetY);
+        ctx.fillText(damageText.sup, offsetX, offsetY);
+    }
+
+    // ⚔️ ikona
     ctx.font = '80px Arial';
-    ctx.fillText("⚔️", w + 10, 0);
+    const w = ctx.measureText(damageText.base).width + (damageText.sup ? 25 : 0);
+    if (this.damage < 10) {
+      ctx.fillText("⚔️", w + 40 , 0);
+    } else {
+      ctx.fillText("⚔️", w + 10, 0);
+    }
+    // damge text
 
     ctx.restore();
   }
