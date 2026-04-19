@@ -421,7 +421,7 @@ export default class Enemy {
   }
 
   _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, type = "GOLEM", quality = "low") {
-    if (this.damage <= 1) return;
+    console.log("damage: " + this.damage );
     
     let indicatorSize = 1;
     let indicatorPostionX = 10;
@@ -469,9 +469,12 @@ export default class Enemy {
     ctx.lineWidth = 10;
     
     // damge text
-    const damageText = this.damage > 99
-    ? { base: "99", sup: "+" }
-    : { base: String(this.damage), sup: "" };
+    const absValDmg = Math.abs(this.damage);
+
+    // 2. Podmínku postavíme nad touto absolutní hodnotou
+    const damageText = absValDmg >= 100
+        ? { base: "99", sup: "+" }
+        : { base: String(absValDmg), sup: "" };
 
     // hlavní text
     ctx.strokeText(damageText.base, 0, 0);
@@ -487,13 +490,31 @@ export default class Enemy {
         ctx.fillText(damageText.sup, offsetX, offsetY);
     }
 
-    // ⚔️ ikona
+    // ⚔️ / ❤️ ikona
     ctx.font = '80px Arial';
+    // Původní výpočet šířky w
     const w = ctx.measureText(damageText.base).width + (damageText.sup ? 25 : 0);
-    if (this.damage < 10) {
-      ctx.fillText("⚔️", w + 40 , 0);
-    } else {
-      ctx.fillText("⚔️", w + 10, 0);
+    
+    // Absolutní hodnota pro určení počtu cifer (aby -5 i 5 mělo stejnou mezeru)
+    console.log(this.damage);
+    const absVal = Math.abs(this.damage);
+        console.log(absVal);
+    if (this.damage >= 1) {
+        // KLADNÝ DAMAGE (Meč)
+        if (absVal < 10) {
+            ctx.fillText("⚔️", w + 40, 0);
+        } else {
+            ctx.fillText("⚔️", w + 10, 0);
+        }
+    } else if (this.damage <= 0) {
+        // ZÁPORNÝ DAMAGE / HEAL (Srdce)
+        // Používáme tvou logiku: pod -10 (např. -5) mezera 40, jinak 10
+    
+        if (absVal > -10) { 
+            ctx.fillText("❤️", w + 40, 0);
+        } else {
+            ctx.fillText("❤️", w + 10, 0);
+        }
     }
     // damge text
 
@@ -501,7 +522,7 @@ export default class Enemy {
   }
 
   _preRenderIndicatorCache() {
-    if (this.damage <= 1) return null;
+    //if (this.damage <= 1) return null;
 
     const canvas = document.createElement("canvas");
     // 300x200 bohatě stačí pro text s mečem

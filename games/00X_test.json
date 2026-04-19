@@ -101,8 +101,8 @@
           "level": 1,
           "enemies": [
             {
-              "type": "basic",
-              "count": 50,
+              "type": "damage50",
+              "count": 1,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
@@ -111,14 +111,34 @@
               "firstDelay": "0"
             },
             {
-              "type": "tank",
-              "count": 50,
+              "type": "damge100",
+              "count": 1,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
               "interval": "1000",
               "coinReward": 1,
-              "firstDelay": "500"
+              "firstDelay": "1000"
+            },
+            {
+              "type": "heal50",
+              "count": 1,
+              "health": 1,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "2000",
+              "coinReward": 1
+            },
+            {
+              "type": "heal100",
+              "count": 1,
+              "health": 1,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": "3000",
+              "coinReward": 1
             }
           ]
         }
@@ -126,13 +146,28 @@
       "enemyEffects": [],
       "enemyDamage": [
         {
-          "type": "basic",
-          "damage": 5
+          "type": "damage50",
+          "damage": 50
         },
         {
-          "type": "tank",
+          "type": "damge100",
           "damage": 100
+        },
+        {
+          "type": "heal50",
+          "damage": -50
+        },
+        {
+          "type": "heal100",
+          "damage": -33
         }
+      ],
+      "enemyTypes": [
+        "basic",
+        "damage50",
+        "damge100",
+        "heal50",
+        "heal100"
       ]
     }
   ]

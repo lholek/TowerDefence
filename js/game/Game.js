@@ -207,7 +207,7 @@ export default class Game {
           returnPopup.style.display = 'flex';
       } else {
           returnPopup.style.display = 'none';
-          this.gameOverlay.style.display = 'none';
+          //this.gameOverlay.style.display = 'none';
       }
   }
 

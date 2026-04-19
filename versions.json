@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - Gameplay - Enemies now can have custom damage that takes more hearts to the Trees of Life",
+        "Improved - Gameplay - Enemies now can have healing effect that heals hearts to the Trees of Life",
         "Improved - Gameplay - Updated Game speed - Player can increase Game speed (x1, x1.5, x2, x2.5, x3, x4, x5)",
         "Improved - Gameplay - Fixed bug that game doesnt count abilities in final stats",
         "Improved - Editor - Editor now can set custom damage that takes more hearts to the Trees of to specific enemy types",
