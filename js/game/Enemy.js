@@ -422,7 +422,7 @@ export default class Enemy {
 
   _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, type = "GOLEM", quality = "low") {
     console.log("damage: " + this.damage );
-    
+    if (this.damage == 1){return;}
     let indicatorSize = 1;
     let indicatorPostionX = 10;
     let indicatorPostionY = 10;

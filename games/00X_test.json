@@ -147,7 +147,7 @@
       "enemyDamage": [
         {
           "type": "damage50",
-          "damage": 50
+          "damage": -25
         },
         {
           "type": "damge100",
