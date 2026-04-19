@@ -401,7 +401,7 @@ export const waveEditor = (() => {
                             ${enemiesHtml}
                         </div>
                         </div>
-                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add btn-green">Add Enemy Group</button>
+                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add btn-green">+ Add Enemy Group</button>
                 </div>
             `;
         });
