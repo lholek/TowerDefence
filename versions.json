@@ -4,6 +4,7 @@
       "version": "Pre-Beta III.",
       "release": "-",
       "changes": [
+        "TODO: Improve - Gameplay - Fix healing enemies in the final stats (fix healing enemies)",
         "Improved - Gameplay - Enemies now can have custom damage that takes more hearts to the Trees of Life",
         "Improved - Gameplay - Enemies now can have healing effect that heals hearts to the Trees of Life",
         "Improved - Gameplay - Updated Game speed - Player can increase Game speed (x1, x1.5, x2, x2.5, x3, x4, x5)",
