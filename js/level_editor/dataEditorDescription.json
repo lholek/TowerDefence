@@ -75,7 +75,7 @@
       "description": "Specifies which enemy type receives the custom damage."
     },
     "damage": {
-      "description": "The amount of health removed by the specified enemy type when it reaches the tree."
+      "description": "The amount of health removed by the specified enemy type when it reaches the tree. Negative values will heal the tree instead of damaging it."
     }
   },
   "wave-editor": {

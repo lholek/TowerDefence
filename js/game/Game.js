@@ -454,6 +454,8 @@ export default class Game {
     const s = (totalSeconds % 60).toString().padStart(2, '0');
     const timeString = `${m}:${s}`;
 
+    if (this.stats.lifeLost < 0) this.stats.lifeLost = 0; // Ensure no negative life lost due to overkill
+
     // 3. Set content (Notice we use the variables defined above)
     overlay.innerHTML = `
         <div class="overlay-content final-status" style="border-color: ${color}">
