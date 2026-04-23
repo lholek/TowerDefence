@@ -537,9 +537,12 @@ export default class Game {
               logBtn.classList.remove('btn-shake');
               void logBtn.offsetWidth; // Restart animace
               logBtn.classList.add('btn-shake');
+              logBtn.addEventListener('animationend', () => {
+                  logBtn.classList.remove('btn-shake');
+              }, { once: true });
           }
       };
-
+      customDamage = Number(customDamage);
       if (customDamage > 99) {
           this.logEvent(`An enemy has spawned with <span style="color:#f87171; font-weight:500;">${customDamage}</span> ⚔️ damage!`);
           triggerLogShake();
@@ -548,7 +551,6 @@ export default class Game {
           this.logEvent(`An enemy has spawned with <span style="color:#4ade80; font-weight:500;">${healAmount}</span> ❤️ healing effect!`);
           triggerLogShake();
       }
-    } else {
     }
   }
 
