@@ -531,9 +531,24 @@ export default class Game {
         config.type, 
         customDamage
       ));
+      const triggerLogShake = () => {
+          const logBtn = document.getElementById('gameLogBtn');
+          if (logBtn) {
+              logBtn.classList.remove('btn-shake');
+              void logBtn.offsetWidth; // Restart animace
+              logBtn.classList.add('btn-shake');
+          }
+      };
+
+      if (customDamage > 99) {
+          this.logEvent(`An enemy has spawned with <span style="color:#f87171; font-weight:500;">${customDamage}</span> ⚔️ damage!`);
+          triggerLogShake();
+      } else if (customDamage < -99) {
+          const healAmount = Math.abs(customDamage);
+          this.logEvent(`An enemy has spawned with <span style="color:#4ade80; font-weight:500;">${healAmount}</span> ❤️ healing effect!`);
+          triggerLogShake();
+      }
     } else {
-      // Warn only if we expected a path but didn't find one
-      console.warn(`Path '${pathKey}' not found! Check your map tokens (S#/E#) or JSON.`);
     }
   }
 

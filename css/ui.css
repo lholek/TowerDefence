@@ -1095,6 +1095,18 @@
         0 10px 18px rgba(0, 0, 0, 0.45);
 }
 
+@keyframes shake-shiver {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-3deg); }
+  50% { transform: translateX(6px) rotate(3deg); }
+  75% { transform: translateX(-6px) rotate(-2deg); }
+  100% { transform: translateX(0); }
+}
+
+.btn-shake {
+  animation: shake-shiver 0.4s ease-in-out;
+}
+
 /* --- Error: overlay --- */
   .error-overlay {
   display: none;
