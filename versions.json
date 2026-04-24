@@ -4,16 +4,16 @@
       "version": "Pre-Beta III.",
       "release": "2026-04-24",
       "changes": [
-        "Improved - Gameplay - Enemies now can have custom damage that takes more hearts to the Trees of Life",
+        "Improved - Gameplay - Enemies now can have custom damage that takes more hearts from the Trees of Life",
         "Improved - Gameplay - Enemies now can have healing effect that heals hearts to the Trees of Life",
         "Improved - Gameplay - Updated Game speed - Player can increase Game speed (x1, x1.5, x2, x2.5, x3, x4, x5)",
         "Improved - Gameplay - Updated Log Button - It will shake when an enemy with custom damage or healing effect over 99 spawns",
-        "Improved - Gameplay - Fixed bug that game doesnt count abilities in final stats",
-        "Improved - Editor - Editor now can set custom damage that takes more hearts to the Trees of to specific enemy types",
-        "Improved - Editor - Editor now can set custom healing effect that heals hearts to the Trees of to specific enemy types",
+        "Improved - Gameplay - Fixed bug where the game doesn't count abilities in final stats",
+        "Improved - Editor - Editor now can set custom damage that takes more hearts from the Trees of Life to specific enemy types",
+        "Improved - Editor - Editor now can set custom healing effect that heals hearts to the Trees of Life to specific enemy types",
         "Improved - Menu - Updated 'How to Play' (Tutorial / Guide) section",
         "Improved - UI - New Enemy health bars design",
-        "Improved - UI - Updated css (Map info)"
+        "Improved - UI - Updated CSS (Map info)"
       ]
     },
     {
