@@ -16,6 +16,7 @@ export default class Tower {
         this.y = pos.y;
 
         // Properties
+        this.name = type.name || 'Tower';
         this.range = type.range || 150;
         this.fireRate = type.fireRate || 1200;
         this.damage = type.damage || 1;

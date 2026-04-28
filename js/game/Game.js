@@ -35,6 +35,10 @@ export default class Game {
     this.selectedTowerType = null;
     this.towerTypes = {};
 
+    // Tower selection for popup display
+    this.selectedTower = null;
+    this.towerUpgradeButtonRect = null; // Store button click area
+
     // Abilities
     this.abilityManager = new AbilityManager(this);
 
@@ -214,6 +218,22 @@ export default class Game {
   handleBuild(e) {
     if (!this.map || !this.gameStarted || this.paused) return;
 
+    // Check if clicking on the upgrade button
+    if (this.selectedTower && this.towerUpgradeButtonRect) {
+      const rect = this.canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      
+      if (clickX >= this.towerUpgradeButtonRect.x && 
+          clickX <= this.towerUpgradeButtonRect.x + this.towerUpgradeButtonRect.width &&
+          clickY >= this.towerUpgradeButtonRect.y && 
+          clickY <= this.towerUpgradeButtonRect.y + this.towerUpgradeButtonRect.height) {
+        // Click is on upgrade button
+        this.upgradeTower(this.selectedTower);
+        return;
+      }
+    }
+
     // převést kliknutí na world souřadnice
     const worldPos = this.map.screenToWorld(e.clientX, e.clientY);
 
@@ -223,6 +243,16 @@ export default class Game {
     // získat cílový tile (getTileFromCoords očekává world coords)
     const tile = this.map.getTileFromCoords(worldPos.x, worldPos.y);
 
+    // Check if clicking on an existing tower - select it for popup display
+    const clickedTower = this.towers.find(t => t.col === tile.col && t.row === tile.row);
+    if (clickedTower) {
+      this.selectedTower = clickedTower;
+      return;
+    }
+    
+    // Clicking empty space deselects tower
+    this.selectedTower = null;
+
     // do not build towers while placing an ability
     if (this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
       // forward click to ability manager instead of building
@@ -231,7 +261,6 @@ export default class Game {
 
     // zkontrolovat, jestli se dá stavět
     if (!this.map.isBuildableTile(tile.col, tile.row)) return;
-    if (this.towers.some(t => t.col === tile.col && t.row === tile.row)) return;
     if (!this.selectedTowerType) return;
 
     const type = this.towerTypes[this.selectedTowerType];
@@ -269,6 +298,7 @@ export default class Game {
           this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
           this.towers = this.towers.filter(t => t !== tower);
           this.stats.towersSold++;
+          this.selectedTower = null; // Close popup when tower is sold
           this.updateUI();
           this.logEvent(`Player sold <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
       }
@@ -672,7 +702,7 @@ export default class Game {
                 <div>⚔️ Damage: ${type.damage}</div>
                 <div>🎯 Range: ${(type.range / this.map.tileSize).toFixed(1)}</div>
                 <div>⏱️ Fire  Rate: ${(type.fireRate)}ms</div>
-                <div>🗲 speed: ${(type.range / this.map.tileSize)}</div>
+                <div>🗲 speed: ${(type.speed)}</div>
             </div>
         `;
 
@@ -1029,7 +1059,114 @@ export default class Game {
     if (this.shakeDuration > 0) {
       this.ctx.restore(); 
     }
+    this.renderTowerPopup();
     this.renderCustomCursor();
+  }
+
+  renderTowerPopup() {
+    if (!this.selectedTower || !this.map) return;
+
+    // Get tower position in world coordinates
+    const towerWorldPos = this.map.tileToWorld(this.selectedTower.col, this.selectedTower.row);
+    
+    // Convert world position to screen position using camera
+    const canvasX = this.map.camera.x + towerWorldPos.x * this.map.camera.zoom;
+    const canvasY = this.map.camera.y + towerWorldPos.y * this.map.camera.zoom;
+
+    // Calculate popup position (above the tower in screen space)
+    const popupWidth = 180;
+    const popupHeight = 135;
+    const popupX = canvasX - popupWidth / 2;
+    const popupY = canvasY - 155; // Fixed offset above tower
+
+    // Save context to draw without camera transform
+    this.ctx.save();
+    this.ctx.resetTransform();
+
+    // Draw popup background
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    this.ctx.fillRect(popupX, popupY, popupWidth, popupHeight);
+
+    // Draw popup border
+    this.ctx.strokeStyle = 'rgba(100, 165, 255, 0.8)';
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(popupX, popupY, popupWidth, popupHeight);
+
+    // Get tower type for additional info
+    const type = this.towerTypes[this.selectedTower.typeKey];
+    const dps = type ? (type.damage * 1000 / type.fireRate).toFixed(1) : 0;
+
+    // Draw tower name (larger, top)
+    this.ctx.fillStyle = '#60a5fa';
+    this.ctx.font = 'bold 13px Arial';
+    this.ctx.textAlign = 'left';
+    this.ctx.textBaseline = 'top';
+    this.ctx.fillText(this.selectedTower.name, popupX + 8, popupY + 6);
+
+    // Draw stats
+    this.ctx.fillStyle = '#e0e0e0';
+    this.ctx.font = '11px Arial';
+    const lineHeight = 16;
+    const startY = popupY + 24;
+
+    this.ctx.fillText(`⚔️ ${this.selectedTower.damage}`, popupX + 8, startY);
+    this.ctx.fillText(`🎯 ${Math.round(this.selectedTower.range)}`, popupX + 95, startY);
+    
+    this.ctx.fillText(`💥 ${dps} DPS`, popupX + 8, startY + lineHeight);
+    this.ctx.fillText(`⏱️ ${this.selectedTower.fireRate}ms`, popupX + 95, startY + lineHeight);
+    
+    this.ctx.fillText(`💰 Sell: ${this.selectedTower.sellPrice}`, popupX + 8, startY + lineHeight * 2);
+
+    // Draw upgrade button
+    const buttonWidth = 160;
+    const buttonHeight = 24;
+    const buttonX = popupX + 10;
+    const buttonY = popupY + 103;
+
+    // Store button rect for click detection
+    this.towerUpgradeButtonRect = { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
+
+    // Button background
+    this.ctx.fillStyle = 'rgba(100, 200, 255, 0.7)';
+    this.ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    // Button border
+    this.ctx.strokeStyle = 'rgba(200, 255, 255, 0.9)';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    // Button text
+    this.ctx.fillStyle = '#000000';
+    this.ctx.font = 'bold 12px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText('⬆️ Upgrade', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+
+    // Restore context
+    this.ctx.restore();
+  }
+
+  upgradeTower(tower) {
+    // Upgrade cost is 50% of the tower's original price
+    const type = this.towerTypes[tower.typeKey];
+    const upgradeCost = Math.floor(type.price * 0.5);
+
+    if (this.playerCoins < upgradeCost) {
+      this.logEvent(`Not enough coins to upgrade! Need 🪙 ${upgradeCost}`);
+      return;
+    }
+
+    // Apply upgrade: increase damage and range by 20%
+    tower.damage *= 1.2;
+    tower.range *= 1.2;
+
+    // Deduct coins
+    this.playerCoins -= upgradeCost;
+    this.stats.goldSpent += upgradeCost;
+
+    // Log event
+    this.logEvent(`Tower upgraded! <span style="color:${type.color}; font-weight:500;">${tower.name}</span> is now stronger`);
+    this.updateUI();
   }
 
   logEvent(htmlString) {
