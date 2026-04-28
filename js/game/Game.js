@@ -1149,7 +1149,7 @@ export default class Game {
   upgradeTower(tower) {
     // Upgrade cost is 50% of the tower's original price
     const type = this.towerTypes[tower.typeKey];
-    const upgradeCost = Math.floor(type.price * 0.5);
+    const upgradeCost = 0;
 
     if (this.playerCoins < upgradeCost) {
       this.logEvent(`Not enough coins to upgrade! Need 🪙 ${upgradeCost}`);
