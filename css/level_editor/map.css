@@ -128,3 +128,98 @@
 }
 
 /* Ensure the canvas fills the container correctly */
+/* Map Slider */
+.tile-editor-header {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #eee;
+}
+
+.tileCoordinates {
+    float: right;
+    color: rgb(240, 198, 116);
+}
+
+.tile-slider-wrapper {
+    max-width: 400px;
+    position: relative;
+    user-select: none;
+}
+
+.tile-grid-main {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    background: #2e261d;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    overscroll-behavior-x: contain;
+    
+    /* Tvůj scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgb(240, 198, 116) transparent;
+}
+
+/* Chrome/Safari scrollbar */
+.tile-grid-main::-webkit-scrollbar {
+    height: 6px;
+}
+.tile-grid-main::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+.tile-grid-main::-webkit-scrollbar-thumb {
+    background: rgb(240, 198, 116);
+    border-radius: 10px;
+}
+
+.tile-item {
+    flex: 0 0 calc(25% - 10px);
+    min-width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.tile-label {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #bdab94;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.tile-selector-btn {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #443a2f;
+    border-radius: 4px;
+    /*background-color: #3d3327; 
+    color: white;*/
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: transform 0.1s, border-color 0.2s;
+}
+
+/* Pokud tvoje třídy .tile-baseType obsahují obrázky nebo barvy, 
+   přidej sem "background-size: cover" */
+.tile-selector-btn[class*="tile-"] {
+    background-size: cover;
+    background-position: center;
+}
+
+.tile-selector-btn:hover {
+    border-color: rgb(240, 198, 116);
+    transform: translateY(-2px);
+}
+
+.tile-selector-btn:active {
+    transform: scale(0.95);
+}
+/* Map Slider */

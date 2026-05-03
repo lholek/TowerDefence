@@ -472,7 +472,7 @@ hr {
     background-color: #8B4513; /* Path/Start/End color */
     color: white;
 }
-.tile-x, .tile-s {
+.tile-x, .tile-s, .tile-s-snw, .tile-s-snd, .tile-s[snw], .tile-s[snd] {
     background-color: #3F7D3C; /* Defense/Block color */
     color: white;
 }

@@ -505,79 +505,50 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
  * Creates the key/legend for tile types and selection controls.
  */
 function createTileKey() {
+    const container = document.getElementById('tileKey');
+    if (!container) return;
+
+    // Uložení pozice scrollu
+    const activeSlider = container.querySelector('.tile-grid-main');
+    const savedScrollLeft = activeSlider ? activeSlider.scrollLeft : 0;
+
     const labels = {
-        'X': 'Grass',
-        'SNW': 'Snow',
-        'SND': 'Sand',
-        'O': 'Path',
-        'O[SNW]': 'Path Snow',
-        'O[SND]': 'Path Sand',
-        'S': 'Start',
-        'E': 'End',
-        'W': 'Water',
-        'M': 'Mountain',
-        '-': 'Air'
+        'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'O': 'Path',
+        'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
+        'S[SNW]': 'Start Snow', 'S[SND]': 'Start Sand', 'E': 'End',
+        'W': 'Water', 'M': 'Mountain', '-': 'Air'
     };
 
-    // 1. SET YOUR ORDER HERE
-    // Place the codes in the exact order you want them to appear (4 in first row, 3 in second)
     const customOrder = [
-        'X', 'O', 'O[SNW]', 'O[SND]', 
-        'SNW', 'SND', 
-        'S', 'S[SNW]', 'S[SND]', 
-        'E', 'W', 'M', '-'
+        'X', 'O', 'O[SNW]', 'O[SND]', 'SNW', 'SND', 
+        'S', 'S[SNW]', 'S[SND]', 'E', 'W', 'M', '-'
     ];
 
-    // 2. Sort the imported tileTypes based on your customOrder
-    const sortedTiles = customOrder.filter(type => {
-        // Zobrazíme jen ty, které jsou definované v labels nebo existují v logice
-        return labels[type] !== undefined;
-    });
+    const sortedTiles = customOrder.filter(type => labels[type] !== undefined);
 
     let html = `
-        <p>
+        <div class="tile-editor-header">
             <strong>Selected:</strong> <span id="currentTileDisplay" class="current-tile-display"></span> 
-            | <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
-            <i class="info-icon" data-tooltip="map-editor.tile-types">i</i>
-        </p>
+            <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
+        </div>
         
-        <div class="tile-grid-main" style="
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 15px; 
-            background: #2e261d; 
-            padding: 15px; 
-            border-radius: 4px;
-            margin-top: 10px;
-        ">
+        <div class="tile-slider-wrapper">
+            <div class="tile-grid-main" id="tileSlider">
     `;
     
-    // 3. Use sortedTiles instead of tileTypes
     sortedTiles.forEach(type => {
-        const char = type.charAt(0);
         const labelText = labels[type] || 'Unknown';
-        let baseType = type.replace(/[0-9]/g, '').toLowerCase() || '-';
-        if (type === 'O[SNW]') {
-            baseType = 'o-snw';
-        }   else if (type === 'O[SND]') {
-            baseType = 'o-snd';
-        }   else if (type === 'S[SNW]') {
-            baseType = 's-snw';
-        }   else if (type === 'S[SND]') {
-            baseType = 's-snd';
-        }   else if (type === 'E[SNW]') {
-            baseType = 'e-snw';
-        }   else if (type === 'E[SND]') {
-            baseType= 'e-snd';
-        }
+        let baseType = type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase().replace('--', '-').replace(/-$/, '') || '-';
+        if (type === 'O[SNW]') baseType = 'o-snw';
+        if (type === 'O[SND]') baseType = 'o-snd';
+        if (type === 'S[SNW]') baseType = 's-snw';
+        if (type === 'S[SND]') baseType = 's-snd';
+
         html += `
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                <span style="font-size: 0.8rem; font-weight: bold; color: #CCCCCC; text-transform: uppercase;">
-                    ${labelText}
-                </span>
+            <div class="tile-item">
+                <span class="tile-label">${labelText}</span>
                 <button 
                     class="tile-selector-btn tile-${baseType}" 
-                    style="width: 80%; min-width: 60px; padding: 6px;"
                     data-tile="${type}"
                     onclick="window.app.mapEditor.setTileType('${type}')">
                     ${type}
@@ -586,10 +557,21 @@ function createTileKey() {
         `;
     });
 
-    html += '</div>';
+    html += `</div></div>`;
+    container.innerHTML = html;
 
-    if (tileKey) {
-        tileKey.innerHTML = html;
+    const newSlider = document.getElementById('tileSlider');
+    if (newSlider) {
+        newSlider.scrollLeft = savedScrollLeft;
+
+        // HORIZONTÁLNÍ SCROLL KOLEČKEM
+        newSlider.addEventListener('wheel', (evt) => {
+            evt.preventDefault();
+            newSlider.scrollLeft += evt.deltaY;
+        }, { passive: false });
+    }
+
+    if (typeof updateCurrentTileDisplay === 'function') {
         updateCurrentTileDisplay(); 
     }
 }
