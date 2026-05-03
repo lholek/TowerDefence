@@ -515,13 +515,13 @@ function createTileKey() {
     const labels = {
         'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'O': 'Path',
         'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
-        'S[SNW]': 'Start Snow', 'S[SND]': 'Start Sand', 'E': 'End',
+        'E': 'End',
         'W': 'Water', 'M': 'Mountain', '-': 'Air'
     };
 
     const customOrder = [
-        'X', 'O', 'O[SNW]', 'O[SND]', 'SNW', 'SND', 
-        'S', 'S[SNW]', 'S[SND]', 'E', 'W', 'M', '-'
+        'S', 'E', 'X', 'O', 'O[SNW]', 'O[SND]',
+        'SNW', 'SND', 'W', 'M', '-'
     ];
 
     const sortedTiles = customOrder.filter(type => labels[type] !== undefined);
