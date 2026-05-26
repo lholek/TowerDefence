@@ -1,5 +1,6 @@
 import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, getCurrentMap, getNextAvailableMarker } from './level_data.js';
 import { modifyJson } from './json_functions.js';
+import GameMap from '../game/Map.js';
 
 // Get references to elements (will be imported by main.js)
 let canvas, ctx, mapCanvasContainer, mapLayoutWrapper, tileKey;
@@ -16,12 +17,27 @@ const camera = {
 
 // Global variable to store the position of the currently hovered tile
 let hoveredTile = { r: -1, c: -1 };
+
+// --- GameMap instance used for visual rendering ---
+let editorMapInstance = null;
+let editorMapLayoutKey = ''; // Tracks layout shape to know when to rebuild
+
+/**
+ * Forces a full rebuild of the GameMap rendering instance on the next renderMap() call.
+ * Call this whenever a completely new map is loaded (e.g. from JSON import).
+ */
+export function resetEditorMap() {
+    editorMapInstance = null;
+    editorMapLayoutKey = '';
+}
+
 let hoverTimer;
 
 // --- New Drawing State Variables ---
 let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
+let activeDrawTileType = null; // Locks the tile type for the current drag session
 
 // --- Dynamic Brush State ---
 let brushShape = 'square'; // 'square' or 'star'
@@ -44,9 +60,17 @@ export function setModuleReferences(refs) {
  */
 function screenToWorld(screenX, screenY) {
     const rect = canvas.getBoundingClientRect();
-    // Correctly apply reverse camera transform
-    const worldX = (screenX - rect.left - camera.x) / camera.zoom;
-    const worldY = (screenY - rect.top - camera.y) / camera.zoom;
+    // Account for possible CSS scaling of the canvas element
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    // Convert screen (client) coords to canvas drawing-buffer coords,
+    // then apply reverse camera transform and zoom to get world coords.
+    const canvasX = (screenX - rect.left) * scaleX;
+    const canvasY = (screenY - rect.top) * scaleY;
+
+    const worldX = (canvasX - camera.x) / camera.zoom;
+    const worldY = (canvasY - camera.y) / camera.zoom;
     return { x: worldX, y: worldY };
 }
 
@@ -77,9 +101,9 @@ function getTileFromScreen(screenX, screenY, rows, cols) {
 // --- Camera Movement Logic ---
 
 function clampCamera() {
-    const rect = mapCanvasContainer.getBoundingClientRect();
-    const containerWidth = rect.width;
-    const containerHeight = rect.height;
+    // Use canvas drawing-buffer size (not CSS pixels) for camera clamping
+    const containerWidth = canvas.width;
+    const containerHeight = canvas.height;
     
     const layout = currentLevelData.maps[0].layout;
 
@@ -91,7 +115,7 @@ function clampCamera() {
     const rows = layout.length;
     const cols = layout[0].length;
     
-    // Total rendered map dimensions after zoom
+    // Total rendered map dimensions after zoom (in drawing-buffer units)
     const mapWidth = cols * TILE_SIZE * camera.zoom;
     const mapHeight = rows * TILE_SIZE * camera.zoom;
 
@@ -120,23 +144,32 @@ function clampCamera() {
 function startDrag(e) {
     // Only allow drag on middle click (button 1). Exclude left (0) and right (2) clicks.
     if (e.button !== 1) return; 
-    
+
     e.preventDefault(); 
     camera.dragging = true;
-    camera.lastX = e.clientX;
-    camera.lastY = e.clientY;
+    // Store last positions in canvas drawing-buffer coords
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    camera.lastX = (e.clientX - rect.left) * scaleX;
+    camera.lastY = (e.clientY - rect.top) * scaleY;
     mapCanvasContainer.classList.add('panning');
 }
 
 function drag(e) {
     if (!camera.dragging) return;
     e.preventDefault();
-    const dx = e.clientX - camera.lastX;
-    const dy = e.clientY - camera.lastY;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const newX = (e.clientX - rect.left) * scaleX;
+    const newY = (e.clientY - rect.top) * scaleY;
+    const dx = newX - camera.lastX;
+    const dy = newY - camera.lastY;
     camera.x += dx;
     camera.y += dy;
-    camera.lastX = e.clientX;
-    camera.lastY = e.clientY;
+    camera.lastX = newX;
+    camera.lastY = newY;
     clampCamera(); 
 }
 
@@ -167,10 +200,22 @@ function handleZoom(e) {
     
     // 4. Adjust camera position (pan) so the point under the cursor stays fixed in screen space
     const rect = canvas.getBoundingClientRect();
-    camera.x = screenX - rect.left - beforeWorld.x * camera.zoom;
-    camera.y = screenY - rect.top - beforeWorld.y * camera.zoom;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const canvasX = (screenX - rect.left) * scaleX;
+    const canvasY = (screenY - rect.top) * scaleY;
+    camera.x = canvasX - beforeWorld.x * camera.zoom;
+    camera.y = canvasY - beforeWorld.y * camera.zoom;
     
     clampCamera(); 
+}
+
+function resolvePlacementTileType(tileType) {
+    if (tileType === 'S' || tileType === 'E') {
+        return getNextAvailableMarker(tileType);
+    }
+
+    return tileType;
 }
 
 // --- Drawing Logic Helpers ---
@@ -182,9 +227,11 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
     const layout = currentLevelData.maps[0].layout;
     if (!layout || layout.length === 0) return false;
 
+    const resolvedTileType = resolvePlacementTileType(tileType);
+
     // If we are placing a Start or End, and we have already drawn something 
     // during this specific click-and-hold session, STOP.
-    const isMarker = (tileType.startsWith('S') && tileType !== 'SNW' && tileType !== 'SND') || tileType.startsWith('E');
+    const isMarker = (resolvedTileType.startsWith('S') && resolvedTileType !== 'SNW' && resolvedTileType !== 'SND') || resolvedTileType.startsWith('E');
     if (isMarker && hasDrawn) {
         return false; 
     }
@@ -193,19 +240,11 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
     const tilesToPaint = getBrushAffectedTiles(row, col);
 
     let changed = false;
-    let needsSRefresh = false;
-    let needsERefresh = false;
 
     tilesToPaint.forEach(tile => {
         if (tile.r >= 0 && tile.r < layout.length && tile.c >= 0 && tile.c < layout[0].length) {
             const oldTile = String(layout[tile.r][tile.c]);
-            let tileToPlace = tileType;
-
-            if (tileType.startsWith('S') && tileType !== 'SNW' && tileType !== 'SND')  {
-                tileToPlace = getNextAvailableMarker('S');
-            } else if (tileType.startsWith('E')) {
-                tileToPlace = getNextAvailableMarker('E');
-            }
+            const tileToPlace = resolvedTileType;
 
             // Standard placement logic
             if (oldTile !== tileToPlace) {
@@ -222,18 +261,12 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 
                 layout[tile.r][tile.c] = tileToPlace;
                 changed = true;
-
-                if (tileToPlace.startsWith('S') || oldTile.startsWith('S')) needsSRefresh = true;
-                if (tileToPlace.startsWith('E') || oldTile.startsWith('E')) needsERefresh = true;
             }
         }
     });
 
     if (changed) {
         hasDrawn = true; // This prevents the next "move" event from placing another marker
-        if (needsSRefresh) setCurrentTileType('REFRESH_S');
-        if (needsERefresh) setCurrentTileType('REFRESH_E');
-
         renderMap(layout);
         return true;
     }
@@ -250,7 +283,16 @@ function handleMapDrawStart(e) {
         isDrawingLeft = true;
         isDrawingRight = false; // Ensure only one mode is active
         hasDrawn = false;
-        applyTileToCurrentPosition(e.clientX, e.clientY, currentTileType);
+        activeDrawTileType = resolvePlacementTileType(currentTileType);
+        const wasApplied = applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType);
+
+        if (wasApplied) {
+            if (activeDrawTileType.startsWith('S') && activeDrawTileType !== 'SNW' && activeDrawTileType !== 'SND') {
+                setCurrentTileType('REFRESH_S');
+            } else if (activeDrawTileType.startsWith('E')) {
+                setCurrentTileType('REFRESH_E');
+            }
+        }
     } 
     // Right click (button 2)
     else if (e.button === 2) {
@@ -258,13 +300,15 @@ function handleMapDrawStart(e) {
         isDrawingRight = true;
         isDrawingLeft = false; // Ensure only one mode is active
         hasDrawn = false;
-        applyTileToCurrentPosition(e.clientX, e.clientY, '-'); // Default tile for erasing
+        activeDrawTileType = '-';
+        applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType); // Default tile for erasing
     }
 }
 
 function handleMapDrawStop() {
     // 1. Sync changes to the JSON editor if drawing occurred
     if (hasDrawn && (isDrawingLeft || isDrawingRight)) {
+        resetEditorMap();
         // Call modifyJson with an empty operation to sync the already-changed currentLevelData 
         // back to the JSON editor and trigger any required updates.
         modifyJson(() => {}, `Map updated by drag-drawing.`, true);
@@ -274,6 +318,7 @@ function handleMapDrawStop() {
     isDrawingLeft = false;
     isDrawingRight = false;
     hasDrawn = false;
+    activeDrawTileType = null;
 }
 
 function handleMapDrawMove(e) {
@@ -282,11 +327,11 @@ function handleMapDrawMove(e) {
     
     // Apply tile if the left button is held down
     if (isDrawingLeft) {
-        applyTileToCurrentPosition(e.clientX, e.clientY, currentTileType);
+        applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? currentTileType);
     } 
     // Apply default tile if the right button is held down
     else if (isDrawingRight) {
-        applyTileToCurrentPosition(e.clientX, e.clientY, '-');
+        applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? '-');
     }
 }
 
@@ -388,111 +433,110 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     const cols = layout[0].length;
     // ----------------------------------------------------
 
-    // 1. Resize Canvas to fit the full map dimensions (unscaled World size)
-    canvas.width = 1200;
-    canvas.height = 600;
+    // 1. Resize Canvas to match its CSS/display size (avoid drawing-buffer scaling)
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.floor(rect.width));
+    canvas.height = Math.max(1, Math.floor(rect.height));
 
-    // 2. Clear Canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // 3. Apply Camera Transform (translate and zoom)
-    ctx.save();
-    // Transform coordinates based on the canvas container viewport and zoom
-    ctx.translate(camera.x, camera.y);
-    ctx.scale(camera.zoom, camera.zoom); 
-    
-    // 4. Draw Tiles (Drawing is done in World Space: TILE_SIZE = 60)
-    ctx.font = `${TILE_SIZE / 3}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    // 2. Build or rebuild the GameMap instance when the layout shape changes.
+    //    We use TILE_SIZE from the editor so the scale matches 1:1.
+    const layoutKey = `${rows}x${cols}`;
+    if (!editorMapInstance || editorMapLayoutKey !== layoutKey) {
+        editorMapInstance = new GameMap(canvas, layout, TILE_SIZE);
 
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            const x = c * TILE_SIZE;
-            const y = r * TILE_SIZE;
-            const tileType = layout[r][c];
+        // GameMap registers its own drag/zoom listeners on the canvas in its constructor.
+        // The editor has its own handlers for these, so we must neutralise the Map ones
+        // by replacing them with no-ops bound to a dummy object that can never fire.
+        // The cleanest way: replace the three bound methods so they do nothing.
+        editorMapInstance.startDrag = () => {};
+        editorMapInstance.drag      = () => {};
+        editorMapInstance.stopDrag  = () => {};
+        editorMapInstance.handleZoom = () => {};
 
-            // Set color based on tile type
-            let color;
-            if (typeof tileType === 'string') {
-                switch (tileType.charAt(0)) {
-                    case 'O': color = '#8B4513'; break; // Path (Brown)
-                    case 'S': color = '#38761d'; break; // Start (Dark Green)
-                    case 'E': color = '#990000'; break; // End (Dark Red)
-                    case 'X': color = '#3F7D3C'; break; // Grass (Mid Green)
-                    case 'W': color = '#2c4d96'; break; // Water (Dark Blue)
-                    case 'M': color = '#616161'; break; // Mountain (Dark GraY)
-                    case '-': default: color = 'transparent'; break; // Empty (Dark Grey/Brown)
-                }
-            }
-            if (tileType === 'SNW') color = '#f0f0f0';
-            if (tileType === 'SND') color = '#d2b48c';
+        editorMapLayoutKey = layoutKey;
+    } else {
+        // Layout shape is the same — just update the grid in-place so the
+        // next render() call picks up any tile edits the user made.
+        editorMapInstance.grid = editorMapInstance.normalizeLayout(layout);
 
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-
-            // Draw border (adjusted for scale)
-            ctx.strokeStyle = '#2e261d';
-            ctx.lineWidth = 1 / camera.zoom; // Keep border size visually constant
-            ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
-
-            // Draw tile text
-            ctx.fillStyle = 'white';
-            if (tileType === 'SNW' || tileType === 'SND') ctx.fillStyle = 'black';
-            if (tileType.includes('[')) {
-                // 1. Split the string (e.g., "O[SND]" becomes ["O", "SND]"])
-                const parts = tileType.split('[');
-                const baseText = parts[0];
-                const variantText = '[' + parts[1];
-                        
-                // 2. Adjust font sizes
-                const mainFontSize = TILE_SIZE / 3;
-                const subFontSize = TILE_SIZE / 5; // Smaller for the second line
-                        
-                // 3. Draw Line 1 (The base type)
-                ctx.font = `${mainFontSize}px Arial`;
-                ctx.fillText(baseText, x + TILE_SIZE / 2, y + TILE_SIZE / 2 - 8);
-                        
-                // 4. Draw Line 2 (The bracketed variant)
-                ctx.font = `${subFontSize}px Arial`;
-                ctx.fillText(variantText, x + TILE_SIZE / 2, y + TILE_SIZE / 2 + 12);
-                        
-                // Reset font for next tile
-                ctx.font = `${mainFontSize}px Arial`;
-            } else {
-                // Standard single-line rendering for simple tiles
-                ctx.font = `${TILE_SIZE / 3}px Arial`;
-                ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
-            }
-          //  ctx.fillText(tileType, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
-        }
+        // Rebuild the road/water layers so edited tiles are reflected correctly.
+        // These are fast offscreen-canvas operations.
+        editorMapInstance._prerenderRoad();
+        editorMapInstance._prerenderWater
+            ? editorMapInstance._prerenderWater()
+            : editorMapInstance._prerenderWaterHigh?.();
+        editorMapInstance._prerenderGrass();
     }
 
+    // 3. Sync the editor camera → GameMap camera so pan/zoom is shared.
+    editorMapInstance.camera.x    = camera.x;
+    editorMapInstance.camera.y    = camera.y;
+    editorMapInstance.camera.zoom = camera.zoom;
+
+    // Expose internals for debugging in the page context
+    try {
+        window._editorMapDebug = window._editorMapDebug || {};
+        window._editorMapDebug.instance = editorMapInstance;
+        window._editorMapDebug.camera = camera;
+    } catch (err) {
+        // ignore in environments where window is not available
+    }
+
+    // 4. Let GameMap do all the heavy visual rendering (terrain, roads, water,
+    //    mountains, trees, portals, vignette…). Pass no towers/enemies.
+    editorMapInstance.render(ctx);
+
+    // Light grid overlay for precise alignment in the editor
+    ctx.save();
+    ctx.translate(camera.x, camera.y);
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.lineWidth = 1 / camera.zoom;
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+
+    for (let c = 0; c <= cols; c++) {
+        const x = c * TILE_SIZE;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, rows * TILE_SIZE);
+        ctx.stroke();
+    }
+
+    for (let r = 0; r <= rows; r++) {
+        const y = r * TILE_SIZE;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cols * TILE_SIZE, y);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // 5. BRUSH GHOST OVERLAY — drawn on top in world-space
     if (hoveredTile.r !== -1 && hoveredTile.c !== -1) {
         const ghostTiles = getBrushAffectedTiles(hoveredTile.r, hoveredTile.c);
-        
-        // Choose color: Red for Erasing (Right Click), White for Painting
+
+        ctx.save();
+        ctx.translate(camera.x, camera.y);
+        ctx.scale(camera.zoom, camera.zoom);
+
         if (isDrawingRight) {
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Redish for erasing
+            ctx.fillStyle   = 'rgba(255, 0, 0, 0.3)';
             ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
         } else {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; // Whiteish for painting
+            ctx.fillStyle   = 'rgba(255, 255, 255, 0.3)';
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
         }
-
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 / camera.zoom;
 
         ghostTiles.forEach(tile => {
             const gx = tile.c * TILE_SIZE;
             const gy = tile.r * TILE_SIZE;
-            
             ctx.fillRect(gx, gy, TILE_SIZE, TILE_SIZE);
             ctx.strokeRect(gx, gy, TILE_SIZE, TILE_SIZE);
         });
-    }    
-    
-    // 5. Restore Canvas State (undo transform)
-    ctx.restore();
+
+        ctx.restore();
+    }
 
     // Re-render the key/palette every time
     createTileKey();
@@ -908,4 +952,13 @@ export function setBrushSize(size) {
     if (sizeInput) sizeInput.value = brushSize;
 
     renderMap();
+}
+
+// Debugging helper: returns world and tile indices for given client coords
+export function debugScreenToTile(screenX, screenY) {
+    const layout = currentLevelData.maps[0].layout;
+    if (!layout || layout.length === 0) return null;
+    const world = screenToWorld(screenX, screenY);
+    const tile = worldToTile(world.x, world.y);
+    return { world, tile, rows: layout.length, cols: layout[0].length };
 }

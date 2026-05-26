@@ -24,7 +24,7 @@
 }
 
 /* The Select Box */
-#backgroundSelect {
+#backgroundSelect, #editorGraphicsSelect {
     background: #967456;
     color: #ffffff;
     border: 1px solid #555;
@@ -36,11 +36,11 @@
     transition: border-color 0.2s;
 }
 
-#backgroundSelect:hover {
+#backgroundSelect:hover, #editorGraphicsSelect:hover {
     border-color: #87CEEB; /* Highlight color */
 }
 
-#backgroundSelect option {
+#backgroundSelect option, #editorGraphicsSelect option {
     background: #2e261d;
     color: white;
 }
@@ -59,12 +59,17 @@
     position: relative;
     background-color: #000 !important; /* Base black */
     overflow: hidden;
+    min-height: 700px;
+    height: 700px;
 }
 
 #mapCanvas {
     position: relative;
     background: transparent !important;
     z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 /* The Animated Layer */
@@ -226,3 +231,15 @@
     transform: scale(0.95);
 }
 /* Map Slider */
+
+/* Make the tile drawing panel children occupy full width stacked on separate rows */
+#tileDrawingPanel > div {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+#tileDrawingPanel .editor-key-container {
+    width: 100%;
+}

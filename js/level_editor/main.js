@@ -127,6 +127,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inside your DOMContentLoaded listener:
     const editorBgSelect = document.getElementById('backgroundSelect');
     const clouds = document.getElementById('cloudsLayer');
+    const editorGraphicsSelect = document.getElementById('editorGraphicsSelect');
+
+    const defaultGraphicsSettings = {
+        trees: 'low',
+        portals: 'low',
+        enemies: 'low',
+        towers: 'low',
+        water: 'low',
+        terrain: 'low',
+        roads: 'low',
+        mountains: 'low',
+        lava_floor: 'low'
+    };
+
+    const loadGraphicsSettings = () => {
+        const saved = JSON.parse(localStorage.getItem('graphicsSettings') || 'null');
+        return { ...defaultGraphicsSettings, ...(saved || {}) };
+    };
+
+    const applyGraphicsSettings = (quality) => {
+        const current = loadGraphicsSettings();
+        Object.keys(current).forEach(key => {
+            current[key] = quality;
+        });
+        localStorage.setItem('graphicsSettings', JSON.stringify(current));
+        mapEditor.resetEditorMap();
+        mapEditor.renderMap(levelData.currentLevelData.maps[0].layout);
+    };
+
+    if (editorGraphicsSelect) {
+        const savedQuality = loadGraphicsSettings().trees || 'low';
+        editorGraphicsSelect.value = savedQuality;
+        editorGraphicsSelect.addEventListener('change', (e) => {
+            applyGraphicsSettings(e.target.value);
+        });
+    }
     
     editorBgSelect.addEventListener('change', (e) => {
     const theme = e.target.value;

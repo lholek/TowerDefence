@@ -12,6 +12,8 @@ W - Water (impassable, non-buildable, shootable)
 M - Mountain (impassable, non-buildable, non-shootable)
 - - Air(impassable, non-buildable, shootable)
 */
+const SPECIAL_TILE_VISUAL_OFFSET = 6;
+
 export default class Map {
     constructor(canvas, layout, tileSize = 80) {
         this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
@@ -605,7 +607,7 @@ export default class Map {
                         const w = actualImg.width * scale;
                         ctx.drawImage(actualImg, 
                             bounds.x - (w - ts) / 2, 
-                            bounds.y - (h - ts), 
+                            bounds.y - (h - ts) - SPECIAL_TILE_VISUAL_OFFSET, 
                             w, h
                         );
                     }
@@ -614,7 +616,7 @@ export default class Map {
                 // This will ignore "SNW" and "SND" because they have letters after S, not numbers
                 if (/^S\d+/.test(tok)) {
                     const portalX = bounds.x + ts/2;
-                    const portalY = bounds.y + ts/2;
+                    const portalY = bounds.y + ts/2 - SPECIAL_TILE_VISUAL_OFFSET;
                     const time = performance.now();
 
                     // 1. Get the quality from your new settings object
