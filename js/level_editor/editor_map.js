@@ -306,10 +306,16 @@ function handleMapDrawStart(e) {
 function handleMapDrawStop() {
     // 1. Sync changes to the JSON editor if drawing occurred
     if (hasDrawn && (isDrawingLeft || isDrawingRight)) {
+        // Reset the GameMap instance so that ALL prerender layers (road, grass,
+        // water, mountains, trees, portals, holy/burned ground, shores) are
+        // rebuilt exactly once — generating stable random variants for the
+        // final tile configuration rather than re-rolling on every mouse move.
         resetEditorMap();
         // Call modifyJson with an empty operation to sync the already-changed currentLevelData 
         // back to the JSON editor and trigger any required updates.
         modifyJson(() => {}, `Map updated by drag-drawing.`, true);
+        // Force a fresh render so the rebuilt instance is displayed immediately.
+        renderMap();
     }
 
     // 2. Clear drawing state
@@ -461,15 +467,14 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     } else {
         // Layout shape is the same — just update the grid in-place so the
         // next render() call picks up any tile edits the user made.
+        // NOTE: We do NOT re-call _prerenderRoad / _prerenderGrass / _prerenderWater here
+        // during live drawing, because those methods randomly pick shore variants, grass
+        // variants, tree/portal/mountain/holy-ground/burned-ground positions on every call,
+        // causing them to "flicker" with a new random variant on every mouse-move.
+        // The prerendered layers are rebuilt only when resetEditorMap() is called
+        // (i.e. after the user finishes a draw stroke), which triggers a full instance
+        // rebuild on the next renderMap() call — regenerating everything exactly once.
         editorMapInstance.grid = editorMapInstance.normalizeLayout(layout);
-
-        // Rebuild the road/water layers so edited tiles are reflected correctly.
-        // These are fast offscreen-canvas operations.
-        editorMapInstance._prerenderRoad();
-        editorMapInstance._prerenderWater
-            ? editorMapInstance._prerenderWater()
-            : editorMapInstance._prerenderWaterHigh?.();
-        editorMapInstance._prerenderGrass();
     }
 
     // 3. Sync the editor camera → GameMap camera so pan/zoom is shared.
