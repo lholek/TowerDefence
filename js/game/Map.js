@@ -33,8 +33,8 @@ export default class Map {
         for (let r = 0; r < this.rows; r++) {
             this.terrainIndices[r] = [];
             for (let c = 0; c < this.cols; c++) {
-                const maxVariants = (this.graphicsSettings.terrain === 'low') ? 3 : 10;
-                this.terrainIndices[r][c] = Math.floor(Math.random() * maxVariants);
+                // Use only 1 variant (index 0) for fast editor rendering
+                this.terrainIndices[r][c] = 0;
             }
         }
 
@@ -234,140 +234,46 @@ export default class Map {
 
     _generateGrassTiles() {
       this.grassVariants = [];
-      const baseColors = ['#3f7d3c', '#376d35', '#4a8c46'];
+      // Generate just 1 simple grass variant for fast editor rendering
+      const canvas = document.createElement('canvas');
+      canvas.width = this.tileSize;
+      canvas.height = this.tileSize;
+      const tctx = canvas.getContext('2d');
 
-      for (let i = 0; i < 10; i++) {
-          const canvas = document.createElement('canvas');
-          canvas.width = this.tileSize;
-          canvas.height = this.tileSize;
-          const tctx = canvas.getContext('2d');
+      // Simple solid grass color
+      tctx.fillStyle = '#3f7d3c';
+      tctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
-          // 1. Base Layer: Gradient for subtle lighting depth
-          tctx.fillStyle = baseColors[i % baseColors.length];
-          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
-
-          // 2. Flora Layer: Natural distribution
-          // Reduced to 45 iterations to keep it "clean" but detailed
-          for (let j = 0; j < 3; j++) {
-              const lx = Math.random() * this.tileSize;
-              const ly = Math.random() * this.tileSize;
-              tctx.save();
-              tctx.translate(lx, ly);
-              tctx.rotate(Math.random() * Math.PI);
-
-              const roll = Math.random();
-
-              if (roll < 0.015) { 
-                  // VERY RARE: Red flower
-                  this._drawNaturalFlower(tctx, "#e11d48");
-              } 
-              else if (roll < 0.03) { 
-                  // VERY RARE: Pink flower
-                  this._drawNaturalFlower(tctx, "#f472b6");
-              } 
-              else if (roll < 0.045) { 
-                  // VERY RARE: Blue flower
-                  this._drawNaturalFlower(tctx, "#3b82f6");
-              } 
-              else if (roll < 0.10) { 
-                  // RARE: Yellow flower
-                  this._drawNaturalFlower(tctx, "#facc15");
-              } 
-              else if (roll < 0.25) { 
-                  // UNCOMMON: Dry brown leaf
-                  tctx.fillStyle = "#8a5a23";
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              }
-              else if (roll < 0.60) { 
-                  // COMMON: Dark green leaf
-                  tctx.fillStyle = "#14532d"; 
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              } 
-              else { 
-                  // COMMON: Light green leaf
-                  tctx.fillStyle = "#1a9c4d";
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              }
-
-              tctx.restore();
-          }
-          this.grassVariants.push(canvas);
+      // Add a few simple leaves for texture
+      for (let j = 0; j < 2; j++) {
+          const lx = Math.random() * this.tileSize;
+          const ly = Math.random() * this.tileSize;
+          tctx.save();
+          tctx.translate(lx, ly);
+          tctx.rotate(Math.random() * Math.PI);
+          tctx.fillStyle = "#1a9c4d";
+          tctx.beginPath();
+          tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
+          tctx.fill();
+          tctx.restore();
       }
+      
+      this.grassVariants.push(canvas);
     }
 
     _generateGrassTilesLow() {
       this.grassVariants = [];
-      const baseColors = ['#3f7d3c', '#376d35'];
+      // Generate just 1 simple grass variant for fast editor rendering
+      const canvas = document.createElement('canvas');
+      canvas.width = this.tileSize;
+      canvas.height = this.tileSize;
+      const tctx = canvas.getContext('2d');
 
-      for (let i = 0; i < 3; i++) {
-          const canvas = document.createElement('canvas');
-          canvas.width = this.tileSize;
-          canvas.height = this.tileSize;
-          const tctx = canvas.getContext('2d');
-
-          // 1. Base Layer: Gradient for subtle lighting depth
-          tctx.fillStyle = baseColors[i % baseColors.length];
-          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
-
-          // 2. Flora Layer: Natural distribution
-          // Reduced to 45 iterations to keep it "clean" but detailed
-          for (let j = 0; j < 2; j++) {
-              const lx = Math.random() * this.tileSize;
-              const ly = Math.random() * this.tileSize;
-              tctx.save();
-              tctx.translate(lx, ly);
-              tctx.rotate(Math.random() * Math.PI);
-
-              const roll = Math.random();
-
-              if (roll < 0.015) { 
-                  // VERY RARE: Red flower
-                  this._drawNaturalFlower(tctx, "#e11d48");
-              } 
-              else if (roll < 0.03) { 
-                  // VERY RARE: Pink flower
-                  this._drawNaturalFlower(tctx, "#f472b6");
-              } 
-              else if (roll < 0.045) { 
-                  // VERY RARE: Blue flower
-                  this._drawNaturalFlower(tctx, "#3b82f6");
-              } 
-              else if (roll < 0.10) { 
-                  // RARE: Yellow flower
-                  this._drawNaturalFlower(tctx, "#facc15");
-              } 
-              else if (roll < 0.25) { 
-                  // UNCOMMON: Dry brown leaf
-                  tctx.fillStyle = "#8a5a23";
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.5, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              }
-              else if (roll < 0.60) { 
-                  // COMMON: Dark green leaf
-                  tctx.fillStyle = "#14532d"; 
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              } 
-              else { 
-                  // COMMON: Light green leaf
-                  tctx.fillStyle = "#1a9c4d";
-                  tctx.beginPath();
-                  tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-                  tctx.fill();
-              }
-
-              tctx.restore();
-          }
-          this.grassVariants.push(canvas);
-      }
+      // Simple solid grass color
+      tctx.fillStyle = '#376d35';
+      tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+      
+      this.grassVariants.push(canvas);
     }
 
     _drawNaturalFlower(ctx, color) {

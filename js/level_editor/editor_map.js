@@ -31,8 +31,6 @@ export function resetEditorMap() {
     editorMapLayoutKey = '';
 }
 
-let hoverTimer;
-
 // --- New Drawing State Variables ---
 let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
@@ -325,13 +323,22 @@ function handleMapDrawMove(e) {
     // If panning is active, do not draw
     if (camera.dragging) return; 
     
+    let tileApplied = false;
+    
     // Apply tile if the left button is held down
     if (isDrawingLeft) {
-        applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? currentTileType);
+        tileApplied = applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? currentTileType);
     } 
     // Apply default tile if the right button is held down
     else if (isDrawingRight) {
-        applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? '-');
+        tileApplied = applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType ?? '-');
+    }
+    
+    // If drawing but no tile was applied (same tile), still render for ghost preview
+    // This shows the brush outline without regenerating the entire map
+    if ((isDrawingLeft || isDrawingRight) && !tileApplied && hoveredTile.r >= 0) {
+        const layout = currentLevelData.maps[0].layout;
+        renderMap(layout);
     }
 }
 
@@ -384,28 +391,25 @@ function handleMapHover(e) {
 
     if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
         
-        // --- 1. Instant Visual Update (Brush/Ghost Tiles) ---
+        // Update hover state and render when tile changes
         if (hoveredTile.r !== row || hoveredTile.c !== col) {
             hoveredTile = { r: row, c: col };
-            renderMap(layout); // Re-renders immediately so the brush follows the mouse
-        }
-
-        // --- 2. Delayed Coordinate Update (50ms) ---
-        clearTimeout(hoverTimer); // Reset the timer every time the mouse moves
-        hoverTimer = setTimeout(() => {
+            renderMap(layout); // Render for ghost preview
+            
+            // Update coordinates text
             if (coordDisplay) {
                 coordDisplay.textContent = `X: ${col}, Y: ${row}`;
             }
-        }, 25); 
+        }
 
     } else {
-        // Clear everything if mouse leaves the map area
-        clearTimeout(hoverTimer);
-        if (coordDisplay) coordDisplay.textContent = "W: -, H: -";
-
+        // Clear hover state if mouse leaves the map area
         if (hoveredTile.r !== -1) {
             hoveredTile = { r: -1, c: -1 };
             renderMap(layout);
+            if (coordDisplay) {
+                coordDisplay.textContent = "X: - | Y: -";
+            }
         }
     }
 }
