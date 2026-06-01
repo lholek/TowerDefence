@@ -824,8 +824,8 @@ function createTileKey() {
     };
 
     const customOrder = [
-        'S', 'O', 'E', 'O[SNW]','X', 'O[SND]',
-        'SNW', 'SND', 'W', 'M', '-'
+        'S', 'E', 'X', 'SNW', 'SND', 'O', 'O[SNW]','O[SND]',
+        'W', 'M', '-'
     ];
 
     const sortedTiles = customOrder.filter(type => labels[type] !== undefined);

@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editorBgSelect = document.getElementById('backgroundSelect');
     const clouds = document.getElementById('cloudsLayer');
     const editorGraphicsSelect = document.getElementById('editorGraphicsSelect');
+    const editorBackgroundKey = 'editor_background';
 
     const defaultGraphicsSettings = {
         trees: 'low',
@@ -146,6 +147,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return { ...defaultGraphicsSettings, ...(saved || {}) };
     };
 
+    const saveEditorBackground = (theme) => {
+        localStorage.setItem(editorBackgroundKey, theme);
+    };
+
+    const loadEditorBackground = () => {
+        return localStorage.getItem(editorBackgroundKey) || 'sky';
+    };
+
+    const applyEditorBackground = (theme) => {
+        if (!clouds) return;
+        clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
+        void clouds.offsetWidth;
+        clouds.classList.add(`bg-${theme}`);
+    };
+
     const applyGraphicsSettings = (quality) => {
         const current = loadGraphicsSettings();
         Object.keys(current).forEach(key => {
@@ -157,23 +173,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (editorGraphicsSelect) {
-        const savedQuality = loadGraphicsSettings().trees || 'low';
+        const savedQuality = loadGraphicsSettings().terrain || 'low';
         editorGraphicsSelect.value = savedQuality;
         editorGraphicsSelect.addEventListener('change', (e) => {
             applyGraphicsSettings(e.target.value);
         });
     }
-    
-    editorBgSelect.addEventListener('change', (e) => {
-    const theme = e.target.value;
-    
-    // Remove old classes
-    clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
-    
-    // Force a tiny reflow to restart animations (optional but cleaner)
-    void clouds.offsetWidth; 
-    
-    // Add new class
-    clouds.classList.add(`bg-${theme}`);
-});
+
+    if (editorBgSelect) {
+        const savedTheme = loadEditorBackground();
+        editorBgSelect.value = savedTheme;
+        applyEditorBackground(savedTheme);
+        editorBgSelect.addEventListener('change', (e) => {
+            const theme = e.target.value;
+            applyEditorBackground(theme);
+            saveEditorBackground(theme);
+        });
+    }
 });
