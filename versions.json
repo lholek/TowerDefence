@@ -6,6 +6,7 @@
       "changes": [
         "Improved - Editor - New Slider for tiles in editor",
         "Improved - Editor - Updated editor tiles to match in-game visuals",
+        "Improved - Editor - Added selection of low/high graphics for editor tiles",
         "Improved - Graphics - Improved grass on High settings",
         "Improved - Graphics - Improved grass on Low settings",
         "TODO: Improve - Hero Camping",
