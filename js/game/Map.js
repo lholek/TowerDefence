@@ -46,7 +46,7 @@ export default class Map {
         for (let r = 0; r < this.rows; r++) {
             this.terrainIndices[r] = [];
             for (let c = 0; c < this.cols; c++) {
-                // Use only 1 variant (index 0) for fast editor rendering
+                // Default to variant 0; real game will fill a variety later.
                 this.terrainIndices[r][c] = 0;
             }
         }
@@ -58,6 +58,14 @@ export default class Map {
             this._generateGrassTilesLow();
         } else {
             this._generateGrassTiles();
+        }
+
+        if (!this.editorMode && this.grassVariants && this.grassVariants.length > 1) {
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    this.terrainIndices[r][c] = Math.floor(Math.random() * this.grassVariants.length);
+                }
+            }
         }
 
         // 4. DETECT SPECIAL TILES
@@ -210,6 +218,19 @@ export default class Map {
                 } catch (e) {
                     // ignore mountain locking errors
                 }
+
+                // Editor lock: pre-generate deterministic snow and sand textures now,
+                // so later render() doesn't create a random variant on first paint.
+                try {
+                    this.snowTexture = this.graphicsSettings.terrain === 'low'
+                        ? this._preRenderSnowLow(this.tileSize)
+                        : this._preRenderSnowHigh(this.tileSize);
+                    this.sandTexture = this.graphicsSettings.terrain === 'low'
+                        ? this._preRenderSandLow(this.tileSize)
+                        : this._preRenderSandHigh(this.tileSize);
+                } catch (e) {
+                    // ignore editor snow/sand caching errors
+                }
             } catch (e) {
                 // ignore editor asset generation errors
             }
@@ -342,46 +363,90 @@ export default class Map {
 
     _generateGrassTiles() {
       this.grassVariants = [];
-      // Generate just 1 simple grass variant for fast editor rendering
-      const canvas = document.createElement('canvas');
-      canvas.width = this.tileSize;
-      canvas.height = this.tileSize;
-      const tctx = canvas.getContext('2d');
+      const variantCount = this.editorMode ? 1 : 3;
+      const palettes = this.editorMode
+          ? [{ base: '#3f7d3c', dark: '#2f6831', light: '#5da569' }]
+          : [
+              { base: '#3f7d3c', dark: '#2e6d2f', light: '#5ba35f' },
+              { base: '#4a9144', dark: '#357034', light: '#73bd73' },
+              { base: '#2f5d29', dark: '#21431d', light: '#4c8047' }
+            ];
 
-      // Simple solid grass color
-      tctx.fillStyle = '#3f7d3c';
-      tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+      for (let i = 0; i < variantCount; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+          const palette = palettes[i % palettes.length];
 
-      // Add a few simple leaves for texture
-      for (let j = 0; j < 2; j++) {
-          const lx = Math.random() * this.tileSize;
-          const ly = Math.random() * this.tileSize;
-          tctx.save();
-          tctx.translate(lx, ly);
-          tctx.rotate(Math.random() * Math.PI);
-          tctx.fillStyle = "#1a9c4d";
-          tctx.beginPath();
-          tctx.ellipse(0, 0, 3, 1.2, 0, 0, Math.PI * 2);
-          tctx.fill();
-          tctx.restore();
+          // Base grass block with a light/dark variant feel
+          tctx.fillStyle = palette.base;
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          if (!this.editorMode) {
+              // Add subtle light highlights and dark shadow strokes
+              tctx.fillStyle = palette.light;
+              for (let h = 0; h < 1; h++) {
+                  const hx = Math.random() * this.tileSize * 0.8 + this.tileSize * 0.1;
+                  const hy = Math.random() * this.tileSize * 0.8 + this.tileSize * 0.1;
+                  tctx.beginPath();
+                  tctx.ellipse(hx, hy, 5 + Math.random() * 3, 2 + Math.random() * 1.5, Math.random() * Math.PI, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+
+              tctx.fillStyle = palette.dark;
+              for (let j = 0; j < 2; j++) {
+                  const lx = Math.random() * this.tileSize;
+                  const ly = Math.random() * this.tileSize;
+                  tctx.save();
+                  tctx.translate(lx, ly);
+                  tctx.rotate(Math.random() * Math.PI);
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3 + Math.random() * 2, 1.2 + Math.random() * 0.6, 0, 0, Math.PI * 2);
+                  tctx.fill();
+                  tctx.restore();
+              }
+          } else {
+              // Editor: keep a simple single-tone texture
+              const leafCount = 2;
+              tctx.fillStyle = '#2e6f32';
+              for (let j = 0; j < leafCount; j++) {
+                  const lx = Math.random() * this.tileSize;
+                  const ly = Math.random() * this.tileSize;
+                  tctx.beginPath();
+                  tctx.ellipse(lx, ly, 3 + Math.random() * 2, 1.2 + Math.random() * 0.6, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+          }
+
+          this.grassVariants.push(canvas);
       }
-      
-      this.grassVariants.push(canvas);
     }
 
     _generateGrassTilesLow() {
       this.grassVariants = [];
-      // Generate just 1 simple grass variant for fast editor rendering
-      const canvas = document.createElement('canvas');
-      canvas.width = this.tileSize;
-      canvas.height = this.tileSize;
-      const tctx = canvas.getContext('2d');
+      const variantCount = this.editorMode ? 1 : 3;
+      const palettes = this.editorMode
+          ? [{ base: '#376d35', dark: '#2f5b2d', light: '#5f8f55' }]
+          : [
+              { base: '#376d35', dark: '#2f5a2f', light: '#5e8c56' },
+              { base: '#458a43', dark: '#316430', light: '#78b474' },
+              { base: '#2a5527', dark: '#1f3f1d', light: '#4d7a47' }
+            ];
 
-      // Simple solid grass color
-      tctx.fillStyle = '#376d35';
-      tctx.fillRect(0, 0, this.tileSize, this.tileSize);
-      
-      this.grassVariants.push(canvas);
+      for (let i = 0; i < variantCount; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+          const palette = palettes[i % palettes.length];
+
+          // Low quality uses only solid base tiles, without extra grass textures or flowers.
+          tctx.fillStyle = palette.base;
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          this.grassVariants.push(canvas);
+      }
     }
 
     _drawNaturalFlower(ctx, color) {
@@ -1095,12 +1160,24 @@ export default class Map {
     
     _prerenderGrass() {
         const ctx = this.grassLayer.getContext('2d');
+        const flowerColors = ["#ef4444", "#fbbf24", "#a855f7", "#38bdf8"];
+        const flowerChance = 1 / 3.5;
+
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
                 if (this.grid[r][c] === '-') continue;
                 const x = c * this.tileSize;
                 const y = r * this.tileSize;
                 ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+
+                if (!this.editorMode && this.graphicsSettings.terrain !== 'low' && Math.random() < flowerChance) {
+                    const fx = x + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                    const fy = y + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                    ctx.save();
+                    ctx.translate(fx, fy);
+                    this._drawNaturalFlower(ctx, flowerColors[Math.floor(Math.random() * flowerColors.length)]);
+                    ctx.restore();
+                }
             }
         }
     }
