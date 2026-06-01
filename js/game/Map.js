@@ -15,8 +15,21 @@ M - Mountain (impassable, non-buildable, non-shootable)
 const SPECIAL_TILE_VISUAL_OFFSET = 6;
 
 export default class Map {
-    constructor(canvas, layout, tileSize = 80) {
+    constructor(canvas, layout, tileSize = 80, opts = {}) {
         this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+        this.editorMode = Boolean(opts.editor);
+
+        // If editorMode, install a deterministic PRNG for the duration of prerenders
+        let _origRandom = null;
+        if (this.editorMode) {
+            _origRandom = Math.random;
+            let _seed = 123456789;
+            Math.random = function() {
+                // LCG: deterministic sequence
+                _seed = (_seed * 1664525 + 1013904223) >>> 0;
+                return _seed / 4294967296;
+            };
+        }
 
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -112,6 +125,96 @@ export default class Map {
         // BAKE THE ROAD (Now safe because grass images exist)
         this._prerenderRoad();
 
+        // If in editor mode, ensure only one variant exists for variant sets
+        if (this.editorMode) {
+            try {
+                if (this.mountainSet && Array.isArray(this.mountainSet) && this.mountainSet.length > 1) {
+                    this.mountainSet = [this.mountainSet[0]];
+                }
+                if (this.grassVariants && Array.isArray(this.grassVariants) && this.grassVariants.length > 1) {
+                    this.grassVariants = [this.grassVariants[0]];
+                }
+            } catch (e) {}
+        }
+
+        // Editor mode: generate one static canvas per object/version and attach
+        if (this.editorMode) {
+            try {
+                // Trees
+                try {
+                    this.editorTreeLow = typeof this._preRenderTreeLow === 'function' ? this._preRenderTreeLow(this.tileSize) : null;
+                } catch (e) { this.editorTreeLow = null; }
+                try {
+                    this.editorTreeHigh = typeof this._preRenderTreeHigh === 'function' ? this._preRenderTreeHigh(this.tileSize) : null;
+                } catch (e) { this.editorTreeHigh = null; }
+
+                // Portals (draw into dedicated canvases)
+                try {
+                    const pW = Math.round(this.tileSize * 3);
+                    const pH = Math.round(this.tileSize * 3);
+                    const pcLow = document.createElement('canvas'); pcLow.width = pW; pcLow.height = pH;
+                    const pctxLow = pcLow.getContext('2d');
+                    if (typeof this._drawMagicPortalLow === 'function') this._drawMagicPortalLow(pctxLow, pW/2, pH/2, 0);
+                    this.editorPortalLow = pcLow;
+                } catch (e) { this.editorPortalLow = null; }
+                try {
+                    const pW = Math.round(this.tileSize * 3);
+                    const pH = Math.round(this.tileSize * 3);
+                    const pcHigh = document.createElement('canvas'); pcHigh.width = pW; pcHigh.height = pH;
+                    const pctxHigh = pcHigh.getContext('2d');
+                    if (typeof this._drawMagicPortalHigh === 'function') this._drawMagicPortalHigh(pctxHigh, pW/2, pH/2, 0);
+                    this.editorPortalHigh = pcHigh;
+                } catch (e) { this.editorPortalHigh = null; }
+
+                // Grass low/high (capture first variant)
+                try {
+                    const save = this.grassVariants ? this.grassVariants.slice() : null;
+                    if (typeof this._generateGrassTilesLow === 'function') this._generateGrassTilesLow();
+                    if (this.grassVariants && this.grassVariants[0]) {
+                        const g = document.createElement('canvas'); g.width = this.tileSize; g.height = this.tileSize;
+                        g.getContext('2d').drawImage(this.grassVariants[0], 0, 0);
+                        this.editorGrassLow = g;
+                    }
+                    if (typeof this._generateGrassTiles === 'function') this._generateGrassTiles();
+                    if (this.grassVariants && this.grassVariants[0]) {
+                        const g2 = document.createElement('canvas'); g2.width = this.tileSize; g2.height = this.tileSize;
+                        g2.getContext('2d').drawImage(this.grassVariants[0], 0, 0);
+                        this.editorGrassHigh = g2;
+                    }
+                    if (save) this.grassVariants = save;
+                } catch (e) { this.editorGrassLow = this.editorGrassLow || null; this.editorGrassHigh = this.editorGrassHigh || null; }
+
+                // Water capture
+                try {
+                    const saveWL = this.waterLayer;
+                    if (typeof this._prerenderWater === 'function') this._prerenderWater();
+                    const wLow = document.createElement('canvas'); wLow.width = this.tileSize; wLow.height = this.tileSize;
+                    wLow.getContext('2d').drawImage(this.waterLayer, 0, 0, this.tileSize, this.tileSize, 0, 0, this.tileSize, this.tileSize);
+                    this.editorWaterLow = wLow;
+                    if (typeof this._prerenderWaterHigh === 'function') this._prerenderWaterHigh();
+                    const wHigh = document.createElement('canvas'); wHigh.width = this.tileSize; wHigh.height = this.tileSize;
+                    wHigh.getContext('2d').drawImage(this.waterLayer, 0, 0, this.tileSize, this.tileSize, 0, 0, this.tileSize, this.tileSize);
+                    this.editorWaterHigh = wHigh;
+                    if (saveWL) this.waterLayer = saveWL;
+                } catch (e) { this.editorWaterLow = this.editorWaterLow || null; this.editorWaterHigh = this.editorWaterHigh || null; }
+
+                // Mountains
+                try { this.editorMountainLow = typeof this._preRenderMountainLow === 'function' ? this._preRenderMountainLow(this.tileSize) : null; } catch(e){ this.editorMountainLow = null; }
+                try { this.editorMountainHigh = typeof this._preRenderMountainHigh === 'function' ? this._preRenderMountainHigh(this.tileSize) : null; } catch(e){ this.editorMountainHigh = null; }
+                
+                // Editor lock: generate and cache a single mountain variant for the whole editor session.
+                try {
+                    this.mountainSet = [this._preRenderMountainParts(this.tileSize, 1.0)];
+                    if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(this.tileSize);
+                    if (!this.cachedMountainHigh) this.cachedMountainHigh = this._preRenderMountainHigh(this.tileSize);
+                } catch (e) {
+                    // ignore mountain locking errors
+                }
+            } catch (e) {
+                // ignore editor asset generation errors
+            }
+        }
+
         // 7. INPUTS & FINAL SETUP
         this.canvas.addEventListener('mousedown', e => this.startDrag(e));
         this.canvas.addEventListener('mousemove', e => this.drag(e));
@@ -132,6 +235,11 @@ export default class Map {
 
         // 9. GAME QUALITY
         this.quality = localStorage.getItem('graphicsSetting') || 'low';
+
+        // Restore Math.random if we hijacked it for editor deterministic prerenders
+        if (this.editorMode && _origRandom) {
+            Math.random = _origRandom;
+        }
     }
 
     // Normalize: expects layout already as array-of-arrays
@@ -498,41 +606,42 @@ export default class Map {
             }
 
             // LAYER 4: TREES & PORTALS (Top)
-            for (let c = startCol; c < endCol; c++) {
-                const tok = String(this.grid[r][c]);
-                const bounds = this.getTileBounds(c, r);
-                const ts = this.tileSize;
-                // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
-                if (/^E\d+/.test(tok)) {
-                    const actualImg = this.cachedTree;
-                    // If High quality tree is missing (init logic order), simple fallback or ensure init
+            // In editor mode we suppress Map's own drawing of trees/portals so
+            // the editor overlay can render deterministic static images instead.
+            if (!this.editorMode) {
+                for (let c = startCol; c < endCol; c++) {
+                    const tok = String(this.grid[r][c]);
+                    const bounds = this.getTileBounds(c, r);
+                    const ts = this.tileSize;
+                    // Check for E followed by a number (e.g., E1, E2) but NOT "Enemy" or "Empty"
+                    if (/^E\d+/.test(tok)) {
+                        const actualImg = this.cachedTree;
 
-                    if (actualImg) {
-                        const scale = 1.2; 
-                        const h = actualImg.height * scale;
-                        const w = actualImg.width * scale;
-                        ctx.drawImage(actualImg, 
-                            bounds.x - (w - ts) / 2, 
-                            bounds.y - (h - ts) - SPECIAL_TILE_VISUAL_OFFSET, 
-                            w, h
-                        );
+                        if (actualImg) {
+                            const scale = 1.2; 
+                            const h = actualImg.height * scale;
+                            const w = actualImg.width * scale;
+                            ctx.drawImage(actualImg, 
+                                bounds.x - (w - ts) / 2, 
+                                bounds.y - (h - ts) - SPECIAL_TILE_VISUAL_OFFSET, 
+                                w, h
+                            );
+                        }
                     }
-                }
 
-                // This will ignore "SNW" and "SND" because they have letters after S, not numbers
-                if (/^S\d+/.test(tok)) {
-                    const portalX = bounds.x + ts/2;
-                    const portalY = bounds.y + ts/2 - SPECIAL_TILE_VISUAL_OFFSET;
-                    const time = performance.now();
+                    // This will ignore "SNW" and "SND" because they have letters after S, not numbers
+                    if (/^S\d+/.test(tok)) {
+                        const portalX = bounds.x + ts/2;
+                        const portalY = bounds.y + ts/2 - SPECIAL_TILE_VISUAL_OFFSET;
+                        const time = performance.now();
 
-                    // 1. Get the quality from your new settings object
-                    const portalSetting = this.graphicsSettings.portals || 'low';
+                        const portalSetting = this.graphicsSettings.portals || 'low';
 
-                    // 2. Call the animation function (Passes 'time' so it still moves!)
-                    if (portalSetting === 'low') {
-                        this._drawMagicPortalLow(ctx, portalX, portalY, time);
-                    } else {
-                        this._drawMagicPortalHigh(ctx, portalX, portalY, time);
+                        if (portalSetting === 'low') {
+                            this._drawMagicPortalLow(ctx, portalX, portalY, time);
+                        } else {
+                            this._drawMagicPortalHigh(ctx, portalX, portalY, time);
+                        }
                     }
                 }
             }
@@ -1502,6 +1611,10 @@ _drawMagicPortalHigh(ctx, x, y, time) {
   }
 
   _preRenderMountainSet(ts) {
+    if (this.editorMode) {
+      return [this._preRenderMountainParts(ts, 1.0)];
+    }
+
     const variations = [];
     for (let i = 0; i < 5; i++) {
         

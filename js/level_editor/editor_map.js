@@ -8,6 +8,7 @@ let setStatus;
 
 // Canvas rendering constants
 const TILE_SIZE = 60; // Base size for drawing tiles (this.tileSize equivalent)
+const SPECIAL_TILE_VISUAL_OFFSET = 6; // match Map.js offset for portal/tree visuals
 
 // Camera State 
 const camera = {
@@ -452,7 +453,7 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     //    We use TILE_SIZE from the editor so the scale matches 1:1.
     const layoutKey = `${rows}x${cols}`;
     if (!editorMapInstance || editorMapLayoutKey !== layoutKey) {
-        editorMapInstance = new GameMap(canvas, layout, TILE_SIZE);
+        editorMapInstance = new GameMap(canvas, layout, TILE_SIZE, { editor: true });
 
         // GameMap registers its own drag/zoom listeners on the canvas in its constructor.
         // The editor has its own handlers for these, so we must neutralise the Map ones
@@ -477,6 +478,176 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
         editorMapInstance.grid = editorMapInstance.normalizeLayout(layout);
     }
 
+    // Editor-specific: reduce random variant sets to a single deterministic
+    // element so the editor shows only one version per block (no flicker).
+    try {
+        if (editorMapInstance.mountainSet && Array.isArray(editorMapInstance.mountainSet) && editorMapInstance.mountainSet.length > 1) {
+            editorMapInstance.mountainSet = [editorMapInstance.mountainSet[0]];
+        }
+        if (editorMapInstance.grassVariants && Array.isArray(editorMapInstance.grassVariants) && editorMapInstance.grassVariants.length > 1) {
+            editorMapInstance.grassVariants = [editorMapInstance.grassVariants[0]];
+        }
+        // Ensure cachedTree is a single image (preRendered functions already return one)
+        // but guard in case a set exists on high-quality builds
+        if (editorMapInstance.treeSet && Array.isArray(editorMapInstance.treeSet) && editorMapInstance.treeSet.length > 1) {
+            editorMapInstance.treeSet = [editorMapInstance.treeSet[0]];
+        }
+    } catch (err) {
+        // swallow — editor should continue even if pruning fails
+    }
+
+    // Editor: generate static preview assets for LOW and HIGH and store them
+    try {
+        const ts = TILE_SIZE;
+
+        // Helpers to capture a drawing into a small canvas
+        const makeCanvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+
+        // 1) Trees
+        try {
+            if (typeof editorMapInstance._preRenderTreeLow === 'function') {
+                editorMapInstance.tree_low = editorMapInstance._preRenderTreeLow(ts);
+            }
+        } catch (e) {}
+        try {
+            if (typeof editorMapInstance._preRenderTreeHigh === 'function') {
+                editorMapInstance.tree_high = editorMapInstance._preRenderTreeHigh(ts);
+            }
+        } catch (e) {}
+
+        // 2) Portals (render into larger canvas because portals have large effects)
+        try {
+            const pW = ts * 3;
+            const pH = ts * 3;
+            if (typeof editorMapInstance._drawMagicPortalLow === 'function') {
+                const pc = makeCanvas(pW, pH);
+                const pctx = pc.getContext('2d');
+                editorMapInstance._drawMagicPortalLow(pctx, pW/2, pH/2, 0);
+                editorMapInstance.portal_low = pc;
+            }
+        } catch (e) {}
+        try {
+            const pW = ts * 3;
+            const pH = ts * 3;
+            if (typeof editorMapInstance._drawMagicPortalHigh === 'function') {
+                const pc = makeCanvas(pW, pH);
+                const pctx = pc.getContext('2d');
+                editorMapInstance._drawMagicPortalHigh(pctx, pW/2, pH/2, 0);
+                editorMapInstance.portal_high = pc;
+            }
+        } catch (e) {}
+
+        // 3) Mountains (use existing preRender helpers returning canvases)
+        try { editorMapInstance.mountain_low = editorMapInstance._preRenderMountainLow(ts); } catch (e) {}
+        try { editorMapInstance.mountain_high = editorMapInstance._preRenderMountainHigh(ts); } catch (e) {}
+
+        // 4) Grass variants: generate both variants temporarily and capture first
+        const savedGrass = editorMapInstance.grassVariants ? editorMapInstance.grassVariants.slice() : null;
+        try {
+            if (typeof editorMapInstance._generateGrassTiles === 'function') {
+                editorMapInstance._generateGrassTiles();
+                if (editorMapInstance.grassVariants && editorMapInstance.grassVariants[0]) {
+                    const g = makeCanvas(ts, ts);
+                    g.getContext('2d').drawImage(editorMapInstance.grassVariants[0], 0, 0);
+                    editorMapInstance.grass_high = g;
+                }
+            }
+        } catch (e) {}
+        try {
+            if (typeof editorMapInstance._generateGrassTilesLow === 'function') {
+                editorMapInstance._generateGrassTilesLow();
+                if (editorMapInstance.grassVariants && editorMapInstance.grassVariants[0]) {
+                    const g = makeCanvas(ts, ts);
+                    g.getContext('2d').drawImage(editorMapInstance.grassVariants[0], 0, 0);
+                    editorMapInstance.grass_low = g;
+                }
+            }
+        } catch (e) {}
+        // restore grassVariants if present
+        if (savedGrass) editorMapInstance.grassVariants = savedGrass;
+
+        // 5) Water: use waterLayer if available — capture a single tile
+        try {
+            const savedWater = editorMapInstance.waterLayer;
+            if (typeof editorMapInstance._prerenderWaterHigh === 'function') {
+                editorMapInstance._prerenderWaterHigh();
+                const w = makeCanvas(ts, ts);
+                w.getContext('2d').drawImage(editorMapInstance.waterLayer, 0, 0, ts, ts, 0, 0, ts, ts);
+                editorMapInstance.water_high = w;
+            }
+            if (typeof editorMapInstance._prerenderWater === 'function') {
+                editorMapInstance._prerenderWater();
+                const w = makeCanvas(ts, ts);
+                w.getContext('2d').drawImage(editorMapInstance.waterLayer, 0, 0, ts, ts, 0, 0, ts, ts);
+                editorMapInstance.water_low = w;
+            }
+            if (savedWater) editorMapInstance.waterLayer = savedWater;
+        } catch (e) {}
+
+        // 6) Ensure editor uses single deterministic variants and override portal draw
+        try {
+            // Force terrainIndices to zeros so variant index 0 is used everywhere
+            if (Array.isArray(editorMapInstance.terrainIndices)) {
+                for (let rr = 0; rr < editorMapInstance.rows; rr++) {
+                    for (let cc = 0; cc < editorMapInstance.cols; cc++) {
+                        editorMapInstance.terrainIndices[rr][cc] = 0;
+                    }
+                }
+            }
+
+            // Lock grassVariants to first captured low/high if present, otherwise first existing
+            try {
+                const gv = editorMapInstance.grass_low || editorMapInstance.grass_high || (editorMapInstance.grassVariants && editorMapInstance.grassVariants[0]);
+                if (gv) editorMapInstance.grassVariants = [gv];
+            } catch (e) {}
+
+            // Lock mountainSet if present or create one deterministic mountain variant if missing
+            if (editorMapInstance.editorMode) {
+                if (!editorMapInstance.mountainSet && typeof editorMapInstance._preRenderMountainParts === 'function') {
+                    editorMapInstance.mountainSet = [editorMapInstance._preRenderMountainParts(ts, 1.0)];
+                } else if (editorMapInstance.mountainSet && Array.isArray(editorMapInstance.mountainSet) && editorMapInstance.mountainSet.length > 1) {
+                    editorMapInstance.mountainSet = [editorMapInstance.mountainSet[0]];
+                }
+            }
+
+            // Use cached tree image from high/low capture
+            if (editorMapInstance.editorTreeHigh) editorMapInstance.cachedTree = editorMapInstance.editorTreeHigh;
+            else if (editorMapInstance.editorTreeLow) editorMapInstance.cachedTree = editorMapInstance.editorTreeLow;
+
+            // Replace portal draw functions to render our static canvases (centered)
+            if (editorMapInstance.portal_low || editorMapInstance.portal_high) {
+                editorMapInstance._drawMagicPortalLow = function(ctx, x, y /*, time */) {
+                    const img = this.portal_low || this.portal_high;
+                    if (!img) return;
+                    const dx = Math.round(x - img.width / 2);
+                    const dy = Math.round(y - img.height / 2);
+                    try { ctx.drawImage(img, dx, dy); } catch (e) {}
+                };
+
+                editorMapInstance._drawMagicPortalHigh = function(ctx, x, y /*, time */) {
+                    const img = this.portal_high || this.portal_low;
+                    if (!img) return;
+                    const dx = Math.round(x - img.width / 2);
+                    const dy = Math.round(y - img.height / 2);
+                    try { ctx.drawImage(img, dx, dy); } catch (e) {}
+                };
+
+                editorMapInstance._drawMagicPortal = function(ctx, x, y /*, time */) {
+                    // Choose based on settings
+                    const prefer = (this.graphicsSettings && this.graphicsSettings.portals === 'high') ? 'high' : 'low';
+                    const img = (prefer === 'high' ? this.portal_high : this.portal_low) || this.portal_low || this.portal_high;
+                    if (!img) return;
+                    const dx = Math.round(x - img.width / 2);
+                    const dy = Math.round(y - img.height / 2);
+                    try { ctx.drawImage(img, dx, dy); } catch (e) {}
+                };
+            }
+        } catch (e) {}
+
+    } catch (err) {
+        // continue even if asset capture fails
+    }
+
     // 3. Sync the editor camera → GameMap camera so pan/zoom is shared.
     editorMapInstance.camera.x    = camera.x;
     editorMapInstance.camera.y    = camera.y;
@@ -493,7 +664,87 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
     // 4. Let GameMap do all the heavy visual rendering (terrain, roads, water,
     //    mountains, trees, portals, vignette…). Pass no towers/enemies.
+    // Ensure Map does NOT draw trees/portals itself in editor mode (double-draw)
+    try {
+        if (editorMapInstance.editorMode) {
+            // Keep static assets (tree_high/tree_low, portal_high/low) stored, but
+            // prevent Map from drawing them itself by clearing cachedTree and
+            // replacing portal draw functions with no-ops.
+            editorMapInstance.cachedTree = null;
+            editorMapInstance._drawMagicPortalLow = () => {};
+            editorMapInstance._drawMagicPortalHigh = () => {};
+            editorMapInstance._drawMagicPortal = () => {};
+        }
+    } catch (e) {}
+
     editorMapInstance.render(ctx);
+
+    // Editor overlay: draw green labels above Portals (S#) and Trees (E#)
+    try {
+        ctx.save();
+        ctx.translate(camera.x, camera.y);
+        ctx.scale(camera.zoom, camera.zoom);
+
+        const labelColor = '#f0c674'; // žlutý text požadovaný uživatelem
+        const strokeColor = 'rgba(0,0,0,0.6)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = labelColor;
+        ctx.lineWidth = Math.max(1, 2 / Math.max(0.5, camera.zoom));
+        // Larger font, centered in tile
+        ctx.font = `bold ${Math.round(TILE_SIZE * 0.34)}px Arial`;
+
+        // Glow shadow for text
+        ctx.shadowColor = 'rgba(240,198,116,0.3)';
+        ctx.shadowBlur = 15;
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const tok = String(layout[r][c] ?? '');
+                if (/^S\d+/.test(tok) || /^E\d+/.test(tok)) {
+                    const boundsX = c * TILE_SIZE;
+                    const boundsY = r * TILE_SIZE;
+                    const centerX = Math.round(boundsX + TILE_SIZE / 2);
+                    const centerY = Math.round(boundsY + TILE_SIZE / 2);
+
+                    // Draw static image for portal/tree depending on quality fallback order
+                    if (/^S\d+/.test(tok)) {
+                        const prefer = (editorMapInstance.graphicsSettings && editorMapInstance.graphicsSettings.portals === 'high') ? 'high' : 'low';
+                        const img = (prefer === 'high' ? editorMapInstance.editorPortalHigh : editorMapInstance.editorPortalLow) || editorMapInstance.editorPortalLow || editorMapInstance.editorPortalHigh || editorMapInstance.portal_high || editorMapInstance.portal_low;
+                        if (img) {
+                            const dx = Math.round(centerX - img.width / 2);
+                            const dy = Math.round(centerY - img.height / 2 - SPECIAL_TILE_VISUAL_OFFSET);
+                            ctx.drawImage(img, dx, dy);
+                        }
+                    }
+
+                    if (/^E\d+/.test(tok)) {
+                        const prefer = (editorMapInstance.graphicsSettings && editorMapInstance.graphicsSettings.trees === 'high') ? 'high' : 'low';
+                        const img = (prefer === 'high' ? editorMapInstance.editorTreeHigh : editorMapInstance.editorTreeLow) || editorMapInstance.editorTreeLow || editorMapInstance.editorTreeHigh || editorMapInstance.tree_high || editorMapInstance.tree_low || editorMapInstance.cachedTree;
+                        if (img) {
+                            const scale = 1.0;
+                            const w = img.width * scale;
+                            const h = img.height * scale;
+                            const dx = Math.round(centerX - w / 2);
+                            const dy = Math.round(boundsY + TILE_SIZE - h - SPECIAL_TILE_VISUAL_OFFSET);
+                            ctx.drawImage(img, dx, dy, w, h);
+                        }
+                    }
+
+                    // Draw glowing yellow text centered in tile
+                    const x = centerX;
+                    const y = centerY;
+                    ctx.strokeStyle = strokeColor;
+                    ctx.strokeText(tok, x, y);
+                    ctx.fillText(tok, x, y);
+                }
+            }
+        }
+
+        ctx.restore();
+    } catch (err) {
+        // ignore overlay errors to avoid breaking render
+    }
 
     // Light grid overlay for precise alignment in the editor
     ctx.save();
