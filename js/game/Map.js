@@ -231,6 +231,7 @@ export default class Map {
                 } catch (e) {
                     // ignore editor snow/sand caching errors
                 }
+
             } catch (e) {
                 // ignore editor asset generation errors
             }
@@ -1514,16 +1515,25 @@ _drawMagicPortalHigh(ctx, x, y, time) {
     ctx.lineTo(cx + 8, cy);
     ctx.fill();
 
-    // 3. SOLID LEAF CLUSTERS (No random loops)
-    const colors = ["#eab308", "#ca8a04"];
+    // 3. LEAF CLUSTERS — slight random tint and size so each session looks unique.
+    //    In editor mode the constructor's LCG makes these calls deterministic.
+    const colorPalettes = [
+        ["#eab308", "#ca8a04"],
+        ["#f59e0b", "#d97706"],
+        ["#84cc16", "#65a30d"],
+        ["#f97316", "#ea580c"],
+    ];
+    const palette = colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
+    const sizeVariance = 0.85 + Math.random() * 0.3; // 85%–115% of base radius
+
     const leafClusters = [
-        { x: cx, y: cy - ts * 1.4, r: ts * 0.5 },
-        { x: cx - ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 },
-        { x: cx + ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 }
+        { x: cx, y: cy - ts * 1.4, r: ts * 0.5 * sizeVariance },
+        { x: cx - ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 * sizeVariance },
+        { x: cx + ts * 0.35, y: cy - ts * 1.1, r: ts * 0.4 * sizeVariance }
     ];
 
     leafClusters.forEach((cluster, i) => {
-        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillStyle = palette[i % palette.length];
         ctx.beginPath();
         ctx.arc(cluster.x, cluster.y, cluster.r, 0, Math.PI * 2);
         ctx.fill();
@@ -2187,64 +2197,67 @@ _preRenderSandHigh(tileSize) {
 
 _drawBurnedGround(ctx, x, y) {
     const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
     ctx.save();
-    
     ctx.beginPath();
     ctx.rect(x, y, ts, ts);
-    ctx.clip(); 
-
+    ctx.clip();
     ctx.translate(x, y);
 
     // 1. BASE: Deep Scorched Red with Grain
-    ctx.fillStyle = "#3b0704"; 
+    ctx.fillStyle = "#3b0704";
     ctx.fillRect(0, 0, ts, ts);
-    
+
     // Add subtle noise/charcoal texture
     ctx.globalAlpha = 0.2;
     for(let i=0; i<15; i++) {
         ctx.fillStyle = "#000000";
         ctx.beginPath();
-        ctx.arc(Math.random()*ts, Math.random()*ts, Math.random()*15, 0, Math.PI*2);
+        ctx.arc(rng()*ts, rng()*ts, rng()*15, 0, Math.PI*2);
         ctx.fill();
     }
     ctx.globalAlpha = 1.0;
 
     // 2. MOLTEN CRACKS: Multi-pass stroke for "Glow"
     ctx.shadowBlur = 10;
-    ctx.shadowColor = "#ff3300"; // Heat glow color
-    ctx.strokeStyle = "#ff7700"; // Molten center
+    ctx.shadowColor = "#ff3300";
+    ctx.strokeStyle = "#ff7700";
     ctx.lineWidth = 2;
     ctx.lineJoin = "round";
-
     for (let i = 0; i < 6; i++) {
         ctx.beginPath();
-        let curX = Math.random() * ts;
-        let curY = Math.random() * ts;
+        let curX = rng() * ts;
+        let curY = rng() * ts;
         ctx.moveTo(curX, curY);
         for(let j = 0; j < 4; j++) {
-            curX += (Math.random() - 0.5) * 35;
-            curY += (Math.random() - 0.5) * 35;
+            curX += (rng() - 0.5) * 35;
+            curY += (rng() - 0.5) * 35;
             ctx.lineTo(curX, curY);
         }
         ctx.stroke();
     }
-    ctx.shadowBlur = 0; // Reset blur for performance
+    ctx.shadowBlur = 0;
 
     // 3. AMBIENT HEAT: Multi-stage Gradient
     const heat = ctx.createRadialGradient(ts/2, ts/2, 5, ts/2, ts/2, ts);
-    heat.addColorStop(0, "rgba(255, 69, 0, 0.4)");   // Intense core
-    heat.addColorStop(0.4, "rgba(139, 0, 0, 0.2)"); // Blood red mid
-    heat.addColorStop(1, "rgba(0, 0, 0, 0.5)");     // Vignette edges
+    heat.addColorStop(0, "rgba(255, 69, 0, 0.4)");
+    heat.addColorStop(0.4, "rgba(139, 0, 0, 0.2)");
+    heat.addColorStop(1, "rgba(0, 0, 0, 0.5)");
     ctx.fillStyle = heat;
     ctx.fillRect(0, 0, ts, ts);
 
     // 4. FLOATING EMBERS: Glowing particles
     for (let i = 0; i < 15; i++) {
-        const size = Math.random() * 2.5;
-        ctx.fillStyle = Math.random() > 0.5 ? "#ffcc00" : "#ff4400";
-        ctx.globalAlpha = Math.random();
+        const size = rng() * 2.5;
+        ctx.fillStyle = rng() > 0.5 ? "#ffcc00" : "#ff4400";
+        ctx.globalAlpha = rng();
         ctx.beginPath();
-        ctx.arc(Math.random()*ts, Math.random()*ts, size, 0, Math.PI*2);
+        ctx.arc(rng()*ts, rng()*ts, size, 0, Math.PI*2);
         ctx.fill();
     }
 
@@ -2253,6 +2266,11 @@ _drawBurnedGround(ctx, x, y) {
 
 _drawBurnedGroundLow(ctx, x, y) {
     const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
 
     // 0. Pozadí – jednolitá hnědá (#422006)
     ctx.fillStyle = "#422006";
@@ -2260,25 +2278,21 @@ _drawBurnedGroundLow(ctx, x, y) {
 
     // 1. Jemný spálený flek (tmavý uprostřed, mizí do hnědé)
     const grad = ctx.createRadialGradient(
-        x + ts/2, y + ts/2,
-        ts * 0.1,
-        x + ts/2, y + ts/2,
-        ts * 0.55
+        x + ts/2, y + ts/2, ts * 0.1,
+        x + ts/2, y + ts/2, ts * 0.55
     );
-
-    grad.addColorStop(0, "rgba(20,20,20,0.9)");   // tmavý střed
-    grad.addColorStop(0.6, "rgba(0,0,0,0.35)");   // jemný přechod
-    grad.addColorStop(1, "rgba(0,0,0,0)");        // plynulé zmizení
-
+    grad.addColorStop(0, "rgba(20,20,20,0.9)");
+    grad.addColorStop(0.6, "rgba(0,0,0,0.35)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(x, y, ts, ts);
 
     // 2. Jemné saze – malé, nenápadné
     ctx.fillStyle = "rgba(0,0,0,0.35)";
     for (let i = 0; i < 10; i++) {
-        const px = x + Math.random() * ts;
-        const py = y + Math.random() * ts;
-        const r = Math.random() * 1.5;
+        const px = x + rng() * ts;
+        const py = y + rng() * ts;
+        const r = rng() * 1.5;
         ctx.beginPath();
         ctx.arc(px, py, r, 0, Math.PI * 2);
         ctx.fill();
@@ -2287,45 +2301,46 @@ _drawBurnedGroundLow(ctx, x, y) {
 
 _drawHolyGround(ctx, x, y) {
     const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
     ctx.save();
-    
     ctx.beginPath();
     ctx.rect(x, y, ts, ts);
     ctx.clip();
-    
     ctx.translate(x, y);
 
     // 1. BASE: Rich Earthy Mahogany (provides depth)
-    ctx.fillStyle = "#2d1a05"; 
+    ctx.fillStyle = "#2d1a05";
     ctx.fillRect(0, 0, ts, ts);
 
-    const leafColors = ["#eab308", "#ca8a04", "#854d0e"]; // Added a dark gold for shadows
-    
+    const leafColors = ["#eab308", "#ca8a04", "#854d0e"];
+
     // 2. LEAF CARPET: 260 Leaves with Depth
     for (let i = 0; i < 260; i++) {
-        const lx = Math.random() * ts;
-        const ly = Math.random() * ts;
-        const rot = Math.random() * Math.PI;
-        const color = leafColors[Math.floor(Math.random() * leafColors.length)];
-        
+        const lx = rng() * ts;
+        const ly = rng() * ts;
+        const rot = rng() * Math.PI;
+        const color = leafColors[Math.floor(rng() * leafColors.length)];
+
         ctx.save();
         ctx.translate(lx, ly);
         ctx.rotate(rot);
-        
-        // AAA Trick: Subtle Drop Shadow for individual leaves
+
         ctx.shadowColor = "rgba(0,0,0,0.3)";
         ctx.shadowBlur = 2;
         ctx.shadowOffsetY = 1;
 
         ctx.fillStyle = color;
         ctx.beginPath();
-        // Leaf shape: slightly pointed ellipse
-        ctx.ellipse(0, 0, 5 + Math.random()*3, 2 + Math.random()*2, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, 5 + rng()*3, 2 + rng()*2, 0, 0, Math.PI * 2);
         ctx.fill();
-        
-        // Add a "Highlight" on the edge of 10% of leaves
+
         if (i % 10 === 0) {
-            ctx.fillStyle = "#fef08a"; // Bright highlight
+            ctx.fillStyle = "#fef08a";
             ctx.fillRect(-2, -1, 2, 1);
         }
 
@@ -2335,8 +2350,8 @@ _drawHolyGround(ctx, x, y) {
     // 3. DIVINE BLOOM: Soft radiant "God-light"
     ctx.globalCompositeOperation = "screen";
     const bloom = ctx.createRadialGradient(ts/2, ts/2, 0, ts/2, ts/2, ts * 0.9);
-    bloom.addColorStop(0, "rgba(254, 240, 138, 0.4)"); // Bright core
-    bloom.addColorStop(0.5, "rgba(234, 179, 8, 0.1)"); // Soft gold
+    bloom.addColorStop(0, "rgba(254, 240, 138, 0.4)");
+    bloom.addColorStop(0.5, "rgba(234, 179, 8, 0.1)");
     bloom.addColorStop(1, "transparent");
     ctx.fillStyle = bloom;
     ctx.fillRect(0, 0, ts, ts);
@@ -2345,12 +2360,11 @@ _drawHolyGround(ctx, x, y) {
     ctx.globalCompositeOperation = "source-over";
     for (let i = 0; i < 8; i++) {
         ctx.fillStyle = "#ffffff";
-        ctx.globalAlpha = Math.random() * 0.6;
-        const px = Math.random() * ts;
-        const py = Math.random() * ts;
-        // Draw a tiny star/sparkle
+        ctx.globalAlpha = rng() * 0.6;
+        const px = rng() * ts;
+        const py = rng() * ts;
         ctx.fillRect(px, py, 1.5, 1.5);
-        ctx.fillRect(px - 1, py + 1, 3.5, 0.5); // Tiny cross flare
+        ctx.fillRect(px - 1, py + 1, 3.5, 0.5);
     }
 
     ctx.restore();
@@ -2358,33 +2372,34 @@ _drawHolyGround(ctx, x, y) {
 
 _drawHolyGroundLow(ctx, x, y) {
     const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
 
     // 0. Pozadí – jemná zlatohnědá
-    ctx.fillStyle = "#5a3a0a"; 
+    ctx.fillStyle = "#5a3a0a";
     ctx.fillRect(x, y, ts, ts);
 
     // 1. Jemný "svatý" flek uprostřed
     const grad = ctx.createRadialGradient(
-        x + ts/2, y + ts/2,
-        ts * 0.1,
-        x + ts/2, y + ts/2,
-        ts * 0.55
+        x + ts/2, y + ts/2, ts * 0.1,
+        x + ts/2, y + ts/2, ts * 0.55
     );
-
-    grad.addColorStop(0, "rgba(255, 230, 120, 0.45)"); // světlý střed
-    grad.addColorStop(0.5, "rgba(255, 200, 80, 0.15)"); // jemný přechod
-    grad.addColorStop(1, "rgba(0,0,0,0)"); // zmizí do pozadí
-
+    grad.addColorStop(0, "rgba(255, 230, 120, 0.45)");
+    grad.addColorStop(0.5, "rgba(255, 200, 80, 0.15)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(x, y, ts, ts);
 
     // 2. Pár jemných "světelných teček"
     ctx.fillStyle = "rgba(255,255,200,0.6)";
     for (let i = 0; i < 6; i++) {
-        const px = x + Math.random() * ts;
-        const py = y + Math.random() * ts;
+        const px = x + rng() * ts;
+        const py = y + rng() * ts;
         ctx.beginPath();
-        ctx.arc(px, py, Math.random() * 1.5, 0, Math.PI * 2);
+        ctx.arc(px, py, rng() * 1.5, 0, Math.PI * 2);
         ctx.fill();
     }
 }

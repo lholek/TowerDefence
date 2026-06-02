@@ -312,7 +312,7 @@ function handleMapDrawStop() {
         // rebuilt exactly once — generating stable random variants for the
         // final tile configuration rather than re-rolling on every mouse move.
         resetEditorMap();
-        // Call modifyJson with an empty operation to sync the already-changed currentLevelData 
+        // Call modifyJson with an empty operation to sync the already-changed currentLevelData
         // back to the JSON editor and trigger any required updates.
         modifyJson(() => {}, `Map updated by drag-drawing.`, true);
         // Force a fresh render so the rebuilt instance is displayed immediately.
