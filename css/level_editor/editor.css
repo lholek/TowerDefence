@@ -507,7 +507,7 @@ hr {
 
 .current-tile-display {
     display: inline-block;
-    padding: 4px 8px;
+    padding: 10px 8px;
     border-radius: 4px;
     font-weight: bold;
 }

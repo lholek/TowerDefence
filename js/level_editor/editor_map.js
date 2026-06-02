@@ -39,7 +39,7 @@ let hasDrawn = false; // Tracks if any tile was modified during a draw session
 let activeDrawTileType = null; // Locks the tile type for the current drag session
 
 // --- Dynamic Brush State ---
-let brushShape = 'square'; // 'square' or 'star'
+let brushShape = 'square'; // 'square', 'diamond', or 'circle'
 let brushSize = 1;        // Radius/Size (1 to 20)
 
 // Placeholder for external module references
@@ -850,12 +850,12 @@ function createTileKey() {
 
         html += `
             <div class="tile-item">
-                <span class="tile-label">${labelText}</span>
+                <span class="tile-label"></span>
                 <button 
                     class="tile-selector-btn tile-${baseType}" 
                     data-tile="${type}"
                     onclick="window.app.mapEditor.setTileType('${type}')">
-                    ${type}
+                    ${labelText}
                 </button>
             </div>
         `;
@@ -883,10 +883,49 @@ function createTileKey() {
 /**
  * Updates the visual display of the currently selected tile type.
  */
+function getTileTypeLabel(type) {
+    const labels = {
+        'X': 'Grass',
+        'SNW': 'Snow',
+        'SND': 'Sand',
+        'O': 'Path',
+        'O[SNW]': 'Path Snow',
+        'O[SND]': 'Path Sand',
+        'S': 'Start',
+        'E': 'End',
+        'W': 'Water',
+        'M': 'Mountains',
+        '-': 'Air'
+    };
+
+    if (labels[type]) {
+        return labels[type];
+    }
+
+    if (/^S\d+$/.test(type)) {
+        return `Start ${type.substring(1)}`;
+    }
+
+    if (/^E\d+$/.test(type)) {
+        return `End ${type.substring(1)}`;
+    }
+
+    if (/^S/.test(type) && type !== 'SNW' && type !== 'SND') {
+        return 'Start';
+    }
+
+    if (/^E/.test(type)) {
+        return 'End';
+    }
+
+    const normalized = type.replace(/[0-9]/g, '');
+    return labels[normalized] || type;
+}
+
 function updateCurrentTileDisplay() {
     const display = document.getElementById('currentTileDisplay');
     if (display) {
-        display.textContent = currentTileType;
+        display.textContent = getTileTypeLabel(currentTileType);
         
         tileTypes.map(t => t.replace(/[0-9]/g, '').toLowerCase() || '-').forEach(baseType => display.classList.remove(`tile-${baseType}`));
         
@@ -1139,14 +1178,23 @@ function getDynamicBrushMatrix(shape, size) {
     for (let r = 0; r < side; r++) {
         matrix[r] = [];
         for (let c = 0; c < side; c++) {
+            const dr = Math.abs(r - center);
+            const dc = Math.abs(c - center);
+
             if (shape === 'square') {
-                // Square is always filled
                 matrix[r][c] = 1;
-            } else if (shape === 'star') {
-                // Star/Cross logic: Manhattan distance
-                // Paints if the tile is within 'size' distance from center
-                const dist = Math.abs(r - center) + Math.abs(c - center);
+            } else if (shape === 'diamond') {
+                const dist = dr + dc;
                 matrix[r][c] = dist < size ? 1 : 0;
+            } else if (shape === 'circle') {
+                if (size < 3) {
+                    matrix[r][c] = (r === center && c === center) ? 1 : 0;
+                } else {
+                    const dist = Math.sqrt(dr * dr + dc * dc);
+                    matrix[r][c] = dist < size ? 1 : 0;
+                }
+            } else {
+                matrix[r][c] = 0;
             }
         }
     }
@@ -1180,34 +1228,28 @@ function getBrushAffectedTiles(centerR, centerC) {
 
 // New Exported setters for the UI
 export function setBrushShape(shape) {
-    brushShape = shape; // Update the logic ( 'square' or 'star' )
+    brushShape = shape; // Update the logic (square, diamond, circle)
     
-    // --- Graphical Update ---
-    const sqBtn = document.getElementById('btn-brush-square');
-    const stBtn = document.getElementById('btn-brush-star');
-    
-    if (sqBtn && stBtn) {
-        // Remove active class from both
-        sqBtn.classList.remove('active');
-        stBtn.classList.remove('active');
+    const brushButtons = [
+        'btn-brush-square',
+        'btn-brush-diamond',
+        'btn-brush-circle'
+    ].map(id => document.getElementById(id)).filter(Boolean);
 
-        // Add to the selected one
-        if (shape === 'square') {
-            sqBtn.classList.add('active');
-        } else {
-            stBtn.classList.add('active');
-        }
+    brushButtons.forEach(btn => btn.classList.remove('active'));
+
+    const activeButton = document.getElementById(`btn-brush-${shape}`);
+    if (activeButton) {
+        activeButton.classList.add('active');
     }
-    
+
     // Force a re-render so the ghost/brush on the map updates immediately
     renderMap();
 }
 
 export function setBrushSize(size) {
-    // Clamp between 1 and 20
     brushSize = Math.max(1, Math.min(20, parseInt(size) || 1));
     
-    // Optional: Sync the input field value if it was changed by clamping
     const sizeInput = document.getElementById('brushSizeInput');
     if (sizeInput) sizeInput.value = brushSize;
 

@@ -150,7 +150,7 @@
 }
 
 .tile-slider-wrapper {
-    max-width: 788px;
+    max-width: 787px;
     position: relative;
     user-select: none;
 }
@@ -242,13 +242,13 @@
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
+    gap: 0;
     background-color: #2e261d;
 }
 
 .tileDrawingBrushItems {
     display: flex;
-    margin-top: 45px;
+    margin-top: 5px;
     flex-direction: column;
     align-items: center;
     gap: 10px;
@@ -262,11 +262,11 @@
 }
 
 #tileDrawingPanel > div:first-child {
-    flex: 3 1 0;
+    flex: 9 1 0;
 }
 
 #tileDrawingPanel > div:last-child {
-    flex: 1 1 0;
+    flex: 3 1 0;
     min-width: 180px;
 }
 

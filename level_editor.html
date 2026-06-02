@@ -69,12 +69,15 @@
                             <label>Brush Settings</label>
                             <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
                             <div class="brush-toolbar brush-options">
-                                <button id="btn-brush-square" class="btn-brush active" 
-                                onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
-                                <button id="btn-brush-star" class="btn-brush" 
-                                onclick="window.app.mapEditor.setBrushShape('star')">✦ Star</button>
-                                
-                                <div class="brush-size-control" style="display: inline-flex; align-items: center; margin-left: 10px;">
+                                <div class="brush-button-row" style="display:flex; gap:6px; flex-wrap:wrap; flex-direction: column;">
+                                    <button id="btn-brush-square" class="btn-brush active" 
+                                    onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
+                                    <button id="btn-brush-diamond" class="btn-brush" 
+                                    onclick="window.app.mapEditor.setBrushShape('diamond')">◆ Diamond</button>
+                                    <button id="btn-brush-circle" class="btn-brush" 
+                                    onclick="window.app.mapEditor.setBrushShape('circle')">● Circle</button>
+                                </div>
+                                <div class="brush-size-control" style="display: inline-flex; align-items: center; margin-top: 10px; width: 100%; justify-content: center;">
                                     <label class="me-1">Size:</label>
                                     <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" 
                                     oninput="window.app.mapEditor.setBrushSize(this.value)" 
