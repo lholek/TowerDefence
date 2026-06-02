@@ -820,7 +820,7 @@ function createTileKey() {
         'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'O': 'Path',
         'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
         'E': 'End',
-        'W': 'Water', 'M': 'MountainS', '-': 'Air'
+        'W': 'Water', 'M': 'Mountains', '-': 'Air'
     };
 
     const customOrder = [
