@@ -1,0 +1,94 @@
+{
+  "maps": [
+    {
+      "name": "EDIT TITLE",
+      "startingCoins": 100,
+      "startingLifes": 100000,
+      "extraLife": true,
+      "extraLifePrices": [
+        10,
+        25,
+        50,
+        75,
+        100,
+        150,
+        200
+      ],
+      "description": [
+        {
+          "descriptionText": "Edit description",
+          "level count": 1,
+          "difficulty": "⭐",
+          "map_size": "15x10",
+          "tower types": 1,
+          "abilites": "Lava Floor🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["S1","O","O","O","O","O","O","O","O","O","O","O","O","O","E1"],
+              ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"],
+              ["SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["O","O","O","O","O","O","O","O","O","O","O","O","O","O","O"],
+              ["O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]"],
+              ["O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]"],
+              ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
+              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+              ["M","M","M","M","M","M","M","M","M","M","M","M","M","M","M"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 500000,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            }
+          ]
+        }
+      ],
+      "enemyEffects": []
+    }
+  ]
+}
