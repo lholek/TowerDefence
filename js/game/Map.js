@@ -11,6 +11,18 @@ E* - End (E1, E2...) [Tree]
 W - Water (impassable, non-buildable, shootable)
 M - Mountain (impassable, non-buildable, non-shootable)
 - - Air(impassable, non-buildable, shootable)
+Pre-Beta IV:
+SND[Cactus-1..4] - cant build towers, blocks arrows
+SND[Bone-1..3]   - cant build towers, doesnt block arrows  
+SND[Palm-1..2]   - cant build towers, blocks arrows
+"TODO: LAVA - cant build towers, doesnt block arrows",
+"TODO: ICE - cant build towers, doesnt block arrows",
+"TODO: SND[Cactus] - cant build towers, blocks arrows",
+"TODO: SND[Palm] - cant build towers, blocks arrows",
+"TODO: SND[Bone] - cant build towers, doesnt block arrows",
+"TODO: X[Tree] - cant build towers, blocks arrows",
+"TODO: SNW[Tree] - cant build towers, blocks arrows",
+"TODO: SND[Palm] - cant build towers, blocks arrows",
 */
 const SPECIAL_TILE_VISUAL_OFFSET = 6;
 
