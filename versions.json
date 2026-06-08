@@ -11,7 +11,7 @@
         "Improved - Editor - Added text to tile instead of S,E,X,SND etc. ADD THERE FULL TEXT LIKE SNOW SAND atd.",
         "Improved - Graphics - Improved grass on High settings",
         "Improved - Graphics - Improved grass on Low settings",
-        "TODO: Improve - Create a new file MapObjects.js that will include all Map Objects like Grass, Snow, Sand, Path, Path Snow, Path Sand, Water, Mountains, Sky but only visuls ",
+        "TODO: Improve - Create a new file MapTextures.js that will include all Map Textures like Grass, Snow, Sand, Path, Path Snow, Path Sand, Water, Mountains, Sky but only visuls ",
         "TODO: Improve - Editor - Create new tiles in editor:",
         "TODO: Improve - Gameplay - Create new tiles in game:",
         "TODO: GOT: Starting Portal, Ending tree, Grass, Snow, Sand,Path, Path Snow, Path Sand, Water, Mountains, Sky",
