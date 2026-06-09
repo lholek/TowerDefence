@@ -468,10 +468,15 @@ hr {
     transform: scale(1.2);
 }
 /* Tile color styling for the key and display */
-.tile-o, .tile-o-snw, .tile-o-snd, .tile-o[snw], .tile-o[snd] {
-    background-color: #8B4513; /* Path/Start/End color */
+.tile-o, 
+.tile-o-snw, 
+.tile-o-snd, 
+.tile-o\[snw\], 
+.tile-o\[snd\] {
+    background-color: #8B4513;
     color: white;
 }
+
 .tile-x, .tile-s, .tile-s-snw, .tile-s-snd, .tile-s[snw], .tile-s[snd] {
     background-color: #3F7D3C; /* Defense/Block color */
     color: white;
