@@ -1806,28 +1806,84 @@ _prerenderGrass
 Tile: X
 */
 function _prerenderGrass() {
-        const ctx = this.grassLayer.getContext('2d');
-        const flowerColors = ["#ef4444", "#fbbf24", "#a855f7", "#38bdf8"];
-        const flowerChance = 1 / 3.5;
+    const ctx = this.grassLayer.getContext('2d');
+    const flowerColors = ["#ef4444", "#fbbf24", "#a855f7", "#38bdf8"];
+    const flowerChance = 1 / 3.5;
 
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                if (this.grid[r][c] === '-') continue;
-                const x = c * this.tileSize;
-                const y = r * this.tileSize;
-                ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
-
-                if (!this.editorMode && this.graphicsSettings.terrain !== 'low' && Math.random() < flowerChance) {
-                    const fx = x + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
-                    const fy = y + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
-                    ctx.save();
-                    ctx.translate(fx, fy);
-                    this._drawNaturalFlower(ctx, flowerColors[Math.floor(Math.random() * flowerColors.length)]);
-                    ctx.restore();
-                }
+    for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.cols; c++) {
+            if (this.grid[r][c] === '-') continue;
+            const x = c * this.tileSize;
+            const y = r * this.tileSize;
+            ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+            if (!this.editorMode && this.graphicsSettings.terrain !== 'low' && Math.random() < flowerChance) {
+                const fx = x + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                const fy = y + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                ctx.save();
+                ctx.translate(fx, fy);
+                this._drawNaturalFlower(ctx, flowerColors[Math.floor(Math.random() * flowerColors.length)]);
+                ctx.restore();
             }
         }
     }
+}
+
+/*
+_prerenderVignette
+*/
+function _prerenderVignette(width, height) {
+    const vc = document.createElement('canvas');
+    vc.width = width;
+    vc.height = height;
+    const vctx = vc.getContext('2d');
+    const vGrad = vctx.createRadialGradient(
+        width / 2, height / 2, width * 0.3,
+        width / 2, height / 2, width * 0.8
+    );
+    vGrad.addColorStop(0, 'transparent');
+    vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
+    vctx.fillStyle = vGrad;
+    vctx.fillRect(0, 0, width, height);
+    this.vignetteLayer = vc;
+}
+
+/*
+_preRenderMountainFoundations
+*/
+function _preRenderMountainFoundations(ts) {
+    const variants = {};
+    const configs = [
+        { key: 'both',      x: 0,           w: ts },
+        { key: 'rightOnly', x: ts * 0.4,    w: ts * 0.6 },
+        { key: 'leftOnly',  x: 0,           w: ts * 0.6 },
+    ];
+    for (const { key, x, w } of configs) {
+        const c = document.createElement('canvas');
+        c.width = ts;
+        c.height = ts;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#242c3d';
+        ctx.fillRect(x, 0, w, ts);
+        variants[key] = c;
+    }
+    this.mountainFoundations = variants;
+}
+
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
+}
 
 export const MapTextures = {
     _preRenderSnowLow,
@@ -1863,4 +1919,7 @@ export const MapTextures = {
     _prerenderWaterHigh,
     getCoastColor,
     _prerenderGrass,
+    _prerenderVignette,
+    _preRenderMountainFoundations,
+    roundRect,
 };

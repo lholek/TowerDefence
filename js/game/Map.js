@@ -122,6 +122,10 @@ export default class Map {
         // BAKE THE ROAD (Now safe because grass images exist)
         this._prerenderRoad();
 
+        // Prerender vignette overlay and mountain foundation variants
+        this._prerenderVignette(canvas.width, canvas.height);
+        this._preRenderMountainFoundations(this.tileSize);
+
         // If in editor mode, ensure only one variant exists for variant sets
         if (this.editorMode) {
             try {
@@ -462,10 +466,10 @@ export default class Map {
                         const hasRight = (c < this.cols - 1 && String(this.grid[r][c + 1]) === 'M');
 
                         // 1. Foundation
-                        ctx.fillStyle = "#242c3d";
-                        if (hasLeft && hasRight) ctx.fillRect(bounds.x, bounds.y, ts, ts);
-                        else if (!hasLeft && hasRight) ctx.fillRect(bounds.x + ts * 0.4, bounds.y, ts * 0.6, ts);
-                        else if (hasLeft && !hasRight) ctx.fillRect(bounds.x, bounds.y, ts * 0.6, ts);
+                        const mf = this.mountainFoundations;
+                        if (hasLeft && hasRight) ctx.drawImage(mf.both, bounds.x, bounds.y);
+                        else if (!hasLeft && hasRight) ctx.drawImage(mf.rightOnly, bounds.x, bounds.y);
+                        else if (hasLeft && !hasRight) ctx.drawImage(mf.leftOnly, bounds.x, bounds.y);
 
                         // 2. Connector Fog
                         if (p && (hasLeft || hasRight)) { 
@@ -550,14 +554,7 @@ export default class Map {
         ctx.restore();
 
         // 4. PASS: VIGNETTE
-        const vGrad = ctx.createRadialGradient(
-            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.3,
-            this.canvas.width / 2, this.canvas.height / 2, this.canvas.width * 0.8
-        );
-        vGrad.addColorStop(0, 'transparent');
-        vGrad.addColorStop(1, 'rgba(0,5,15,0.4)');
-        ctx.fillStyle = vGrad;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.drawImage(this.vignetteLayer, 0, 0);
     }
 
     // --- TILE / COORD conversions ---
@@ -707,22 +704,6 @@ export default class Map {
       };
     }
 
-
-    roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-      ctx.lineTo(x + radius, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-      if (fill) ctx.fill();
-      if (stroke) ctx.stroke();
-    }
 
     _seededRandom(seed) {
         const x = Math.sin(seed) * 10000;
