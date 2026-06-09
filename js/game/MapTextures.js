@@ -1910,7 +1910,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 /*
 _drawIceTileLow
 Tile: ICE
-Graphics: Low — per-tile seeded, variety across map
+Graphics: Low — per-tile seeded, subtle variety, intentionally cheap
 */
 function _drawIceTileLow(ctx, x, y) {
     const ts = this.tileSize;
@@ -1920,32 +1920,72 @@ function _drawIceTileLow(ctx, x, y) {
         ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
         : () => Math.random();
 
-    // Base with slight per-tile tint
-    const l = 74 + rng() * 8;
-    ctx.fillStyle = `hsl(${200 + rng() * 12}, 60%, ${l}%)`;
+    // Base — muted cold blue, low lightness variance
+    const l = 68 + rng() * 6;
+    const hue = 200 + rng() * 10;
+    ctx.fillStyle = `hsl(${hue}, 52%, ${l}%)`;
     ctx.fillRect(x, y, ts, ts);
 
-    // 3 simple seeded cracks
-    ctx.strokeStyle = 'rgba(65, 125, 185, 0.55)';
-    ctx.lineWidth = 0.6;
+    // Subtle inner glow to hint at depth
+    const glow = ctx.createRadialGradient(
+        x + ts * 0.38, y + ts * 0.38, 0,
+        x + ts * 0.5,  y + ts * 0.5,  ts * 0.75
+    );
+    glow.addColorStop(0, 'rgba(210,235,255,0.18)');
+    glow.addColorStop(1, 'rgba(210,235,255,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(x, y, ts, ts);
+
+    // 2 simple cracks with faint bright edge (cheap subsurface hint)
     ctx.lineCap = 'round';
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
         let cx = x + rng() * ts, cy = y + rng() * ts;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
+        const pts = [[cx, cy]];
         for (let j = 0; j < 2; j++) {
-            cx += (rng() - 0.5) * ts * 0.38;
-            cy += (rng() - 0.5) * ts * 0.38;
-            ctx.lineTo(cx, cy);
+            cx += (rng() - 0.5) * ts * 0.36;
+            cy += (rng() - 0.5) * ts * 0.36;
+            pts.push([cx, cy]);
         }
+        // bright edge
+        ctx.strokeStyle = 'rgba(210,235,255,0.35)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
+        ctx.stroke();
+        // dark core
+        ctx.strokeStyle = 'rgba(50,100,165,0.5)';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
         ctx.stroke();
     }
+
+    // Single sparkle
+    const px = x + rng() * ts, py = y + rng() * ts;
+    ctx.fillStyle = 'rgba(255,255,255,0.82)';
+    ctx.fillRect(px, py, 1, 1);
+
+    // Edge
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, ts, ts);
 }
 
 /*
 _drawIceTile
 Tile: ICE
-Graphics: High — per-tile seeded, branching cracks, randomized highlight + shadow corner
+Graphics: High — physically-inspired, multi-layer, realistic frozen surface
+
+Layers (bottom → top):
+  1. Deep ice base      – dark cold gradient, subsurface blue depth
+  2. Mid-ice volume     – lighter inner glow simulating light bouncing inside
+  3. Surface micro-fog  – fine noise to break up perfection
+  4. Cracks             – branching, each with bright refraction halo + dark core
+  5. Frost patches      – irregular matte white clusters at edges
+  6. Specular highlight – tight elliptical hotspot (directional light)
+  7. Sparkles           – pure white + cross-flare
+  8. Vignette           – soft corner shadow
+  9. Edge
 */
 function _drawIceTile(ctx, x, y) {
     const ts = this.tileSize;
@@ -1961,85 +2001,173 @@ function _drawIceTile(ctx, x, y) {
     ctx.clip();
     ctx.translate(x, y);
 
-    // 1. BASE — randomized gradient direction and lightness
-    const hue = 197 + rng() * 15;
-    const l0  = 73 + rng() * 10;
-    const ang = rng() * Math.PI * 2;
-    const gx1 = ts / 2 - Math.cos(ang) * ts / 2, gy1 = ts / 2 - Math.sin(ang) * ts / 2;
-    const gx2 = ts / 2 + Math.cos(ang) * ts / 2, gy2 = ts / 2 + Math.sin(ang) * ts / 2;
+    // ── 1. DEEP ICE BASE ──────────────────────────────────────────────────
+    // Dark, cold, slightly desaturated — the "depth" of frozen water
+    const hue     = 198 + rng() * 12;
+    const baseLit = 52 + rng() * 8;          // intentionally dark for depth
+    const ang     = rng() * Math.PI * 2;
+    const gx1 = ts * 0.5 - Math.cos(ang) * ts * 0.6;
+    const gy1 = ts * 0.5 - Math.sin(ang) * ts * 0.6;
+    const gx2 = ts * 0.5 + Math.cos(ang) * ts * 0.6;
+    const gy2 = ts * 0.5 + Math.sin(ang) * ts * 0.6;
     const base = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
-    base.addColorStop(0,   `hsl(${hue},     62%, ${l0 + 6}%)`);
-    base.addColorStop(0.5, `hsl(${hue + 5}, 57%, ${l0    }%)`);
-    base.addColorStop(1,   `hsl(${hue},     60%, ${l0 + 3}%)`);
+    base.addColorStop(0,   `hsl(${hue - 4}, 58%, ${baseLit + 6}%)`);
+    base.addColorStop(0.45,`hsl(${hue},     54%, ${baseLit    }%)`);
+    base.addColorStop(1,   `hsl(${hue + 6}, 62%, ${baseLit + 3}%)`);
     ctx.fillStyle = base;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 2. FINE NOISE
-    for (let i = 0; i < 120; i++) {
-        ctx.fillStyle = rng() > 0.5
-            ? `rgba(255,255,255,${(rng() * 0.18).toFixed(2)})`
-            : `rgba(50,105,155,${(rng() * 0.12).toFixed(2)})`;
-        ctx.fillRect(rng() * ts, rng() * ts, 1.2, 1.2);
+    // ── 2. SUBSURFACE / MID-ICE VOLUME ───────────────────────────────────
+    // Blueish inner glow that bleeds upward — light trapped inside ice
+    const ssx = ts * (0.2 + rng() * 0.6);
+    const ssy = ts * (0.2 + rng() * 0.6);
+    const ss = ctx.createRadialGradient(ssx, ssy, 0, ssx, ssy, ts * 0.9);
+    ss.addColorStop(0,   `hsla(${hue + 8}, 72%, ${baseLit + 26}%, 0.55)`);
+    ss.addColorStop(0.4, `hsla(${hue + 4}, 65%, ${baseLit + 18}%, 0.28)`);
+    ss.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = ss;
+    ctx.fillRect(0, 0, ts, ts);
+
+    // ── 3. SURFACE MICRO-FOG ─────────────────────────────────────────────
+    // Tiny pixels, mix of light and cool-dark specks
+    for (let i = 0; i < 90; i++) {
+        const bright = rng() > 0.5;
+        const a = rng() * (bright ? 0.14 : 0.09);
+        ctx.fillStyle = bright
+            ? `rgba(220,240,255,${a.toFixed(2)})`
+            : `rgba(30,75,130,${a.toFixed(2)})`;
+        ctx.fillRect(rng() * ts, rng() * ts, 1.4, 1.4);
     }
 
-    // 3. BRANCHING CRACKS — seeded per tile
+    // ── 4. CRACKS ─────────────────────────────────────────────────────────
+    // Each crack = bright halo (refracted light) + dark core (void/air gap)
     const crack = (sx, sy, angle, len, depth) => {
-        if (depth <= 0 || len < 3) return;
+        if (depth <= 0 || len < 2.5) return;
         const ex = sx + Math.cos(angle) * len;
         const ey = sy + Math.sin(angle) * len;
+        const mx = (sx + ex) / 2 + (rng() - 0.5) * 7;
+        const my = (sy + ey) / 2 + (rng() - 0.5) * 7;
+
+        // Refraction halo — white/cyan glow around crack
+        ctx.strokeStyle = `rgba(195,230,255,${(0.30 + rng() * 0.18).toFixed(2)})`;
+        ctx.lineWidth   = 2.6;
         ctx.beginPath();
         ctx.moveTo(sx, sy);
-        ctx.quadraticCurveTo(
-            (sx + ex) / 2 + (rng() - 0.5) * 8,
-            (sy + ey) / 2 + (rng() - 0.5) * 8,
-            ex, ey
-        );
+        ctx.quadraticCurveTo(mx, my, ex, ey);
         ctx.stroke();
-        if (rng() > 0.35) crack(ex, ey, angle + (rng() - 0.5) * 1.5, len * 0.62, depth - 1);
-        if (rng() > 0.68) {
+
+        // Sub-surface scatter — secondary softer halo
+        ctx.strokeStyle = `rgba(140,200,245,0.18)`;
+        ctx.lineWidth   = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.stroke();
+
+        // Dark core — the actual crack / air gap
+        ctx.strokeStyle = `rgba(25,65,115,${(0.55 + rng() * 0.25).toFixed(2)})`;
+        ctx.lineWidth   = 0.65;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.stroke();
+
+        if (rng() > 0.32) crack(ex, ey, angle + (rng() - 0.5) * 1.4, len * 0.60, depth - 1);
+        if (rng() > 0.65) {
             const sign = rng() > 0.5 ? 1 : -1;
-            crack(ex, ey, angle + sign * (0.4 + rng() * 0.7), len * 0.4, depth - 1);
+            crack(ex, ey, angle + sign * (0.45 + rng() * 0.65), len * 0.38, depth - 1);
         }
     };
-    ctx.strokeStyle = 'rgba(58, 118, 180, 0.62)';
-    ctx.lineWidth = 0.7;
     ctx.lineCap = 'round';
     const nCracks = 3 + Math.floor(rng() * 3);
     for (let i = 0; i < nCracks; i++) {
-        crack(rng() * ts, rng() * ts, rng() * Math.PI * 2, 9 + rng() * 13, 3);
+        crack(rng() * ts, rng() * ts, rng() * Math.PI * 2, 10 + rng() * 14, 4);
     }
 
-    // 4. REFLECTION HIGHLIGHT — random position
-    const hlx = rng() * ts * 0.7, hly = rng() * ts * 0.7;
-    const glow = ctx.createRadialGradient(hlx, hly, 0, ts / 2, ts / 2, ts * 0.88);
-    glow.addColorStop(0, 'rgba(255,255,255,0.42)');
-    glow.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = glow;
+    // ── 5. FROST PATCHES ──────────────────────────────────────────────────
+    // Matte crystalline clusters — preferentially toward one corner
+    const frostCornerX = rng() > 0.5 ? ts * 0.15 : ts * 0.85;
+    const frostCornerY = rng() > 0.5 ? ts * 0.15 : ts * 0.85;
+    const nFrost = 4 + Math.floor(rng() * 5);
+    for (let i = 0; i < nFrost; i++) {
+        // Pull toward corner
+        const fx = frostCornerX * 0.6 + rng() * ts * 0.7;
+        const fy = frostCornerY * 0.6 + rng() * ts * 0.7;
+        const fr = 3 + rng() * 7;
+        const fg = ctx.createRadialGradient(fx, fy, 0, fx, fy, fr);
+        fg.addColorStop(0, `rgba(235,247,255,${(0.32 + rng() * 0.22).toFixed(2)})`);
+        fg.addColorStop(0.6, `rgba(210,232,252,${(0.10 + rng() * 0.10).toFixed(2)})`);
+        fg.addColorStop(1, 'rgba(200,225,248,0)');
+        ctx.fillStyle = fg;
+        ctx.beginPath();
+        ctx.ellipse(fx, fy, fr * (0.7 + rng() * 0.6), fr * (0.4 + rng() * 0.4),
+                    rng() * Math.PI, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // ── 6. SPECULAR HIGHLIGHT ─────────────────────────────────────────────
+    // Tight, directional — simulates single light source above
+    // Elliptical hotspot, slightly off-center
+    const hlx = ts * (0.28 + rng() * 0.32);
+    const hly = ts * (0.18 + rng() * 0.28);
+    const hlRx = ts * (0.10 + rng() * 0.14);
+    const hlRy = hlRx * (0.45 + rng() * 0.35);
+    const hlAng = rng() * Math.PI;
+    const spec = ctx.createRadialGradient(hlx, hly, 0, hlx, hly, Math.max(hlRx, hlRy));
+    spec.addColorStop(0,   'rgba(255,255,255,0.78)');
+    spec.addColorStop(0.35,'rgba(235,248,255,0.30)');
+    spec.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.save();
+    ctx.translate(hlx, hly);
+    ctx.rotate(hlAng);
+    ctx.scale(1, hlRy / Math.max(hlRx, 0.1));
+    ctx.translate(-hlx, -hly);
+    ctx.fillStyle = spec;
+    ctx.fillRect(0, 0, ts, ts);
+    ctx.restore();
+
+    // Soft secondary fill — broad area reflection
+    const broad = ctx.createRadialGradient(hlx, hly, 0, ts * 0.5, ts * 0.5, ts * 0.85);
+    broad.addColorStop(0,   'rgba(240,250,255,0.22)');
+    broad.addColorStop(1,   'rgba(240,250,255,0)');
+    ctx.fillStyle = broad;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 5. SPARKLES
-    for (let i = 0; i < 12; i++) {
+    // ── 7. SPARKLES ──────────────────────────────────────────────────────
+    const nSpark = 8 + Math.floor(rng() * 6);
+    for (let i = 0; i < nSpark; i++) {
         const px = rng() * ts, py = rng() * ts;
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        const bright = rng() > 0.4;
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
         ctx.fillRect(px, py, 1, 1);
-        if (rng() > 0.55) {
-            ctx.fillStyle = 'rgba(145,210,248,0.42)';
-            ctx.fillRect(px - 2, py, 5, 1);
-            ctx.fillRect(px, py - 2, 1, 5);
+        if (bright) {
+            // Cross flare
+            const fl = 2.5 + rng() * 2.5;
+            ctx.fillStyle = 'rgba(200,235,255,0.45)';
+            ctx.fillRect(px - fl, py, fl * 2 + 1, 1);
+            ctx.fillRect(px, py - fl, 1, fl * 2 + 1);
+            // Diagonal glint
+            if (rng() > 0.5) {
+                ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                for (let d = 1; d <= 2; d++) {
+                    ctx.fillRect(px + d, py - d, 1, 1);
+                    ctx.fillRect(px - d, py + d, 1, 1);
+                }
+            }
         }
     }
 
-    // 6. SHADOW VIGNETTE — random corner per tile
+    // ── 8. CORNER VIGNETTE ────────────────────────────────────────────────
     const cx2 = rng() > 0.5 ? ts : 0;
     const cy2 = rng() > 0.5 ? ts : 0;
-    const shad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, ts * 1.05);
-    shad.addColorStop(0, 'rgba(0,25,65,0.18)');
+    const shad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, ts * 1.1);
+    shad.addColorStop(0, 'rgba(0,20,55,0.22)');
     shad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = shad;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 7. EDGE
-    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    // ── 9. EDGE ───────────────────────────────────────────────────────────
+    ctx.strokeStyle = 'rgba(0,0,0,0.09)';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, ts, ts);
 
