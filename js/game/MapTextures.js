@@ -2049,7 +2049,7 @@ function _drawIceTile(ctx, x, y) {
 /*
 _drawLavaTileLow
 Tile: LAVA
-Graphics: Low — per-tile seeded, glowing grid cracks
+Graphics: Low — per-tile seeded, dark-cracked molten surface
 */
 function _drawLavaTileLow(ctx, x, y) {
     const ts = this.tileSize;
@@ -2059,31 +2059,31 @@ function _drawLavaTileLow(ctx, x, y) {
         ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
         : () => Math.random();
 
-    // 1. Near-black base
-    ctx.fillStyle = '#0a0200';
+    // 1. Deep molten base with slight per-tile variation
+    const hue = 16 + rng() * 10;
+    const l = 22 + rng() * 8;
+    ctx.fillStyle = `hsl(${hue}, 75%, ${l}%)`;
     ctx.fillRect(x, y, ts, ts);
 
-    // 2. Glowing crack grid — slightly jittered for variety
-    const j = () => (rng() - 0.5) * ts * 0.14;
-    const lines = [
-        [x + ts * 0.33 + j(), y,       x + ts * 0.33 + j(), y + ts],
-        [x + ts * 0.66 + j(), y,       x + ts * 0.66 + j(), y + ts],
-        [x,       y + ts * 0.33 + j(), x + ts, y + ts * 0.33 + j()],
-        [x,       y + ts * 0.66 + j(), x + ts, y + ts * 0.66 + j()],
-    ];
-    ctx.shadowBlur = 9;
-    ctx.shadowColor = '#ff4400';
-    ctx.strokeStyle = '#ff6600';
-    ctx.lineWidth = 1.3;
+    // 2. 3 simple dark cracks
+    ctx.strokeStyle = 'rgba(5, 1, 0, 0.72)';
+    ctx.lineWidth = 0.7;
     ctx.lineCap = 'round';
-    for (const [x1, y1, x2, y2] of lines) {
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    for (let i = 0; i < 3; i++) {
+        let cx = x + rng() * ts, cy = y + rng() * ts;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        for (let j = 0; j < 2; j++) {
+            cx += (rng() - 0.5) * ts * 0.38;
+            cy += (rng() - 0.5) * ts * 0.38;
+            ctx.lineTo(cx, cy);
+        }
+        ctx.stroke();
     }
-    ctx.shadowBlur = 0;
 
-    // 3. Heat gradient — stronger center
+    // 3. Subtle heat centre
     const heat = ctx.createRadialGradient(x + ts / 2, y + ts / 2, 0, x + ts / 2, y + ts / 2, ts * 0.62);
-    heat.addColorStop(0, 'rgba(210, 55, 0, 0.25)');
+    heat.addColorStop(0, 'rgba(255, 120, 0, 0.12)');
     heat.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = heat;
     ctx.fillRect(x, y, ts, ts);
@@ -2092,7 +2092,7 @@ function _drawLavaTileLow(ctx, x, y) {
 /*
 _drawLavaTile
 Tile: LAVA
-Graphics: High — per-tile seeded, 3-pass glowing cracks, molten pools, embers
+Graphics: High — per-tile seeded, molten gradient, branching dark cracks, glowing hotspots
 */
 function _drawLavaTile(ctx, x, y) {
     const ts = this.tileSize;
@@ -2108,106 +2108,174 @@ function _drawLavaTile(ctx, x, y) {
     ctx.clip();
     ctx.translate(x, y);
 
-    // 1. NEAR-BLACK VOLCANIC BASE
-    ctx.fillStyle = '#060100';
+    // 1. BASE — randomized gradient direction with deep molten colors
+    const hue = 16 + rng() * 12;
+    const l0  = 24 + rng() * 10;
+    const ang = rng() * Math.PI * 2;
+    const gx1 = ts / 2 - Math.cos(ang) * ts / 2, gy1 = ts / 2 - Math.sin(ang) * ts / 2;
+    const gx2 = ts / 2 + Math.cos(ang) * ts / 2, gy2 = ts / 2 + Math.sin(ang) * ts / 2;
+    const base = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
+    base.addColorStop(0,   `hsl(${hue},     88%, ${l0 + 8}%)`);
+    base.addColorStop(0.5, `hsl(${hue - 5}, 82%, ${l0    }%)`);
+    base.addColorStop(1,   `hsl(${hue + 4}, 85%, ${l0 + 4}%)`);
+    ctx.fillStyle = base;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 2. DARK ROCK GRAIN — subtle dark blobs for crust texture
-    for (let i = 0; i < 22; i++) {
-        ctx.fillStyle = rng() > 0.5 ? 'rgba(22,5,0,0.45)' : 'rgba(6,0,0,0.38)';
+    // 2. FINE DARK NOISE
+    for (let i = 0; i < 120; i++) {
+        ctx.fillStyle = rng() > 0.5
+            ? `rgba(0,0,0,${(rng() * 0.18).toFixed(2)})`
+            : `rgba(180,60,0,${(rng() * 0.10).toFixed(2)})`;
+        ctx.fillRect(rng() * ts, rng() * ts, 1.2, 1.2);
+    }
+
+    // 3. BRANCHING DARK CRACKS
+    const crack = (sx, sy, angle, len, depth) => {
+        if (depth <= 0 || len < 3) return;
+        const ex = sx + Math.cos(angle) * len;
+        const ey = sy + Math.sin(angle) * len;
         ctx.beginPath();
-        ctx.arc(rng() * ts, rng() * ts, rng() * ts * 0.11 + 3, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // 3. CRACK NETWORK — 3x3 perturbed grid + diagonal connections
-    const N = 3;
-    const seeds = [];
-    for (let row = 0; row <= N; row++) {
-        for (let col = 0; col <= N; col++) {
-            seeds.push({
-                x: (col / N + (rng() - 0.5) * 0.28) * ts,
-                y: (row / N + (rng() - 0.5) * 0.28) * ts
-            });
+        ctx.moveTo(sx, sy);
+        ctx.quadraticCurveTo(
+            (sx + ex) / 2 + (rng() - 0.5) * 8,
+            (sy + ey) / 2 + (rng() - 0.5) * 8,
+            ex, ey
+        );
+        ctx.stroke();
+        if (rng() > 0.35) crack(ex, ey, angle + (rng() - 0.5) * 1.5, len * 0.62, depth - 1);
+        if (rng() > 0.68) {
+            const sign = rng() > 0.5 ? 1 : -1;
+            crack(ex, ey, angle + sign * (0.4 + rng() * 0.7), len * 0.4, depth - 1);
         }
-    }
-
-    // 3-pass crack: wide dark glow → medium bright → thin yellow core
-    const lavaCrack = (x1, y1, x2, y2) => {
-        const mx = (x1 + x2) / 2 + (rng() - 0.5) * ts * 0.09;
-        const my = (y1 + y2) / 2 + (rng() - 0.5) * ts * 0.09;
-        ctx.lineCap = 'round';
-
-        // Pass 1 — wide dark-orange spread
-        ctx.shadowBlur = 15; ctx.shadowColor = '#991500';
-        ctx.strokeStyle = '#7a1000'; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
-
-        // Pass 2 — medium vivid orange
-        ctx.shadowBlur = 9;  ctx.shadowColor = '#ff5500';
-        ctx.strokeStyle = '#ee4400'; ctx.lineWidth = 1.8;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
-
-        // Pass 3 — thin bright yellow core
-        ctx.shadowBlur = 4;  ctx.shadowColor = '#ffcc00';
-        ctx.strokeStyle = '#ffaa22'; ctx.lineWidth = 0.7;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
-
-        ctx.shadowBlur = 0;
     };
-
-    for (let i = 0; i < seeds.length; i++) {
-        const row = Math.floor(i / (N + 1));
-        const col = i % (N + 1);
-        // Horizontal neighbor
-        if (col < N) lavaCrack(seeds[i].x, seeds[i].y, seeds[i + 1].x, seeds[i + 1].y);
-        // Vertical neighbor
-        if (row < N) lavaCrack(seeds[i].x, seeds[i].y, seeds[i + N + 1].x, seeds[i + N + 1].y);
-        // Diagonal (adds organic triangular cells)
-        if (col < N && row < N && rng() > 0.4)
-            lavaCrack(seeds[i].x, seeds[i].y, seeds[i + N + 2].x, seeds[i + N + 2].y);
+    ctx.strokeStyle = 'rgba(8, 2, 0, 0.82)';
+    ctx.lineWidth = 0.85;
+    ctx.lineCap = 'round';
+    const nCracks = 3 + Math.floor(rng() * 3);
+    for (let i = 0; i < nCracks; i++) {
+        crack(rng() * ts, rng() * ts, rng() * Math.PI * 2, 9 + rng() * 13, 3);
     }
 
-    // 4. MOLTEN POOLS at crack nodes — glowing bright spots
-    for (const seed of seeds) {
-        if (rng() > 0.38) {
-            ctx.shadowBlur = 10; ctx.shadowColor = '#ffaa00';
-            ctx.fillStyle = '#ff7700';
-            ctx.globalAlpha = 0.65 + rng() * 0.3;
-            ctx.beginPath();
-            ctx.arc(seed.x, seed.y, 1.8 + rng() * 1.8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            ctx.shadowBlur = 0;
+    // 4. GLOWING HOTSPOTS — molten bright points
+    for (let i = 0; i < 10; i++) {
+        const px = rng() * ts, py = rng() * ts;
+        ctx.fillStyle = rng() > 0.5 ? 'rgba(255, 200, 80, 0.88)' : 'rgba(255, 100, 20, 0.78)';
+        ctx.beginPath();
+        ctx.arc(px, py, rng() * 1.5 + 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        if (rng() > 0.55) {
+            ctx.fillStyle = 'rgba(255, 220, 130, 0.50)';
+            ctx.fillRect(px - 3, py, 7, 0.8);
+            ctx.fillRect(px, py - 3, 0.8, 7);
         }
     }
 
-    // 5. AMBIENT HEAT — radial orange glow over dark rock
-    const heat = ctx.createRadialGradient(ts / 2, ts / 2, 0, ts / 2, ts / 2, ts * 0.78);
-    heat.addColorStop(0,   'rgba(210, 55, 0, 0.22)');
-    heat.addColorStop(0.55,'rgba(120, 18, 0, 0.10)');
-    heat.addColorStop(1,   'rgba(0,   0,  0, 0.32)');
+    // 5. HEAT VIGNETTE
+    const heat = ctx.createRadialGradient(ts / 2, ts / 2, 0, ts / 2, ts / 2, ts * 0.88);
+    heat.addColorStop(0,    'rgba(255, 140, 0, 0.18)');
+    heat.addColorStop(0.55, 'rgba(180,  50, 0, 0.08)');
+    heat.addColorStop(1,    'rgba(0,     0, 0, 0.28)');
     ctx.fillStyle = heat;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 6. HOT EMBERS — glowing sparks
-    for (let i = 0; i < 14; i++) {
-        ctx.fillStyle = rng() > 0.5 ? '#ffcc00' : '#ff5500';
-        ctx.globalAlpha = rng() * 0.9 + 0.08;
-        ctx.shadowBlur = 4; ctx.shadowColor = '#ff8800';
-        ctx.beginPath();
-        ctx.arc(rng() * ts, rng() * ts, rng() * 1.6 + 0.3, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
+    // 6. SHADOW VIGNETTE — random corner per tile
+    const cx2 = rng() > 0.5 ? ts : 0;
+    const cy2 = rng() > 0.5 ? ts : 0;
+    const shad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, ts * 1.05);
+    shad.addColorStop(0, 'rgba(0, 0, 0, 0.22)');
+    shad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = shad;
+    ctx.fillRect(0, 0, ts, ts);
 
     // 7. EDGE
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.10)';
     ctx.lineWidth = 1;
     ctx.strokeRect(0, 0, ts, ts);
 
     ctx.restore();
+}
+
+/*
+_drawLavaBubbles
+Tile: LAVA
+Graphics: High — animated overlay, called every frame with current time (seconds).
+Performance notes:
+  - Seeded params + shimmer canvas cached on first call — zero Math.sin per frame
+  - No ctx.clip: bubble centers are ≥11% from tile edge, maxR < 11% → no overflow
+  - No string allocs per frame: alpha via globalAlpha float, colors set once
+  - Shimmer pre-rendered to offscreen canvas, drawn with drawImage + globalAlpha
+*/
+function _drawLavaBubbles(ctx, x, y, time) {
+    const ts = this.tileSize;
+
+    if (!this._lavaBubbleCache) this._lavaBubbleCache = new Map();
+    const key = `${x},${y}`;
+    let p = this._lavaBubbleCache.get(key);
+    if (!p) {
+        const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+        let si = 0;
+        const seed = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+        const bubbles = [];
+        for (let i = 0; i < 5; i++) {
+            const period = 2.0 + seed() * 1.6;
+            bubbles.push({
+                bx:    x + seed() * ts * 0.78 + ts * 0.11,
+                by:    y + seed() * ts * 0.78 + ts * 0.11,
+                period,
+                phase0: seed() * period,
+                maxR:  (2.2 + seed() * 2.8) * (ts / 64),
+            });
+        }
+        // Pre-render shimmer gradient once — redrawn every frame via globalAlpha only
+        const sx = (0.28 + seed() * 0.44) * ts;
+        const sy = (0.28 + seed() * 0.44) * ts;
+        const shimCanvas = document.createElement('canvas');
+        shimCanvas.width = ts; shimCanvas.height = ts;
+        const sc = shimCanvas.getContext('2d');
+        const shimG = sc.createRadialGradient(sx, sy, 0, sx, sy, ts * 0.40);
+        shimG.addColorStop(0, 'rgb(255,135,15)');
+        shimG.addColorStop(1, 'rgba(0,0,0,0)');
+        sc.fillStyle = shimG;
+        sc.fillRect(0, 0, ts, ts);
+        p = { bubbles, shimCanvas };
+        this._lavaBubbleCache.set(key, p);
+    }
+
+    // Fixed colors set once — alpha controlled via globalAlpha (no per-frame string allocs)
+    ctx.lineWidth   = 0.85 * (ts / 64);
+    ctx.lineCap     = 'round';
+    ctx.strokeStyle = 'rgb(4,1,0)';
+    ctx.fillStyle   = 'rgb(255,185,55)';
+
+    for (const { bx, by, period, phase0, maxR } of p.bubbles) {
+        const t = ((time + phase0) % period) / period;
+        let r, alpha;
+        if (t < 0.60) {
+            const q = t / 0.60;
+            r     = maxR * q;
+            alpha = Math.min(q * 2.5, 1.0) * 0.80;
+        } else {
+            const q = (t - 0.60) / 0.40;
+            r     = maxR * (1 + q * 0.35);
+            alpha = (1 - q) * 0.50;
+        }
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(bx, by, Math.max(r, 0.4), 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (t < 0.55 && r > 1.2) {
+            ctx.globalAlpha = (t / 0.60) * 0.42;
+            ctx.beginPath();
+            ctx.arc(bx - r * 0.28, by - r * 0.28, r * 0.30, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    // Shimmer: pre-rendered canvas + single float globalAlpha — no gradient alloc per frame
+    ctx.globalAlpha = 0.055 + Math.sin((time % 3.8) / 3.8 * Math.PI * 2) * 0.038;
+    ctx.drawImage(p.shimCanvas, x, y);
+    ctx.globalAlpha = 1;
 }
 
 export const MapTextures = {
@@ -2219,6 +2287,7 @@ export const MapTextures = {
     _drawIceTile,
     _drawLavaTileLow,
     _drawLavaTile,
+    _drawLavaBubbles,
     _drawBurnedGround,
     _drawBurnedGroundLow,
     _drawHolyGround,

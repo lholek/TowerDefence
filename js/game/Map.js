@@ -406,6 +406,19 @@ export default class Map {
         if (this.waterLayer) ctx.drawImage(this.waterLayer, sX, sY, sW, sH, sX, sY, sW, sH);
         ctx.drawImage(this.roadLayer, sX, sY, sW, sH, sX, sY, sW, sH);
 
+        // Animated lava bubble overlay (high quality only, game mode only)
+        if (!this.editorMode && this.graphicsSettings.terrain !== 'low') {
+            const lavaTime = performance.now() * 0.001;
+            for (let r = startRow; r < endRow; r++) {
+                for (let c = startCol; c < endCol; c++) {
+                    if (String(this.grid[r][c]) === 'LAVA') {
+                        const bounds = this.getTileBounds(c, r);
+                        this._drawLavaBubbles(ctx, bounds.x, bounds.y, lavaTime);
+                    }
+                }
+            }
+        }
+
         // --- HELPER: Sort dynamic entities into rows for performance ---
         // This allows us to draw them inside the row loop without searching arrays every time
         const rowTowers = new Array(this.rows).fill(null).map(() => []);
