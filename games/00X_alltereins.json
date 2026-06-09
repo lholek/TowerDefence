@@ -35,6 +35,8 @@
               ["O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]"],
               ["-","-","-","-","-","-","-","-","-","-","-","-","-","-","-"],
               ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"],
+              ["LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA","LAVA"],
+              ["ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE","ICE"],
               ["M","M","M","M","M","M","M","M","M","M","M","M","M","M","M"]
           ],
       "abilities": [

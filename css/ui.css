@@ -115,6 +115,8 @@
 .minimap-tile.mountain{ background: #5a6363; }
 .minimap-tile.sand{ background: #c2b280; }
 .minimap-tile.snow{ background: #f0f8ff; }
+.minimap-tile.ice{ background: #9fd4f0; }
+.minimap-tile.lava{ background: #ff9955; }
 /* mini map */
 
 /* map info table */

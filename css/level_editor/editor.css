@@ -505,6 +505,16 @@ hr {
     color: black;
 }
 
+.tile-ice {
+    background-color: #9fd4f0;
+    color: #1a3a55;
+}
+
+.tile-lava {
+    background-color: #5a1200;
+    color: #ff9955;
+}
+
 .tile- {
     background-color: #2e261d; /* Empty color */
     color: #ccc;

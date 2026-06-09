@@ -379,6 +379,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'O[SNW]':
             tile.classList.add('path');
             break;
+          case 'ICE':
+            tile.classList.add('ice');
+            break;
+          case 'LAVA':
+            tile.classList.add('lava');
+            break;
           default:
             tile.classList.add('block');
             break;

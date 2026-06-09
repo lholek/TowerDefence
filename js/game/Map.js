@@ -212,7 +212,7 @@ export default class Map {
                     // ignore mountain locking errors
                 }
 
-                // Editor lock: pre-generate deterministic snow and sand textures now,
+                // Editor lock: pre-generate deterministic snow, sand, ice and lava textures now,
                 // so later render() doesn't create a random variant on first paint.
                 try {
                     this.snowTexture = this.graphicsSettings.terrain === 'low'
@@ -222,7 +222,7 @@ export default class Map {
                         ? this._preRenderSandLow(this.tileSize)
                         : this._preRenderSandHigh(this.tileSize);
                 } catch (e) {
-                    // ignore editor snow/sand caching errors
+                    // ignore editor terrain caching errors
                 }
 
             } catch (e) {
@@ -383,7 +383,7 @@ export default class Map {
                 const tok = String(this.grid[r][c]);
                 const bounds = this.getTileBounds(c, r);
             
-                if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') { 
+                if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]') {
                     if (!this.snowTexture)
                         this.snowTexture = (
                             this.graphicsSettings.terrain === 'low'
@@ -600,6 +600,8 @@ export default class Map {
       if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
       if (tok === '-') return false;        // blocked tiles
       if (tok === 'W') return false;        // blocked tiles
+      if (tok === 'ICE') return false;      // ice terrain
+      if (tok === 'LAVA') return false;     // lava terrain
     
       // everything else (X, B, L, etc.) is buildable
       return true;

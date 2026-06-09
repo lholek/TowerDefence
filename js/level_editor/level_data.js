@@ -103,7 +103,7 @@ export function getCurrentMap() {
     return currentLevelData.maps[0];
 }
 export let currentTileType = 'O'; 
-export const tileTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND']; 
+export const tileTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND', 'ICE', 'LAVA'];
 
 /**
  * FIX: Renamed from setCurrentLevelData to updateCurrentLevelData

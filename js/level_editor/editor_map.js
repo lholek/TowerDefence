@@ -817,14 +817,14 @@ function createTileKey() {
     const savedScrollLeft = activeSlider ? activeSlider.scrollLeft : 0;
 
     const labels = {
-        'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'O': 'Path',
-        'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
+        'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'ICE': 'Ice', 'LAVA': 'Lava',
+        'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
         'E': 'End',
         'W': 'Water', 'M': 'Mountains', '-': 'Air'
     };
 
     const customOrder = [
-        'S', 'E', 'X', 'SNW', 'SND', 'O', 'O[SNW]','O[SND]',
+        'S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]',
         'W', 'M', '-'
     ];
 
@@ -891,6 +891,8 @@ function getTileTypeLabel(type) {
         'X': 'Grass',
         'SNW': 'Snow',
         'SND': 'Sand',
+        'ICE': 'Ice',
+        'LAVA': 'Lava',
         'O': 'Path',
         'O[SNW]': 'Path Snow',
         'O[SND]': 'Path Sand',

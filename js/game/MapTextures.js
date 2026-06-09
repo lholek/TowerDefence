@@ -3,6 +3,8 @@
 X - Grass
 SND - Sand
 SNW - Snow
+ICE - Ice (impassable, non-buildable, shootable)
+LAVA - Lava (impassable, non-buildable, shootable)
 O - Road
 O[SNW] - Snowy Road
 O[SND] - Sandy Road
@@ -13,10 +15,8 @@ M - Mountain (impassable, non-buildable, non-shootable)
 - - Air(impassable, non-buildable, shootable)
 Pre-Beta IV:
 SND[Cactus-1..4] - cant build towers, blocks arrows
-SND[Bone-1..3]   - cant build towers, doesnt block arrows  
+SND[Bone-1..3]   - cant build towers, doesnt block arrows
 SND[Palm-1..2]   - cant build towers, blocks arrows
-"TODO: LAVA - cant build towers, doesnt block arrows",
-"TODO: ICE - cant build towers, doesnt block arrows",
 "TODO: SND[Cactus] - cant build towers, blocks arrows",
 "TODO: SND[Palm] - cant build towers, blocks arrows",
 "TODO: SND[Bone] - cant build towers, doesnt block arrows",
@@ -1595,6 +1595,26 @@ function _prerenderRoad() {
                 const worldX = c * ts;
                 const worldY = r * ts;
 
+                // --- LED (ICE) ---
+                if (tok === 'ICE') {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawIceTileLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawIceTile(ctx, worldX, worldY);
+                    }
+                    continue;
+                }
+
+                // --- LÁVA (LAVA) ---
+                if (tok === 'LAVA') {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawLavaTileLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawLavaTile(ctx, worldX, worldY);
+                    }
+                    continue;
+                }
+
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -1798,6 +1818,8 @@ function getCoastColor(row, col) {
         // 3. Return color based on tile type
         if (tile.includes('SNW') || tile === 'M') return "#A5B4C4"; // Snow/Mountain
         if (tile.includes('SND')) return "#C2A35D";                // Sand
+        if (tile === 'ICE') return "#88C8E8";                      // Ice
+        if (tile === 'LAVA') return "#8B2000";                     // Lava
         return "#4A8C46";                                         // Default (Grass)
     }
 
@@ -1885,11 +1907,318 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     if (stroke) ctx.stroke();
 }
 
+/*
+_drawIceTileLow
+Tile: ICE
+Graphics: Low — per-tile seeded, variety across map
+*/
+function _drawIceTileLow(ctx, x, y) {
+    const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
+    // Base with slight per-tile tint
+    const l = 74 + rng() * 8;
+    ctx.fillStyle = `hsl(${200 + rng() * 12}, 60%, ${l}%)`;
+    ctx.fillRect(x, y, ts, ts);
+
+    // 3 simple seeded cracks
+    ctx.strokeStyle = 'rgba(65, 125, 185, 0.55)';
+    ctx.lineWidth = 0.6;
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 3; i++) {
+        let cx = x + rng() * ts, cy = y + rng() * ts;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        for (let j = 0; j < 2; j++) {
+            cx += (rng() - 0.5) * ts * 0.38;
+            cy += (rng() - 0.5) * ts * 0.38;
+            ctx.lineTo(cx, cy);
+        }
+        ctx.stroke();
+    }
+}
+
+/*
+_drawIceTile
+Tile: ICE
+Graphics: High — per-tile seeded, branching cracks, randomized highlight + shadow corner
+*/
+function _drawIceTile(ctx, x, y) {
+    const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+    ctx.translate(x, y);
+
+    // 1. BASE — randomized gradient direction and lightness
+    const hue = 197 + rng() * 15;
+    const l0  = 73 + rng() * 10;
+    const ang = rng() * Math.PI * 2;
+    const gx1 = ts / 2 - Math.cos(ang) * ts / 2, gy1 = ts / 2 - Math.sin(ang) * ts / 2;
+    const gx2 = ts / 2 + Math.cos(ang) * ts / 2, gy2 = ts / 2 + Math.sin(ang) * ts / 2;
+    const base = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
+    base.addColorStop(0,   `hsl(${hue},     62%, ${l0 + 6}%)`);
+    base.addColorStop(0.5, `hsl(${hue + 5}, 57%, ${l0    }%)`);
+    base.addColorStop(1,   `hsl(${hue},     60%, ${l0 + 3}%)`);
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, ts, ts);
+
+    // 2. FINE NOISE
+    for (let i = 0; i < 120; i++) {
+        ctx.fillStyle = rng() > 0.5
+            ? `rgba(255,255,255,${(rng() * 0.18).toFixed(2)})`
+            : `rgba(50,105,155,${(rng() * 0.12).toFixed(2)})`;
+        ctx.fillRect(rng() * ts, rng() * ts, 1.2, 1.2);
+    }
+
+    // 3. BRANCHING CRACKS — seeded per tile
+    const crack = (sx, sy, angle, len, depth) => {
+        if (depth <= 0 || len < 3) return;
+        const ex = sx + Math.cos(angle) * len;
+        const ey = sy + Math.sin(angle) * len;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.quadraticCurveTo(
+            (sx + ex) / 2 + (rng() - 0.5) * 8,
+            (sy + ey) / 2 + (rng() - 0.5) * 8,
+            ex, ey
+        );
+        ctx.stroke();
+        if (rng() > 0.35) crack(ex, ey, angle + (rng() - 0.5) * 1.5, len * 0.62, depth - 1);
+        if (rng() > 0.68) {
+            const sign = rng() > 0.5 ? 1 : -1;
+            crack(ex, ey, angle + sign * (0.4 + rng() * 0.7), len * 0.4, depth - 1);
+        }
+    };
+    ctx.strokeStyle = 'rgba(58, 118, 180, 0.62)';
+    ctx.lineWidth = 0.7;
+    ctx.lineCap = 'round';
+    const nCracks = 3 + Math.floor(rng() * 3);
+    for (let i = 0; i < nCracks; i++) {
+        crack(rng() * ts, rng() * ts, rng() * Math.PI * 2, 9 + rng() * 13, 3);
+    }
+
+    // 4. REFLECTION HIGHLIGHT — random position
+    const hlx = rng() * ts * 0.7, hly = rng() * ts * 0.7;
+    const glow = ctx.createRadialGradient(hlx, hly, 0, ts / 2, ts / 2, ts * 0.88);
+    glow.addColorStop(0, 'rgba(255,255,255,0.42)');
+    glow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, ts, ts);
+
+    // 5. SPARKLES
+    for (let i = 0; i < 12; i++) {
+        const px = rng() * ts, py = rng() * ts;
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.fillRect(px, py, 1, 1);
+        if (rng() > 0.55) {
+            ctx.fillStyle = 'rgba(145,210,248,0.42)';
+            ctx.fillRect(px - 2, py, 5, 1);
+            ctx.fillRect(px, py - 2, 1, 5);
+        }
+    }
+
+    // 6. SHADOW VIGNETTE — random corner per tile
+    const cx2 = rng() > 0.5 ? ts : 0;
+    const cy2 = rng() > 0.5 ? ts : 0;
+    const shad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, ts * 1.05);
+    shad.addColorStop(0, 'rgba(0,25,65,0.18)');
+    shad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = shad;
+    ctx.fillRect(0, 0, ts, ts);
+
+    // 7. EDGE
+    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, ts, ts);
+
+    ctx.restore();
+}
+
+/*
+_drawLavaTileLow
+Tile: LAVA
+Graphics: Low — per-tile seeded, glowing grid cracks
+*/
+function _drawLavaTileLow(ctx, x, y) {
+    const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
+    // 1. Near-black base
+    ctx.fillStyle = '#0a0200';
+    ctx.fillRect(x, y, ts, ts);
+
+    // 2. Glowing crack grid — slightly jittered for variety
+    const j = () => (rng() - 0.5) * ts * 0.14;
+    const lines = [
+        [x + ts * 0.33 + j(), y,       x + ts * 0.33 + j(), y + ts],
+        [x + ts * 0.66 + j(), y,       x + ts * 0.66 + j(), y + ts],
+        [x,       y + ts * 0.33 + j(), x + ts, y + ts * 0.33 + j()],
+        [x,       y + ts * 0.66 + j(), x + ts, y + ts * 0.66 + j()],
+    ];
+    ctx.shadowBlur = 9;
+    ctx.shadowColor = '#ff4400';
+    ctx.strokeStyle = '#ff6600';
+    ctx.lineWidth = 1.3;
+    ctx.lineCap = 'round';
+    for (const [x1, y1, x2, y2] of lines) {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+
+    // 3. Heat gradient — stronger center
+    const heat = ctx.createRadialGradient(x + ts / 2, y + ts / 2, 0, x + ts / 2, y + ts / 2, ts * 0.62);
+    heat.addColorStop(0, 'rgba(210, 55, 0, 0.25)');
+    heat.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = heat;
+    ctx.fillRect(x, y, ts, ts);
+}
+
+/*
+_drawLavaTile
+Tile: LAVA
+Graphics: High — per-tile seeded, 3-pass glowing cracks, molten pools, embers
+*/
+function _drawLavaTile(ctx, x, y) {
+    const ts = this.tileSize;
+    const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+    let si = 1;
+    const rng = this.editorMode
+        ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
+        : () => Math.random();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+    ctx.translate(x, y);
+
+    // 1. NEAR-BLACK VOLCANIC BASE
+    ctx.fillStyle = '#060100';
+    ctx.fillRect(0, 0, ts, ts);
+
+    // 2. DARK ROCK GRAIN — subtle dark blobs for crust texture
+    for (let i = 0; i < 22; i++) {
+        ctx.fillStyle = rng() > 0.5 ? 'rgba(22,5,0,0.45)' : 'rgba(6,0,0,0.38)';
+        ctx.beginPath();
+        ctx.arc(rng() * ts, rng() * ts, rng() * ts * 0.11 + 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 3. CRACK NETWORK — 3x3 perturbed grid + diagonal connections
+    const N = 3;
+    const seeds = [];
+    for (let row = 0; row <= N; row++) {
+        for (let col = 0; col <= N; col++) {
+            seeds.push({
+                x: (col / N + (rng() - 0.5) * 0.28) * ts,
+                y: (row / N + (rng() - 0.5) * 0.28) * ts
+            });
+        }
+    }
+
+    // 3-pass crack: wide dark glow → medium bright → thin yellow core
+    const lavaCrack = (x1, y1, x2, y2) => {
+        const mx = (x1 + x2) / 2 + (rng() - 0.5) * ts * 0.09;
+        const my = (y1 + y2) / 2 + (rng() - 0.5) * ts * 0.09;
+        ctx.lineCap = 'round';
+
+        // Pass 1 — wide dark-orange spread
+        ctx.shadowBlur = 15; ctx.shadowColor = '#991500';
+        ctx.strokeStyle = '#7a1000'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
+
+        // Pass 2 — medium vivid orange
+        ctx.shadowBlur = 9;  ctx.shadowColor = '#ff5500';
+        ctx.strokeStyle = '#ee4400'; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
+
+        // Pass 3 — thin bright yellow core
+        ctx.shadowBlur = 4;  ctx.shadowColor = '#ffcc00';
+        ctx.strokeStyle = '#ffaa22'; ctx.lineWidth = 0.7;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
+
+        ctx.shadowBlur = 0;
+    };
+
+    for (let i = 0; i < seeds.length; i++) {
+        const row = Math.floor(i / (N + 1));
+        const col = i % (N + 1);
+        // Horizontal neighbor
+        if (col < N) lavaCrack(seeds[i].x, seeds[i].y, seeds[i + 1].x, seeds[i + 1].y);
+        // Vertical neighbor
+        if (row < N) lavaCrack(seeds[i].x, seeds[i].y, seeds[i + N + 1].x, seeds[i + N + 1].y);
+        // Diagonal (adds organic triangular cells)
+        if (col < N && row < N && rng() > 0.4)
+            lavaCrack(seeds[i].x, seeds[i].y, seeds[i + N + 2].x, seeds[i + N + 2].y);
+    }
+
+    // 4. MOLTEN POOLS at crack nodes — glowing bright spots
+    for (const seed of seeds) {
+        if (rng() > 0.38) {
+            ctx.shadowBlur = 10; ctx.shadowColor = '#ffaa00';
+            ctx.fillStyle = '#ff7700';
+            ctx.globalAlpha = 0.65 + rng() * 0.3;
+            ctx.beginPath();
+            ctx.arc(seed.x, seed.y, 1.8 + rng() * 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    // 5. AMBIENT HEAT — radial orange glow over dark rock
+    const heat = ctx.createRadialGradient(ts / 2, ts / 2, 0, ts / 2, ts / 2, ts * 0.78);
+    heat.addColorStop(0,   'rgba(210, 55, 0, 0.22)');
+    heat.addColorStop(0.55,'rgba(120, 18, 0, 0.10)');
+    heat.addColorStop(1,   'rgba(0,   0,  0, 0.32)');
+    ctx.fillStyle = heat;
+    ctx.fillRect(0, 0, ts, ts);
+
+    // 6. HOT EMBERS — glowing sparks
+    for (let i = 0; i < 14; i++) {
+        ctx.fillStyle = rng() > 0.5 ? '#ffcc00' : '#ff5500';
+        ctx.globalAlpha = rng() * 0.9 + 0.08;
+        ctx.shadowBlur = 4; ctx.shadowColor = '#ff8800';
+        ctx.beginPath();
+        ctx.arc(rng() * ts, rng() * ts, rng() * 1.6 + 0.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+
+    // 7. EDGE
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, ts, ts);
+
+    ctx.restore();
+}
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
     _preRenderSandLow,
     _preRenderSandHigh,
+    _drawIceTileLow,
+    _drawIceTile,
+    _drawLavaTileLow,
+    _drawLavaTile,
     _drawBurnedGround,
     _drawBurnedGroundLow,
     _drawHolyGround,
