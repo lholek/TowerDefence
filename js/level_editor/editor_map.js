@@ -864,6 +864,9 @@ function createTileKey() {
     html += `</div></div>`;
     container.innerHTML = html;
 
+    const countEl = document.getElementById('tileObjectCount');
+    if (countEl) countEl.textContent = sortedTiles.length;
+
     const newSlider = document.getElementById('tileSlider');
     if (newSlider) {
         newSlider.scrollLeft = savedScrollLeft;

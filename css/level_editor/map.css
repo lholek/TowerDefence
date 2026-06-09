@@ -159,6 +159,16 @@
     margin-bottom: 10px;
 }
 
+.tile-object-count {
+    color: #ffffff;
+    font-size: 0.8em;
+    margin-bottom: 10px;
+}
+
+.tile-object-count-number {
+    color: #f0c674;
+}
+
 .tile-grid-main {
     display: grid;
     grid-auto-flow: column;
