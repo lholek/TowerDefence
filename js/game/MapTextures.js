@@ -1,4 +1,249 @@
 // js/game/MapTextures.js
+/*
+X - Grass
+SND - Sand
+SNW - Snow
+O - Road
+O[SNW] - Snowy Road
+O[SND] - Sandy Road
+S* - Start (S1, S2...) [Portal]
+E* - End (E1, E2...) [Tree]
+W - Water (impassable, non-buildable, shootable)
+M - Mountain (impassable, non-buildable, non-shootable)
+- - Air(impassable, non-buildable, shootable)
+Pre-Beta IV:
+SND[Cactus-1..4] - cant build towers, blocks arrows
+SND[Bone-1..3]   - cant build towers, doesnt block arrows  
+SND[Palm-1..2]   - cant build towers, blocks arrows
+"TODO: LAVA - cant build towers, doesnt block arrows",
+"TODO: ICE - cant build towers, doesnt block arrows",
+"TODO: SND[Cactus] - cant build towers, blocks arrows",
+"TODO: SND[Palm] - cant build towers, blocks arrows",
+"TODO: SND[Bone] - cant build towers, doesnt block arrows",
+"TODO: X[Tree] - cant build towers, blocks arrows",
+"TODO: SNW[Tree] - cant build towers, blocks arrows",
+"TODO: SND[Palm] - cant build towers, blocks arrows",
+*/
+/*
+_preRenderSnowLow
+Tile: SNW
+Graphics: Low
+*/
+function _preRenderSnowLow(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. ZÁKLAD – necháváme
+    ctx.fillStyle = '#b8c9d9';
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. TEXTURA – méně bodů, žádná bílá
+    for (let i = 0; i < 120; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        ctx.fillStyle = Math.random() > 0.6
+            ? 'rgba(200, 215, 230, 0.25)'
+            : 'rgba(70, 100, 130, 0.20)';
+
+        ctx.fillRect(x, y, 1, 1);
+    }
+
+    // 3A. STÍN – pravý dolní roh (původní, ale jemnější)
+    const shadowBR = ctx.createRadialGradient(
+        tileSize, tileSize, 0,
+        tileSize, tileSize, tileSize
+    );
+    shadowBR.addColorStop(0, 'rgba(0, 40, 80, 0.10)');
+    shadowBR.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowBR;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 3B. STÍN – nový levý horní roh (jemný, aby nepálil)
+    const shadowTL = ctx.createRadialGradient(
+        0, 0, 0,
+        0, 0, tileSize * 0.9
+    );
+    shadowTL.addColorStop(0, 'rgba(0, 30, 60, 0.08)');
+    shadowTL.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowTL;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. KRYSTALY – méně, žádná čistá bílá
+    for (let i = 0; i < 10; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        ctx.fillStyle = 'rgba(230, 240, 255, 0.7)';
+        ctx.fillRect(x, y, 1, 1);
+
+        if (Math.random() > 0.8) {
+            ctx.fillStyle = 'rgba(0, 100, 255, 0.15)';
+            ctx.fillRect(x - 1, y, 3, 1);
+            ctx.fillRect(x, y - 1, 1, 3);
+        }
+    }
+
+    // 5. HRANA – jemnější
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
+
+    return offCanvas;
+}
+
+/*
+_preRenderSnowHigh
+Tile: SNW
+Graphics: High
+*/
+function  _preRenderSnowHigh(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. ZÁKLAD: Mnohem tmavší "matná" modro-šedá
+    // V HDR bude tato barva vypadat jako "normální bílá", 
+    // což nám umožní vykreslit vločky ještě světleji.
+    ctx.fillStyle = '#b8c9d9'; 
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. TEXTURA POVRCHU (Vysoký kontrast)
+    for (let i = 0; i < 350; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        
+        // Používáme výraznější tmavé body pro simulaci stínů mezi zrnky
+        ctx.fillStyle = Math.random() > 0.6 ? 'rgba(255, 255, 255, 0.6)' : 'rgba(60, 90, 120, 0.3)';
+        ctx.fillRect(x, y, 1.2, 1.2);
+    }
+
+    // 3. HLUBOKÉ STÍNY (Závěje)
+    // Přidáme tmavší gradienty, které HDR nerozpije
+    const shadowGrad = ctx.createRadialGradient(tileSize, tileSize, 0, tileSize, tileSize, tileSize);
+    shadowGrad.addColorStop(0, 'rgba(0, 40, 80, 0.15)');
+    shadowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. HDR-READY KRYSTALY
+    // Místo velkých ploch použijeme mikroskopické, ale velmi kontrastní body
+    for (let i = 0; i < 40; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        
+        // Ostrý bílý bod (v HDR bude svítit)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, 1, 1);
+        
+        // Temně modrý "halo" efekt kolem krystalu (vytvoří umělý kontrast)
+        if (Math.random() > 0.8) {
+            ctx.fillStyle = 'rgba(0, 100, 255, 0.4)';
+            ctx.fillRect(x - 1, y, 3, 1);
+            ctx.fillRect(x, y - 1, 1, 3);
+        }
+    }
+
+    // 5. ZVÝRAZNĚNÉ HRANY
+    // V HDR splývají dlaždice dohromady, proto přidáme tmavou linku na spodek
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
+
+    return offCanvas;
+}
+
+/*
+_preRenderSandLow
+Tile: SND
+Graphics: Low
+*/
+function  _preRenderSandLow(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. Jednoduchý základ – tlumená písková
+    ctx.fillStyle = '#d8c27a'; // méně sytá, méně pěkná
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. Velmi řídká textura – jen pár zrnek
+    for (let i = 0; i < 40; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+
+        const opacity = 0.05 + Math.random() * 0.08;
+        ctx.fillStyle = Math.random() > 0.7
+            ? `rgba(140, 110, 60, ${opacity})`
+            : `rgba(255, 255, 255, ${opacity * 0.4})`;
+
+        ctx.fillRect(x, y, 1.2, 1.2);
+    }
+
+    // 3. Žádné duny – jen velmi slabý náznak
+    const dune = ctx.createLinearGradient(0, 0, tileSize, tileSize);
+    dune.addColorStop(0, 'rgba(0,0,0,0)');
+    dune.addColorStop(1, 'rgba(0,0,0,0.08)');
+    ctx.fillStyle = dune;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. Žádné AO, žádné hrany – opravdu low quality
+    return offCanvas;
+}
+
+/*
+_preRenderSandHigh
+Tile: SND
+Graphics: High
+*/
+function _preRenderSandHigh(tileSize) {
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = tileSize;
+    offCanvas.height = tileSize;
+    const ctx = offCanvas.getContext("2d");
+
+    // 1. Základní barva - bohatší žlutohnědá
+    ctx.fillStyle = '#eecd7d';
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 2. Textura zrnek (vysoká hustota)
+    for (let i = 0; i < 400; i++) {
+        const x = Math.random() * tileSize;
+        const y = Math.random() * tileSize;
+        const opacity = Math.random() * 0.2;
+        // Náhodně tmavší hnědá nebo světlejší žlutá zrnka
+        ctx.fillStyle = Math.random() > 0.5 ? `rgba(139, 69, 19, ${opacity})` : `rgba(255, 255, 255, ${opacity})`;
+        ctx.fillRect(x, y, 1.2, 1.2);
+    }
+
+    // 3. Efekt větrných dun (více vrstev gradientů)
+    const dune = ctx.createLinearGradient(0, 0, tileSize, tileSize * 0.5);
+    dune.addColorStop(0, 'rgba(0,0,0,0)');
+    dune.addColorStop(0.3, 'rgba(180, 130, 40, 0.15)'); // Stín duny
+    dune.addColorStop(0.5, 'rgba(255, 240, 150, 0.2)'); // Vrcholek duny (osvětlený)
+    dune.addColorStop(0.7, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dune;
+    ctx.fillRect(0, 0, tileSize, tileSize);
+
+    // 4. Teplý okraj (Ambient Occlusion)
+    // Horní/Levý okraj zesvětlíme (světlo), Dolní/Pravý ztmavíme (stín)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, 0, tileSize, tileSize);
+    
+    ctx.strokeStyle = 'rgba(120, 80, 20, 0.2)';
+    ctx.beginPath();
+    ctx.moveTo(0, tileSize);
+    ctx.lineTo(tileSize, tileSize);
+    ctx.lineTo(tileSize, 0);
+    ctx.stroke();
+
+    return offCanvas;
+}
 
 /*
 _drawBurnedGround
@@ -230,6 +475,10 @@ function _drawHolyGroundLow(ctx, x, y) {
 }
 
 export const MapTextures = {
+    _preRenderSnowLow,
+    _preRenderSnowHigh,
+    _preRenderSandLow,
+    _preRenderSandHigh,
     _drawBurnedGround,
     _drawBurnedGroundLow,
     _drawHolyGround,
