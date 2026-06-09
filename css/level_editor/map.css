@@ -161,7 +161,8 @@
 
 .tile-object-count {
     color: #ffffff;
-    font-size: 0.8em;
+    font-size: 1em;
+    margin-top: -6px;
     margin-bottom: 10px;
 }
 
