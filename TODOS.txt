@@ -18,8 +18,9 @@ LONG TODOS:
   "???TODO: New Ability - 'Freeze'",
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 ---------------------------------------------------------------------------------------------
-Pre-beta IV.:
+Pre-beta V.:
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta IV ??]",
   "TODO: Improve - Editor - Undo / Redo system (Ctrl+Z / Ctrl+Y) [store on every change json into stack, check difrances and scroll to change]",
+  "TODO: Improve - Hero Camping",
 
 Beta 1.0
