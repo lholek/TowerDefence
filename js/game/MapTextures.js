@@ -1482,6 +1482,353 @@ function _createNoisePattern() {
     return ctx.createPattern(canvas, 'repeat');
 }
 
+/*
+_generateGrassTiles
+Tile: X
+Graphics: High
+*/
+function _generateGrassTiles() {
+      this.grassVariants = [];
+      const variantCount = this.editorMode ? 1 : 3;
+      const palettes = this.editorMode
+          ? [{ base: '#3f7d3c', dark: '#2f6831', light: '#5da569' }]
+          : [
+              { base: '#3f7d3c', dark: '#2e6d2f', light: '#5ba35f' },
+              { base: '#4a9144', dark: '#357034', light: '#73bd73' },
+              { base: '#2f5d29', dark: '#21431d', light: '#4c8047' }
+            ];
+
+      for (let i = 0; i < variantCount; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+          const palette = palettes[i % palettes.length];
+
+          // Base grass block with a light/dark variant feel
+          tctx.fillStyle = palette.base;
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          if (!this.editorMode) {
+              // Add subtle light highlights and dark shadow strokes
+              tctx.fillStyle = palette.light;
+              for (let h = 0; h < 1; h++) {
+                  const hx = Math.random() * this.tileSize * 0.8 + this.tileSize * 0.1;
+                  const hy = Math.random() * this.tileSize * 0.8 + this.tileSize * 0.1;
+                  tctx.beginPath();
+                  tctx.ellipse(hx, hy, 5 + Math.random() * 3, 2 + Math.random() * 1.5, Math.random() * Math.PI, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+
+              tctx.fillStyle = palette.dark;
+              for (let j = 0; j < 2; j++) {
+                  const lx = Math.random() * this.tileSize;
+                  const ly = Math.random() * this.tileSize;
+                  tctx.save();
+                  tctx.translate(lx, ly);
+                  tctx.rotate(Math.random() * Math.PI);
+                  tctx.beginPath();
+                  tctx.ellipse(0, 0, 3 + Math.random() * 2, 1.2 + Math.random() * 0.6, 0, 0, Math.PI * 2);
+                  tctx.fill();
+                  tctx.restore();
+              }
+          } else {
+              // Editor: keep a simple single-tone texture
+              const leafCount = 2;
+              tctx.fillStyle = '#2e6f32';
+              for (let j = 0; j < leafCount; j++) {
+                  const lx = Math.random() * this.tileSize;
+                  const ly = Math.random() * this.tileSize;
+                  tctx.beginPath();
+                  tctx.ellipse(lx, ly, 3 + Math.random() * 2, 1.2 + Math.random() * 0.6, 0, 0, Math.PI * 2);
+                  tctx.fill();
+              }
+          }
+
+          this.grassVariants.push(canvas);
+      }
+    }
+
+/*
+_generateGrassTilesLow
+Tile: X
+Graphics: Low
+*/
+function _generateGrassTilesLow() {
+      this.grassVariants = [];
+      const variantCount = this.editorMode ? 1 : 3;
+      const palettes = this.editorMode
+          ? [{ base: '#376d35', dark: '#2f5b2d', light: '#5f8f55' }]
+          : [
+              { base: '#376d35', dark: '#2f5a2f', light: '#5e8c56' },
+              { base: '#458a43', dark: '#316430', light: '#78b474' },
+              { base: '#2a5527', dark: '#1f3f1d', light: '#4d7a47' }
+            ];
+
+      for (let i = 0; i < variantCount; i++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.tileSize;
+          canvas.height = this.tileSize;
+          const tctx = canvas.getContext('2d');
+          const palette = palettes[i % palettes.length];
+
+          // Low quality uses only solid base tiles, without extra grass textures or flowers.
+          tctx.fillStyle = palette.base;
+          tctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+          this.grassVariants.push(canvas);
+      }
+    }
+
+/*
+_prerenderRoad
+Tile: O
+*/
+function _prerenderRoad() {
+        const ctx = this.roadLayer.getContext('2d');
+        const ts = this.tileSize;
+        const stoneColors = ["#57534e", "#78716c", "#44403c", "#a8a29e"];
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                const tok = String(this.grid[r][c] ?? '');
+                const worldX = c * ts;
+                const worldY = r * ts;
+
+                // --- STROM (E) ---
+                if (/^E/i.test(tok)) {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawHolyGroundLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawHolyGround(ctx, worldX, worldY);
+                    }
+                    continue; // Přeskočíme kreslení kamenů
+                }
+
+                // --- PORTÁL (S) ---
+                if (/^S\d+/.test(tok)) {
+                    // Pod portálem vykreslíme spálenou zem
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawBurnedGroundLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawBurnedGround(ctx, worldX, worldY);
+                    }
+                    continue; // Přeskočíme kreslení kamenů
+                }
+
+                // --- KLASICKÁ CESTA (O) ---
+                if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') {
+                    // number of stones
+                    let density = 4;
+                    // LOW verze – jednoduchá šedá cesta uprostřed, ne přes celý blok
+                    if (this.graphicsSettings.roads === 'low') {
+                        density = 2;
+                    }
+                    const step = ts / density;
+                    for (let i = 0; i < density; i++) {
+                        for (let j = 0; j < density; j++) {
+                            const gX = c * density + j;
+                            const gY = r * density + i;
+                            const seed = (gX * 1234) ^ (gY * 5678);
+                            const rand = (s) => (Math.abs(Math.sin(s) * 10000) % 1);
+
+                            const x = worldX + (j * step) + (rand(seed) * (step * 0.6));
+                            const y = worldY + (i * step) + (rand(seed + 1) * (step * 0.6));
+                            const size = step * (0.6 + rand(seed + 2) * 0.5);
+                            const rot = rand(seed + 3) * Math.PI;
+                            const color = stoneColors[Math.floor(rand(seed + 4) * stoneColors.length)];
+
+                            this._drawAAAStone(ctx, x, y, size, rot, color, rand(seed + 5));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+/*
+_prerenderWater
+Tile: W
+Graphics: Low
+*/
+function _prerenderWater() {
+        const ctx = this.waterLayer.getContext('2d');
+        const ts = this.tileSize;
+
+        ctx.clearRect(0, 0, this.waterLayer.width, this.waterLayer.height);
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] !== 'W') continue;
+
+                const x = c * ts;
+                const y = r * ts;
+
+                // Base dark water
+                ctx.fillStyle = "#0b3a5e";
+                ctx.fillRect(x, y, ts, ts);
+            }
+        }
+    }
+
+/*
+_prerenderWaterHigh
+Tile: W
+Graphics: High
+*/
+function _prerenderWaterHigh() {
+        const w = this.waterLayer.width;
+        const h = this.waterLayer.height;
+        const ts = this.tileSize;
+
+        const ctx = this.waterLayer.getContext("2d");
+        ctx.clearRect(0, 0, w, h);
+
+        // OFFSCREEN WATER TEXTURE
+        const waterTex = document.createElement("canvas");
+        waterTex.width = w;
+        waterTex.height = h;
+        const wctx = waterTex.getContext("2d");
+
+        // Deep background gradient
+        const grad = wctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, "#0a3d5f");
+        grad.addColorStop(1, "#062a44");
+        wctx.fillStyle = grad;
+        wctx.fillRect(0, 0, w, h);
+
+        // RANDOM FOG PATCHES
+        // Instead of one big gradient, we stamp 10 random "clouds"
+        let rows = this.rows;
+        let cols = this.cols;
+
+        let waterTileCount = 0;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (this.grid[r][c] === "W") waterTileCount++;
+            }
+        }
+
+        const fogPatches = Math.max(3, Math.floor(waterTileCount / 10));
+        for (let i = 0; i < fogPatches; i++) {
+            const randX = Math.random() * w;
+            const randY = Math.random() * h;
+            const radius = (Math.random() * ts * 5) + ts; // 1 to 5 tiles wide
+
+            const fog = wctx.createRadialGradient(randX, randY, 0, randX, randY, radius);
+            fog.addColorStop(0, "rgba(255,255,255,0.12)");   // Soft center
+            fog.addColorStop(0.5, "rgba(255,255,255,0.04)"); // Fading
+            fog.addColorStop(1, "transparent");             // Edge
+
+            wctx.fillStyle = fog;
+            wctx.fillRect(0, 0, w, h);
+        }
+
+        // 2) MASK (only W tiles)
+        const mask = document.createElement("canvas");
+        mask.width = w;
+        mask.height = h;
+        const mctx = mask.getContext("2d");
+
+        mctx.fillStyle = "black";
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] === "W") {
+                    mctx.fillRect(c * ts, r * ts, ts, ts);
+                }
+            }
+        }
+
+        // 3) APPLY MASK
+        ctx.save();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.drawImage(mask, 0, 0);
+
+        ctx.globalCompositeOperation = "source-in";
+        ctx.drawImage(waterTex, 0, 0);
+        ctx.restore();
+
+        // Reset state for coast shading
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+
+        // 4) COAST SHADING
+        const isLand = (r, c) =>
+            r >= 0 && r < this.rows && c >= 0 && c < this.cols && this.grid[r][c] !== "W";
+
+        const cs = Math.floor(ts * 0.12);
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] !== "W") continue;
+
+                const x = c * ts;
+                const y = r * ts;
+
+                const drawCoast = (rr, cc, dx, dy, w2, h2) => {
+                    if (!isLand(rr, cc)) return;
+                    const color = this.getCoastColor(rr, cc);
+                    if (!color) return;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x + dx, y + dy, w2, h2);
+                };
+
+                drawCoast(r - 1, c, 0, 0, ts, cs);
+                drawCoast(r + 1, c, 0, ts - cs, ts, cs);
+                drawCoast(r, c - 1, 0, 0, cs, ts);
+                drawCoast(r, c + 1, ts - cs, 0, cs, ts);
+            }
+        }
+    }
+
+/*
+getCoastColor
+Tile: W
+*/
+function getCoastColor(row, col) {
+        // 1. Bounds check
+        if (row < 0 || row >= this.rows || col < 0 || col >= this.cols) return null;
+
+        const tile = String(this.grid[row][col] ?? '');
+
+        // 2. Ignore if neighbor is also water
+        if (tile === 'W') return null;
+
+        // 3. Return color based on tile type
+        if (tile.includes('SNW') || tile === 'M') return "#A5B4C4"; // Snow/Mountain
+        if (tile.includes('SND')) return "#C2A35D";                // Sand
+        return "#4A8C46";                                         // Default (Grass)
+    }
+
+/*
+_prerenderGrass
+Tile: X
+*/
+function _prerenderGrass() {
+        const ctx = this.grassLayer.getContext('2d');
+        const flowerColors = ["#ef4444", "#fbbf24", "#a855f7", "#38bdf8"];
+        const flowerChance = 1 / 3.5;
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if (this.grid[r][c] === '-') continue;
+                const x = c * this.tileSize;
+                const y = r * this.tileSize;
+                ctx.drawImage(this.grassVariants[this.terrainIndices[r][c]], x, y);
+
+                if (!this.editorMode && this.graphicsSettings.terrain !== 'low' && Math.random() < flowerChance) {
+                    const fx = x + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                    const fy = y + Math.random() * this.tileSize * 0.7 + this.tileSize * 0.15;
+                    ctx.save();
+                    ctx.translate(fx, fy);
+                    this._drawNaturalFlower(ctx, flowerColors[Math.floor(Math.random() * flowerColors.length)]);
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
@@ -1509,4 +1856,11 @@ export const MapTextures = {
     drawFixedPeak,
     _getJaggedLine,
     _createNoisePattern,
+    _generateGrassTiles,
+    _generateGrassTilesLow,
+    _prerenderRoad,
+    _prerenderWater,
+    _prerenderWaterHigh,
+    getCoastColor,
+    _prerenderGrass,
 };
