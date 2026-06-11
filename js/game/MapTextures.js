@@ -2163,8 +2163,8 @@ function _drawLavaTile(ctx, x, y) {
     ctx.beginPath(); ctx.rect(x, y, ts, ts); ctx.clip();
     ctx.translate(x, y);
 
-    // 1. Near-black basalt base
-    ctx.fillStyle = `hsl(${10 + (s0 & 5)}, 32%, ${5 + (s0 & 4)}%)`;
+    // 1. Dark orange-brown basalt base (glowing hot, not cooled)
+    ctx.fillStyle = `hsl(${18 + (s0 & 6)}, 72%, ${14 + (s0 & 6)}%)`;
     ctx.fillRect(0, 0, ts, ts);
 
     // 2. Basalt micro-texture
@@ -2177,11 +2177,12 @@ function _drawLavaTile(ctx, x, y) {
         ctx.fill();
     }
 
-    // 3. Lava floor glow under basalt
+    // 3. Lava floor glow — bright orange radiating heat
     const lx = ts * (0.2 + rng() * 0.6), ly = ts * (0.2 + rng() * 0.6);
-    const lg = ctx.createRadialGradient(lx, ly, 0, lx, ly, ts * 0.72);
-    lg.addColorStop(0,   'rgba(210, 65, 0, 0.55)');
-    lg.addColorStop(0.5, 'rgba(140, 30, 0, 0.28)');
+    const lg = ctx.createRadialGradient(lx, ly, 0, lx, ly, ts * 0.88);
+    lg.addColorStop(0,   'rgba(255, 145, 0, 0.90)');
+    lg.addColorStop(0.35,'rgba(230, 90, 0, 0.62)');
+    lg.addColorStop(0.7, 'rgba(180, 40, 0, 0.30)');
     lg.addColorStop(1,   'rgba(0, 0, 0, 0)');
     ctx.fillStyle = lg;
     ctx.fillRect(0, 0, ts, ts);
@@ -2243,11 +2244,11 @@ function _drawLavaTile(ctx, x, y) {
         ctx.fill();
     }
 
-    // 7. Depth vignette
+    // 7. Depth vignette — subtle, keeps orange glow visible at edges
     const vg = ctx.createRadialGradient(ts / 2, ts / 2, ts * 0.10, ts / 2, ts / 2, ts * 0.95);
     vg.addColorStop(0,   'rgba(0, 0, 0, 0)');
-    vg.addColorStop(0.6, 'rgba(0, 0, 0, 0.06)');
-    vg.addColorStop(1,   'rgba(0, 0, 0, 0.48)');
+    vg.addColorStop(0.6, 'rgba(0, 0, 0, 0.04)');
+    vg.addColorStop(1,   'rgba(0, 0, 0, 0.22)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, ts, ts);
 
