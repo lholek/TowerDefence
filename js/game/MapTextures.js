@@ -2271,10 +2271,15 @@ function _drawLavaBubbles(ctx, x, y, time) {
     if (!this._lavaBubbleCache) this._lavaBubbleCache = new Map();
     const key = `${x},${y}`;
     let p = this._lavaBubbleCache.get(key);
+    
     if (!p) {
-        const s0 = ((x / ts) | 0) * 1234 ^ ((y / ts) | 0) * 5678;
+        const tx = (x / ts) | 0, ty = (y / ts) | 0;
+        const s0 = tx * 1234 ^ ty * 5678;
         let si = 0;
         const seed = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+        const eh = (a, b, off) => Math.abs(Math.sin(a * 127.1 + b * 311.7 + off) * 43758.5) % 1;
+
+        // 1. Generování bublin
         const bubbles = [];
         for (let i = 0; i < 5; i++) {
             const period = 2.0 + seed() * 1.6;
@@ -2286,7 +2291,31 @@ function _drawLavaBubbles(ctx, x, y, time) {
                 maxR:  (2.2 + seed() * 2.8) * (ts / 64),
             });
         }
-        // Pre-render shimmer gradient once — redrawn every frame via globalAlpha only
+        
+        // 2. CACHE PRO PRASKLINY (Musí přesně odpovídat generátoru v _drawLavaTile!)
+        const kx = ts * (0.30 + seed() * 0.40);
+        const ky = ts * (0.30 + seed() * 0.40);
+        const edgePoints = [
+            [ts * (0.12 + eh(tx, ty,     0.1) * 0.76), 0 ],
+            [ts * (0.12 + eh(tx, ty + 1, 0.1) * 0.76), ts],
+            [0,  ts * (0.12 + eh(tx,     ty, 0.9) * 0.76)],
+            [ts, ts * (0.12 + eh(tx + 1, ty, 0.9) * 0.76)],
+        ];
+        
+        const cracks = [];
+        for (const [ex, ey] of edgePoints) {
+            const mx = (kx + ex) / 2 + (seed() - 0.5) * ts * 0.22;
+            const my = (ky + ey) / 2 + (seed() - 0.5) * ts * 0.22;
+            const hasBranch = seed() > 0.42;
+            let bx = 0, by = 0;
+            if (hasBranch) {
+                bx = ts * (0.15 + seed() * 0.70);
+                by = ts * (0.15 + seed() * 0.70);
+            }
+            cracks.push({ kx, ky, mx, my, ex, ey, hasBranch, bx, by });
+        }
+
+        // 3. Shimmer záře
         const sx = (0.28 + seed() * 0.44) * ts;
         const sy = (0.28 + seed() * 0.44) * ts;
         const shimCanvas = document.createElement('canvas');
@@ -2297,44 +2326,80 @@ function _drawLavaBubbles(ctx, x, y, time) {
         shimG.addColorStop(1, 'rgba(0,0,0,0)');
         sc.fillStyle = shimG;
         sc.fillRect(0, 0, ts, ts);
-        p = { bubbles, shimCanvas };
+
+        p = { bubbles, cracks, shimCanvas, pulsePhase: seed() * Math.PI * 2 };
         this._lavaBubbleCache.set(key, p);
     }
 
-    // Fixed colors set once — alpha controlled via globalAlpha (no per-frame string allocs)
-    ctx.lineWidth   = 0.85 * (ts / 64);
+    // --- ANIMACE TOKU / PULZACE PRASKLIN ---
+    // Vytvoříme rychlou matematickou vlnu závislou na čase a unikátní fázi dlaždice
+    const wave = Math.sin(time * 3.5 + p.pulsePhase);
+    
+    ctx.save();
+    ctx.translate(x, y); // Posuneme kontext na 0,0 dlaždice pro snazší kreslení z cache
+    ctx.lineCap = 'round';
+
+    for (const chunk of p.cracks) {
+        // Pulzující zářivé jádro praskliny (překreslujeme jen to nejjasnější středové koryto)
+        ctx.lineWidth   = ts * (0.014 + wave * 0.004); 
+        ctx.strokeStyle = `rgba(255, ${200 + wave * 55}, 40, ${0.85 + wave * 0.15})`;
+        ctx.beginPath();
+        ctx.moveTo(chunk.kx, chunk.ky);
+        ctx.quadraticCurveTo(chunk.mx, chunk.my, chunk.ex, chunk.ey);
+        ctx.stroke();
+
+        // Pulzování vedlejších větví
+        if (chunk.hasBranch) {
+            ctx.lineWidth   = ts * (0.009 + wave * 0.003);
+            ctx.strokeStyle = `rgba(255, ${160 + wave * 40}, 20, ${0.75 + wave * 0.15})`;
+            ctx.beginPath();
+            ctx.moveTo(chunk.mx, chunk.my);
+            ctx.lineTo(chunk.bx, chunk.by);
+            ctx.stroke();
+        }
+    }
+    ctx.restore(); // Vrátíme souřadnicový systém zpět
+
+    // --- KRESLENÍ BUBLED (Zůstává rychlé bez stringů) ---
     ctx.lineCap     = 'round';
     ctx.strokeStyle = 'rgb(4,1,0)';
     ctx.fillStyle   = 'rgb(255,185,55)';
 
     for (const { bx, by, period, phase0, maxR } of p.bubbles) {
         const t = ((time + phase0) % period) / period;
-        let r, alpha;
+        
         if (t < 0.60) {
             const q = t / 0.60;
-            r     = maxR * q;
-            alpha = Math.min(q * 2.5, 1.0) * 0.80;
-        } else {
-            const q = (t - 0.60) / 0.40;
-            r     = maxR * (1 + q * 0.35);
-            alpha = (1 - q) * 0.50;
-        }
-        ctx.globalAlpha = alpha;
-        ctx.beginPath();
-        ctx.arc(bx, by, Math.max(r, 0.4), 0, Math.PI * 2);
-        ctx.stroke();
-
-        if (t < 0.55 && r > 1.2) {
-            ctx.globalAlpha = (t / 0.60) * 0.42;
+            const r = maxR * q;
+            ctx.lineWidth   = 0.85 * (ts / 64);
+            ctx.globalAlpha = Math.min(q * 2.5, 1.0) * 0.80;
             ctx.beginPath();
-            ctx.arc(bx - r * 0.28, by - r * 0.28, r * 0.30, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.arc(bx, by, Math.max(r, 0.4), 0, Math.PI * 2);
+            ctx.stroke();
+
+            if (t < 0.55 && r > 1.2) {
+                ctx.globalAlpha = (t / 0.60) * 0.42;
+                ctx.beginPath();
+                ctx.arc(bx - r * 0.28, by - r * 0.28, r * 0.30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else {
+            const q = (t - 0.60) / 0.40; 
+            const r = maxR * (1.0 + q * 0.8);
+            ctx.lineWidth   = 0.5 * (ts / 64) * (1 - q);
+            ctx.globalAlpha = (1 - q) * 0.65;
+            ctx.beginPath();
+            ctx.arc(bx, by, r, 0, Math.PI * 2);
+            ctx.stroke();
         }
     }
 
-    // Shimmer: pre-rendered canvas + single float globalAlpha — no gradient alloc per frame
-    ctx.globalAlpha = 0.055 + Math.sin((time % 3.8) / 3.8 * Math.PI * 2) * 0.038;
-    ctx.drawImage(p.shimCanvas, x, y);
+    // --- ORGANICKÝ SHIMMER (ZÁŘE) ---
+    const pulse = Math.sin((time % 3.8) / 3.8 * Math.PI * 2);
+    ctx.globalAlpha = 0.06 + pulse * 0.04;
+    const offset = pulse * (ts * 0.03); 
+    ctx.drawImage(p.shimCanvas, x - offset / 2, y - offset / 2, ts + offset, ts + offset);
+    
     ctx.globalAlpha = 1;
 }
 
