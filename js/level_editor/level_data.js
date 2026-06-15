@@ -103,7 +103,9 @@ export function getCurrentMap() {
     return currentLevelData.maps[0];
 }
 export let currentTileType = 'O'; 
-export const tileTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND', 'ICE', 'LAVA', 'SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
+export const terrainTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND', 'ICE', 'LAVA'];
+export const objectTypes  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
+export const tileTypes    = [...terrainTypes, ...objectTypes];
 
 /**
  * FIX: Renamed from setCurrentLevelData to updateCurrentLevelData

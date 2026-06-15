@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - Editor - New Slider for tiles in editor",
+        "Improved - Editor - Fixed bug - Tile cordinates shows where editores hovers",
         "Improved - Editor - Updated editor tiles to match in-game visuals",
         "Improved - Editor - Added selection of low/high graphics for editor tiles",
         "Improved - Editor - Editor now saves the selected graphics quality for tiles and backgrounds",

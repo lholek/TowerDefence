@@ -1,4 +1,4 @@
-import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, getCurrentMap, getNextAvailableMarker } from './level_data.js';
+import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, terrainTypes, objectTypes, getCurrentMap, getNextAvailableMarker } from './level_data.js';
 import { modifyJson } from './json_functions.js';
 import GameMap from '../game/Map.js';
 
@@ -18,6 +18,9 @@ const camera = {
 
 // Global variable to store the position of the currently hovered tile
 let hoveredTile = { r: -1, c: -1 };
+
+// Active tile filter state — both on by default
+const activeTileFilters = { terrains: true, objects: true };
 
 // --- GameMap instance used for visual rendering ---
 let editorMapInstance = null;
@@ -394,29 +397,25 @@ function handleMapHover(e) {
     if (!layout || layout.length === 0 || layout[0].length === 0) return;
 
     const { row, col } = getTileFromScreen(e.clientX, e.clientY, layout.length, layout[0].length);
-    const coordDisplay = document.getElementById('tileCoordinates');
 
     if (row >= 0 && row < layout.length && col >= 0 && col < layout[0].length) {
-        
-        // Update hover state and render when tile changes
+
         if (hoveredTile.r !== row || hoveredTile.c !== col) {
             hoveredTile = { r: row, c: col };
-            renderMap(layout); // Render for ghost preview
-            
-            // Update coordinates text
-            if (coordDisplay) {
-                coordDisplay.textContent = `X: ${col}, Y: ${row}`;
-            }
+            renderMap(layout); // calls createTileKey → replaces DOM, so re-query after
+
+            // Re-query AFTER renderMap so we get the fresh element
+            const coordDisplay = document.getElementById('tileCoordinates');
+            if (coordDisplay) coordDisplay.textContent = `X: ${col}, Y: ${row}`;
         }
 
     } else {
-        // Clear hover state if mouse leaves the map area
         if (hoveredTile.r !== -1) {
             hoveredTile = { r: -1, c: -1 };
             renderMap(layout);
-            if (coordDisplay) {
-                coordDisplay.textContent = "X: - | Y: -";
-            }
+
+            const coordDisplay = document.getElementById('tileCoordinates');
+            if (coordDisplay) coordDisplay.textContent = 'X: - | Y: -';
         }
     }
 }
@@ -812,82 +811,98 @@ function createTileKey() {
     const container = document.getElementById('tileKey');
     if (!container) return;
 
-    // Uložení pozice scrollu
+    // Preserve scroll position across re-renders
     const activeSlider = container.querySelector('.tile-grid-main');
     const savedScrollLeft = activeSlider ? activeSlider.scrollLeft : 0;
 
     const labels = {
         'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'ICE': 'Ice', 'LAVA': 'Lava',
         'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
-        'E': 'End',
-        'W': 'Water', 'M': 'Mountains', '-': 'Air',
-        'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2', 'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4'
+        'E': 'End', 'W': 'Water', 'M': 'Mountains', '-': 'Air',
+        'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2',
+        'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4'
     };
 
-    const customOrder = [
-        'S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]', 'W', 'M', '-',
-        'SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'
-    ];
+    const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]', 'W', 'M', '-'];
+    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
 
-    const sortedTiles = customOrder.filter(type => labels[type] !== undefined);
+    const visibleTerrains = activeTileFilters.terrains ? terrainOrder.filter(t => labels[t]) : [];
+    const visibleObjects  = activeTileFilters.objects  ? objectOrder.filter(t => labels[t])  : [];
+
+    // Helper: tile type → CSS base class
+    const toBaseType = (type) => {
+        if (type === 'O[SNW]') return 'o-snw';
+        if (type === 'O[SND]') return 'o-snd';
+        if (/^SND\[BONE-/.test(type)) return 'snd-bone';
+        return type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase()
+                   .replace(/--+/g, '-').replace(/-$/, '') || '-';
+    };
+
+    // Helper: generate one tile button
+    const tileBtn = (type) => {
+        const label = labels[type] || type;
+        const base  = toBaseType(type);
+        return `<div class="tile-item">
+            <button class="tile-selector-btn tile-${base}" data-tile="${type}"
+                    onclick="window.app.mapEditor.setTileType('${type}')">${label}</button>
+        </div>`;
+    };
+
+    // Filter button active class helper
+    const fa = (key) => activeTileFilters[key] ? ' tile-filter-active' : '';
 
     let html = `
         <div class="tile-editor-header">
-            <strong>Selected:</strong> <span id="currentTileDisplay" class="current-tile-display"></span> 
+            <strong>Selected:</strong>
+            <span id="currentTileDisplay" class="current-tile-display"></span>
             <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
         </div>
-        
+        <div class="tile-key-filters">
+            <button class="tile-filter-btn${fa('terrains')}"
+                    onclick="window.app.mapEditor.toggleTileFilter('terrains')">Terrains</button>
+            <button class="tile-filter-btn${fa('objects')}"
+                    onclick="window.app.mapEditor.toggleTileFilter('objects')">Map objects</button>
+        </div>
         <div class="tile-slider-wrapper">
             <div class="tile-grid-main" id="tileSlider">
     `;
-    
-    sortedTiles.forEach(type => {
-        const labelText = labels[type] || 'Unknown';
-        let baseType = type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase().replace('--', '-').replace(/-$/, '') || '-';
-        if (type === 'O[SNW]') baseType = 'o-snw';
-        if (type === 'O[SND]') baseType = 'o-snd';
-        if (type === 'S[SNW]') baseType = 's-snw';
-        if (type === 'S[SND]') baseType = 's-snd';
-        if (type === 'SND[BONE-1]' || type === 'SND[BONE-2]' || type === 'SND[BONE-3]' || type === 'SND[BONE-4]') baseType = 'snd-bone';
 
-        // Separator before bone items
-        if (type === 'SND[BONE-1]') {
-            html += `<div class="tile-separator"></div>`;
-        }
+    visibleTerrains.forEach(t => { html += tileBtn(t); });
 
-        html += `
-            <div class="tile-item">
-                <span class="tile-label"></span>
-                <button
-                    class="tile-selector-btn tile-${baseType}"
-                    data-tile="${type}"
-                    onclick="window.app.mapEditor.setTileType('${type}')">
-                    ${labelText}
-                </button>
-            </div>
-        `;
-    });
+    if (visibleTerrains.length > 0 && visibleObjects.length > 0) {
+        html += `<div class="tile-separator"></div>`;
+    }
+
+    visibleObjects.forEach(t => { html += tileBtn(t); });
 
     html += `</div></div>`;
     container.innerHTML = html;
 
     const countEl = document.getElementById('tileObjectCount');
-    if (countEl) countEl.textContent = sortedTiles.length;
+    if (countEl) countEl.textContent = visibleTerrains.length + visibleObjects.length;
 
     const newSlider = document.getElementById('tileSlider');
     if (newSlider) {
         newSlider.scrollLeft = savedScrollLeft;
-
-        // HORIZONTÁLNÍ SCROLL KOLEČKEM
         newSlider.addEventListener('wheel', (evt) => {
             evt.preventDefault();
             newSlider.scrollLeft += evt.deltaY;
         }, { passive: false });
     }
 
-    if (typeof updateCurrentTileDisplay === 'function') {
-        updateCurrentTileDisplay(); 
-    }
+    updateCurrentTileDisplay();
+}
+
+/**
+ * Toggles a tile filter category and re-renders the tile key.
+ * At least one filter must stay active.
+ */
+export function toggleTileFilter(filter) {
+    const other = filter === 'terrains' ? 'objects' : 'terrains';
+    // Prevent turning off both filters simultaneously
+    if (activeTileFilters[filter] && !activeTileFilters[other]) return;
+    activeTileFilters[filter] = !activeTileFilters[filter];
+    createTileKey();
 }
 
 /**

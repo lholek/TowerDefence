@@ -455,6 +455,37 @@ hr {
     margin-top: 10px;
 }
 
+.tile-key-filters {
+    display: flex;
+    gap: 6px;
+    padding: 6px 12px 2px;
+}
+
+.tile-filter-btn {
+    padding: 4px 12px;
+    border: 1px solid rgba(240, 198, 116, 0.35);
+    border-radius: 4px;
+    background: rgba(240, 198, 116, 0.10);
+    color: #a89060;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.tile-filter-btn.tile-filter-active {
+    background: rgb(240, 198, 116);
+    border-color: rgb(240, 198, 116);
+    color: #2e261d;
+    font-weight: 600;
+}
+
+.tile-filter-btn:hover:not(.tile-filter-active) {
+    background: rgba(240, 198, 116, 0.25);
+    border-color: rgba(240, 198, 116, 0.6);
+    color: #c8a860;
+}
+
 .tile-selector-btn {
     padding: 5px 10px;
     border: none;
