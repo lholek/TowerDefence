@@ -1,43 +1,13 @@
-/* Container for the floating select */
-.editor-map-theme-control {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000; /* Ensure it stays above the canvas */
-    background: rgba(46, 38, 29, 0.9); /* Matching your tile-grid-main color */
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #4a3f35;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    pointer-events: auto; /* Ensure clicks work over the canvas */
-}
-
-.editor-map-theme-control label {
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: #CCCCCC;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
 
 /* The Select Box */
 #backgroundSelect, #editorGraphicsSelect {
-    background: #967456;
-    color: #ffffff;
-    border: 1px solid #555;
-    padding: 5px 5px;
-    border-radius: 4px;
-    cursor: pointer;
     font-family: 'Arial', sans-serif;
-    outline: none;
     transition: border-color 0.2s;
 }
 
 #backgroundSelect:hover, #editorGraphicsSelect:hover {
-    border-color: #87CEEB; /* Highlight color */
+    border-color: rgb(240, 198, 116);
+    background: rgba(255,255,255,0.14);
 }
 
 #backgroundSelect option, #editorGraphicsSelect option {
@@ -45,15 +15,35 @@
     color: white;
 }
 
-/* Position the select in the top-right corner of the canvas */
-.canvas-overlay-control {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 10;
-    z-index: 1001 !important;
-    pointer-events: auto !important;
+/* Brown toolbar bar above the map canvas */
+.map-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2e261d;
+    padding: 8px 14px;
+    gap: 12px;
 }
+
+.map-top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #c8b99a;
+    font-size: 0.85rem;
+}
+
+.map-top-bar-left label {
+    color: #c8b99a;
+    font-size: 0.85rem;
+}
+
+.map-top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Ensure the container and canvas allow the background to show */
 #mapCanvasContainer {
     position: relative;
@@ -128,8 +118,15 @@
     0% { background-position: 0 0, 0 0, 0 0; } 
     100% { background-position: 0 0, 1400px 2800px, 800px 1600px; } 
 }
-.background-select{
-    z-index: 1000;
+.background-select {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.20);
+    color: #e0d4c0;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    outline: none;
 }
 
 /* Ensure the canvas fills the container correctly */

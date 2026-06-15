@@ -398,14 +398,6 @@ hr {
     margin-top: 15px;
 }
 
-.map-size-controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    align-items: center;
-    margin-bottom: 15px;
-    color: #ccc;
-}
 
 .input-small {
     width: 60px;
