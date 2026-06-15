@@ -856,12 +856,13 @@ function createTileKey() {
             <strong>Selected:</strong>
             <span id="currentTileDisplay" class="current-tile-display"></span>
             <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
-        </div>
-        <div class="tile-key-filters">
+                    <div class="tile-key-filters">
+        Filters:
             <button class="tile-filter-btn${fa('terrains')}"
                     onclick="window.app.mapEditor.toggleTileFilter('terrains')">Terrains</button>
             <button class="tile-filter-btn${fa('objects')}"
                     onclick="window.app.mapEditor.toggleTileFilter('objects')">Map objects</button>
+        </div>
         </div>
         <div class="tile-slider-wrapper">
             <div class="tile-grid-main" id="tileSlider">
