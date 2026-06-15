@@ -941,7 +941,7 @@ function getTileTypeLabel(type) {
         return `End ${type.substring(1)}`;
     }
 
-    if (/^S/.test(type) && type !== 'SNW' && type !== 'SND') {
+    if (/^S\d+/.test(type)) {
         return 'Start';
     }
 
@@ -1057,12 +1057,12 @@ export function checkMapValidity() {
         for (let c = 0; c < layout[r].length; c++) {
             const tile = String(layout[r][c] ?? '');
             
-            // Matches 'S' followed by anything, but excludes base SNW/SND tiles
-            if (/^S/.test(tile) && tile !== 'SNW' && tile !== 'SND') {
+            // Matches 'S' followed by digits only (S1, S2...), excludes SNW/SND/SND[BONE-...]
+            if (/^S\d+/.test(tile)) {
                 starts.set(tile.substring(1), { r, c, type: tile });
             }
-            // Matches 'E' followed by anything (E1, E[SND], etc.)
-            if (/^E/.test(tile)) {
+            // Matches 'E' followed by digits only (E1, E2...)
+            if (/^E\d+/.test(tile)) {
                 ends.set(tile.substring(1), { r, c, type: tile });
             }
         }

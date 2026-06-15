@@ -63,8 +63,8 @@ export default class Map {
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
                 const t = String(this.grid[r][c] ?? '');
-                if (/^S/i.test(t)) this.starts[t] = { row: r, col: c };
-                if (/^E/i.test(t)) this.ends[t] = { row: r, col: c };
+                if (/^S\d+/i.test(t)) this.starts[t] = { row: r, col: c };
+                if (/^E\d+/i.test(t)) this.ends[t] = { row: r, col: c };
             }
         }
 
