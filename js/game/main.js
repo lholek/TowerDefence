@@ -370,6 +370,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             tile.classList.add('mountain');
             break;
           case 'SND':
+          case 'SND[BONE-1]':
+          case 'SND[BONE-2]':
+          case 'SND[BONE-3]':
+          case 'SND[BONE-4]':
             tile.classList.add('sand');
             break;
           case 'SNW':

@@ -391,7 +391,7 @@ export default class Map {
                                 : this._preRenderSnowHigh(this.tileSize)
                         );
                     ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-                } else if (tok === 'SND' || tok === 'O[SND]') {
+                } else if (tok === 'SND' || tok === 'O[SND]' || tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') {
                     if (!this.sandTexture)
                         this.sandTexture = (
                             this.graphicsSettings.terrain === 'low'
@@ -603,7 +603,8 @@ export default class Map {
       if (tok === 'W') return false;        // blocked tiles
       if (tok === 'ICE') return false;      // ice terrain
       if (tok === 'LAVA') return false;     // lava terrain
-    
+      if (tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') return false;
+
       // everything else (X, B, L, etc.) is buildable
       return true;
     }

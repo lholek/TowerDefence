@@ -505,6 +505,18 @@ hr {
     color: black;
 }
 
+.tile-snd-bone {
+    background-color: #f0d78c;
+    color: black;
+}
+
+.tile-separator {
+    width: 2px;
+    background-color: rgb(240, 198, 116);
+    align-self: stretch;
+    border-radius: 1px;
+}
+
 .tile-ice {
     background-color: #9fd4f0;
     color: #1a3a55;

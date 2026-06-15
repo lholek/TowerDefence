@@ -540,7 +540,7 @@ export function getAvailablePaths() {
     layout.forEach(row => {
         row.forEach(tile => {
             if (typeof tile === 'string') {
-                if (tile.startsWith('S')) starts.add(tile);
+                if (tile.startsWith('S') && !tile.startsWith('SND[') && tile !== 'SNW' && tile !== 'SND') starts.add(tile);
                 if (tile.startsWith('E')) ends.add(tile);
             }
         });

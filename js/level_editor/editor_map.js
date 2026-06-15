@@ -230,7 +230,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 
     // If we are placing a Start or End, and we have already drawn something 
     // during this specific click-and-hold session, STOP.
-    const isMarker = (resolvedTileType.startsWith('S') && resolvedTileType !== 'SNW' && resolvedTileType !== 'SND') || resolvedTileType.startsWith('E');
+    const isMarker = (resolvedTileType.startsWith('S') && resolvedTileType !== 'SNW' && resolvedTileType !== 'SND' && !resolvedTileType.startsWith('SND[')) || resolvedTileType.startsWith('E');
     if (isMarker && hasDrawn) {
         return false; 
     }
@@ -249,7 +249,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
             if (oldTile !== tileToPlace) {
                 // Prevent overwriting a different S with an S, or E with an E
                 // This stops the "machine gun" effect even for big brushes
-                const isMarkerS = (t) => t.startsWith('S') && t !== 'SNW' && t !== 'SND';
+                const isMarkerS = (t) => t.startsWith('S') && t !== 'SNW' && t !== 'SND' && !t.startsWith('SND[');
                 const isMarkerE = (t) => t.startsWith('E');
                             
                 const overwritingSameCategory = 
@@ -286,7 +286,7 @@ function handleMapDrawStart(e) {
         const wasApplied = applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType);
 
         if (wasApplied) {
-            if (activeDrawTileType.startsWith('S') && activeDrawTileType !== 'SNW' && activeDrawTileType !== 'SND') {
+            if (activeDrawTileType.startsWith('S') && activeDrawTileType !== 'SNW' && activeDrawTileType !== 'SND' && !activeDrawTileType.startsWith('SND[')) {
                 setCurrentTileType('REFRESH_S');
             } else if (activeDrawTileType.startsWith('E')) {
                 setCurrentTileType('REFRESH_E');
@@ -820,12 +820,13 @@ function createTileKey() {
         'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'ICE': 'Ice', 'LAVA': 'Lava',
         'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
         'E': 'End',
-        'W': 'Water', 'M': 'Mountains', '-': 'Air'
+        'W': 'Water', 'M': 'Mountains', '-': 'Air',
+        'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2', 'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4'
     };
 
     const customOrder = [
-        'S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]',
-        'W', 'M', '-'
+        'S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]', 'W', 'M', '-',
+        'SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'
     ];
 
     const sortedTiles = customOrder.filter(type => labels[type] !== undefined);
@@ -847,12 +848,18 @@ function createTileKey() {
         if (type === 'O[SND]') baseType = 'o-snd';
         if (type === 'S[SNW]') baseType = 's-snw';
         if (type === 'S[SND]') baseType = 's-snd';
+        if (type === 'SND[BONE-1]' || type === 'SND[BONE-2]' || type === 'SND[BONE-3]' || type === 'SND[BONE-4]') baseType = 'snd-bone';
+
+        // Separator before bone items
+        if (type === 'SND[BONE-1]') {
+            html += `<div class="tile-separator"></div>`;
+        }
 
         html += `
             <div class="tile-item">
                 <span class="tile-label"></span>
-                <button 
-                    class="tile-selector-btn tile-${baseType}" 
+                <button
+                    class="tile-selector-btn tile-${baseType}"
                     data-tile="${type}"
                     onclick="window.app.mapEditor.setTileType('${type}')">
                     ${labelText}
@@ -900,7 +907,11 @@ function getTileTypeLabel(type) {
         'E': 'End',
         'W': 'Water',
         'M': 'Mountains',
-        '-': 'Air'
+        '-': 'Air',
+        'SND[BONE-1]': 'Bone 1',
+        'SND[BONE-2]': 'Bone 2',
+        'SND[BONE-3]': 'Bone 3',
+        'SND[BONE-4]': 'Bone 4'
     };
 
     if (labels[type]) {
@@ -929,14 +940,26 @@ function getTileTypeLabel(type) {
 
 function updateCurrentTileDisplay() {
     const display = document.getElementById('currentTileDisplay');
-    if (display) {
-        display.textContent = getTileTypeLabel(currentTileType);
-        
-        tileTypes.map(t => t.replace(/[0-9]/g, '').toLowerCase() || '-').forEach(baseType => display.classList.remove(`tile-${baseType}`));
-        
-        const baseType = currentTileType.replace(/[0-9]/g, '').toLowerCase() || '-';
-        display.classList.add(`tile-${baseType}`);
-    }
+    if (!display) return;
+
+    display.textContent = getTileTypeLabel(currentTileType);
+
+    // Remove all existing tile-* classes (safer than trying to enumerate them)
+    [...display.classList].filter(c => c.startsWith('tile-')).forEach(c => display.classList.remove(c));
+
+    // Derive CSS-safe baseType using the same logic as createTileKey
+    let baseType = currentTileType
+        .replace(/[\[\]]/g, '-')
+        .replace(/[0-9]/g, '')
+        .toLowerCase()
+        .replace(/--+/g, '-')
+        .replace(/-$/, '') || '-';
+
+    if (currentTileType === 'O[SNW]')   baseType = 'o-snw';
+    if (currentTileType === 'O[SND]')   baseType = 'o-snd';
+    if (/^SND\[BONE-/.test(currentTileType)) baseType = 'snd-bone';
+
+    display.classList.add(`tile-${baseType}`);
 }
 
 /**

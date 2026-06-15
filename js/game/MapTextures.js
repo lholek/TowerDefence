@@ -15,11 +15,11 @@ M - Mountain (impassable, non-buildable, non-shootable)
 - - Air(impassable, non-buildable, shootable)
 Pre-Beta IV:
 SND[Cactus-1..4] - cant build towers, blocks arrows
-SND[Bone-1..3]   - cant build towers, doesnt block arrows
+SND[BONE-1..4]   - cant build towers, doesnt block arrows
 SND[Palm-1..2]   - cant build towers, blocks arrows
 "TODO: SND[Cactus] - cant build towers, blocks arrows",
 "TODO: SND[Palm] - cant build towers, blocks arrows",
-"TODO: SND[Bone] - cant build towers, doesnt block arrows",
+"TODO: SND[BONE] - cant build towers, doesnt block arrows",
 "TODO: X[Tree] - cant build towers, blocks arrows",
 "TODO: SNW[Tree] - cant build towers, blocks arrows",
 "TODO: SND[Palm] - cant build towers, blocks arrows",
@@ -1615,6 +1615,13 @@ function _prerenderRoad() {
                     continue;
                 }
 
+                // --- BONES ON SAND (SND[BONE-1..4]) ---
+                if (tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') {
+                    const vm = {'SND[BONE-1]':1,'SND[BONE-2]':2,'SND[BONE-3]':3,'SND[BONE-4]':4};
+                    this._drawSandBones(ctx, worldX, worldY, vm[tok]);
+                    continue;
+                }
+
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -1927,11 +1934,11 @@ function _drawIceTileLow(ctx, x, y) {
     ctx.fillStyle = `hsl(${200 + (s0 & 10)}, 50%, ${68 + (s0 & 7)}%)`;
     ctx.fillRect(x, y, ts, ts);
 
-    // Inner glow
+    // Inner glow — subtle, kept dim for realism
     const gx = x + ts * (0.25 + rng() * 0.50);
     const gy = y + ts * (0.25 + rng() * 0.50);
     const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, ts * 0.65);
-    glow.addColorStop(0, 'rgba(200,235,255,0.32)');
+    glow.addColorStop(0, 'rgba(200,235,255,0.14)');
     glow.addColorStop(1, 'rgba(200,235,255,0)');
     ctx.fillStyle = glow;
     ctx.fillRect(x, y, ts, ts);
@@ -1949,17 +1956,23 @@ function _drawIceTileLow(ctx, x, y) {
     for (const [ex, ey] of edges) {
         const mx = (kx + ex) / 2 + (rng() - 0.5) * ts * 0.20;
         const my = (ky + ey) / 2 + (rng() - 0.5) * ts * 0.20;
-        ctx.lineWidth = 2.2; ctx.strokeStyle = 'rgba(190,225,255,0.45)';
+        ctx.lineWidth = 2.2; ctx.strokeStyle = 'rgba(155,195,235,0.55)';
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
-        ctx.lineWidth = 0.7; ctx.strokeStyle = 'rgba(40,95,165,0.55)';
+        ctx.lineWidth = 0.7; ctx.strokeStyle = 'rgba(25,70,140,0.65)';
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
+        // Branch crack from midpoint
+        if (rng() > 0.35) {
+            const bx = x + ts * (0.15 + rng() * 0.70), by = y + ts * (0.15 + rng() * 0.70);
+            ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(155,195,235,0.40)';
+            ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(bx, by); ctx.stroke();
+            ctx.lineWidth = 0.4; ctx.strokeStyle = 'rgba(25,70,140,0.50)';
+            ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(bx, by); ctx.stroke();
+        }
     }
 
-    // Sparkles
-    for (let i = 0; i < 3; i++) {
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        ctx.fillRect(x + rng() * ts, y + rng() * ts, 1, 1);
-    }
+    // Sparkles — just one faint pixel
+    ctx.fillStyle = 'rgba(255,255,255,0.60)';
+    ctx.fillRect(x + rng() * ts, y + rng() * ts, 1, 1);
 
     ctx.strokeStyle = 'rgba(0,0,0,0.06)';
     ctx.lineWidth = 1;
@@ -1994,11 +2007,11 @@ function _drawIceTile(ctx, x, y) {
     ctx.fillStyle = base;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 2. Subsurface volume glow
+    // 2. Subsurface volume glow — kept faint so ice looks cold and solid
     const sx = ts * (0.2 + rng() * 0.6), sy = ts * (0.2 + rng() * 0.6);
     const ss = ctx.createRadialGradient(sx, sy, 0, sx, sy, ts * 0.85);
-    ss.addColorStop(0,   `hsla(${hue + 10}, 70%, ${baseLit + 22}%, 0.45)`);
-    ss.addColorStop(0.5, `hsla(${hue + 5 }, 62%, ${baseLit + 12}%, 0.18)`);
+    ss.addColorStop(0,   `hsla(${hue + 10}, 70%, ${baseLit + 22}%, 0.20)`);
+    ss.addColorStop(0.5, `hsla(${hue + 5 }, 62%, ${baseLit + 12}%, 0.08)`);
     ss.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = ss;
     ctx.fillRect(0, 0, ts, ts);
@@ -2026,25 +2039,35 @@ function _drawIceTile(ctx, x, y) {
     for (const [ex, ey] of edgePoints) {
         const mx = (kx + ex) / 2 + (rng() - 0.5) * ts * 0.22;
         const my = (ky + ey) / 2 + (rng() - 0.5) * ts * 0.22;
-        // Refraction halo
-        ctx.lineWidth = ts * 0.10; ctx.strokeStyle = 'rgba(190,225,255,0.20)';
+        // Refraction halo — narrower so cracks look sharper
+        ctx.lineWidth = ts * 0.065; ctx.strokeStyle = 'rgba(160,205,240,0.20)';
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
         // Subsurface scatter
-        ctx.lineWidth = ts * 0.044; ctx.strokeStyle = 'rgba(150,205,250,0.35)';
+        ctx.lineWidth = ts * 0.032; ctx.strokeStyle = 'rgba(120,180,230,0.38)';
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
         // Bright crack core
-        ctx.lineWidth = ts * 0.014; ctx.strokeStyle = `rgba(210,240,255,${(0.70 + rng() * 0.20).toFixed(2)})`;
+        ctx.lineWidth = ts * 0.014; ctx.strokeStyle = `rgba(210,240,255,${(0.75 + rng() * 0.15).toFixed(2)})`;
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
-        // Dark air gap
-        ctx.lineWidth = ts * 0.005; ctx.strokeStyle = `rgba(25,70,130,${(0.45 + rng() * 0.20).toFixed(2)})`;
+        // Dark air gap — deeper for realism
+        ctx.lineWidth = ts * 0.006; ctx.strokeStyle = `rgba(15,50,110,${(0.55 + rng() * 0.20).toFixed(2)})`;
         ctx.beginPath(); ctx.moveTo(kx, ky); ctx.quadraticCurveTo(mx, my, ex, ey); ctx.stroke();
-        // Optional interior branch
-        if (rng() > 0.48) {
+        // Primary branch — always present
+        {
             const bx = ts * (0.15 + rng() * 0.70), by = ts * (0.15 + rng() * 0.70);
-            ctx.lineWidth = ts * 0.026; ctx.strokeStyle = 'rgba(180,220,255,0.28)';
+            ctx.lineWidth = ts * 0.022; ctx.strokeStyle = 'rgba(160,210,245,0.30)';
             ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(bx, by); ctx.stroke();
-            ctx.lineWidth = ts * 0.008; ctx.strokeStyle = 'rgba(200,235,255,0.60)';
+            ctx.lineWidth = ts * 0.007; ctx.strokeStyle = 'rgba(200,235,255,0.65)';
             ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(bx, by); ctx.stroke();
+            ctx.lineWidth = ts * 0.003; ctx.strokeStyle = 'rgba(10,45,100,0.50)';
+            ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(bx, by); ctx.stroke();
+        }
+        // Secondary micro-branch — 60% chance
+        if (rng() > 0.40) {
+            const b2x = ts * (0.10 + rng() * 0.80), b2y = ts * (0.10 + rng() * 0.80);
+            ctx.lineWidth = ts * 0.010; ctx.strokeStyle = 'rgba(185,225,255,0.25)';
+            ctx.beginPath(); ctx.moveTo(ex * 0.4 + kx * 0.6, ey * 0.4 + ky * 0.6); ctx.lineTo(b2x, b2y); ctx.stroke();
+            ctx.lineWidth = ts * 0.004; ctx.strokeStyle = 'rgba(10,45,100,0.45)';
+            ctx.beginPath(); ctx.moveTo(ex * 0.4 + kx * 0.6, ey * 0.4 + ky * 0.6); ctx.lineTo(b2x, b2y); ctx.stroke();
         }
     }
 
@@ -2066,26 +2089,26 @@ function _drawIceTile(ctx, x, y) {
         ctx.fill();
     }
 
-    // 6. Specular highlight
+    // 6. Specular highlight — dimmed for a matte, realistic ice look
     const hlx = ts * (0.25 + rng() * 0.35);
     const hly = ts * (0.15 + rng() * 0.30);
-    const hlR = ts * (0.08 + rng() * 0.12);
+    const hlR = ts * (0.06 + rng() * 0.09);
     const spec = ctx.createRadialGradient(hlx, hly, 0, hlx, hly, hlR);
-    spec.addColorStop(0,   'rgba(255,255,255,0.72)');
-    spec.addColorStop(0.4, 'rgba(230,248,255,0.22)');
+    spec.addColorStop(0,   'rgba(255,255,255,0.38)');
+    spec.addColorStop(0.4, 'rgba(230,248,255,0.10)');
     spec.addColorStop(1,   'rgba(255,255,255,0)');
     ctx.fillStyle = spec;
     ctx.fillRect(0, 0, ts, ts);
 
-    // 7. Sparkles
-    const nSpark = 6 + Math.floor(rng() * 5);
+    // 7. Sparkles — sparse, very faint; real ice doesn't glitter much
+    const nSpark = 2 + Math.floor(rng() * 3);
     for (let i = 0; i < nSpark; i++) {
         const px = rng() * ts, py = rng() * ts;
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.fillStyle = 'rgba(255,255,255,0.65)';
         ctx.fillRect(px, py, 1, 1);
-        if (rng() > 0.50) {
-            const fl = 2 + rng() * 2;
-            ctx.fillStyle = 'rgba(200,235,255,0.40)';
+        if (rng() > 0.75) {
+            const fl = 1.5 + rng() * 1.5;
+            ctx.fillStyle = 'rgba(200,235,255,0.22)';
             ctx.fillRect(px - fl, py, fl * 2 + 1, 1);
             ctx.fillRect(px, py - fl, 1, fl * 2 + 1);
         }
@@ -2403,6 +2426,198 @@ function _drawLavaBubbles(ctx, x, y, time) {
     ctx.globalAlpha = 1;
 }
 
+/*
+_drawSandBones
+Tiles: SND[BONE-1..4]
+Graphics: shared (both quality levels)
+Sun-bleached bones / skull partially buried in desert sand.
+Background is fully transparent — sand texture below shows through.
+Burial via canvas clip only — no gradient overlay that could darken sand.
+*/
+function _drawSandBones(ctx, x, y, variant) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    const COL_BASE = '#d9d0b0';   // sun-bleached ivory
+    const COL_DARK = '#b0a074';   // crevice / underside shadow
+    const COL_HI   = '#ecead8';   // lit top surface
+
+    // ── Long bone: flat epiphysis ends (ew < eh → not round) ──
+    const drawBone = (cx, cy, length, thick, angle) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+
+        const hw = length * 0.42;
+        const sh = thick * 0.28;
+        const ew = thick * 0.44;   // end cap half-length along bone (narrow = flat)
+        const eh = thick * 0.88;   // end cap half-height perp (wide = flared)
+
+        // Drop shadow
+        ctx.fillStyle = 'rgba(70,50,10,0.16)';
+        for (const s of [-1, 1]) {
+            ctx.beginPath();
+            ctx.ellipse(hw*s + thick*0.10, thick*0.12, ew*0.88, eh*0.88, 0, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.fillRect(-hw*0.88 + thick*0.10, -sh*0.5 + thick*0.12, hw*1.76, sh);
+
+        // Shaft
+        ctx.fillStyle = COL_BASE;
+        ctx.fillRect(-hw*0.88, -sh, hw*1.76, sh*2);
+        // End caps
+        for (const s of [-1, 1]) {
+            ctx.beginPath();
+            ctx.ellipse(hw*s, 0, ew, eh, 0, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        // Bottom shade (cylindrical depth)
+        ctx.fillStyle = COL_DARK;
+        ctx.fillRect(-hw*0.80, sh*0.28, hw*1.60, sh*0.68);
+        for (const s of [-1, 1]) {
+            ctx.beginPath();
+            ctx.ellipse(hw*s, eh*0.22, ew*0.78, eh*0.58, 0, 0, Math.PI);
+            ctx.fill();
+        }
+
+        // Top highlight
+        ctx.fillStyle = COL_HI;
+        ctx.fillRect(-hw*0.75, -sh, hw*1.50, sh*0.65);
+        for (const s of [-1, 1]) {
+            ctx.beginPath();
+            ctx.ellipse(hw*s, -eh*0.20, ew*0.60, eh*0.44, 0, 0, Math.PI);
+            ctx.fill();
+        }
+        ctx.restore();
+    };
+
+    // ── Rib: curved arc bone (quadratic bezier stroke) ──
+    const drawRib = (cx, cy, width, sag, thick, angle) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+        ctx.lineCap = 'round';
+
+        // Shadow
+        ctx.lineWidth = thick + thick * 0.24;
+        ctx.strokeStyle = 'rgba(70,50,10,0.15)';
+        ctx.beginPath();
+        ctx.moveTo(-width/2, thick*0.14);
+        ctx.quadraticCurveTo(0, -sag + thick*0.14, width/2, thick*0.14);
+        ctx.stroke();
+
+        // Main body
+        ctx.lineWidth = thick;
+        ctx.strokeStyle = COL_BASE;
+        ctx.beginPath();
+        ctx.moveTo(-width/2, 0);
+        ctx.quadraticCurveTo(0, -sag, width/2, 0);
+        ctx.stroke();
+
+        // Bottom shade strip
+        ctx.lineWidth = thick * 0.33;
+        ctx.strokeStyle = COL_DARK;
+        ctx.beginPath();
+        ctx.moveTo(-width/2 + thick*0.5, thick*0.22);
+        ctx.quadraticCurveTo(0, -sag + thick*0.44, width/2 - thick*0.5, thick*0.22);
+        ctx.stroke();
+
+        // Top highlight
+        ctx.lineWidth = thick * 0.36;
+        ctx.strokeStyle = COL_HI;
+        ctx.beginPath();
+        ctx.moveTo(-width/2 + thick*0.5, -thick*0.05);
+        ctx.quadraticCurveTo(0, -sag + thick*0.14, width/2 - thick*0.5, -thick*0.05);
+        ctx.stroke();
+
+        ctx.restore();
+    };
+
+    // ── Skull: oval cranium with eye sockets and nose cavity ──
+    const drawSkull = (cx, cy, size) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        const cw = size * 0.46;
+        const ch = size * 0.38;
+
+        // Drop shadow
+        ctx.fillStyle = 'rgba(70,50,10,0.20)';
+        ctx.beginPath();
+        ctx.ellipse(size*0.06, size*0.07, cw*0.94, ch*0.94, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        // Cranium
+        ctx.fillStyle = COL_BASE;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, cw, ch, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        // Underside shade
+        ctx.fillStyle = COL_DARK;
+        ctx.beginPath();
+        ctx.ellipse(0, ch*0.24, cw*0.82, ch*0.55, 0, 0, Math.PI);
+        ctx.fill();
+
+        // Top highlight
+        ctx.fillStyle = COL_HI;
+        ctx.beginPath();
+        ctx.ellipse(-cw*0.16, -ch*0.26, cw*0.38, ch*0.32, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        // Eye sockets — elongated horizontally, dark hollow
+        const eW = size * 0.125, eH = size * 0.095;
+        const eX = size * 0.155, eY = size * 0.02;
+        ctx.fillStyle = 'rgba(22,15,5,0.82)';
+        ctx.beginPath(); ctx.ellipse(-eX, eY, eW, eH, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse( eX, eY, eW, eH, 0, 0, Math.PI*2); ctx.fill();
+
+        // Nose cavity
+        ctx.fillStyle = 'rgba(22,15,5,0.65)';
+        ctx.beginPath();
+        ctx.ellipse(0, ch*0.33, size*0.062, size*0.082, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.restore();
+    };
+
+    // Clip to upper portion of tile — burial effect without any dark overlay.
+    // Sand texture below shows through transparent road-layer pixels.
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts * 0.68);
+    ctx.clip();
+
+    if (variant === 1) {
+        // Single large long bone, slight diagonal
+        const a = Math.PI * 0.11 + (rng() - 0.5) * 0.14;
+        drawBone(x + ts*0.50, y + ts*0.46, ts*0.68, ts*0.095, a);
+
+    } else if (variant === 2) {
+        // Two crossed bones — X shape
+        drawBone(x + ts*0.50, y + ts*0.46, ts*0.62, ts*0.084,  Math.PI*0.21);
+        drawBone(x + ts*0.50, y + ts*0.46, ts*0.62, ts*0.084, -Math.PI*0.21);
+
+    } else if (variant === 3) {
+        // Ribs — 3 parallel curved rib arcs, slightly angled
+        const rAngle = Math.PI * 0.04 + (rng() - 0.5) * 0.06;
+        const rW = ts * 0.64, rSag = ts * 0.14, rT = ts * 0.076;
+        drawRib(x + ts*0.50, y + ts*0.28, rW,        rSag,        rT,        rAngle);
+        drawRib(x + ts*0.50, y + ts*0.44, rW * 0.86, rSag * 0.82, rT * 0.90, rAngle);
+        drawRib(x + ts*0.50, y + ts*0.60, rW * 0.70, rSag * 0.62, rT * 0.78, rAngle);
+
+    } else {
+        // Skull
+        drawSkull(x + ts*0.50, y + ts*0.40, ts*0.46);
+    }
+
+    ctx.restore();
+}
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
@@ -2445,4 +2660,5 @@ export const MapTextures = {
     _prerenderVignette,
     _preRenderMountainFoundations,
     roundRect,
+    _drawSandBones,
 };
