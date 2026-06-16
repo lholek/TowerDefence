@@ -40,6 +40,7 @@ let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
 let activeDrawTileType = null; // Locks the tile type for the current drag session
+let pendingTiles = []; // Tiles changed during current draw stroke, before full prerender rebuild
 
 // --- Dynamic Brush State ---
 let brushShape = 'square'; // 'square', 'diamond', or 'circle'
@@ -262,6 +263,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
                 if (overwritingSameCategory) return;
 
                 layout[tile.r][tile.c] = tileToPlace;
+                pendingTiles.push({ r: tile.r, c: tile.c });
                 changed = true;
             }
         }
@@ -310,6 +312,8 @@ function handleMapDrawStart(e) {
 function handleMapDrawStop() {
     // 1. Sync changes to the JSON editor if drawing occurred
     if (hasDrawn && (isDrawingLeft || isDrawingRight)) {
+        // Clear pending highlight before full rebuild so the final render shows clean tiles.
+        pendingTiles = [];
         // Reset the GameMap instance so that ALL prerender layers (road, grass,
         // water, mountains, trees, portals, holy/burned ground, shores) are
         // rebuilt exactly once — generating stable random variants for the
@@ -327,6 +331,7 @@ function handleMapDrawStop() {
     isDrawingRight = false;
     hasDrawn = false;
     activeDrawTileType = null;
+    pendingTiles = [];
 }
 
 function handleMapDrawMove(e) {
@@ -770,7 +775,24 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
     ctx.restore();
 
-    // 5. BRUSH GHOST OVERLAY — drawn on top in world-space
+    // 5a. PENDING TILES OVERLAY — highlight tiles changed during current stroke
+    if (pendingTiles.length > 0) {
+        ctx.save();
+        ctx.translate(camera.x, camera.y);
+        ctx.scale(camera.zoom, camera.zoom);
+        ctx.fillStyle   = isDrawingRight ? 'rgba(255, 60, 60, 0.22)'  : 'rgba(255, 220, 50, 0.22)';
+        ctx.strokeStyle = isDrawingRight ? 'rgba(255, 60, 60, 0.7)'   : 'rgba(255, 220, 50, 0.7)';
+        ctx.lineWidth   = 2 / camera.zoom;
+        pendingTiles.forEach(tile => {
+            const gx = tile.c * TILE_SIZE;
+            const gy = tile.r * TILE_SIZE;
+            ctx.fillRect(gx, gy, TILE_SIZE, TILE_SIZE);
+            ctx.strokeRect(gx, gy, TILE_SIZE, TILE_SIZE);
+        });
+        ctx.restore();
+    }
+
+    // 5b. BRUSH GHOST OVERLAY — drawn on top in world-space
     if (hoveredTile.r !== -1 && hoveredTile.c !== -1) {
         const ghostTiles = getBrushAffectedTiles(hoveredTile.r, hoveredTile.c);
 
