@@ -2713,20 +2713,20 @@ function _drawSandCactus(ctx, x, y, variant) {
     ctx.clip();
 
     if (variant === 1) {
-        // Left bigger, right smaller
-        drawCactus(x + ts * 0.34, baseY, 1.00, true);
-        drawCactus(x + ts * 0.71, baseY, 0.62, false);
+        // Left bigger, right smaller — both shifted slightly higher
+        drawCactus(x + ts * 0.34, baseY - ts * 0.10, 1.00, true);
+        drawCactus(x + ts * 0.71, baseY - ts * 0.10, 0.62, false);
     } else if (variant === 2) {
         // 1 big cactus in the middle
         drawCactus(x + ts * 0.50, baseY, 1.15, true);
     } else if (variant === 3) {
-        // 2 big cacti with gap between them
-        drawCactus(x + ts * 0.26, baseY, 1.00, true);
-        drawCactus(x + ts * 0.74, baseY, 1.00, true);
+        // 2 small cacti: left at bottom, right slightly higher
+        drawCactus(x + ts * 0.28, baseY, 0.62, false);
+        drawCactus(x + ts * 0.70, baseY - ts * 0.16, 0.62, false);
     } else {
-        // variant 4: Left smaller, right bigger
-        drawCactus(x + ts * 0.29, baseY, 0.62, false);
-        drawCactus(x + ts * 0.66, baseY, 1.00, true);
+        // variant 4: Left smaller, right bigger — both shifted slightly higher
+        drawCactus(x + ts * 0.29, baseY - ts * 0.10, 0.62, false);
+        drawCactus(x + ts * 0.66, baseY - ts * 0.10, 1.00, true);
     }
 
     ctx.restore();

@@ -391,7 +391,7 @@ export default class Map {
                                 : this._preRenderSnowHigh(this.tileSize)
                         );
                     ctx.drawImage(this.snowTexture, bounds.x, bounds.y);
-                } else if (tok === 'SND' || tok === 'O[SND]' || tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') {
+                } else if (tok === 'SND' || tok === 'O[SND]' || tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]' || tok === 'SND[CACTUS-1]' || tok === 'SND[CACTUS-2]' || tok === 'SND[CACTUS-3]' || tok === 'SND[CACTUS-4]') {
                     if (!this.sandTexture)
                         this.sandTexture = (
                             this.graphicsSettings.terrain === 'low'
