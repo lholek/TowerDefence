@@ -589,24 +589,23 @@ export default class Map {
     }
 
     isBuildableTile(col, row) {
-      // bounds check
       if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return false;
-    
       const tok = String(this.grid[row][col] ?? '');
-    
-      // Block paths and special start/end tiles
-      if (tok === 'M') return false;
-      if (tok === 'O' || tok === 'O[SNW]' || tok === 'O[SND]') return false; // path
-      if (/^S\d+/i.test(tok)) return false; // start tiles like S1, S2
-      if (/^E\d+/i.test(tok)) return false; // end tiles like E1, E2
-      if (tok === '-') return false;        // blocked tiles
-      if (tok === 'W') return false;        // blocked tiles
-      if (tok === 'ICE') return false;      // ice terrain
-      if (tok === 'LAVA') return false;     // lava terrain
-      if (tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') return false;
-      if (tok === 'SND[CACTUS-1]' || tok === 'SND[CACTUS-2]' || tok === 'SND[CACTUS-3]' || tok === 'SND[CACTUS-4]') return false;
 
-      // everything else (X, B, L, etc.) is buildable
+      const NON_BUILDABLE = [
+        'M',
+        'O', 'O[SNW]', 'O[SND]',
+        '-',
+        'W',
+        'ICE',
+        'LAVA',
+        'SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]',
+        'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]',
+      ];
+
+      if (NON_BUILDABLE.includes(tok)) return false;
+      if (/^S\d+/i.test(tok)) return false; // start tiles
+      if (/^E\d+/i.test(tok)) return false; // end tiles
       return true;
     }
 
