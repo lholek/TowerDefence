@@ -890,7 +890,7 @@ function createTileKey() {
                 <button class="tile-filter-btn${fa('paths')}"
                         onclick="window.app.mapEditor.toggleTileFilter('paths')">Paths</button>
                 <button class="tile-filter-btn${fa('objects')}"
-                        onclick="window.app.mapEditor.toggleTileFilter('objects')">Map objects</button>
+                        onclick="window.app.mapEditor.toggleTileFilter('objects')">Map Objects</button>
             </div>
         </div>
         <div class="tile-slider-wrapper">
