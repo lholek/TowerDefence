@@ -2721,7 +2721,7 @@ function _drawSandCactus(ctx, x, y, variant) {
         drawCactus(x + ts * 0.50, baseY, 1.15, true);
     } else if (variant === 3) {
         // 2 small cacti: left at bottom, right slightly higher
-        drawCactus(x + ts * 0.28, baseY, 0.62, false);
+        drawCactus(x + ts * 0.28, baseY, 0.80, false);
         drawCactus(x + ts * 0.70, baseY - ts * 0.16, 0.62, false);
     } else {
         // variant 4: Left smaller, right bigger — both shifted slightly higher
