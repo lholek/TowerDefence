@@ -65,26 +65,28 @@
                     <div>
                         <div id="tileKey" class="tile-key-container editor-key-container"></div>
                         <div class="w-100 tile-drawing-descripton"><small>(Drawing is disabled for Start and End)</small></div>
-                        <div class="w-100 tile-object-count"><small>Current objects to select from: <span id="tileObjectCount" class="tile-object-count-number">0</span></small></div>
+                        <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
                     </div>
                     <div class="tileDrawingBrushItems">
                         <div class="control-group brush-key-container editor-key-container mt-0">
-                            <label>Brush Settings</label>
+                            <strong>Brush Settings</strong>
                             <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
                             <div class="brush-toolbar brush-options">
                                 <div class="brush-button-row" style="display:flex; gap:6px; flex-wrap:wrap; flex-direction: column;">
-                                    <button id="btn-brush-square" class="btn-brush active" 
+                                    <button id="btn-brush-square" class="tile-filter-btn tile-filter-active"
                                     onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
-                                    <button id="btn-brush-diamond" class="btn-brush" 
+                                    <button id="btn-brush-diamond" class="tile-filter-btn"
                                     onclick="window.app.mapEditor.setBrushShape('diamond')">◆ Diamond</button>
-                                    <button id="btn-brush-circle" class="btn-brush" 
+                                    <button id="btn-brush-circle" class="tile-filter-btn"
                                     onclick="window.app.mapEditor.setBrushShape('circle')">● Circle</button>
                                 </div>
                                 <div class="brush-size-control" style="display: inline-flex; align-items: center; margin-top: 10px; width: 100%; justify-content: center;">
-                                    <label class="me-1">Size:</label>
-                                    <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" 
-                                    oninput="window.app.mapEditor.setBrushSize(this.value)" 
-                                    style="width: 50px; padding: 4px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <div>
+                                        <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" 
+                                        oninput="window.app.mapEditor.setBrushSize(this.value)" 
+                                        style="width: 50px; padding: 4px; border-radius: 4px; border: 1px solid #ccc;">
+                                    </div>
+
                                 </div>
                             </div>
                         </div>    

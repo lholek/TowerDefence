@@ -168,20 +168,37 @@
 }
 
 .tile-grid-main {
-    display: grid;
-    grid-auto-flow: column;
-   /* grid-template-rows: repeat(2, auto);*/
-    gap: 10px 8px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center; /* fallback for browsers without safe center */
+    justify-content: safe center;
+    align-items: stretch;
+    gap: 8px;
     overflow-x: auto;
     background: #2e261d;
     padding: 12px;
     border-radius: 4px;
     margin-top: 10px;
     overscroll-behavior-x: contain;
-    
+
     /* Tvůj scrollbar */
     scrollbar-width: thin;
     scrollbar-color: rgb(240, 198, 116) transparent;
+}
+
+.tile-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px 8px;
+    flex-shrink: 0;
+}
+
+.tile-separator {
+    flex-shrink: 0;
+    min-height: 50px;
 }
 
 /* Chrome/Safari scrollbar */

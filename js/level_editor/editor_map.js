@@ -19,8 +19,8 @@ const camera = {
 // Global variable to store the position of the currently hovered tile
 let hoveredTile = { r: -1, c: -1 };
 
-// Active tile filter state — both on by default
-const activeTileFilters = { terrains: true, objects: true };
+// Active tile filter state — all on by default
+const activeTileFilters = { terrains: true, paths: true, objects: true };
 
 // --- GameMap instance used for visual rendering ---
 let editorMapInstance = null;
@@ -845,10 +845,12 @@ function createTileKey() {
         'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4'
     };
 
-    const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'O', 'O[SNW]', 'O[SND]', 'W', 'M', '-'];
+    const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-'];
+    const pathsOrder   = ['O', 'O[SNW]', 'O[SND]'];
     const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
 
     const visibleTerrains = activeTileFilters.terrains ? terrainOrder.filter(t => labels[t]) : [];
+    const visiblePaths    = activeTileFilters.paths    ? pathsOrder.filter(t => labels[t])   : [];
     const visibleObjects  = activeTileFilters.objects  ? objectOrder.filter(t => labels[t])  : [];
 
     // Helper: tile type → CSS base class
@@ -878,31 +880,35 @@ function createTileKey() {
             <strong>Selected:</strong>
             <span id="currentTileDisplay" class="current-tile-display"></span>
             <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
-                    <div class="tile-key-filters">
-        Filters:
-            <button class="tile-filter-btn${fa('terrains')}"
-                    onclick="window.app.mapEditor.toggleTileFilter('terrains')">Terrains</button>
-            <button class="tile-filter-btn${fa('objects')}"
-                    onclick="window.app.mapEditor.toggleTileFilter('objects')">Map objects</button>
-        </div>
+            <div class="tile-key-filters">
+                <strong>Filters:</strong>
+                <button class="tile-filter-btn${fa('terrains')}"
+                        onclick="window.app.mapEditor.toggleTileFilter('terrains')">Terrains</button>
+                <button class="tile-filter-btn${fa('paths')}"
+                        onclick="window.app.mapEditor.toggleTileFilter('paths')">Paths</button>
+                <button class="tile-filter-btn${fa('objects')}"
+                        onclick="window.app.mapEditor.toggleTileFilter('objects')">Map objects</button>
+            </div>
         </div>
         <div class="tile-slider-wrapper">
             <div class="tile-grid-main" id="tileSlider">
     `;
 
-    visibleTerrains.forEach(t => { html += tileBtn(t); });
-
-    if (visibleTerrains.length > 0 && visibleObjects.length > 0) {
-        html += `<div class="tile-separator"></div>`;
-    }
-
-    visibleObjects.forEach(t => { html += tileBtn(t); });
+    const tileGroups = [visibleTerrains, visiblePaths, visibleObjects].filter(g => g.length > 0);
+    tileGroups.forEach((groupTiles, i) => {
+        if (i > 0) html += `<div class="tile-separator"></div>`;
+        html += `<div class="tile-group">`;
+        groupTiles.forEach(t => { html += tileBtn(t); });
+        html += `</div>`;
+    });
 
     html += `</div></div>`;
     container.innerHTML = html;
 
     const countEl = document.getElementById('tileObjectCount');
-    if (countEl) countEl.textContent = visibleTerrains.length + visibleObjects.length;
+    if (countEl) countEl.textContent = visibleTerrains.length + visiblePaths.length + visibleObjects.length;
+    const totalEl = document.getElementById('tileObjectTotal');
+    if (totalEl) totalEl.textContent = terrainOrder.length + pathsOrder.length + objectOrder.length;
 
     const newSlider = document.getElementById('tileSlider');
     if (newSlider) {
@@ -921,9 +927,9 @@ function createTileKey() {
  * At least one filter must stay active.
  */
 export function toggleTileFilter(filter) {
-    const other = filter === 'terrains' ? 'objects' : 'terrains';
-    // Prevent turning off both filters simultaneously
-    if (activeTileFilters[filter] && !activeTileFilters[other]) return;
+    const activeCount = Object.values(activeTileFilters).filter(Boolean).length;
+    // Prevent turning off the last active filter
+    if (activeTileFilters[filter] && activeCount === 1) return;
     activeTileFilters[filter] = !activeTileFilters[filter];
     createTileKey();
 }
@@ -1302,11 +1308,11 @@ export function setBrushShape(shape) {
         'btn-brush-circle'
     ].map(id => document.getElementById(id)).filter(Boolean);
 
-    brushButtons.forEach(btn => btn.classList.remove('active'));
+    brushButtons.forEach(btn => btn.classList.remove('tile-filter-active'));
 
     const activeButton = document.getElementById(`btn-brush-${shape}`);
     if (activeButton) {
-        activeButton.classList.add('active');
+        activeButton.classList.add('tile-filter-active');
     }
 
     // Force a re-render so the ghost/brush on the map updates immediately
