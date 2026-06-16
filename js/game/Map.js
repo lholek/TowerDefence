@@ -604,6 +604,7 @@ export default class Map {
       if (tok === 'ICE') return false;      // ice terrain
       if (tok === 'LAVA') return false;     // lava terrain
       if (tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') return false;
+      if (tok === 'SND[CACTUS-1]' || tok === 'SND[CACTUS-2]' || tok === 'SND[CACTUS-3]' || tok === 'SND[CACTUS-4]') return false;
 
       // everything else (X, B, L, etc.) is buildable
       return true;

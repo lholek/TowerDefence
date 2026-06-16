@@ -1622,6 +1622,13 @@ function _prerenderRoad() {
                     continue;
                 }
 
+                // --- CACTI ON SAND (SND[CACTUS-1..4]) ---
+                if (tok === 'SND[CACTUS-1]' || tok === 'SND[CACTUS-2]' || tok === 'SND[CACTUS-3]' || tok === 'SND[CACTUS-4]') {
+                    const vm = {'SND[CACTUS-1]':1,'SND[CACTUS-2]':2,'SND[CACTUS-3]':3,'SND[CACTUS-4]':4};
+                    this._drawSandCactus(ctx, worldX, worldY, vm[tok]);
+                    continue;
+                }
+
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -2618,6 +2625,113 @@ function _drawSandBones(ctx, x, y, variant) {
     ctx.restore();
 }
 
+function _drawSandCactus(ctx, x, y, variant) {
+    const ts = this.tileSize;
+
+    const COL_BODY  = '#4c8c2a';
+    const COL_DARK  = '#2e5a18';
+    const COL_HI    = '#72bb40';
+    const COL_SPINE = '#d4c882';
+
+    // cx = center x, baseY = bottom of cactus, scale = size multiplier, withArms = bool
+    const drawCactus = (cx, baseY, scale, withArms) => {
+        const W  = ts * 0.13 * scale;   // trunk full width
+        const H  = ts * 0.62 * scale;   // trunk height
+        const R  = W * 0.45;            // trunk corner radius
+        const tx = cx - W * 0.5;        // trunk left edge
+        const ty = baseY - H;           // trunk top edge
+
+        if (withArms) {
+            const AW = W * 0.76;              // arm cross-section width
+            const AH = ts * 0.17 * scale;     // arm horizontal reach
+            const AV = ts * 0.21 * scale;     // arm vertical height
+            const AJ = ty + H * 0.42;         // Y where arm meets trunk
+            const AR = AW * 0.5;              // arm corner radius
+
+            for (const side of [-1, 1]) {
+                // Horizontal segment of arm
+                const hx = side < 0 ? tx - AH : tx + W;
+                ctx.fillStyle = COL_BODY;
+                this.roundRect(ctx, hx, AJ - AW * 0.5, AH + W * 0.1, AW, AR, true, false);
+                ctx.fillStyle = COL_DARK;
+                ctx.fillRect(hx + AW * 0.15, AJ + AW * 0.08, AH - AW * 0.3 + W * 0.1, AW * 0.30);
+
+                // Vertical segment going up from elbow
+                const vcx = side < 0 ? (tx - AH) + AW * 0.5 : (tx + W + AH) - AW * 0.5;
+                const vx  = vcx - AW * 0.5;
+                const vty = AJ - AW * 0.5 - AV;
+                ctx.fillStyle = COL_BODY;
+                this.roundRect(ctx, vx, vty, AW, AV + AW * 0.5, AR, true, false);
+                ctx.fillStyle = COL_DARK;
+                ctx.fillRect(vx + AW * 0.56, vty + AW * 0.14, AW * 0.34, AV * 0.74);
+                ctx.fillStyle = COL_HI;
+                ctx.fillRect(vx + AW * 0.08, vty + AW * 0.12, AW * 0.22, AV * 0.66);
+            }
+        }
+
+        // Trunk drop shadow
+        ctx.fillStyle = 'rgba(0,40,0,0.18)';
+        ctx.fillRect(tx + W * 0.12, ty + H * 0.03, W + 2, H);
+
+        // Trunk body
+        ctx.fillStyle = COL_BODY;
+        this.roundRect(ctx, tx, ty, W, H, R, true, false);
+
+        // Dark right strip
+        ctx.fillStyle = COL_DARK;
+        this.roundRect(ctx, tx + W * 0.57, ty + H * 0.06, W * 0.37, H * 0.87, R * 0.5, true, false);
+
+        // Highlight left strip
+        ctx.fillStyle = COL_HI;
+        ctx.fillRect(tx + W * 0.07, ty + H * 0.07, W * 0.25, H * 0.79);
+
+        // Top gleam
+        ctx.fillStyle = COL_HI;
+        ctx.beginPath();
+        ctx.ellipse(cx - W * 0.09, ty + W * 0.42, W * 0.30, W * 0.20, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Spines on trunk sides
+        ctx.save();
+        ctx.strokeStyle = COL_SPINE;
+        ctx.lineWidth = Math.max(0.7, ts * 0.011 * scale);
+        for (let i = 0; i < 3; i++) {
+            const sy = ty + H * (0.18 + i * 0.28);
+            const sl = W * 0.52;
+            ctx.beginPath(); ctx.moveTo(tx, sy); ctx.lineTo(tx - sl, sy - sl * 0.35); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(tx + W, sy); ctx.lineTo(tx + W + sl, sy - sl * 0.35); ctx.stroke();
+        }
+        ctx.restore();
+    };
+
+    const baseY = y + ts * 0.88;
+
+    // Clip to tile bounds
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    if (variant === 1) {
+        // Left bigger, right smaller
+        drawCactus(x + ts * 0.34, baseY, 1.00, true);
+        drawCactus(x + ts * 0.71, baseY, 0.62, false);
+    } else if (variant === 2) {
+        // 1 big cactus in the middle
+        drawCactus(x + ts * 0.50, baseY, 1.15, true);
+    } else if (variant === 3) {
+        // 2 big cacti with gap between them
+        drawCactus(x + ts * 0.26, baseY, 1.00, true);
+        drawCactus(x + ts * 0.74, baseY, 1.00, true);
+    } else {
+        // variant 4: Left smaller, right bigger
+        drawCactus(x + ts * 0.29, baseY, 0.62, false);
+        drawCactus(x + ts * 0.66, baseY, 1.00, true);
+    }
+
+    ctx.restore();
+}
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
@@ -2661,4 +2775,5 @@ export const MapTextures = {
     _preRenderMountainFoundations,
     roundRect,
     _drawSandBones,
+    _drawSandCactus,
 };

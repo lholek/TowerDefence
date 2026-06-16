@@ -842,12 +842,14 @@ function createTileKey() {
         'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
         'E': 'End', 'W': 'Water', 'M': 'Mountains', '-': 'Air',
         'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2',
-        'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4'
+        'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4',
+        'SND[CACTUS-1]': 'Cactus 1', 'SND[CACTUS-2]': 'Cactus 2',
+        'SND[CACTUS-3]': 'Cactus 3', 'SND[CACTUS-4]': 'Cactus 4'
     };
 
     const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-'];
     const pathsOrder   = ['O', 'O[SNW]', 'O[SND]'];
-    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
+    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]'];
 
     const visibleTerrains = activeTileFilters.terrains ? terrainOrder.filter(t => labels[t]) : [];
     const visiblePaths    = activeTileFilters.paths    ? pathsOrder.filter(t => labels[t])   : [];
@@ -858,6 +860,7 @@ function createTileKey() {
         if (type === 'O[SNW]') return 'o-snw';
         if (type === 'O[SND]') return 'o-snd';
         if (/^SND\[BONE-/.test(type)) return 'snd-bone';
+        if (/^SND\[CACTUS-/.test(type)) return 'snd-cactus';
         return type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase()
                    .replace(/--+/g, '-').replace(/-$/, '') || '-';
     };
@@ -955,7 +958,11 @@ function getTileTypeLabel(type) {
         'SND[BONE-1]': 'Bone 1',
         'SND[BONE-2]': 'Bone 2',
         'SND[BONE-3]': 'Bone 3',
-        'SND[BONE-4]': 'Bone 4'
+        'SND[BONE-4]': 'Bone 4',
+        'SND[CACTUS-1]': 'Cactus 1',
+        'SND[CACTUS-2]': 'Cactus 2',
+        'SND[CACTUS-3]': 'Cactus 3',
+        'SND[CACTUS-4]': 'Cactus 4'
     };
 
     if (labels[type]) {

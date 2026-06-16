@@ -534,6 +534,11 @@ hr {
     color: black;
 }
 
+.tile-snd-cactus {
+    background-color: #4c8c2a;
+    color: white;
+}
+
 .tile-separator {
     width: 2px;
     background-color: rgb(240, 198, 116);

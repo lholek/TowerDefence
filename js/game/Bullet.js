@@ -78,6 +78,10 @@ export default class Bullet {
             this.active = false;
             return;
         }
+        if (tileType === 'SND[CACTUS-1]' || tileType === 'SND[CACTUS-2]' || tileType === 'SND[CACTUS-3]' || tileType === 'SND[CACTUS-4]') {
+            this.active = false;
+            return;
+        }
 
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;

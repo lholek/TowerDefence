@@ -104,7 +104,7 @@ export function getCurrentMap() {
 }
 export let currentTileType = 'O'; 
 export const terrainTypes = ['-', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND', 'ICE', 'LAVA'];
-export const objectTypes  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]'];
+export const objectTypes  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]'];
 export const tileTypes    = [...terrainTypes, ...objectTypes];
 
 /**
