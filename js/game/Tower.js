@@ -448,7 +448,7 @@ checkLineOfSight(ex, ey) {
         const tile = this.map.getTileFromCoords(checkX, checkY);
         const type = this.map.getTileStatus(tile.col, tile.row);
 
-        if (type === 'M') {
+        if ((type === 'M') || (type === 'SND[CACTUS-1]') || (type === 'SND[CACTUS-2]') || (type === 'SND[CACTUS-3]') || (type === 'SND[CACTUS-4]')) {
             return false; // Vision blocked
         }
     }
