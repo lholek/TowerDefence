@@ -1912,6 +1912,9 @@ function _preRenderMountainFoundations(ts) {
     this.mountainFoundations = variants;
 }
 
+/*
+roundRect
+*/
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
@@ -1993,6 +1996,11 @@ function _drawIceTileLow(ctx, x, y) {
     ctx.strokeRect(x, y, ts, ts);
 }
 
+/*
+_drawIceTile
+Tile: ICE
+Graphics: High
+*/
 function _drawIceTile(ctx, x, y) {
     const ts = this.tileSize;
     const tx = (x / ts) | 0, ty = (y / ts) | 0;
@@ -2143,6 +2151,11 @@ function _drawIceTile(ctx, x, y) {
     ctx.restore();
 }
 
+/*
+_drawLavaTileLow
+Tile: LAVA
+Graphics: Low
+*/
 function _drawLavaTileLow(ctx, x, y) {
     const ts = this.tileSize;
     const tx = (x / ts) | 0, ty = (y / ts) | 0;
@@ -2186,6 +2199,11 @@ function _drawLavaTileLow(ctx, x, y) {
     }
 }
 
+/*
+_drawLavaTile
+Tile: LAVA
+Graphics: High
+*/
 function _drawLavaTile(ctx, x, y) {
     const ts = this.tileSize;
     const tx = (x / ts) | 0, ty = (y / ts) | 0;
@@ -2700,6 +2718,11 @@ function _drawSandBones(ctx, x, y, variant, quality) {
     ctx.restore();
 }
 
+/*
+_drawSandCactus
+Tiles: SND[Cactus-1..4]
+Graphics: shared (both quality levels)
+*/
 function _drawSandCactus(ctx, x, y, variant, quality) {
     const ts = this.tileSize;
 
@@ -2855,6 +2878,11 @@ function _drawSandCactus(ctx, x, y, variant, quality) {
     ctx.restore();
 }
 
+/*
+_drawSandPalm
+Tiles: SND[Palm-1..2]
+Graphics: shared (both quality levels)
+*/
 function _drawSandPalm(ctx, x, y, variant, quality) {
     const ts = this.tileSize;
 
