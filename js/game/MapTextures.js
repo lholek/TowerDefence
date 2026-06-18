@@ -2969,48 +2969,124 @@ function _drawSandPalm(ctx, x, y, variant, quality) {
             ctx.stroke();
         }
 
-        // ── FRONDS ──
-        const frondLen  = ts * 0.30 * scale;
-        const frondW    = ts * 0.046 * scale;
-        const numFronds = 7;
+        // ── FRONDS (AAA — leaflets along each rachis) ──
+        const frondLen  = ts * 0.34 * scale;
+        const numFronds = 11;
         const fanOffset = lean * 0.28;
+
+        const COL_RACHIS    = '#16400D';
+        const COL_FROND_TIP = '#5FC838';
+
+        // Dark ambient-occlusion blob at crown
+        const crownGrad = ctx.createRadialGradient(topX, topY, 0, topX, topY, ts * 0.09 * scale);
+        crownGrad.addColorStop(0, 'rgba(8,22,4,0.72)');
+        crownGrad.addColorStop(1, 'rgba(8,22,4,0.0)');
+        ctx.fillStyle = crownGrad;
+        ctx.beginPath();
+        ctx.arc(topX, topY, ts * 0.09 * scale, 0, Math.PI * 2);
+        ctx.fill();
 
         for (let i = 0; i < numFronds; i++) {
             const rawAngle = (i / numFronds) * Math.PI * 2 + fanOffset;
             const norm = ((rawAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 
-            // Skip fronds pointing too far downward (near PI/2 in canvas coords)
-            if (norm > Math.PI * 0.20 && norm < Math.PI * 0.80) continue;
+            // Skip fronds pointing too far downward
+            if (norm > Math.PI * 0.18 && norm < Math.PI * 0.82) continue;
 
+            // Rachis with natural gravitational droop
+            const droop = frondLen * 0.42;
             const endX  = topX + Math.cos(rawAngle) * frondLen;
-            const endY  = topY + Math.sin(rawAngle) * frondLen + frondLen * 0.22;
-            const ctrlX = topX + Math.cos(rawAngle) * frondLen * 0.52;
-            const ctrlY = topY + Math.sin(rawAngle) * frondLen * 0.52 + frondLen * 0.08;
+            const endY  = topY + Math.sin(rawAngle) * frondLen + droop;
+            const ctrlX = topX + Math.cos(rawAngle) * frondLen * 0.50;
+            const ctrlY = topY + Math.sin(rawAngle) * frondLen * 0.34 + droop * 0.26;
 
-            // Shadow
-            ctx.strokeStyle = 'rgba(0,40,0,0.22)';
-            ctx.lineWidth   = frondW;
-            ctx.lineCap     = 'round';
+            // Broad shadow behind the whole frond
+            ctx.strokeStyle = 'rgba(0,30,0,0.15)';
+            ctx.lineWidth   = frondLen * 0.22;
+            ctx.lineCap     = 'butt';
             ctx.beginPath();
             ctx.moveTo(topX, topY);
             ctx.quadraticCurveTo(ctrlX + 1, ctrlY + 2, endX + 1, endY + 2);
             ctx.stroke();
 
-            // Frond body
-            ctx.strokeStyle = (i % 2 === 0) ? COL_FROND : COL_FROND_DRK;
-            ctx.lineWidth   = frondW;
+            // Leaflets along the rachis
+            const numLeaflets = 11;
+            for (let j = 0; j < numLeaflets; j++) {
+                const t  = (j + 0.5) / numLeaflets;
+                const mt = 1 - t;
+
+                // Point on rachis (quadratic bezier)
+                const rx = mt*mt*topX + 2*mt*t*ctrlX + t*t*endX;
+                const ry = mt*mt*topY + 2*mt*t*ctrlY + t*t*endY;
+
+                // Tangent direction along rachis
+                const dtx  = 2*(1-t)*(ctrlX - topX) + 2*t*(endX - ctrlX);
+                const dty  = 2*(1-t)*(ctrlY - topY) + 2*t*(endY - ctrlY);
+                const dtlen = Math.sqrt(dtx*dtx + dty*dty) || 1;
+                const tnx = dtx / dtlen, tny = dty / dtlen;
+                const pnx = -tny, pny =  tnx; // left-side perpendicular
+
+                // Leaflet length: long at base, tapers toward rachis tip
+                const taper   = 1.0 - t * 0.54;
+                const leafLen = frondLen * 0.195 * taper * (j < 1 ? 0.58 : 1.0);
+                const leafW   = Math.max(0.4, frondLen * 0.033 * (1 - t * 0.44));
+
+                // Colour: tips are bright lime, body alternates dark / mid / light
+                let lColor;
+                if      (t > 0.76)      lColor = COL_FROND_TIP;
+                else if (j % 3 === 0)   lColor = COL_FROND_LIT;
+                else if (j % 3 === 1)   lColor = COL_FROND;
+                else                    lColor = COL_FROND_DRK;
+
+                // Leaflets lean slightly forward (toward tip) and droop
+                const fwdBias  = 0.18;
+                const leafDroop = leafLen * 0.30;
+
+                ctx.strokeStyle = lColor;
+                ctx.lineWidth   = leafW;
+                ctx.lineCap     = 'round';
+
+                // Left leaflet
+                const l1ex = rx + (pnx + tnx * fwdBias) * leafLen;
+                const l1ey = ry + (pny + tny * fwdBias) * leafLen + leafDroop;
+                ctx.beginPath();
+                ctx.moveTo(rx, ry);
+                ctx.quadraticCurveTo(
+                    rx + (pnx + tnx * fwdBias) * leafLen * 0.52,
+                    ry + (pny + tny * fwdBias) * leafLen * 0.52 + leafDroop * 0.30,
+                    l1ex, l1ey
+                );
+                ctx.stroke();
+
+                // Right leaflet (mirrored)
+                const l2ex = rx + (-pnx + tnx * fwdBias) * leafLen;
+                const l2ey = ry + (-pny + tny * fwdBias) * leafLen + leafDroop;
+                ctx.beginPath();
+                ctx.moveTo(rx, ry);
+                ctx.quadraticCurveTo(
+                    rx + (-pnx + tnx * fwdBias) * leafLen * 0.52,
+                    ry + (-pny + tny * fwdBias) * leafLen * 0.52 + leafDroop * 0.30,
+                    l2ex, l2ey
+                );
+                ctx.stroke();
+            }
+
+            // Rachis spine drawn on top of leaflets
+            ctx.strokeStyle = COL_RACHIS;
+            ctx.lineWidth   = Math.max(0.5, frondLen * 0.018);
+            ctx.lineCap     = 'round';
             ctx.beginPath();
             ctx.moveTo(topX, topY);
             ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
             ctx.stroke();
 
-            // Midrib highlight
+            // Midrib rim light on proximal half
             ctx.strokeStyle = COL_FROND_LIT;
-            ctx.lineWidth   = frondW * 0.23;
+            ctx.lineWidth   = Math.max(0.3, frondLen * 0.007);
             ctx.beginPath();
             ctx.moveTo(topX, topY);
             ctx.quadraticCurveTo(
-                ctrlX * 0.6 + topX * 0.4, ctrlY * 0.6 + topY * 0.4,
+                ctrlX * 0.52 + topX * 0.48, ctrlY * 0.52 + topY * 0.48,
                 ctrlX, ctrlY
             );
             ctx.stroke();
