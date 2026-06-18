@@ -1618,14 +1618,14 @@ function _prerenderRoad() {
                 // --- BONES ON SAND (SND[BONE-1..4]) ---
                 if (tok === 'SND[BONE-1]' || tok === 'SND[BONE-2]' || tok === 'SND[BONE-3]' || tok === 'SND[BONE-4]') {
                     const vm = {'SND[BONE-1]':1,'SND[BONE-2]':2,'SND[BONE-3]':3,'SND[BONE-4]':4};
-                    this._drawSandBones(ctx, worldX, worldY, vm[tok]);
+                    this._drawSandBones(ctx, worldX, worldY, vm[tok], this.graphicsSettings.objects);
                     continue;
                 }
 
                 // --- CACTI ON SAND (SND[CACTUS-1..4]) ---
                 if (tok === 'SND[CACTUS-1]' || tok === 'SND[CACTUS-2]' || tok === 'SND[CACTUS-3]' || tok === 'SND[CACTUS-4]') {
                     const vm = {'SND[CACTUS-1]':1,'SND[CACTUS-2]':2,'SND[CACTUS-3]':3,'SND[CACTUS-4]':4};
-                    this._drawSandCactus(ctx, worldX, worldY, vm[tok]);
+                    this._drawSandCactus(ctx, worldX, worldY, vm[tok], this.graphicsSettings.objects);
                     continue;
                 }
 
@@ -2441,7 +2441,7 @@ Sun-bleached bones / skull partially buried in desert sand.
 Background is fully transparent — sand texture below shows through.
 Burial via canvas clip only — no gradient overlay that could darken sand.
 */
-function _drawSandBones(ctx, x, y, variant) {
+function _drawSandBones(ctx, x, y, variant, quality) {
     const ts = this.tileSize;
     const tx = (x / ts) | 0, ty = (y / ts) | 0;
     const s0 = tx * 1234 ^ ty * 5678;
@@ -2451,6 +2451,74 @@ function _drawSandBones(ctx, x, y, variant) {
     const COL_BASE = '#d9d0b0';   // sun-bleached ivory
     const COL_DARK = '#b0a074';   // crevice / underside shadow
     const COL_HI   = '#ecead8';   // lit top surface
+
+    // ── LOW quality: flat shapes, no shadows/highlights ──
+    if (quality === 'low') {
+        const drawBoneLow = (cx, cy, length, thick, angle) => {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+            const hw = length * 0.42;
+            const sh = thick * 0.28;
+            ctx.fillStyle = COL_BASE;
+            ctx.fillRect(-hw * 0.88, -sh, hw * 1.76, sh * 2);
+            ctx.restore();
+        };
+
+        const drawRibLow = (cx, cy, width, sag, thick, angle) => {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+            ctx.lineCap = 'round';
+            ctx.lineWidth = thick;
+            ctx.strokeStyle = COL_BASE;
+            ctx.beginPath();
+            ctx.moveTo(-width / 2, 0);
+            ctx.quadraticCurveTo(0, -sag, width / 2, 0);
+            ctx.stroke();
+            ctx.restore();
+        };
+
+        const drawSkullLow = (cx, cy, size) => {
+            ctx.save();
+            ctx.translate(cx, cy);
+            const cw = size * 0.46, ch = size * 0.38;
+            ctx.fillStyle = COL_BASE;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, cw, ch, 0, 0, Math.PI * 2);
+            ctx.fill();
+            const eW = size * 0.12, eH = size * 0.09;
+            const eX = size * 0.155, eY = size * 0.02;
+            ctx.fillStyle = 'rgba(22,15,5,0.75)';
+            ctx.beginPath(); ctx.ellipse(-eX, eY, eW, eH, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse( eX, eY, eW, eH, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        };
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, ts, ts * 0.68);
+        ctx.clip();
+
+        if (variant === 1) {
+            const a = Math.PI * 0.11 + (rng() - 0.5) * 0.14;
+            drawBoneLow(x + ts * 0.50, y + ts * 0.46, ts * 0.68, ts * 0.095, a);
+        } else if (variant === 2) {
+            drawBoneLow(x + ts * 0.50, y + ts * 0.46, ts * 0.62, ts * 0.084,  Math.PI * 0.21);
+            drawBoneLow(x + ts * 0.50, y + ts * 0.46, ts * 0.62, ts * 0.084, -Math.PI * 0.21);
+        } else if (variant === 3) {
+            const rAngle = Math.PI * 0.04 + (rng() - 0.5) * 0.06;
+            const rW = ts * 0.64, rSag = ts * 0.14, rT = ts * 0.076;
+            drawRibLow(x + ts * 0.50, y + ts * 0.28, rW,        rSag,        rT,        rAngle);
+            drawRibLow(x + ts * 0.50, y + ts * 0.44, rW * 0.86, rSag * 0.82, rT * 0.90, rAngle);
+            drawRibLow(x + ts * 0.50, y + ts * 0.60, rW * 0.70, rSag * 0.62, rT * 0.78, rAngle);
+        } else {
+            drawSkullLow(x + ts * 0.50, y + ts * 0.40, ts * 0.46);
+        }
+
+        ctx.restore();
+        return;
+    }
 
     // ── Long bone: flat epiphysis ends (ew < eh → not round) ──
     const drawBone = (cx, cy, length, thick, angle) => {
@@ -2625,13 +2693,61 @@ function _drawSandBones(ctx, x, y, variant) {
     ctx.restore();
 }
 
-function _drawSandCactus(ctx, x, y, variant) {
+function _drawSandCactus(ctx, x, y, variant, quality) {
     const ts = this.tileSize;
 
     const COL_BODY  = '#4c8c2a';
     const COL_DARK  = '#2e5a18';
     const COL_HI    = '#72bb40';
     const COL_SPINE = '#d4c882';
+
+    // ── LOW quality: plain flat rectangles, no arms detail, no spines ──
+    if (quality === 'low') {
+        const drawCactusLow = (cx, baseY, scale, withArms) => {
+            const W  = ts * 0.13 * scale;
+            const H  = ts * 0.62 * scale;
+            const tx = cx - W * 0.5;
+            const ty = baseY - H;
+
+            if (withArms) {
+                const AW = W * 0.76;
+                const AH = ts * 0.17 * scale;
+                const AJ = ty + H * 0.42;
+                ctx.fillStyle = COL_BODY;
+                // left arm
+                ctx.fillRect(tx - AH, AJ - AW * 0.5, AH + W * 0.1, AW);
+                ctx.fillRect(tx - AH, AJ - AW * 0.5 - ts * 0.21 * scale, AW, ts * 0.21 * scale + AW * 0.5);
+                // right arm
+                ctx.fillRect(tx + W - W * 0.1, AJ - AW * 0.5, AH + W * 0.1, AW);
+                ctx.fillRect(tx + W + AH - AW, AJ - AW * 0.5 - ts * 0.21 * scale, AW, ts * 0.21 * scale + AW * 0.5);
+            }
+
+            ctx.fillStyle = COL_BODY;
+            ctx.fillRect(tx, ty, W, H);
+        };
+
+        const baseY = y + ts * 0.88;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, ts, ts);
+        ctx.clip();
+
+        if (variant === 1) {
+            drawCactusLow(x + ts * 0.34, baseY - ts * 0.10, 1.00, true);
+            drawCactusLow(x + ts * 0.71, baseY - ts * 0.10, 0.62, false);
+        } else if (variant === 2) {
+            drawCactusLow(x + ts * 0.50, baseY, 1.15, true);
+        } else if (variant === 3) {
+            drawCactusLow(x + ts * 0.28, baseY, 0.80, false);
+            drawCactusLow(x + ts * 0.70, baseY - ts * 0.16, 0.62, false);
+        } else {
+            drawCactusLow(x + ts * 0.29, baseY - ts * 0.10, 0.62, false);
+            drawCactusLow(x + ts * 0.66, baseY - ts * 0.10, 1.00, true);
+        }
+
+        ctx.restore();
+        return;
+    }
 
     // cx = center x, baseY = bottom of cactus, scale = size multiplier, withArms = bool
     const drawCactus = (cx, baseY, scale, withArms) => {
