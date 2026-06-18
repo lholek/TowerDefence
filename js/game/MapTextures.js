@@ -1629,6 +1629,13 @@ function _prerenderRoad() {
                     continue;
                 }
 
+                // --- PALMS ON SAND (SND[PALM-1..4]) ---
+                if (tok === 'SND[PALM-1]' || tok === 'SND[PALM-2]' || tok === 'SND[PALM-3]' || tok === 'SND[PALM-4]') {
+                    const vm = {'SND[PALM-1]':1,'SND[PALM-2]':2,'SND[PALM-3]':3,'SND[PALM-4]':4};
+                    this._drawSandPalm(ctx, worldX, worldY, vm[tok], this.graphicsSettings.objects);
+                    continue;
+                }
+
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -2848,6 +2855,210 @@ function _drawSandCactus(ctx, x, y, variant, quality) {
     ctx.restore();
 }
 
+function _drawSandPalm(ctx, x, y, variant, quality) {
+    const ts = this.tileSize;
+
+    const COL_TRUNK      = '#7D5510';
+    const COL_TRUNK_DARK = '#4E3408';
+    const COL_TRUNK_LIT  = '#B8841C';
+    const COL_FROND      = '#2B7019';
+    const COL_FROND_DRK  = '#1A4A10';
+    const COL_FROND_LIT  = '#48A030';
+    const COL_COCONUT    = '#5C3608';
+
+    // ── LOW quality ──
+    if (quality === 'low') {
+        const drawPalmLow = (cx, baseY, scale, lean) => {
+            const H   = ts * 0.68 * scale;
+            const TW  = ts * 0.07  * scale;
+            const topX = cx + lean * H * 0.28;
+            const topY = baseY - H;
+
+            ctx.fillStyle = COL_TRUNK;
+            ctx.beginPath();
+            ctx.moveTo(cx - TW, baseY);
+            ctx.lineTo(cx + TW, baseY);
+            ctx.lineTo(topX + TW * 0.55, topY);
+            ctx.lineTo(topX - TW * 0.55, topY);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = COL_FROND;
+            const crR = ts * 0.23 * scale;
+            ctx.beginPath();
+            ctx.ellipse(topX, topY - crR * 0.28, crR * 1.05, crR * 0.52, lean * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        const baseY = y + ts * 0.88;
+        ctx.save();
+        ctx.beginPath(); ctx.rect(x, y, ts, ts); ctx.clip();
+
+        if (variant === 1) {
+            drawPalmLow(x + ts * 0.50, baseY, 1.00,  0.20);
+        } else if (variant === 2) {
+            drawPalmLow(x + ts * 0.27, baseY, 0.90, -0.18);
+            drawPalmLow(x + ts * 0.70, baseY, 0.90,  0.18);
+        } else if (variant === 3) {
+            drawPalmLow(x + ts * 0.26, baseY, 0.66, -0.32);
+            drawPalmLow(x + ts * 0.69, baseY, 1.00,  0.32);
+        } else {
+            drawPalmLow(x + ts * 0.30, baseY, 1.00, -0.32);
+            drawPalmLow(x + ts * 0.72, baseY, 0.66,  0.32);
+        }
+
+        ctx.restore();
+        return;
+    }
+
+    // ── HIGH quality ──
+    const drawPalm = (cx, baseY, scale, lean) => {
+        const H   = ts * 0.72 * scale;
+        const TW  = ts * 0.072 * scale;
+        const topX = cx + lean * H * 0.28;
+        const topY = baseY - H;
+
+        // Bezier control points for the curved trunk
+        const c1x = cx  + lean * H * 0.09;
+        const c1y = baseY - H * 0.38;
+        const c2x = topX - lean * H * 0.05;
+        const c2y = topY  + H * 0.25;
+
+        // Ground shadow ellipse
+        ctx.fillStyle = 'rgba(50,25,0,0.22)';
+        ctx.beginPath();
+        ctx.ellipse(cx + lean * ts * 0.07 * scale, baseY - 1, TW * 3.2, TW * 0.70, lean * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Trunk body
+        ctx.lineCap  = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = COL_TRUNK;
+        ctx.lineWidth   = TW * 2.1;
+        ctx.beginPath();
+        ctx.moveTo(cx, baseY);
+        ctx.bezierCurveTo(c1x, c1y, c2x, c2y, topX, topY);
+        ctx.stroke();
+
+        // Dark edge
+        ctx.strokeStyle = COL_TRUNK_DARK;
+        ctx.lineWidth   = TW * 0.72;
+        ctx.beginPath();
+        ctx.moveTo(cx + TW * 0.52, baseY);
+        ctx.bezierCurveTo(c1x + TW * 0.55, c1y, c2x + TW * 0.55, c2y, topX + TW * 0.52, topY);
+        ctx.stroke();
+
+        // Lit edge
+        ctx.strokeStyle = COL_TRUNK_LIT;
+        ctx.lineWidth   = TW * 0.44;
+        ctx.beginPath();
+        ctx.moveTo(cx - TW * 0.46, baseY);
+        ctx.bezierCurveTo(c1x - TW * 0.42, c1y, c2x - TW * 0.42, c2y, topX - TW * 0.46, topY);
+        ctx.stroke();
+
+        // Trunk ring scars
+        ctx.strokeStyle = COL_TRUNK_DARK;
+        ctx.lineWidth   = Math.max(0.5, ts * 0.009 * scale);
+        for (let i = 0; i < 6; i++) {
+            const t  = 0.07 + i * 0.155;
+            const mt = 1 - t;
+            const bx = mt*mt*mt*cx + 3*mt*mt*t*c1x + 3*mt*t*t*c2x + t*t*t*topX;
+            const by = mt*mt*mt*baseY + 3*mt*mt*t*c1y + 3*mt*t*t*c2y + t*t*t*topY;
+            ctx.beginPath();
+            ctx.moveTo(bx - TW, by);
+            ctx.lineTo(bx + TW, by + TW * 0.30);
+            ctx.stroke();
+        }
+
+        // ── FRONDS ──
+        const frondLen  = ts * 0.30 * scale;
+        const frondW    = ts * 0.046 * scale;
+        const numFronds = 7;
+        const fanOffset = lean * 0.28;
+
+        for (let i = 0; i < numFronds; i++) {
+            const rawAngle = (i / numFronds) * Math.PI * 2 + fanOffset;
+            const norm = ((rawAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+            // Skip fronds pointing too far downward (near PI/2 in canvas coords)
+            if (norm > Math.PI * 0.20 && norm < Math.PI * 0.80) continue;
+
+            const endX  = topX + Math.cos(rawAngle) * frondLen;
+            const endY  = topY + Math.sin(rawAngle) * frondLen + frondLen * 0.22;
+            const ctrlX = topX + Math.cos(rawAngle) * frondLen * 0.52;
+            const ctrlY = topY + Math.sin(rawAngle) * frondLen * 0.52 + frondLen * 0.08;
+
+            // Shadow
+            ctx.strokeStyle = 'rgba(0,40,0,0.22)';
+            ctx.lineWidth   = frondW;
+            ctx.lineCap     = 'round';
+            ctx.beginPath();
+            ctx.moveTo(topX, topY);
+            ctx.quadraticCurveTo(ctrlX + 1, ctrlY + 2, endX + 1, endY + 2);
+            ctx.stroke();
+
+            // Frond body
+            ctx.strokeStyle = (i % 2 === 0) ? COL_FROND : COL_FROND_DRK;
+            ctx.lineWidth   = frondW;
+            ctx.beginPath();
+            ctx.moveTo(topX, topY);
+            ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+            ctx.stroke();
+
+            // Midrib highlight
+            ctx.strokeStyle = COL_FROND_LIT;
+            ctx.lineWidth   = frondW * 0.23;
+            ctx.beginPath();
+            ctx.moveTo(topX, topY);
+            ctx.quadraticCurveTo(
+                ctrlX * 0.6 + topX * 0.4, ctrlY * 0.6 + topY * 0.4,
+                ctrlX, ctrlY
+            );
+            ctx.stroke();
+        }
+
+        // Coconuts at crown
+        ctx.fillStyle = COL_COCONUT;
+        for (let i = 0; i < 3; i++) {
+            const ca  = (i / 3) * Math.PI * 1.2 - Math.PI * 0.1 + fanOffset;
+            const cr  = ts * 0.034 * scale;
+            const ccx = topX + Math.cos(ca) * cr * 2.8;
+            const ccy = topY + cr * 1.6  + Math.sin(ca) * cr;
+            ctx.beginPath();
+            ctx.arc(ccx, ccy, cr, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(220,160,60,0.30)';
+            ctx.beginPath();
+            ctx.arc(ccx - cr * 0.28, ccy - cr * 0.28, cr * 0.42, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = COL_COCONUT;
+        }
+    };
+
+    const baseY = y + ts * 0.88;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x, y, ts, ts); ctx.clip();
+
+    if (variant === 1) {
+        // Single big palm, slight right lean
+        drawPalm(x + ts * 0.50, baseY, 1.00,  0.20);
+    } else if (variant === 2) {
+        // 2 big palms leaning outward
+        drawPalm(x + ts * 0.27, baseY, 0.92, -0.18);
+        drawPalm(x + ts * 0.70, baseY, 0.92,  0.18);
+    } else if (variant === 3) {
+        // Big on right leaning right, smaller on left leaning left
+        drawPalm(x + ts * 0.26, baseY, 0.68, -0.32);
+        drawPalm(x + ts * 0.69, baseY, 1.00,  0.32);
+    } else {
+        // Big on left leaning left, smaller on right leaning right
+        drawPalm(x + ts * 0.30, baseY, 1.00, -0.32);
+        drawPalm(x + ts * 0.72, baseY, 0.68,  0.32);
+    }
+
+    ctx.restore();
+}
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
@@ -2892,4 +3103,5 @@ export const MapTextures = {
     roundRect,
     _drawSandBones,
     _drawSandCactus,
+    _drawSandPalm,
 };

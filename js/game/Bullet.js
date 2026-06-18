@@ -82,6 +82,10 @@ export default class Bullet {
             this.active = false;
             return;
         }
+        if (tileType === 'SND[PALM-1]' || tileType === 'SND[PALM-2]' || tileType === 'SND[PALM-3]' || tileType === 'SND[PALM-4]') {
+            this.active = false;
+            return;
+        }
 
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;

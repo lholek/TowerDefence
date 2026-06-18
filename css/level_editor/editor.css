@@ -539,6 +539,11 @@ hr {
     color: black;
 }
 
+.tile-snd-palm {
+    background-color: #f0d78c;
+    color: black;
+}
+
 .tile-separator {
     width: 2px;
     background-color: rgb(240, 198, 116);
