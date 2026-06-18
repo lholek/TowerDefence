@@ -900,12 +900,19 @@ function createTileKey() {
             <div class="tile-grid-main" id="tileSlider">
     `;
 
-    const tileGroups = [visibleTerrains, visiblePaths, visibleObjects].filter(g => g.length > 0);
-    tileGroups.forEach((groupTiles, i) => {
+    const tileGroups = [
+        { name: 'Terrains',    tiles: visibleTerrains },
+        { name: 'Paths',       tiles: visiblePaths },
+        { name: 'Map Objects', tiles: visibleObjects }
+    ].filter(g => g.tiles.length > 0);
+
+    tileGroups.forEach((group, i) => {
         if (i > 0) html += `<div class="tile-separator"></div>`;
-        html += `<div class="tile-group">`;
-        groupTiles.forEach(t => { html += tileBtn(t); });
-        html += `</div>`;
+        html += `<div class="tile-group">
+            <div class="tile-group-label">${group.name}</div>
+            <div class="tile-group-items">`;
+        group.tiles.forEach(t => { html += tileBtn(t); });
+        html += `</div></div>`;
     });
 
     html += `</div></div>`;

@@ -856,3 +856,26 @@ hr {
 .btn-green:active, .btn-blue:active, .btn-help:active, .btn-test-map:active {
     transform: translateY(0);
 }
+
+/* Tile filters */
+.tile-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.tile-group-label {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.7;
+    margin-bottom: 4px;
+    padding-right: 4px;
+    white-space: nowrap;
+}
+
+.tile-group-items {
+    display: flex;
+    gap: 4px;
+}
