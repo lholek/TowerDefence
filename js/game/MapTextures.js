@@ -2892,7 +2892,6 @@ function _drawSandPalm(ctx, x, y, variant, quality) {
 
         const baseY = y + ts * 0.88;
         ctx.save();
-        ctx.beginPath(); ctx.rect(x, y, ts, ts); ctx.clip();
 
         if (variant === 1) {
             drawPalmLow(x + ts * 0.50, baseY, 1.00,  0.20);
@@ -3037,7 +3036,6 @@ function _drawSandPalm(ctx, x, y, variant, quality) {
 
     const baseY = y + ts * 0.88;
     ctx.save();
-    ctx.beginPath(); ctx.rect(x, y, ts, ts); ctx.clip();
 
     if (variant === 1) {
         // Single big palm, slight right lean

@@ -965,7 +965,11 @@ function getTileTypeLabel(type) {
         'SND[CACTUS-1]': 'Cactus 1',
         'SND[CACTUS-2]': 'Cactus 2',
         'SND[CACTUS-3]': 'Cactus 3',
-        'SND[CACTUS-4]': 'Cactus 4'
+        'SND[CACTUS-4]': 'Cactus 4',
+        'SND[PALM-1]': 'Palm 1',
+        'SND[PALM-2]': 'Palm 2',
+        'SND[PALM-3]': 'Palm 3',
+        'SND[PALM-4]': 'Palm 4'
     };
 
     if (labels[type]) {
