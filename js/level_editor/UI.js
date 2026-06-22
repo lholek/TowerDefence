@@ -38,12 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function toggleEditorPanel(targetIds, clickedButton) {
         // Split the string by spaces to handle multiple IDs
-        console.log(clickedButton);
 
         // 1. Define the IDs you want to ignore
         const excludedIds = ['testMapBtn', 'shareMapBtn', 'toggleHelp'];
-
-        console.log(clickedButton);
 
         if (!targetIds) {
             return; // Early exit if no IDs provided

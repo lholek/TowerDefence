@@ -421,7 +421,6 @@ export default class Enemy {
   }
 
   _drawDamageIndicator(ctx, x = 0, y = 0, size = 30, isPre = false, type = "GOLEM", quality = "low") {
-    console.log("damage: " + this.damage );
     if (this.damage == 1){return;}
     let indicatorSize = 1;
     let indicatorPostionX = 10;
@@ -496,9 +495,7 @@ export default class Enemy {
     const w = ctx.measureText(damageText.base).width + (damageText.sup ? 25 : 0);
     
     // Absolutní hodnota pro určení počtu cifer (aby -5 i 5 mělo stejnou mezeru)
-    console.log(this.damage);
     const absVal = Math.abs(this.damage);
-        console.log(absVal);
     if (this.damage >= 1) {
         // KLADNÝ DAMAGE (Meč)
         if (absVal < 10) {
