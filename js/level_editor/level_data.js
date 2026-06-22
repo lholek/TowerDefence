@@ -126,11 +126,12 @@ export function getNextAvailableMarker(prefix) {
     const layout = currentLevelData.maps[0].layout;
     const foundNumbers = new Set();
 
+    const markerPattern = new RegExp(`^${prefix}(\\d+)`);
     layout.forEach(row => {
         row.forEach(tile => {
-            if (typeof tile === 'string' && tile.startsWith(prefix)) {
-                const match = tile.match(/\d+/);
-                if (match) foundNumbers.add(parseInt(match[0], 10));
+            if (typeof tile === 'string') {
+                const match = tile.match(markerPattern);
+                if (match) foundNumbers.add(parseInt(match[1], 10));
             }
         });
     });
