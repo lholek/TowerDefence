@@ -1,22 +1,23 @@
 // js/game/MapTextures.js
 /*
-X - Grass
-SND - Sand
-SNW - Snow
-ICE - Ice (impassable, non-buildable, shootable)
-LAVA - Lava (impassable, non-buildable, shootable)
-O - Road
-O[SNW] - Snowy Road
-O[SND] - Sandy Road
-S* - Start (S1, S2...) [Portal]
-E* - End (E1, E2...) [Tree]
-W - Water (impassable, non-buildable, shootable)
-M - Mountain (impassable, non-buildable, non-shootable)
-- - Air(impassable, non-buildable, shootable)
-Pre-Beta IV:
+X                - Grass
+SND              - Sand
+SNW              - Snow
+ICE              - Ice (impassable, non-buildable, shootable)
+LAVA             - Lava (impassable, non-buildable, shootable)
+O                - Road
+O[SNW]           - Snowy Road
+O[SND]           - Sandy Road
+S*               - Start (S1, S2...) [Portal]
+E*               - End (E1, E2...) [Tree]
+W                - Water (impassable, non-buildable, shootable)
+M                - Mountain (impassable, non-buildable, non-shootable)
+-                - Air(impassable, non-buildable, shootable)
 SND[Cactus-1..4] - cant build towers, blocks arrows
 SND[BONE-1..4]   - cant build towers, doesnt block arrows
 SND[Palm-1..2]   - cant build towers, blocks arrows
+
+Pre-Beta IV:
 "TODO: SND[Cactus] - cant build towers, blocks arrows",
 "TODO: SND[Palm] - cant build towers, blocks arrows",
 "TODO: SND[BONE] - cant build towers, doesnt block arrows",
@@ -24,6 +25,63 @@ SND[Palm-1..2]   - cant build towers, blocks arrows
 "TODO: SNW[Tree] - cant build towers, blocks arrows",
 "TODO: SND[Palm] - cant build towers, blocks arrows",
 */
+
+/**
+ * 
+ * TILES:
+ * 
+ * @see _preRenderSnowLow - Snow Low 
+ * @see _preRenderSnowHigh - Snow High
+ * @see _preRenderSandLow - Sand Low
+ * @see _preRenderSandHigh - Sand High
+ * @see _drawBurnedGroundLow - Burned Ground Low
+ * @see _drawBurnedGround - Burned Ground High
+ * @see _drawHolyGroundLow - Holy Ground High
+ * @see _drawHolyGround - Holy Ground High
+ * @see _drawMagicPortal - Starting Portal Helper
+ * @see _drawMagicPortalHigh - Starting Portal High
+ * @see _drawMagicPortalLow - Starting Portal Low
+ * @see _preRenderTreeLow - Ending Tree Low
+ * @see _preRenderTreeHigh - Ending Tree High
+ * @see _drawLifeTree - Ending Tree 
+ * @see _drawRootBase - Ending Tree Roots
+ * @see _preRenderMountainSet - Mountins
+ * @see _preRenderMountainParts - Mountins
+ * @see _preRenderMountainHigh - Mountins High
+ * @see _preRenderMountainLow - Mountins Low
+ * @see drawFixedPeak - Mountins
+ * @see _getJaggedLine - Mountins Helper
+ * @see _createNoisePattern - Mountins Helper
+ * @see _prerenderGrass - Grass
+ * @see _generateGrassTiles - Grass High
+ * @see _generateGrassTilesLow - Grass Low
+ * @see _prerenderRoad - Roads Low/High
+ * @see _prerenderWaterHigh - Water High
+ * @see _prerenderWater - Water Low
+ * @see _drawIceTile - Ice High
+ * @see _drawIceTileLow - Ice Low
+ * @see _drawLavaTile - Lava High
+ * @see _drawLavaTileLow - Lava Low
+ * @see _drawSandBones - Bones Low/High
+ * @see _drawSandCactus - Cactuses Low/High
+ * @see _drawSandPalm - Palms Low/High
+ * 
+ * HELPERS:
+ * @see _drawNaturalFlower - Flower Helper
+ * @see _adjustColor - Color Helper
+ * @see _drawAAAStone - Road Helper
+ * @see getCoastColor - Coats Helper
+ * @see _prerenderVignette - Vignette Helper
+ * @see _preRenderMountainFoundations - Mountins Helper
+ * @see _drawLavaBubbles - Lava Helper
+ * 
+ * 
+ * EDITOR HELPERS: 
+ *
+ * @see roundRect - Global Helper
+ * 
+ * 
+ */
 /*
 _preRenderSnowLow
 Tile: SNW
@@ -550,44 +608,6 @@ function _adjustColor(hex, amt) {
     }
 
 /*
-_drawMarker
-Tile: E*, S* (Editor)
-*/
-function _drawMarker(ctx, x, y, color, label, subtext = "") {
-      const size = this.tileSize * 0.6;
-      ctx.save();
-      ctx.translate(x, y);
-
-      // 1. Outer Glow/Shadow
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = color;
-
-      // 2. Stone Plate (3D look)
-      ctx.fillStyle = "#334155"; // Dark stone base
-      this.roundRect(ctx, -size/2, -size/2, size, size, 8, true, false);
-
-      // 3. Colored Inset
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.8;
-      this.roundRect(ctx, -size/2 + 4, -size/2 + 4, size - 8, size - 8, 4, true, false);
-      ctx.globalAlpha = 1.0;
-
-      // 4. Text Labels
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.font = `bold ${this.tileSize * 0.18}px Arial`;
-      ctx.fillText(label, 0, 5);
-
-      if (subtext) {
-          ctx.font = `${this.tileSize * 0.12}px Arial`;
-          ctx.fillText(subtext, 0, 18);
-      }
-
-      ctx.restore();
-    }
-
-/*
 _drawAAAStone
 Tile: O
 */
@@ -621,6 +641,7 @@ function _drawAAAStone(ctx, x, y, size, rotation, color, variation) {
 /*
 _drawMagicPortal
 Tile: S*
+Graphics: Low
 */
 function _drawMagicPortal(ctx, x, y, performanceTime) {
         const time = (typeof performanceTime === 'number' && isFinite(performanceTime))
@@ -3177,7 +3198,6 @@ export const MapTextures = {
     _drawHolyGroundLow,
     _drawNaturalFlower,
     _adjustColor,
-    _drawMarker,
     _drawAAAStone,
     _drawMagicPortal,
     _drawMagicPortalHigh,
