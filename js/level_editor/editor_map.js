@@ -234,7 +234,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 
     // If we are placing a Start or End, and we have already drawn something 
     // during this specific click-and-hold session, STOP.
-    const isMarker = (resolvedTileType.startsWith('S') && resolvedTileType !== 'SNW' && resolvedTileType !== 'SND' && !resolvedTileType.startsWith('SND[')) || resolvedTileType.startsWith('E');
+    const isMarker = (resolvedTileType.startsWith('S') && resolvedTileType !== 'SNW' && resolvedTileType !== 'SND' && !resolvedTileType.startsWith('SND[') && !resolvedTileType.startsWith('SNW[')) || resolvedTileType.startsWith('E');
     if (isMarker && hasDrawn) {
         return false; 
     }
@@ -253,7 +253,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
             if (oldTile !== tileToPlace) {
                 // Prevent overwriting a different S with an S, or E with an E
                 // This stops the "machine gun" effect even for big brushes
-                const isMarkerS = (t) => t.startsWith('S') && t !== 'SNW' && t !== 'SND' && !t.startsWith('SND[');
+                const isMarkerS = (t) => t.startsWith('S') && t !== 'SNW' && t !== 'SND' && !t.startsWith('SND[') && !t.startsWith('SNW[');
                 const isMarkerE = (t) => t.startsWith('E');
                             
                 const overwritingSameCategory = 
@@ -291,7 +291,7 @@ function handleMapDrawStart(e) {
         const wasApplied = applyTileToCurrentPosition(e.clientX, e.clientY, activeDrawTileType);
 
         if (wasApplied) {
-            if (activeDrawTileType.startsWith('S') && activeDrawTileType !== 'SNW' && activeDrawTileType !== 'SND' && !activeDrawTileType.startsWith('SND[')) {
+            if (activeDrawTileType.startsWith('S') && activeDrawTileType !== 'SNW' && activeDrawTileType !== 'SND' && !activeDrawTileType.startsWith('SND[') && !activeDrawTileType.startsWith('SNW[')) {
                 setCurrentTileType('REFRESH_S');
             } else if (activeDrawTileType.startsWith('E')) {
                 setCurrentTileType('REFRESH_E');

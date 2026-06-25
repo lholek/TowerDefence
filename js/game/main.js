@@ -379,6 +379,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'SNW':
             tile.classList.add('snow');
             break;
+          case 'SNW[SPIKE-1]':
+          case 'SNW[SPIKE-2]':
+          case 'SNW[SPIKE-3]':
+          case 'SNW[SPIKE-4]':
+            tile.classList.add('snw-spike');
+            break;
           case 'O[SND]':
           case 'O[SNW]':
             tile.classList.add('path');

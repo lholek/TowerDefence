@@ -145,7 +145,7 @@ export function getNextAvailableMarker(prefix) {
 
 export function setCurrentTileType(type) {
     // Determine what category we are currently holding
-    const isHoldingS = typeof currentTileType === 'string' && currentTileType.startsWith('S') && (currentTileType !== 'SNW' && currentTileType !== 'SND' && !currentTileType.startsWith('SND['))
+    const isHoldingS = typeof currentTileType === 'string' && currentTileType.startsWith('S') && (currentTileType !== 'SNW' && currentTileType !== 'SND' && !currentTileType.startsWith('SND[') && !currentTileType.startsWith('SNW['))
     const isHoldingE = typeof currentTileType === 'string' && currentTileType.startsWith('E');
 
     if (type === 'S' || (type === 'REFRESH_S' && isHoldingS)) {
