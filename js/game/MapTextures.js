@@ -3438,7 +3438,7 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
     ctx.clip();
 
     if (variant === 1) {
-        drawSpike(x + ts * 0.50, baseY, ts * 0.86, ts * 0.25, 0, b1);
+        drawSpike(x + ts * 0.50, baseY, ts * 0.74, ts * 0.25, 0, b1);
     } else if (variant === 2) {
         drawSpike(x + ts * 0.30, baseY, ts * 0.52, ts * 0.16, -0.14, b1);
         drawSpike(x + ts * 0.70, baseY, ts * 0.52, ts * 0.16,  0.14, b2);
