@@ -544,6 +544,11 @@ hr {
     color: black;
 }
 
+.tile-snw-spike {
+    background-color: white;
+    color: black;
+}
+
 .tile-separator {
     width: 2px;
     background-color: rgb(240, 198, 116);

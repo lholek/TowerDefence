@@ -16,6 +16,7 @@ M                - Mountain (impassable, non-buildable, non-shootable)
 SND[Cactus-1..4] - cant build towers, blocks arrows
 SND[BONE-1..4]   - cant build towers, doesnt block arrows
 SND[Palm-1..2]   - cant build towers, blocks arrows
+SNW[Spike-1..4]  - cant build towers, blocks arrows
 
 Pre-Beta IV:
 "TODO: SND[Cactus] - cant build towers, blocks arrows",
@@ -65,6 +66,7 @@ Pre-Beta IV:
  * @see _drawSandBones - Bones Low/High
  * @see _drawSandCactus - Cactuses Low/High
  * @see _drawSandPalm - Palms Low/High
+ * @see _drawSnowSpike - Snow Spikes Low/High
  * 
  * HELPERS:
  * @see _drawNaturalFlower - Flower Helper
@@ -1657,6 +1659,13 @@ function _prerenderRoad() {
                     continue;
                 }
 
+                // --- SPIKES ON SNOW (SNW[SPIKE-1..4]) ---
+                if (tok === 'SNW[SPIKE-1]' || tok === 'SNW[SPIKE-2]' || tok === 'SNW[SPIKE-3]' || tok === 'SNW[SPIKE-4]') {
+                    const vm = {'SNW[SPIKE-1]':1,'SNW[SPIKE-2]':2,'SNW[SPIKE-3]':3,'SNW[SPIKE-4]':4};
+                    this._drawSnowSpike(ctx, worldX, worldY, vm[tok], this.graphicsSettings.objects);
+                    continue;
+                }
+
                 // --- STROM (E) ---
                 if (/^E/i.test(tok)) {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -3182,6 +3191,271 @@ function _drawSandPalm(ctx, x, y, variant, quality) {
     ctx.restore();
 }
 
+/*
+_drawSnowSpike
+Tiles: SNW[SPIKE-1..4]
+Graphics: shared (both quality levels)
+Frosty bent ice-crystal spikes rising from the snow.
+Background is the snow texture — spike is drawn on top in the road layer.
+Bent via quadratic bezier curves; snowy frost patches cling to the lit side.
+*/
+function _drawSnowSpike(ctx, x, y, variant, quality) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    const COL_SNOW   = '#e4f2fa';   // snow mound / frost patches
+    const COL_ICE_D  = '#0d1e30';   // deep shadow facet
+    const COL_ICE_M  = '#2a5a7a';   // mid ice blue
+    const COL_ICE_L  = '#5aaccf';   // lit ice face
+
+    // ── LOW quality: bent triangles with frost accent ──
+    if (quality === 'low') {
+        const drawSpikeLow = (cx, baseY, h, w, angle, bendX) => {
+            const bx = bendX || 0;
+            ctx.save();
+            ctx.translate(cx, baseY);
+            ctx.rotate(angle || 0);
+
+            // Main body — curved sides
+            ctx.fillStyle = COL_ICE_M;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2, 0);
+            ctx.quadraticCurveTo(bx - w * 0.20, -h * 0.50, bx, -h);
+            ctx.quadraticCurveTo(bx + w * 0.20, -h * 0.50, w / 2, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Lit right face
+            ctx.fillStyle = COL_ICE_L;
+            ctx.beginPath();
+            ctx.moveTo(w * 0.05, 0);
+            ctx.quadraticCurveTo(bx + w * 0.20, -h * 0.50, bx + w * 0.04, -h);
+            ctx.lineTo(w / 2, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            // Frost patch near tip
+            ctx.fillStyle = 'rgba(220, 244, 255, 0.75)';
+            ctx.beginPath();
+            ctx.ellipse(bx, -h * 0.82, w * 0.18, h * 0.07, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        };
+
+        const baseY = y + ts * 0.80;
+        const b1 = (rng() - 0.5) * ts * 0.09;
+        const b2 = (rng() - 0.5) * ts * 0.07;
+        const b3 = (rng() - 0.5) * ts * 0.08;
+        const b4 = (rng() - 0.5) * ts * 0.07;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, ts, ts);
+        ctx.clip();
+
+        if (variant === 1) {
+            drawSpikeLow(x + ts * 0.50, baseY, ts * 0.72, ts * 0.22, 0, b1);
+        } else if (variant === 2) {
+            drawSpikeLow(x + ts * 0.32, baseY, ts * 0.44, ts * 0.14, -0.14, b1);
+            drawSpikeLow(x + ts * 0.68, baseY, ts * 0.44, ts * 0.14,  0.14, b2);
+            drawSpikeLow(x + ts * 0.50, baseY, ts * 0.60, ts * 0.18, 0, b3);
+        } else if (variant === 3) {
+            drawSpikeLow(x + ts * 0.36, baseY, ts * 0.66, ts * 0.18, -0.20, b1);
+            drawSpikeLow(x + ts * 0.64, baseY, ts * 0.66, ts * 0.18,  0.20, b2);
+        } else {
+            drawSpikeLow(x + ts * 0.22, baseY, ts * 0.34, ts * 0.11, -0.22, b1);
+            drawSpikeLow(x + ts * 0.42, baseY, ts * 0.60, ts * 0.16, 0, b2);
+            drawSpikeLow(x + ts * 0.62, baseY, ts * 0.46, ts * 0.14,  0.14, b3);
+            drawSpikeLow(x + ts * 0.77, baseY, ts * 0.30, ts * 0.09,  0.25, b4);
+        }
+
+        ctx.restore();
+        return;
+    }
+
+    // ── HIGH quality: glassy frosty bent spike ──
+    const drawSpike = (cx, baseY, h, w, angle, bendX) => {
+        const bx = bendX || 0;
+
+        ctx.save();
+        ctx.translate(cx, baseY);
+        ctx.rotate(angle || 0);
+
+        // Helper: spike outline as quadratic bezier (bent shape)
+        const spikePath = (offX, offY) => {
+            const ox = offX || 0, oy = offY || 0;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 + ox, oy);
+            ctx.quadraticCurveTo(bx - w * 0.22 + ox, -h * 0.50 + oy, bx + ox, -h + oy);
+            ctx.quadraticCurveTo(bx + w * 0.22 + ox, -h * 0.50 + oy,  w / 2 + ox, oy);
+            ctx.closePath();
+        };
+
+        // Drop shadow (offset)
+        ctx.fillStyle = 'rgba(0, 12, 35, 0.40)';
+        spikePath(3.5, 4);
+        ctx.fill();
+
+        // Snow mound at base
+        ctx.fillStyle = COL_SNOW;
+        ctx.beginPath();
+        ctx.ellipse(bx * 0.25, 1, w * 0.92, w * 0.30, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // === Clip all interior to spike silhouette ===
+        ctx.save();
+        spikePath();
+        ctx.clip();
+
+        // STEP 1: Ice core — dark-to-lit horizontal gradient
+        const coreGrad = ctx.createLinearGradient(-w / 2, 0, w / 2, 0);
+        coreGrad.addColorStop(0,    '#0a1825');
+        coreGrad.addColorStop(0.25, '#163350');
+        coreGrad.addColorStop(0.55, '#2a6080');
+        coreGrad.addColorStop(0.82, '#4a9ab8');
+        coreGrad.addColorStop(1,    '#163350');
+        ctx.fillStyle = coreGrad;
+        ctx.fillRect(-w, -h - 2, w * 2.5, h + 4);
+
+        // STEP 2: Frosted surface — white-blue near tip, fading to nothing at base
+        const frostGrad = ctx.createLinearGradient(0, -h, 0, 0);
+        frostGrad.addColorStop(0,    'rgba(238, 252, 255, 0.76)');
+        frostGrad.addColorStop(0.22, 'rgba(195, 235, 250, 0.44)');
+        frostGrad.addColorStop(0.60, 'rgba(115, 175, 215, 0.18)');
+        frostGrad.addColorStop(1,    'rgba(60, 100, 140, 0.04)');
+        ctx.fillStyle = frostGrad;
+        ctx.fillRect(-w, -h - 2, w * 2.5, h + 4);
+
+        // STEP 3: Left shadow facet
+        ctx.globalAlpha = 0.60;
+        ctx.fillStyle = '#050e1a';
+        ctx.beginPath();
+        ctx.moveTo(-w / 2, 0);
+        ctx.quadraticCurveTo(bx - w * 0.20, -h * 0.48, bx - w * 0.02, -h);
+        ctx.lineTo(bx + w * 0.10, -h * 0.45);
+        ctx.lineTo(-w * 0.10, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+
+        // STEP 4: Snow/frost patches clinging to the lit side
+        ctx.globalAlpha = 0.70;
+        ctx.fillStyle = '#eef7ff';
+        ctx.beginPath();
+        ctx.ellipse(bx + w * 0.18, -h * 0.66, w * 0.26, h * 0.10, -0.25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(bx + w * 0.26, -h * 0.50, w * 0.16, h * 0.065, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(bx + w * 0.10, -h * 0.82, w * 0.14, h * 0.055, -0.10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+
+        // STEP 5: Frost sparkle pixels (single-pixel bright dots)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.90)';
+        for (let i = 0; i < 8; i++) {
+            ctx.fillRect(
+                bx + (rng() - 0.5) * w * 1.1,
+                -(rng() * h * 0.87 + h * 0.04),
+                1, 1
+            );
+        }
+
+        ctx.restore(); // end clip
+
+        // STEP 6: Caustic refraction streak (over silhouette)
+        ctx.globalAlpha = 0.30;
+        ctx.strokeStyle = '#b8e4ff';
+        ctx.lineWidth = Math.max(0.5, ts * 0.009);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(bx + w * 0.07, -h * 0.88);
+        ctx.lineTo(bx + w * 0.28, -h * 0.28);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        // STEP 7: Right rim light — the glass/ice edge sheen
+        ctx.globalAlpha = 0.80;
+        const rimGrad = ctx.createLinearGradient(w / 2, 0, w / 2, -h);
+        rimGrad.addColorStop(0,    'rgba(200, 240, 255, 0)');
+        rimGrad.addColorStop(0.20, '#cceeff');
+        rimGrad.addColorStop(0.75, '#ffffff');
+        rimGrad.addColorStop(1,    'rgba(255, 255, 255, 0.15)');
+        ctx.strokeStyle = rimGrad;
+        ctx.lineWidth = Math.max(0.9, ts * 0.013);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(w / 2, 0);
+        ctx.quadraticCurveTo(bx + w * 0.24, -h * 0.50, bx + w * 0.04, -h);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        // STEP 8: Left edge cold-blue outline
+        ctx.globalAlpha = 0.36;
+        ctx.strokeStyle = '#4a90b0';
+        ctx.lineWidth = Math.max(0.4, ts * 0.006);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-w / 2, 0);
+        ctx.quadraticCurveTo(bx - w * 0.24, -h * 0.50, bx, -h);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        // STEP 9: Bright white tip + sparkle cross
+        ctx.globalAlpha = 0.96;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(bx - w * 0.03, -h + 2.5);
+        ctx.lineTo(bx, -h);
+        ctx.lineTo(bx + w * 0.03, -h + 2.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.68)';
+        ctx.lineWidth = Math.max(0.5, ts * 0.007);
+        ctx.beginPath(); ctx.moveTo(bx, -h - 3.5); ctx.lineTo(bx, -h + 1); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bx - 2.5, -h);  ctx.lineTo(bx + 2.5, -h); ctx.stroke();
+        ctx.globalAlpha = 1.0;
+
+        ctx.restore();
+    };
+
+    const baseY = y + ts * 0.80;
+
+    // Per-tile seeded bend values (deterministic, unique per tile position)
+    const b1 = (rng() - 0.5) * ts * 0.10;
+    const b2 = (rng() - 0.5) * ts * 0.09;
+    const b3 = (rng() - 0.5) * ts * 0.08;
+    const b4 = (rng() - 0.5) * ts * 0.08;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    if (variant === 1) {
+        drawSpike(x + ts * 0.50, baseY, ts * 0.86, ts * 0.25, 0, b1);
+    } else if (variant === 2) {
+        drawSpike(x + ts * 0.30, baseY, ts * 0.52, ts * 0.16, -0.14, b1);
+        drawSpike(x + ts * 0.70, baseY, ts * 0.52, ts * 0.16,  0.14, b2);
+        drawSpike(x + ts * 0.50, baseY, ts * 0.74, ts * 0.21,  0,    b3);
+    } else if (variant === 3) {
+        drawSpike(x + ts * 0.34, baseY, ts * 0.80, ts * 0.21, -0.20, b1);
+        drawSpike(x + ts * 0.66, baseY, ts * 0.80, ts * 0.21,  0.20, b2);
+    } else {
+        drawSpike(x + ts * 0.20, baseY, ts * 0.40, ts * 0.13, -0.22, b1);
+        drawSpike(x + ts * 0.41, baseY, ts * 0.72, ts * 0.19,  0,    b2);
+        drawSpike(x + ts * 0.62, baseY, ts * 0.55, ts * 0.16,  0.14, b3);
+        drawSpike(x + ts * 0.78, baseY, ts * 0.36, ts * 0.11,  0.25, b4);
+    }
+
+    ctx.restore();
+}
+
 export const MapTextures = {
     _preRenderSnowLow,
     _preRenderSnowHigh,
@@ -3226,4 +3500,5 @@ export const MapTextures = {
     _drawSandBones,
     _drawSandCactus,
     _drawSandPalm,
+    _drawSnowSpike,
 };

@@ -846,12 +846,14 @@ function createTileKey() {
         'SND[CACTUS-1]': 'Cactus 1', 'SND[CACTUS-2]': 'Cactus 2',
         'SND[CACTUS-3]': 'Cactus 3', 'SND[CACTUS-4]': 'Cactus 4',
         'SND[PALM-1]': 'Palm 1', 'SND[PALM-2]': 'Palm 2',
-        'SND[PALM-3]': 'Palm 3', 'SND[PALM-4]': 'Palm 4'
+        'SND[PALM-3]': 'Palm 3', 'SND[PALM-4]': 'Palm 4',
+        'SNW[SPIKE-1]': 'Spike 1', 'SNW[SPIKE-2]': 'Spike 2',
+        'SNW[SPIKE-3]': 'Spike 3', 'SNW[SPIKE-4]': 'Spike 4'
     };
 
     const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-'];
     const pathsOrder   = ['O', 'O[SNW]', 'O[SND]'];
-    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]'];
+    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]'];
 
     const visibleTerrains = activeTileFilters.terrains ? terrainOrder.filter(t => labels[t]) : [];
     const visiblePaths    = activeTileFilters.paths    ? pathsOrder.filter(t => labels[t])   : [];
@@ -864,6 +866,7 @@ function createTileKey() {
         if (/^SND\[BONE-/.test(type)) return 'snd-bone';
         if (/^SND\[CACTUS-/.test(type)) return 'snd-cactus';
         if (/^SND\[PALM-/.test(type)) return 'snd-palm';
+        if (/^SNW\[SPIKE-/.test(type)) return 'snw-spike';
         return type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase()
                    .replace(/--+/g, '-').replace(/-$/, '') || '-';
     };
@@ -976,7 +979,11 @@ function getTileTypeLabel(type) {
         'SND[PALM-1]': 'Palm 1',
         'SND[PALM-2]': 'Palm 2',
         'SND[PALM-3]': 'Palm 3',
-        'SND[PALM-4]': 'Palm 4'
+        'SND[PALM-4]': 'Palm 4',
+        'SNW[SPIKE-1]': 'Spike 1',
+        'SNW[SPIKE-2]': 'Spike 2',
+        'SNW[SPIKE-3]': 'Spike 3',
+        'SNW[SPIKE-4]': 'Spike 4'
     };
 
     if (labels[type]) {
@@ -1023,6 +1030,9 @@ function updateCurrentTileDisplay() {
     if (currentTileType === 'O[SNW]')   baseType = 'o-snw';
     if (currentTileType === 'O[SND]')   baseType = 'o-snd';
     if (/^SND\[BONE-/.test(currentTileType)) baseType = 'snd-bone';
+    if (/^SND\[CACTUS-/.test(currentTileType)) baseType = 'snd-cactus';
+    if (/^SND\[PALM-/.test(currentTileType)) baseType = 'snd-palm';
+    if (/^SNW\[SPIKE-/.test(currentTileType)) baseType = 'snw-spike';
 
     display.classList.add(`tile-${baseType}`);
 }

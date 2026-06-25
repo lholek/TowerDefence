@@ -86,6 +86,10 @@ export default class Bullet {
             this.active = false;
             return;
         }
+        if (tileType === 'SNW[SPIKE-1]' || tileType === 'SNW[SPIKE-2]' || tileType === 'SNW[SPIKE-3]' || tileType === 'SNW[SPIKE-4]') {
+            this.active = false;
+            return;
+        }
 
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;
