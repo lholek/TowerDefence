@@ -385,6 +385,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'SNW[SPIKE-4]':
             tile.classList.add('snw-spike');
             break;
+          case 'SNW[Snowman]':
+            tile.classList.add('snow');
+            break;
+          case 'W[Rock-1]':
+          case 'W[Rock-2]':
+          case 'W[Rock-3]':
+          case 'W[Rock-4]':
+            tile.classList.add('water');
+            break;
           case 'O[SND]':
           case 'O[SNW]':
             tile.classList.add('path');

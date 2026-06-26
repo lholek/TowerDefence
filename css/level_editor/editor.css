@@ -549,6 +549,16 @@ hr {
     color: black;
 }
 
+.tile-snw-snowman {
+    background-color: white;
+    color: black;
+}
+
+.tile-w-rock {
+    background-color: #0b3a5e;
+    color: #a8d8f0;
+}
+
 .tile-separator {
     width: 2px;
     background-color: rgb(240, 198, 116);

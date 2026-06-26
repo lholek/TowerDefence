@@ -383,7 +383,7 @@ export default class Map {
                 const tok = String(this.grid[r][c]);
                 const bounds = this.getTileBounds(c, r);
             
-                if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]' || tok === 'SNW[SPIKE-1]' || tok === 'SNW[SPIKE-2]' || tok === 'SNW[SPIKE-3]' || tok === 'SNW[SPIKE-4]') {
+                if (tok === 'SNW' || tok === 'M' || tok === 'O[SNW]' || tok === 'SNW[SPIKE-1]' || tok === 'SNW[SPIKE-2]' || tok === 'SNW[SPIKE-3]' || tok === 'SNW[SPIKE-4]' || tok === 'SNW[Snowman]') {
                     if (!this.snowTexture)
                         this.snowTexture = (
                             this.graphicsSettings.terrain === 'low'
@@ -603,6 +603,8 @@ export default class Map {
         'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]',
         'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]',
         'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]',
+        'SNW[Snowman]',
+        'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]',
       ];
 
       if (NON_BUILDABLE.includes(tok)) return false;
