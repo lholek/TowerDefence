@@ -5,6 +5,7 @@
       "release": "-",
       "changes": [
         "Improved - UI - Added option to set Obejct quality in the Settings",
+        "Improve - From 11 -> 34 Tiles",
         "Improved - Graphics - Improved grass on High and Low settings",
         "Improved - Editor - New Improved Map Editor",
         "Improved - Editor - MAP - New Slider for tiles in editor",
@@ -28,7 +29,9 @@
         "TODO: ADDED: SND[Palm 1-4] - cant build towers, blocks arrows",
         "TODO: ADDED: SNW[Spike 1-4] - cant build towers, blocks arrows",
         "-------------------------------------------------------------",
-        "TODO: ADD: X[Tree], SNW[Tree], SNW[Spike], W[Rock 1-4]",
+        "TODO: ADD: Holy Ground, Burned Ground, X[Tree], SNW[Tree], SNW[Spike], W[Rock 1-4]",
+        "TODO: Holy Ground - cant build towers, doesnt blocks arrows - is now under Tree",
+        "TODO: Burndee Ground - cant build towers, doesnt blocks arrows - is now under Portal",
         "TODO: X[Tree] - cant build towers, blocks arrows, joins in group",
         "TODO: SNW[Tree] - cant build towers, blocks arrows, joins in group",
         "TODO: SNW[Snowman] - cant build towers, blocks arrows",
