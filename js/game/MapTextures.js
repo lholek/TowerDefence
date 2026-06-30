@@ -3726,6 +3726,8 @@ function _drawWaterRock(ctx, x, y, variant, quality) {
     }
 
     // ── HIGH quality shared helpers ──
+    const bY = wY + ts*0.02;
+
     const drawRipples = (cx2, n = 3) => {
         ctx.save();
         for (let i = 0; i < n; i++) {
@@ -3733,7 +3735,7 @@ function _drawWaterRock(ctx, x, y, variant, quality) {
             ctx.lineWidth = Math.max(0.5, ts*0.008);
             ctx.globalAlpha = 1.0 - i*0.30;
             ctx.beginPath();
-            ctx.ellipse(cx2, wY + ts*0.008, ts*0.28*(1+i*0.28), ts*0.042*(1+i*0.28), 0, 0, Math.PI*2);
+            ctx.ellipse(cx2, wY + ts*0.010, ts*0.32*(1+i*0.28), ts*0.046*(1+i*0.28), 0, 0, Math.PI*2);
             ctx.stroke();
         }
         ctx.globalAlpha = 1.0; ctx.restore();
@@ -3742,288 +3744,415 @@ function _drawWaterRock(ctx, x, y, variant, quality) {
     const drawFoam = (x1, y1, x2, y2, cpx, cpy) => {
         ctx.save();
         ctx.strokeStyle = FOAM; ctx.lineWidth = Math.max(1.0, ts*0.016);
-        ctx.lineCap = 'round'; ctx.globalAlpha = 0.70;
+        ctx.lineCap = 'round'; ctx.globalAlpha = 0.72;
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
         ctx.globalAlpha = 1.0; ctx.restore();
     };
 
-    // ── HIGH: VARIANT 1 — Large organic granite boulder ──
-    if (variant === 1) {
-        const cx = x + ts*0.48;
+    // Clip-and-fill helper
+    const cfill = (pathFn, grad) => {
+        ctx.save(); pathFn(); ctx.clip(); ctx.fillStyle = grad; ctx.fillRect(x, y, ts, ts); ctx.restore();
+    };
 
-        const rock1 = () => {
+    // ── HIGH: VARIANT 1 — The Great Coastal Cliff (massive sheer face) ──
+    if (variant === 1) {
+        const cx = x + ts*0.50;
+
+        // Massive cliff spanning ~88% of tile, reaching near tile top
+        const cliff = () => {
             ctx.beginPath();
-            ctx.moveTo(cx - ts*0.33, wY + ts*0.01);
-            ctx.bezierCurveTo(cx - ts*0.42, wY - ts*0.16, cx - ts*0.34, wY - ts*0.44, cx - ts*0.08, wY - ts*0.47);
-            ctx.bezierCurveTo(cx + ts*0.10, wY - ts*0.50, cx + ts*0.30, wY - ts*0.42, cx + ts*0.36, wY - ts*0.26);
-            ctx.bezierCurveTo(cx + ts*0.40, wY - ts*0.14, cx + ts*0.36, wY - ts*0.02, cx + ts*0.34, wY + ts*0.01);
+            ctx.moveTo(x + ts*0.06, bY);
+            ctx.bezierCurveTo(x + ts*0.01, wY - ts*0.18, x + ts*0.03, wY - ts*0.44, x + ts*0.08, y + ts*0.06);
+            ctx.lineTo(x + ts*0.14, y + ts*0.04);
+            ctx.lineTo(x + ts*0.22, y + ts*0.02);   // left peak
+            ctx.lineTo(x + ts*0.30, y + ts*0.06);
+            ctx.lineTo(x + ts*0.40, y + ts*0.03);   // center-left peak
+            ctx.lineTo(x + ts*0.50, y + ts*0.05);
+            ctx.lineTo(x + ts*0.62, y + ts*0.04);
+            ctx.lineTo(x + ts*0.72, y + ts*0.08);   // shoulder
+            ctx.lineTo(x + ts*0.82, y + ts*0.10);
+            ctx.lineTo(x + ts*0.88, y + ts*0.07);   // right secondary peak
+            ctx.lineTo(x + ts*0.94, y + ts*0.16);
+            ctx.bezierCurveTo(x + ts*0.98, wY - ts*0.24, x + ts*0.96, wY - ts*0.06, x + ts*0.94, bY);
             ctx.closePath();
         };
 
-        // Drop shadow
-        ctx.save(); ctx.translate(5, 6); rock1(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
+        ctx.save(); ctx.translate(6, 7); cliff(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
+        cliff(); ctx.fillStyle = R_DEEP; ctx.fill();
 
-        // Dark base
-        rock1(); ctx.fillStyle = R_BASE; ctx.fill();
+        // Body gradient: lit upper-left, dark lower-right
+        cfill(cliff, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.04, y+ts*0.04, x+ts*0.94, bY);
+            g.addColorStop(0.0, R_MID); g.addColorStop(0.24, R_BASE); g.addColorStop(0.62, R_DEEP); g.addColorStop(1.0, '#0e0f18');
+            return g;
+        })());
 
-        // Main body (light from upper-left)
-        ctx.save(); rock1(); ctx.clip();
-        const bodyG = ctx.createLinearGradient(cx - ts*0.38, wY - ts*0.46, cx + ts*0.36, wY);
-        bodyG.addColorStop(0.0, R_LIT); bodyG.addColorStop(0.28, R_MID);
-        bodyG.addColorStop(0.60, R_BASE); bodyG.addColorStop(1.0, R_DEEP);
-        ctx.fillStyle = bodyG; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        // Left sheer face bright strip
+        cfill(cliff, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.01, 0, x+ts*0.24, 0);
+            g.addColorStop(0, 'rgba(162,176,205,0.84)'); g.addColorStop(0.22, 'rgba(102,116,145,0.50)'); g.addColorStop(0.58, 'rgba(0,0,0,0)');
+            return g;
+        })());
 
-        // Lit zone (radial, upper-left)
-        ctx.save(); rock1(); ctx.clip();
-        const litG = ctx.createRadialGradient(cx - ts*0.14, wY - ts*0.36, 0, cx - ts*0.08, wY - ts*0.22, ts*0.44);
-        litG.addColorStop(0.0, 'rgba(195,205,220,0.72)'); litG.addColorStop(0.30, 'rgba(140,150,170,0.38)');
-        litG.addColorStop(0.65, 'rgba(80,90,110,0.12)'); litG.addColorStop(1.0, 'rgba(0,0,0,0)');
-        ctx.fillStyle = litG; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        // Top edge lit
+        cfill(cliff, (() => {
+            const g = ctx.createLinearGradient(0, y+ts*0.01, 0, y+ts*0.11);
+            g.addColorStop(0, 'rgba(198,212,238,0.88)'); g.addColorStop(0.28, 'rgba(145,162,194,0.52)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            return g;
+        })());
 
-        // Specular glint
-        ctx.save(); rock1(); ctx.clip();
-        const specG = ctx.createRadialGradient(cx - ts*0.12, wY - ts*0.43, 0, cx - ts*0.12, wY - ts*0.43, ts*0.12);
-        specG.addColorStop(0.0, 'rgba(240,248,255,0.90)'); specG.addColorStop(0.4, 'rgba(200,215,235,0.30)');
-        specG.addColorStop(1.0, 'rgba(0,0,0,0)');
-        ctx.fillStyle = specG; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        // Right face deep shadow
+        cfill(cliff, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.68, 0, x+ts*0.98, 0);
+            g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.40, 'rgba(0,0,8,0.28)'); g.addColorStop(1, 'rgba(0,0,14,0.74)');
+            return g;
+        })());
 
-        // Surface cracks
-        ctx.save(); rock1(); ctx.clip();
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'rgba(12,14,22,0.40)'; ctx.lineWidth = Math.max(0.7, ts*0.010);
-        ctx.beginPath(); ctx.moveTo(cx - ts*0.04, wY - ts*0.44);
-        ctx.bezierCurveTo(cx + ts*0.04, wY - ts*0.34, cx - ts*0.10, wY - ts*0.22, cx + ts*0.08, wY - ts*0.10); ctx.stroke();
-        ctx.strokeStyle = 'rgba(12,14,22,0.28)'; ctx.lineWidth = Math.max(0.5, ts*0.006);
-        ctx.beginPath(); ctx.moveTo(cx + ts*0.14, wY - ts*0.36);
-        ctx.quadraticCurveTo(cx + ts*0.22, wY - ts*0.26, cx + ts*0.20, wY - ts*0.14); ctx.stroke();
-        ctx.strokeStyle = 'rgba(18,20,30,0.22)'; ctx.lineWidth = Math.max(0.3, ts*0.004);
-        ctx.beginPath(); ctx.moveTo(cx - ts*0.20, wY - ts*0.18);
-        ctx.quadraticCurveTo(cx - ts*0.14, wY - ts*0.12, cx - ts*0.12, wY - ts*0.06); ctx.stroke();
+        // Specular at ridge peaks
+        ctx.save(); cliff(); ctx.clip();
+        for (const [px, py] of [[x+ts*0.22, y+ts*0.02], [x+ts*0.40, y+ts*0.03], [x+ts*0.88, y+ts*0.07]]) {
+            const g = ctx.createRadialGradient(px, py, 0, px, py, ts*0.07);
+            g.addColorStop(0, 'rgba(235,248,255,0.90)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g; ctx.fillRect(x, y, ts, ts);
+        }
+        ctx.restore();
+
+        // Horizontal strata (geological layers)
+        ctx.save(); cliff(); ctx.clip(); ctx.lineCap = 'round';
+        for (const [yfrac, alpha] of [[0.20, 0.30], [0.36, 0.24], [0.52, 0.18]]) {
+            const fy = y + ts * yfrac;
+            ctx.strokeStyle = `rgba(8,9,16,${alpha})`; ctx.lineWidth = Math.max(0.6, ts*0.008);
+            ctx.beginPath(); ctx.moveTo(x+ts*0.04, fy);
+            ctx.bezierCurveTo(x+ts*0.30, fy-ts*0.008, x+ts*0.65, fy+ts*0.010, x+ts*0.92, fy+ts*0.004); ctx.stroke();
+        }
+        // Vertical cracks
+        ctx.strokeStyle = 'rgba(8,9,16,0.45)'; ctx.lineWidth = Math.max(0.7, ts*0.010);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.32, y+ts*0.05);
+        ctx.bezierCurveTo(x+ts*0.34, wY-ts*0.28, x+ts*0.30, wY-ts*0.14, x+ts*0.32, wY-ts*0.02); ctx.stroke();
+        ctx.strokeStyle = 'rgba(8,9,16,0.30)'; ctx.lineWidth = Math.max(0.5, ts*0.007);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.60, y+ts*0.06);
+        ctx.bezierCurveTo(x+ts*0.62, wY-ts*0.24, x+ts*0.58, wY-ts*0.10, x+ts*0.60, wY-ts*0.02); ctx.stroke();
         ctx.restore();
 
         // Algae belt
-        ctx.save(); ctx.beginPath(); ctx.rect(x, wY - ts*0.072, ts, ts*0.075); ctx.clip();
-        rock1(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
+        ctx.save(); ctx.beginPath(); ctx.rect(x, wY-ts*0.074, ts, ts*0.078); ctx.clip();
+        cliff(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
 
         // Wet zone
-        ctx.save(); rock1(); ctx.clip();
-        const wetG = ctx.createLinearGradient(cx, wY - ts*0.06, cx, wY + ts*0.02);
-        wetG.addColorStop(0, 'rgba(0,0,0,0)'); wetG.addColorStop(1, WET);
-        ctx.fillStyle = wetG; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        cfill(cliff, (() => {
+            const g = ctx.createLinearGradient(cx, wY-ts*0.08, cx, bY);
+            g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, WET); return g;
+        })());
 
-        drawFoam(cx - ts*0.32, wY - ts*0.01, cx + ts*0.33, wY + ts*0.005, cx, wY - ts*0.018);
+        // Spray
+        ctx.fillStyle = 'rgba(215,238,255,0.58)';
+        for (const [sx, sy, sr] of [
+            [x+ts*0.04, wY-ts*0.04, ts*0.017], [x+ts*0.10, wY-ts*0.07, ts*0.011],
+            [x+ts*0.92, wY-ts*0.04, ts*0.016], [x+ts*0.86, wY-ts*0.06, ts*0.011],
+            [cx-ts*0.14, wY-ts*0.03, ts*0.009], [cx+ts*0.16, wY-ts*0.05, ts*0.008],
+        ]) { ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill(); }
+
+        drawFoam(x+ts*0.02, wY, x+ts*0.98, wY+ts*0.007, cx, wY-ts*0.024);
         drawRipples(cx, 3);
 
-    // ── HIGH: VARIANT 2 — Sea stack leaning LEFT ──
+    // ── HIGH: VARIANT 2 — Cathedral Spire left + secondary rock right ──
     } else if (variant === 2) {
-        const tip = { x: x + ts*0.15, y: y + ts*0.05 };
-        const bL  = { x: x + ts*0.18, y: wY + ts*0.01 };
-        const bR  = { x: x + ts*0.54, y: wY + ts*0.01 };
-        const mL  = { x: x + ts*0.12, y: wY - ts*0.30 };
-        const mR  = { x: x + ts*0.38, y: wY - ts*0.28 };
 
-        const rock2 = () => {
+        // Main tall spire — leans hard left with dramatic overhang
+        const spire2 = () => {
             ctx.beginPath();
-            ctx.moveTo(bL.x, bL.y);
-            ctx.bezierCurveTo(mL.x - ts*0.03, bL.y - ts*0.10, mL.x, mL.y, tip.x, tip.y);
-            ctx.bezierCurveTo(mR.x, mR.y, mR.x + ts*0.06, bR.y - ts*0.12, bR.x, bR.y);
+            ctx.moveTo(x + ts*0.12, bY);
+            ctx.bezierCurveTo(x - ts*0.01, wY - ts*0.10, x - ts*0.01, wY - ts*0.36, x + ts*0.04, wY - ts*0.52);
+            ctx.quadraticCurveTo(x + ts*0.08, y + ts*0.05, x + ts*0.16, y + ts*0.02);
+            ctx.lineTo(x + ts*0.22, y + ts*0.01);   // left peak
+            ctx.lineTo(x + ts*0.27, y + ts*0.04);   // notch
+            ctx.lineTo(x + ts*0.32, y + ts*0.01);   // right peak
+            ctx.bezierCurveTo(x + ts*0.40, wY - ts*0.36, x + ts*0.58, wY - ts*0.08, x + ts*0.58, bY);
             ctx.closePath();
         };
 
-        ctx.save(); ctx.translate(5,6); rock2(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
-        rock2(); ctx.fillStyle = R_DEEP; ctx.fill();
+        // Secondary spire (right side) — shorter but still impressive
+        const sec2 = () => {
+            ctx.beginPath();
+            ctx.moveTo(x + ts*0.56, bY);
+            ctx.bezierCurveTo(x + ts*0.52, wY - ts*0.08, x + ts*0.58, wY - ts*0.30, x + ts*0.68, y + ts*0.15);
+            ctx.lineTo(x + ts*0.73, y + ts*0.12);
+            ctx.lineTo(x + ts*0.77, y + ts*0.15);
+            ctx.bezierCurveTo(x + ts*0.86, wY - ts*0.26, x + ts*0.90, wY - ts*0.08, x + ts*0.88, bY);
+            ctx.closePath();
+        };
 
-        // Lit left → dark right gradient
-        ctx.save(); rock2(); ctx.clip();
-        const litL2 = ctx.createLinearGradient(tip.x, tip.y, bR.x, bR.y);
-        litL2.addColorStop(0.0, R_HIGH); litL2.addColorStop(0.25, R_LIT);
-        litL2.addColorStop(0.55, R_MID); litL2.addColorStop(1.0, R_DEEP);
-        ctx.fillStyle = litL2; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        ctx.save(); ctx.translate(5, 7); spire2(); ctx.fillStyle = SHADOW; ctx.fill(); sec2(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
+        spire2(); ctx.fillStyle = R_DEEP; ctx.fill();
+        sec2(); ctx.fillStyle = R_DEEP; ctx.fill();
 
-        // Shadow right face
-        ctx.save(); rock2(); ctx.clip();
-        const shadR2 = ctx.createLinearGradient(bL.x + ts*0.08, wY - ts*0.05, bR.x, wY);
-        shadR2.addColorStop(0.0, 'rgba(0,0,0,0)'); shadR2.addColorStop(0.50, 'rgba(0,0,8,0.35)');
-        shadR2.addColorStop(1.0, 'rgba(0,0,12,0.70)');
-        ctx.fillStyle = shadR2; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        cfill(spire2, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.01, y+ts*0.02, x+ts*0.58, bY);
+            g.addColorStop(0.0, R_LIT); g.addColorStop(0.22, R_MID); g.addColorStop(0.58, R_BASE); g.addColorStop(1.0, R_DEEP);
+            return g;
+        })());
+        cfill(spire2, (() => {
+            const g = ctx.createLinearGradient(x-ts*0.02, 0, x+ts*0.20, 0);
+            g.addColorStop(0, 'rgba(178,194,220,0.88)'); g.addColorStop(0.28, 'rgba(108,122,152,0.50)'); g.addColorStop(0.65, 'rgba(0,0,0,0)');
+            return g;
+        })());
+        cfill(spire2, (() => {
+            const g = ctx.createLinearGradient(0, y+ts*0.01, 0, y+ts*0.10);
+            g.addColorStop(0, 'rgba(208,222,248,0.90)'); g.addColorStop(0.28, 'rgba(152,168,200,0.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            return g;
+        })());
+        cfill(spire2, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.28, 0, x+ts*0.60, 0);
+            g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.45, 'rgba(0,0,8,0.30)'); g.addColorStop(1, 'rgba(0,0,14,0.72)');
+            return g;
+        })());
+        cfill(sec2, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.56, y+ts*0.12, x+ts*0.90, bY);
+            g.addColorStop(0, R_MID); g.addColorStop(0.40, R_BASE); g.addColorStop(1, R_DEEP);
+            return g;
+        })());
 
-        // Specular tip
-        ctx.save(); rock2(); ctx.clip();
-        const specL2 = ctx.createRadialGradient(tip.x + ts*0.02, tip.y + ts*0.02, 0, tip.x + ts*0.02, tip.y + ts*0.02, ts*0.08);
-        specL2.addColorStop(0.0, 'rgba(235,245,255,0.90)'); specL2.addColorStop(1.0, 'rgba(0,0,0,0)');
-        ctx.fillStyle = specL2; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        // Specular tips
+        ctx.save(); spire2(); ctx.clip();
+        for (const [px, py] of [[x+ts*0.22, y+ts*0.01], [x+ts*0.32, y+ts*0.01]]) {
+            const g = ctx.createRadialGradient(px, py, 0, px, py, ts*0.07);
+            g.addColorStop(0, 'rgba(238,250,255,0.92)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g; ctx.fillRect(x, y, ts, ts);
+        }
+        ctx.restore();
+        ctx.save(); sec2(); ctx.clip();
+        const g2s = ctx.createRadialGradient(x+ts*0.73, y+ts*0.12, 0, x+ts*0.73, y+ts*0.12, ts*0.06);
+        g2s.addColorStop(0, 'rgba(220,236,255,0.82)'); g2s.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g2s; ctx.fillRect(x, y, ts, ts); ctx.restore();
 
-        // Left ridge highlight stroke
-        ctx.save(); rock2(); ctx.clip();
-        ctx.strokeStyle = 'rgba(185,200,222,0.50)';
-        ctx.lineWidth = Math.max(0.8, ts*0.012); ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(bL.x, bL.y);
-        ctx.bezierCurveTo(mL.x - ts*0.03, bL.y - ts*0.10, mL.x, mL.y, tip.x, tip.y); ctx.stroke();
+        // Left ridge highlight
+        ctx.save(); spire2(); ctx.clip();
+        ctx.strokeStyle = 'rgba(185,202,230,0.56)'; ctx.lineWidth = Math.max(0.9, ts*0.013); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(x+ts*0.12, bY);
+        ctx.bezierCurveTo(x-ts*0.01, wY-ts*0.10, x-ts*0.01, wY-ts*0.36, x+ts*0.04, wY-ts*0.52);
+        ctx.quadraticCurveTo(x+ts*0.08, y+ts*0.05, x+ts*0.22, y+ts*0.01);
+        ctx.stroke(); ctx.restore();
+
+        // Strata + crack
+        ctx.save(); spire2(); ctx.clip(); ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(8,9,16,0.30)'; ctx.lineWidth = Math.max(0.5, ts*0.007);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.08, wY-ts*0.22); ctx.lineTo(x+ts*0.46, wY-ts*0.20); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x+ts*0.08, wY-ts*0.38); ctx.lineTo(x+ts*0.38, wY-ts*0.37); ctx.stroke();
+        ctx.strokeStyle = 'rgba(8,9,16,0.48)'; ctx.lineWidth = Math.max(0.7, ts*0.010);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.26, y+ts*0.06);
+        ctx.bezierCurveTo(x+ts*0.28, wY-ts*0.28, x+ts*0.24, wY-ts*0.12, x+ts*0.26, wY-ts*0.02); ctx.stroke();
         ctx.restore();
 
-        // Cracks
-        ctx.save(); rock2(); ctx.clip(); ctx.lineCap = 'round';
-        ctx.strokeStyle = 'rgba(10,12,20,0.45)'; ctx.lineWidth = Math.max(0.6, ts*0.008);
-        ctx.beginPath(); ctx.moveTo(tip.x + ts*0.04, tip.y + ts*0.08);
-        ctx.bezierCurveTo(tip.x + ts*0.08, wY - ts*0.32, bL.x + ts*0.06, wY - ts*0.16, bL.x + ts*0.04, wY - ts*0.02); ctx.stroke();
-        ctx.strokeStyle = 'rgba(10,12,20,0.26)'; ctx.lineWidth = Math.max(0.4, ts*0.005);
-        ctx.beginPath(); ctx.moveTo(x + ts*0.28, wY - ts*0.22);
-        ctx.quadraticCurveTo(x + ts*0.36, wY - ts*0.16, x + ts*0.34, wY - ts*0.06); ctx.stroke();
-        ctx.restore();
-
-        const rcx2 = (bL.x + bR.x) / 2;
-        ctx.save(); ctx.beginPath(); ctx.rect(x, wY - ts*0.068, ts, ts*0.070); ctx.clip();
-        rock2(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
-        ctx.save(); rock2(); ctx.clip();
-        const wetG2 = ctx.createLinearGradient(rcx2, wY - ts*0.06, rcx2, wY + ts*0.02);
-        wetG2.addColorStop(0, 'rgba(0,0,0,0)'); wetG2.addColorStop(1, WET);
-        ctx.fillStyle = wetG2; ctx.fillRect(x, y, ts, ts); ctx.restore();
-        drawFoam(bL.x - ts*0.02, wY, bR.x + ts*0.02, wY + ts*0.004, rcx2, wY - ts*0.014);
+        const rcx2 = x + ts*0.40;
+        ctx.save(); ctx.beginPath(); ctx.rect(x, wY-ts*0.074, ts, ts*0.078); ctx.clip();
+        spire2(); ctx.fillStyle = ALGAE; ctx.fill(); sec2(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
+        for (const fn of [spire2, sec2]) {
+            cfill(fn, (() => { const g = ctx.createLinearGradient(rcx2, wY-ts*0.08, rcx2, bY); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, WET); return g; })());
+        }
+        ctx.fillStyle = 'rgba(215,238,255,0.58)';
+        for (const [sx, sy, sr] of [
+            [x+ts*0.06, wY-ts*0.04, ts*0.018], [x+ts*0.12, wY-ts*0.07, ts*0.011],
+            [x+ts*0.57, wY-ts*0.04, ts*0.013], [x+ts*0.86, wY-ts*0.05, ts*0.014],
+        ]) { ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill(); }
+        drawFoam(x+ts*0.04, wY, x+ts*0.92, wY+ts*0.007, rcx2, wY-ts*0.022);
         drawRipples(rcx2, 3);
 
-    // ── HIGH: VARIANT 3 — Sea stack leaning RIGHT ──
+    // ── HIGH: VARIANT 3 — Cathedral Spire right + secondary rock left ──
     } else if (variant === 3) {
-        const tip = { x: x + ts*0.85, y: y + ts*0.05 };
-        const bL  = { x: x + ts*0.46, y: wY + ts*0.01 };
-        const bR  = { x: x + ts*0.82, y: wY + ts*0.01 };
-        const mL  = { x: x + ts*0.62, y: wY - ts*0.28 };
-        const mR  = { x: x + ts*0.88, y: wY - ts*0.30 };
 
-        const rock3 = () => {
+        // Main tall spire — leans hard right with dramatic overhang
+        const spire3 = () => {
             ctx.beginPath();
-            ctx.moveTo(bL.x, bL.y);
-            ctx.bezierCurveTo(mL.x - ts*0.06, bL.y - ts*0.12, mL.x, mL.y, tip.x, tip.y);
-            ctx.bezierCurveTo(mR.x, mR.y, mR.x + ts*0.03, bR.y - ts*0.10, bR.x, bR.y);
+            ctx.moveTo(x + ts*0.42, bY);
+            ctx.bezierCurveTo(x + ts*0.38, wY - ts*0.10, x + ts*0.44, wY - ts*0.36, x + ts*0.56, wY - ts*0.52);
+            ctx.quadraticCurveTo(x + ts*0.64, y + ts*0.05, x + ts*0.68, y + ts*0.01);
+            ctx.lineTo(x + ts*0.73, y + ts*0.01);   // main peak
+            ctx.lineTo(x + ts*0.78, y + ts*0.04);   // notch
+            ctx.lineTo(x + ts*0.84, y + ts*0.02);   // right peak
+            ctx.bezierCurveTo(x + ts*0.94, wY - ts*0.34, x + ts*1.01, wY - ts*0.10, x + ts*0.88, bY);
             ctx.closePath();
         };
 
-        ctx.save(); ctx.translate(5,6); rock3(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
-        rock3(); ctx.fillStyle = R_DEEP; ctx.fill();
+        // Secondary spire (left side) — shorter
+        const sec3 = () => {
+            ctx.beginPath();
+            ctx.moveTo(x + ts*0.12, bY);
+            ctx.bezierCurveTo(x + ts*0.10, wY - ts*0.08, x + ts*0.16, wY - ts*0.28, x + ts*0.27, y + ts*0.15);
+            ctx.lineTo(x + ts*0.32, y + ts*0.12);
+            ctx.lineTo(x + ts*0.36, y + ts*0.15);
+            ctx.bezierCurveTo(x + ts*0.44, wY - ts*0.24, x + ts*0.46, wY - ts*0.08, x + ts*0.44, bY);
+            ctx.closePath();
+        };
 
-        // Left face shadow → right face lit
-        ctx.save(); rock3(); ctx.clip();
-        const shadL3 = ctx.createLinearGradient(bL.x, wY, tip.x - ts*0.10, tip.y);
-        shadL3.addColorStop(0.0, R_DEEP); shadL3.addColorStop(0.45, R_BASE); shadL3.addColorStop(1.0, R_MID);
-        ctx.fillStyle = shadL3; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        ctx.save(); ctx.translate(5, 7); spire3(); ctx.fillStyle = SHADOW; ctx.fill(); sec3(); ctx.fillStyle = SHADOW; ctx.fill(); ctx.restore();
+        spire3(); ctx.fillStyle = R_DEEP; ctx.fill();
+        sec3(); ctx.fillStyle = R_DEEP; ctx.fill();
 
-        ctx.save(); rock3(); ctx.clip();
-        const litR3 = ctx.createLinearGradient(bL.x + ts*0.08, wY, tip.x, tip.y);
-        litR3.addColorStop(0.0, 'rgba(0,0,0,0)'); litR3.addColorStop(0.40, 'rgba(100,108,130,0.40)');
-        litR3.addColorStop(1.0, 'rgba(190,205,225,0.70)');
-        ctx.fillStyle = litR3; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        cfill(spire3, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.90, y+ts*0.02, x+ts*0.42, bY);
+            g.addColorStop(0.0, R_LIT); g.addColorStop(0.22, R_MID); g.addColorStop(0.58, R_BASE); g.addColorStop(1.0, R_DEEP);
+            return g;
+        })());
+        cfill(spire3, (() => {
+            const g = ctx.createLinearGradient(x+ts*1.02, 0, x+ts*0.80, 0);
+            g.addColorStop(0, 'rgba(178,194,220,0.88)'); g.addColorStop(0.28, 'rgba(108,122,152,0.50)'); g.addColorStop(0.65, 'rgba(0,0,0,0)');
+            return g;
+        })());
+        cfill(spire3, (() => {
+            const g = ctx.createLinearGradient(0, y+ts*0.01, 0, y+ts*0.10);
+            g.addColorStop(0, 'rgba(208,222,248,0.90)'); g.addColorStop(0.28, 'rgba(152,168,200,0.55)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            return g;
+        })());
+        cfill(spire3, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.40, 0, x+ts*0.72, 0);
+            g.addColorStop(0, 'rgba(0,0,14,0.68)'); g.addColorStop(0.50, 'rgba(0,0,8,0.30)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            return g;
+        })());
+        cfill(sec3, (() => {
+            const g = ctx.createLinearGradient(x+ts*0.12, y+ts*0.12, x+ts*0.46, bY);
+            g.addColorStop(0, R_MID); g.addColorStop(0.40, R_BASE); g.addColorStop(1, R_DEEP);
+            return g;
+        })());
 
-        // Specular tip
-        ctx.save(); rock3(); ctx.clip();
-        const specR3 = ctx.createRadialGradient(tip.x - ts*0.02, tip.y + ts*0.02, 0, tip.x - ts*0.02, tip.y + ts*0.02, ts*0.08);
-        specR3.addColorStop(0.0, 'rgba(235,245,255,0.90)'); specR3.addColorStop(1.0, 'rgba(0,0,0,0)');
-        ctx.fillStyle = specR3; ctx.fillRect(x, y, ts, ts); ctx.restore();
+        // Specular tips
+        ctx.save(); spire3(); ctx.clip();
+        for (const [px, py] of [[x+ts*0.73, y+ts*0.01], [x+ts*0.84, y+ts*0.02]]) {
+            const g = ctx.createRadialGradient(px, py, 0, px, py, ts*0.07);
+            g.addColorStop(0, 'rgba(238,250,255,0.92)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g; ctx.fillRect(x, y, ts, ts);
+        }
+        ctx.restore();
+        ctx.save(); sec3(); ctx.clip();
+        const g3s = ctx.createRadialGradient(x+ts*0.32, y+ts*0.12, 0, x+ts*0.32, y+ts*0.12, ts*0.06);
+        g3s.addColorStop(0, 'rgba(220,236,255,0.82)'); g3s.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g3s; ctx.fillRect(x, y, ts, ts); ctx.restore();
 
         // Right ridge highlight
-        ctx.save(); rock3(); ctx.clip();
-        ctx.strokeStyle = 'rgba(185,200,222,0.50)';
-        ctx.lineWidth = Math.max(0.8, ts*0.012); ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(bR.x, bR.y);
-        ctx.bezierCurveTo(mR.x + ts*0.03, bR.y - ts*0.10, mR.x, mR.y, tip.x, tip.y); ctx.stroke();
+        ctx.save(); spire3(); ctx.clip();
+        ctx.strokeStyle = 'rgba(185,202,230,0.56)'; ctx.lineWidth = Math.max(0.9, ts*0.013); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(x+ts*0.88, bY);
+        ctx.bezierCurveTo(x+ts*1.01, wY-ts*0.10, x+ts*0.96, wY-ts*0.36, x+ts*0.84, wY-ts*0.52);
+        ctx.quadraticCurveTo(x+ts*0.80, y+ts*0.05, x+ts*0.84, y+ts*0.02);
+        ctx.stroke(); ctx.restore();
+
+        // Strata + crack
+        ctx.save(); spire3(); ctx.clip(); ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(8,9,16,0.30)'; ctx.lineWidth = Math.max(0.5, ts*0.007);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.52, wY-ts*0.22); ctx.lineTo(x+ts*0.86, wY-ts*0.20); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x+ts*0.58, wY-ts*0.38); ctx.lineTo(x+ts*0.86, wY-ts*0.37); ctx.stroke();
+        ctx.strokeStyle = 'rgba(8,9,16,0.48)'; ctx.lineWidth = Math.max(0.7, ts*0.010);
+        ctx.beginPath(); ctx.moveTo(x+ts*0.74, y+ts*0.06);
+        ctx.bezierCurveTo(x+ts*0.72, wY-ts*0.28, x+ts*0.76, wY-ts*0.12, x+ts*0.74, wY-ts*0.02); ctx.stroke();
         ctx.restore();
 
-        // Cracks
-        ctx.save(); rock3(); ctx.clip(); ctx.lineCap = 'round';
-        ctx.strokeStyle = 'rgba(10,12,20,0.45)'; ctx.lineWidth = Math.max(0.6, ts*0.008);
-        ctx.beginPath(); ctx.moveTo(tip.x - ts*0.04, tip.y + ts*0.08);
-        ctx.bezierCurveTo(tip.x - ts*0.08, wY - ts*0.32, bR.x - ts*0.06, wY - ts*0.16, bR.x - ts*0.04, wY - ts*0.02); ctx.stroke();
-        ctx.restore();
-
-        const rcx3 = (bL.x + bR.x) / 2;
-        ctx.save(); ctx.beginPath(); ctx.rect(x, wY - ts*0.068, ts, ts*0.070); ctx.clip();
-        rock3(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
-        ctx.save(); rock3(); ctx.clip();
-        const wetG3 = ctx.createLinearGradient(rcx3, wY - ts*0.06, rcx3, wY + ts*0.02);
-        wetG3.addColorStop(0, 'rgba(0,0,0,0)'); wetG3.addColorStop(1, WET);
-        ctx.fillStyle = wetG3; ctx.fillRect(x, y, ts, ts); ctx.restore();
-        drawFoam(bL.x - ts*0.02, wY, bR.x + ts*0.02, wY + ts*0.004, rcx3, wY - ts*0.014);
+        const rcx3 = x + ts*0.54;
+        ctx.save(); ctx.beginPath(); ctx.rect(x, wY-ts*0.074, ts, ts*0.078); ctx.clip();
+        spire3(); ctx.fillStyle = ALGAE; ctx.fill(); sec3(); ctx.fillStyle = ALGAE; ctx.fill(); ctx.restore();
+        for (const fn of [spire3, sec3]) {
+            cfill(fn, (() => { const g = ctx.createLinearGradient(rcx3, wY-ts*0.08, rcx3, bY); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, WET); return g; })());
+        }
+        ctx.fillStyle = 'rgba(215,238,255,0.58)';
+        for (const [sx, sy, sr] of [
+            [x+ts*0.12, wY-ts*0.04, ts*0.018], [x+ts*0.44, wY-ts*0.05, ts*0.013],
+            [x+ts*0.88, wY-ts*0.04, ts*0.016], [x+ts*0.82, wY-ts*0.06, ts*0.011],
+        ]) { ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill(); }
+        drawFoam(x+ts*0.08, wY, x+ts*0.94, wY+ts*0.007, rcx3, wY-ts*0.022);
         drawRipples(rcx3, 3);
 
-    // ── HIGH: VARIANT 4 — Jagged reef / multi-spire formation ──
+    // ── HIGH: VARIANT 4 — The Basalt Crown (5 massive peaks, fortress width) ──
     } else {
-        const spires = [
-            { cx: x+ts*0.18, h: ts*0.26, wL: ts*0.10, wR: ts*0.09 },
-            { cx: x+ts*0.38, h: ts*0.45, wL: ts*0.12, wR: ts*0.11 },
-            { cx: x+ts*0.60, h: ts*0.35, wL: ts*0.10, wR: ts*0.11 },
-            { cx: x+ts*0.78, h: ts*0.20, wL: ts*0.08, wR: ts*0.09 },
+        const peaks = [
+            { cx: x+ts*0.10, h: ts*0.42, wL: ts*0.09, wR: ts*0.10 },
+            { cx: x+ts*0.28, h: ts*0.56, wL: ts*0.13, wR: ts*0.12 },
+            { cx: x+ts*0.50, h: ts*0.60, wL: ts*0.14, wR: ts*0.13 }, // king peak
+            { cx: x+ts*0.70, h: ts*0.52, wL: ts*0.12, wR: ts*0.13 },
+            { cx: x+ts*0.88, h: ts*0.38, wL: ts*0.09, wR: ts*0.09 },
         ];
 
-        const spirePath = (s) => {
+        const peakPath = (p) => {
             ctx.beginPath();
-            ctx.moveTo(s.cx - s.wL, wY + ts*0.01);
-            ctx.bezierCurveTo(s.cx - s.wL*0.5, wY - s.h*0.42, s.cx - s.wL*0.15, wY - s.h*0.82, s.cx, wY - s.h);
-            ctx.bezierCurveTo(s.cx + s.wR*0.15, wY - s.h*0.82, s.cx + s.wR*0.5, wY - s.h*0.42, s.cx + s.wR, wY + ts*0.01);
+            ctx.moveTo(p.cx - p.wL - ts*0.02, bY);
+            ctx.bezierCurveTo(p.cx - p.wL*0.6, bY - p.h*0.38, p.cx - p.wL*0.18, bY - p.h*0.80, p.cx - ts*0.01, bY - p.h + ts*0.01);
+            ctx.lineTo(p.cx, bY - p.h);
+            ctx.lineTo(p.cx + ts*0.01, bY - p.h + ts*0.01);
+            ctx.bezierCurveTo(p.cx + p.wR*0.18, bY - p.h*0.80, p.cx + p.wR*0.6, bY - p.h*0.38, p.cx + p.wR + ts*0.02, bY);
             ctx.closePath();
         };
 
-        // Shadows
-        ctx.save(); ctx.translate(4, 5);
-        for (const s of spires) { spirePath(s); ctx.fillStyle = SHADOW; ctx.fill(); }
+        ctx.save(); ctx.translate(4, 6);
+        for (const p of peaks) { peakPath(p); ctx.fillStyle = SHADOW; ctx.fill(); }
         ctx.restore();
 
-        // Draw back-to-front by height
-        for (const s of [...spires].sort((a,b) => a.h - b.h)) {
-            spirePath(s); ctx.fillStyle = R_DEEP; ctx.fill();
+        for (const p of [...peaks].sort((a, b) => a.h - b.h)) {
+            peakPath(p); ctx.fillStyle = R_DEEP; ctx.fill();
 
-            ctx.save(); spirePath(s); ctx.clip();
-            const spG = ctx.createLinearGradient(s.cx - s.wL, wY, s.cx, wY - s.h);
-            spG.addColorStop(0.0, R_BASE); spG.addColorStop(0.35, R_MID);
-            spG.addColorStop(0.70, R_LIT); spG.addColorStop(1.0, R_HIGH);
-            ctx.fillStyle = spG; ctx.fillRect(x, y, ts, ts); ctx.restore();
+            cfill(() => peakPath(p), (() => {
+                const g = ctx.createLinearGradient(p.cx - p.wL, bY, p.cx + p.wR*0.22, bY - p.h);
+                g.addColorStop(0.0, R_BASE); g.addColorStop(0.28, R_MID); g.addColorStop(0.66, R_LIT); g.addColorStop(1.0, R_HIGH);
+                return g;
+            })());
 
-            // Right shadow
-            ctx.save(); spirePath(s); ctx.clip();
-            const spSh = ctx.createLinearGradient(s.cx - s.wL*0.1, wY, s.cx + s.wR, wY);
-            spSh.addColorStop(0, 'rgba(0,0,0,0)'); spSh.addColorStop(0.45, 'rgba(0,0,8,0.22)');
-            spSh.addColorStop(1, 'rgba(0,0,12,0.60)');
-            ctx.fillStyle = spSh; ctx.fillRect(x, y, ts, ts); ctx.restore();
+            cfill(() => peakPath(p), (() => {
+                const g = ctx.createLinearGradient(p.cx, bY, p.cx + p.wR + ts*0.02, bY);
+                g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.44, 'rgba(0,0,8,0.22)'); g.addColorStop(1, 'rgba(0,0,14,0.68)');
+                return g;
+            })());
 
             // Left ridge highlight
-            ctx.save(); spirePath(s); ctx.clip();
-            ctx.strokeStyle = 'rgba(175,190,215,0.46)';
-            ctx.lineWidth = Math.max(0.6, ts*0.009); ctx.lineCap = 'round';
+            ctx.save(); peakPath(p); ctx.clip();
+            ctx.strokeStyle = 'rgba(180,196,224,0.52)'; ctx.lineWidth = Math.max(0.7, ts*0.010); ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(s.cx - s.wL, wY + ts*0.01);
-            ctx.bezierCurveTo(s.cx - s.wL*0.5, wY - s.h*0.42, s.cx - s.wL*0.15, wY - s.h*0.82, s.cx, wY - s.h);
+            ctx.moveTo(p.cx - p.wL - ts*0.02, bY);
+            ctx.bezierCurveTo(p.cx - p.wL*0.6, bY - p.h*0.38, p.cx - p.wL*0.18, bY - p.h*0.80, p.cx, bY - p.h);
             ctx.stroke(); ctx.restore();
 
-            // Specular tip on taller spires
-            if (s.h > ts*0.28) {
-                ctx.save(); spirePath(s); ctx.clip();
-                const tipG = ctx.createRadialGradient(s.cx - s.wL*0.08, wY - s.h, 0, s.cx - s.wL*0.08, wY - s.h, ts*0.06);
-                tipG.addColorStop(0, 'rgba(228,240,255,0.88)'); tipG.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = tipG; ctx.fillRect(x, y, ts, ts); ctx.restore();
-            }
+            // Specular tip
+            ctx.save(); peakPath(p); ctx.clip();
+            const tG = ctx.createRadialGradient(p.cx - ts*0.01, bY - p.h, 0, p.cx - ts*0.01, bY - p.h, ts*0.066);
+            tG.addColorStop(0, 'rgba(235,250,255,0.92)'); tG.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = tG; ctx.fillRect(x, y, ts, ts); ctx.restore();
 
             // Crack
-            ctx.save(); spirePath(s); ctx.clip();
-            ctx.strokeStyle = 'rgba(10,12,22,0.38)';
-            ctx.lineWidth = Math.max(0.4, ts*0.006); ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(s.cx - s.wL*0.10, wY - s.h*0.28);
-            ctx.bezierCurveTo(s.cx + s.wR*0.05, wY - s.h*0.58, s.cx - s.wL*0.05, wY - s.h*0.80, s.cx, wY - s.h);
+            ctx.save(); peakPath(p); ctx.clip();
+            ctx.strokeStyle = 'rgba(8,10,20,0.42)'; ctx.lineWidth = Math.max(0.4, ts*0.006); ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(p.cx - ts*0.01, bY - p.h*0.28);
+            ctx.bezierCurveTo(p.cx + ts*0.02, bY - p.h*0.54, p.cx - ts*0.02, bY - p.h*0.80, p.cx, bY - p.h);
             ctx.stroke(); ctx.restore();
         }
 
-        // Algae belt
-        ctx.save(); ctx.beginPath(); ctx.rect(x + ts*0.05, wY - ts*0.068, ts*0.90, ts*0.072); ctx.clip();
-        ctx.fillStyle = ALGAE;
-        for (const s of spires) { spirePath(s); ctx.fill(); }
+        // Wide strata across the whole formation
+        ctx.save(); ctx.lineCap = 'round';
+        for (const [yfrac, alpha, lw] of [[0.52, 0.26, 0.009], [0.38, 0.20, 0.007]]) {
+            const fy = y + ts * yfrac;
+            ctx.strokeStyle = `rgba(8,9,16,${alpha})`; ctx.lineWidth = Math.max(0.5, ts*lw);
+            ctx.beginPath(); ctx.moveTo(x+ts*0.01, fy); ctx.bezierCurveTo(x+ts*0.28, fy-ts*0.009, x+ts*0.72, fy+ts*0.010, x+ts*0.99, fy); ctx.stroke();
+        }
         ctx.restore();
 
-        const reefCx = x + ts*0.47;
-        ctx.fillStyle = WET;
-        ctx.beginPath(); ctx.ellipse(reefCx, wY, ts*0.46, ts*0.042, 0, 0, Math.PI*2); ctx.fill();
-        drawFoam(x + ts*0.06, wY, x + ts*0.90, wY + ts*0.006, reefCx, wY - ts*0.016);
+        const crownCx = x + ts*0.50;
+        ctx.save(); ctx.beginPath(); ctx.rect(x+ts*0.01, wY-ts*0.074, ts*0.98, ts*0.078); ctx.clip();
+        ctx.fillStyle = ALGAE;
+        for (const p of peaks) { peakPath(p); ctx.fill(); }
+        ctx.restore();
 
+        ctx.fillStyle = WET;
+        ctx.beginPath(); ctx.ellipse(crownCx, wY, ts*0.50, ts*0.048, 0, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = 'rgba(215,238,255,0.58)';
+        for (const [sx, sy, sr] of [
+            [x+ts*0.04, wY-ts*0.04, ts*0.016], [x+ts*0.12, wY-ts*0.07, ts*0.010],
+            [x+ts*0.30, wY-ts*0.03, ts*0.012], [x+ts*0.50, wY-ts*0.05, ts*0.009],
+            [x+ts*0.68, wY-ts*0.04, ts*0.013], [x+ts*0.88, wY-ts*0.06, ts*0.010],
+            [x+ts*0.95, wY-ts*0.04, ts*0.015],
+        ]) { ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill(); }
+
+        drawFoam(x+ts*0.01, wY, x+ts*0.99, wY+ts*0.007, crownCx, wY-ts*0.022);
         ctx.save();
         for (let i = 0; i < 3; i++) {
             ctx.strokeStyle = RIPPLE; ctx.lineWidth = Math.max(0.5, ts*0.008);
             ctx.globalAlpha = 1.0 - i*0.28;
-            ctx.beginPath(); ctx.ellipse(reefCx, wY + ts*0.010, ts*0.40*(1+i*0.32), ts*0.055*(1+i*0.32), 0, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(crownCx, wY+ts*0.010, ts*0.48*(1+i*0.30), ts*0.060*(1+i*0.30), 0, 0, Math.PI*2); ctx.stroke();
         }
         ctx.globalAlpha = 1.0; ctx.restore();
     }
