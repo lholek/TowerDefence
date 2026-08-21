@@ -450,7 +450,6 @@ checkLineOfSight(ex, ey) {
 
         if ((type === 'M') || (type === 'SND[CACTUS-1]') || (type === 'SND[CACTUS-2]') || (type === 'SND[CACTUS-3]') || (type === 'SND[CACTUS-4]')
             || (type === 'SND[PALM-1]') || (type === 'SND[PALM-2]') || (type === 'SND[PALM-3]') || (type === 'SND[PALM-4]')
-            || (type === 'SNW[Snowman]')
             || (type === 'W[Rock-1]') || (type === 'W[Rock-2]') || (type === 'W[Rock-3]') || (type === 'W[Rock-4]')) {
             return false; // Vision blocked
         }

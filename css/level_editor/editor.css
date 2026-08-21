@@ -479,6 +479,80 @@ hr {
     color: #c8a860;
 }
 
+.tile-search-wrapper {
+    position: relative;
+}
+
+.tile-search-input {
+    width: 180px;
+    padding: 4px 10px;
+    border: 1px solid rgba(240, 198, 116, 0.35);
+    border-radius: 4px;
+    background: rgba(240, 198, 116, 0.10);
+    color: #eee;
+    font-size: 12px;
+    outline: none;
+    transition: background 0.12s, border-color 0.12s;
+}
+
+.tile-search-input::placeholder {
+    color: #a89060;
+}
+
+.tile-search-input:focus {
+    background: rgba(240, 198, 116, 0.18);
+    border-color: rgb(240, 198, 116);
+}
+
+.tile-search-suggestions {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #2e261d;
+    border: 1px solid rgba(240, 198, 116, 0.35);
+    border-radius: 4px;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.tile-search-suggestions.tile-search-open {
+    display: block;
+}
+
+.tile-search-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #eee;
+    cursor: pointer;
+}
+
+.tile-search-suggestion:hover,
+.tile-search-suggestion.tile-search-suggestion-active {
+    background: rgba(240, 198, 116, 0.20);
+}
+
+.tile-search-empty {
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #a89060;
+    font-style: italic;
+}
+
+.tile-search-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
 .tile-selector-btn {
     padding: 5px 10px;
     border: none;
@@ -549,11 +623,6 @@ hr {
     color: black;
 }
 
-.tile-snw-snowman {
-    background-color: white;
-    color: black;
-}
-
 .tile-w-rock {
     background-color: #0b3a5e;
     color: #a8d8f0;
@@ -573,6 +642,16 @@ hr {
 
 .tile-lava {
     background-color: #5a1200;
+    color: #ff9955;
+}
+
+.tile-hlg {
+    background-color: #c99a2e;
+    color: #2d1a05;
+}
+
+.tile-brg {
+    background-color: #3b0704;
     color: #ff9955;
 }
 

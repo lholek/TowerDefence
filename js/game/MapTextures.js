@@ -1666,12 +1666,22 @@ function _prerenderRoad() {
                     continue;
                 }
 
-                // --- SNOWMAN (SNW[Snowman]) ---
-                if (tok === 'SNW[Snowman]') {
-                    if (this.graphicsSettings.objects === 'low') {
-                        this._drawSnowman(ctx, worldX, worldY);
+                // --- HOLY GROUND (HLG) ---
+                if (tok === 'HLG') {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawHolyGroundLow(ctx, worldX, worldY);
                     } else {
-                        this._drawSnowmanHigh(ctx, worldX, worldY);
+                        this._drawHolyGround(ctx, worldX, worldY);
+                    }
+                    continue;
+                }
+
+                // --- BURNED GROUND (BRG) ---
+                if (tok === 'BRG') {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawBurnedGroundLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawBurnedGround(ctx, worldX, worldY);
                     }
                     continue;
                 }
@@ -3480,161 +3490,6 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
 }
 
 /*
-_drawSnowman / _drawSnowmanHigh
-Tile: SNW[Snowman]
-Easter egg snowman on snow. Carrot nose, broom, pot on head, scarf.
-Blocks arrows and towers, blocks tower LOS.
-*/
-function _drawSnowman(ctx, x, y) {
-    const ts = this.tileSize;
-    const cx = x + ts * 0.52;
-    const COL_COAL = '#1a1a2e', COL_CARROT = '#e87820', COL_SCARF = '#cc2222';
-    const COL_POT = '#383848', COL_POT_HI = '#7a7a8a';
-    const COL_STICK = '#7a5020', COL_BROOM = '#c8a840';
-    const bodyY = y + ts * 0.68, bodyR = ts * 0.21;
-    const headY = y + ts * 0.40, headR = ts * 0.145;
-
-    // Broom stick
-    ctx.strokeStyle = COL_STICK; ctx.lineWidth = Math.max(1.5, ts * 0.022); ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(cx - bodyR * 0.6, bodyY - bodyR * 0.4); ctx.lineTo(cx - bodyR * 2.1, headY - headR * 0.8); ctx.stroke();
-    // Bristles (fan of lines)
-    ctx.strokeStyle = COL_BROOM; ctx.lineWidth = Math.max(1, ts * 0.018);
-    const bx = cx - bodyR * 2.1, by = headY - headR * 0.8;
-    for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + i * ts * 0.025 - ts * 0.015, by - ts * 0.07); ctx.stroke(); }
-    // Snow base
-    ctx.fillStyle = '#c8dce8';
-    ctx.beginPath(); ctx.ellipse(cx, y + ts * 0.90, bodyR * 1.1, ts * 0.06, 0, 0, Math.PI * 2); ctx.fill();
-    // Body + Head
-    ctx.fillStyle = '#f0f8ff';
-    ctx.beginPath(); ctx.arc(cx, bodyY, bodyR, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx, headY, headR, 0, Math.PI * 2); ctx.fill();
-    // Scarf
-    ctx.fillStyle = COL_SCARF;
-    ctx.beginPath(); ctx.ellipse(cx, bodyY - bodyR + ts * 0.01, headR * 1.02, ts * 0.035, 0, 0, Math.PI * 2); ctx.fill();
-    // Eyes
-    ctx.fillStyle = COL_COAL;
-    ctx.beginPath(); ctx.arc(cx - headR * 0.38, headY - headR * 0.22, ts * 0.020, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + headR * 0.38, headY - headR * 0.22, ts * 0.020, 0, Math.PI * 2); ctx.fill();
-    // Carrot nose
-    ctx.fillStyle = COL_CARROT;
-    ctx.beginPath(); ctx.moveTo(cx + headR * 0.08, headY - ts * 0.018); ctx.lineTo(cx + headR * 1.55, headY + ts * 0.012); ctx.lineTo(cx + headR * 0.08, headY + ts * 0.028); ctx.closePath(); ctx.fill();
-    // Pot
-    ctx.fillStyle = COL_POT;
-    ctx.fillRect(cx - headR * 0.88, headY - headR - headR * 0.95, headR * 1.76, headR * 0.92);
-    ctx.fillStyle = COL_POT_HI;
-    ctx.fillRect(cx - headR * 1.05, headY - headR - headR * 0.10, headR * 2.1, ts * 0.024);
-}
-
-function _drawSnowmanHigh(ctx, x, y) {
-    const ts = this.tileSize;
-    const cx = x + ts * 0.52;
-    const COL_COAL = '#1a1a2e', COL_CARROT = '#e87820';
-    const COL_STICK = '#7a5020';
-    const bodyY = y + ts * 0.68, bodyR = ts * 0.21;
-    const headY = y + ts * 0.40, headR = ts * 0.145;
-
-    // ── BROOM (drawn first, behind body) ──
-    const broomBaseX = cx - bodyR * 0.55, broomBaseY = bodyY - bodyR * 0.45;
-    const broomTipX  = cx - bodyR * 2.10, broomTipY  = headY - headR * 0.70;
-    // Handle with wood-grain gradient
-    const handleGrad = ctx.createLinearGradient(broomBaseX, broomBaseY, broomTipX, broomTipY);
-    handleGrad.addColorStop(0, '#9a6828'); handleGrad.addColorStop(0.5, '#c89040'); handleGrad.addColorStop(1, '#7a5020');
-    ctx.strokeStyle = handleGrad; ctx.lineWidth = Math.max(2.2, ts * 0.028); ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(broomBaseX, broomBaseY); ctx.lineTo(broomTipX, broomTipY); ctx.stroke();
-    // Bristle head — rotate so bristles fan upward from tip
-    ctx.save();
-    ctx.translate(broomTipX, broomTipY);
-    const broomAngle = Math.atan2(broomTipY - broomBaseY, broomTipX - broomBaseX);
-    ctx.rotate(broomAngle + Math.PI / 2);  // point bristles "up" from handle end
-    const bLen = ts * 0.095, bW = ts * 0.10;
-    // Binding band first (behind bristles)
-    ctx.fillStyle = '#b07820';
-    ctx.fillRect(-bW * 0.52, -ts * 0.015, bW * 1.04, ts * 0.020);
-    // Individual straw strands — each slightly different length and angle
-    for (let i = 0; i < 9; i++) {
-        const t = (i / 8) - 0.5;                  // -0.5 .. +0.5
-        const spread = t * bW;
-        const strandLen = bLen * (0.82 + Math.abs(t) * 0.25); // outer strands longer
-        const curve = t * ts * 0.035;              // outer strands curve outward
-        const col = i % 2 === 0 ? '#d0a830' : '#a88020';
-        ctx.strokeStyle = col; ctx.lineWidth = Math.max(0.8, ts * 0.011); ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(spread, 0);
-        ctx.quadraticCurveTo(spread + curve * 0.5, -strandLen * 0.55, spread + curve, -strandLen);
-        ctx.stroke();
-    }
-    ctx.restore();
-
-    // Snow base
-    const baseGrad = ctx.createRadialGradient(cx, y + ts * 0.90, 0, cx, y + ts * 0.90, bodyR * 1.2);
-    baseGrad.addColorStop(0, '#e4f2fa'); baseGrad.addColorStop(1, 'rgba(200,220,235,0)');
-    ctx.fillStyle = baseGrad;
-    ctx.beginPath(); ctx.ellipse(cx, y + ts * 0.90, bodyR * 1.2, ts * 0.08, 0, 0, Math.PI * 2); ctx.fill();
-
-    // Lower body sphere
-    const bodyGrad = ctx.createRadialGradient(cx - bodyR * 0.3, bodyY - bodyR * 0.3, 0, cx, bodyY, bodyR * 1.1);
-    bodyGrad.addColorStop(0, '#ffffff'); bodyGrad.addColorStop(0.55, '#e8f4fc'); bodyGrad.addColorStop(1, '#b8cedd');
-    ctx.fillStyle = bodyGrad; ctx.beginPath(); ctx.arc(cx, bodyY, bodyR, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(140,180,210,0.45)'; ctx.lineWidth = Math.max(0.5, ts * 0.007); ctx.stroke();
-    // Buttons
-    ctx.fillStyle = COL_COAL;
-    for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(cx, bodyY - bodyR * 0.22 + i * bodyR * 0.32, ts * 0.024, 0, Math.PI * 2); ctx.fill(); }
-
-    // Scarf
-    const scarfY = bodyY - bodyR + ts * 0.012;
-    const scarfGrad = ctx.createLinearGradient(cx - headR, scarfY, cx + headR, scarfY);
-    scarfGrad.addColorStop(0, '#aa1818'); scarfGrad.addColorStop(0.5, '#ff4444'); scarfGrad.addColorStop(1, '#aa1818');
-    ctx.fillStyle = scarfGrad;
-    ctx.beginPath(); ctx.ellipse(cx, scarfY, headR * 1.06, ts * 0.044, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#ff7777'; ctx.lineWidth = Math.max(0.6, ts * 0.008);
-    ctx.beginPath(); ctx.ellipse(cx, scarfY - ts * 0.010, headR * 1.06, ts * 0.044, 0, -0.6, 0.6); ctx.stroke();
-    // Dangling tail
-    ctx.fillStyle = '#cc2222';
-    ctx.beginPath(); ctx.moveTo(cx + headR * 0.35, scarfY + ts * 0.012); ctx.lineTo(cx + headR * 0.62, scarfY + ts * 0.13); ctx.lineTo(cx + headR * 0.22, scarfY + ts * 0.13); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#ff5555'; ctx.lineWidth = Math.max(0.5, ts * 0.006);
-    ctx.beginPath(); ctx.moveTo(cx + headR * 0.28, scarfY + ts * 0.028); ctx.lineTo(cx + headR * 0.52, scarfY + ts * 0.115); ctx.stroke();
-
-    // Head sphere
-    const headGrad = ctx.createRadialGradient(cx - headR * 0.35, headY - headR * 0.35, 0, cx, headY, headR * 1.05);
-    headGrad.addColorStop(0, '#ffffff'); headGrad.addColorStop(0.5, '#eaf5fd'); headGrad.addColorStop(1, '#b8cedd');
-    ctx.fillStyle = headGrad; ctx.beginPath(); ctx.arc(cx, headY, headR, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(140,180,210,0.45)'; ctx.lineWidth = Math.max(0.5, ts * 0.007); ctx.stroke();
-    // Eyes + shine
-    ctx.fillStyle = COL_COAL;
-    ctx.beginPath(); ctx.arc(cx - headR * 0.38, headY - headR * 0.24, ts * 0.023, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + headR * 0.38, headY - headR * 0.24, ts * 0.023, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.65)';
-    ctx.beginPath(); ctx.arc(cx - headR * 0.33, headY - headR * 0.30, ts * 0.009, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + headR * 0.43, headY - headR * 0.30, ts * 0.009, 0, Math.PI * 2); ctx.fill();
-    // Smile
-    ctx.fillStyle = COL_COAL;
-    for (let i = -2; i <= 2; i++) {
-        const a = (i / 3) * 0.55;
-        ctx.beginPath(); ctx.arc(cx + Math.sin(a) * headR * 0.52, headY + headR * 0.28 + (1 - Math.cos(a)) * headR * 0.12 - headR * 0.08, ts * 0.013, 0, Math.PI * 2); ctx.fill();
-    }
-    // Carrot nose
-    const noseGrad = ctx.createLinearGradient(cx, headY, cx + headR * 1.6, headY);
-    noseGrad.addColorStop(0, '#f09020'); noseGrad.addColorStop(1, '#d04000');
-    ctx.fillStyle = noseGrad;
-    ctx.beginPath(); ctx.moveTo(cx + headR * 0.08, headY - ts * 0.020); ctx.lineTo(cx + headR * 1.60, headY + ts * 0.014); ctx.lineTo(cx + headR * 0.08, headY + ts * 0.028); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,200,80,0.55)'; ctx.lineWidth = Math.max(0.4, ts * 0.005);
-    ctx.beginPath(); ctx.moveTo(cx + headR * 0.12, headY - ts * 0.010); ctx.lineTo(cx + headR * 1.40, headY + ts * 0.010); ctx.stroke();
-
-    // Pot on head
-    const potW = headR * 1.92, potH = headR * 1.02;
-    const potX = cx - potW / 2, potY = headY - headR - potH;
-    const potGrad = ctx.createLinearGradient(potX, potY, potX + potW, potY);
-    potGrad.addColorStop(0, '#2a2a38'); potGrad.addColorStop(0.4, '#5a5a6a'); potGrad.addColorStop(1, '#2a2a38');
-    ctx.fillStyle = potGrad; ctx.fillRect(potX, potY, potW, potH);
-    ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(potX + potW * 0.14, potY + potH * 0.12, potW * 0.22, potH * 0.55);
-    const rimGrad = ctx.createLinearGradient(potX - ts * 0.025, 0, potX + potW + ts * 0.025, 0);
-    rimGrad.addColorStop(0, '#4a4a5a'); rimGrad.addColorStop(0.5, '#9a9aaa'); rimGrad.addColorStop(1, '#4a4a5a');
-    ctx.fillStyle = rimGrad; ctx.fillRect(potX - ts * 0.028, potY, potW + ts * 0.056, ts * 0.030);
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
-    ctx.beginPath(); ctx.ellipse(cx, potY + potH, potW / 2, ts * 0.022, 0, 0, Math.PI * 2); ctx.fill();
-}
-
-/*
 _drawWaterRock
 Tiles: W[Rock-1..4]
 Graphics: Low / High quality
@@ -4205,7 +4060,5 @@ export const MapTextures = {
     _drawSandCactus,
     _drawSandPalm,
     _drawSnowSpike,
-    _drawSnowman,
-    _drawSnowmanHigh,
     _drawWaterRock,
 };

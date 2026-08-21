@@ -22,6 +22,45 @@ let hoveredTile = { r: -1, c: -1 };
 // Active tile filter state — all on by default
 const activeTileFilters = { terrains: true, paths: true, objects: true };
 
+// --- Shared tile metadata (labels + ordering) used by the key/legend and the search box ---
+const TILE_LABELS = {
+    'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'ICE': 'Ice', 'LAVA': 'Lava',
+    'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
+    'E': 'End', 'W': 'Water', 'M': 'Mountains', '-': 'Air',
+    'HLG': 'Holy Ground', 'BRG': 'Burned Ground',
+    'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2',
+    'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4',
+    'SND[CACTUS-1]': 'Cactus 1', 'SND[CACTUS-2]': 'Cactus 2',
+    'SND[CACTUS-3]': 'Cactus 3', 'SND[CACTUS-4]': 'Cactus 4',
+    'SND[PALM-1]': 'Palm 1', 'SND[PALM-2]': 'Palm 2',
+    'SND[PALM-3]': 'Palm 3', 'SND[PALM-4]': 'Palm 4',
+    'SNW[SPIKE-1]': 'Spike 1', 'SNW[SPIKE-2]': 'Spike 2',
+    'SNW[SPIKE-3]': 'Spike 3', 'SNW[SPIKE-4]': 'Spike 4',
+    'W[Rock-1]': 'Rock 1', 'W[Rock-2]': 'Rock 2',
+    'W[Rock-3]': 'Rock 3', 'W[Rock-4]': 'Rock 4'
+};
+
+const TERRAIN_ORDER = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-', 'HLG', 'BRG'];
+const PATHS_ORDER   = ['O', 'O[SNW]', 'O[SND]'];
+const OBJECT_ORDER   = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
+
+// Helper: tile type → CSS base class (shared by the key/legend, the current-tile display and the search box)
+function tileTypeToBaseClass(type) {
+    if (type === 'O[SNW]') return 'o-snw';
+    if (type === 'O[SND]') return 'o-snd';
+    if (/^SND\[BONE-/.test(type)) return 'snd-bone';
+    if (/^SND\[CACTUS-/.test(type)) return 'snd-cactus';
+    if (/^SND\[PALM-/.test(type)) return 'snd-palm';
+    if (/^SNW\[SPIKE-/.test(type)) return 'snw-spike';
+    if (/^W\[Rock-/.test(type)) return 'w-rock';
+    return type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase()
+               .replace(/--+/g, '-').replace(/-$/, '') || '-';
+}
+
+// --- Tile search/autocomplete state ---
+let tileSearchResults = [];
+let tileSearchHighlightIndex = -1;
+
 // --- GameMap instance used for visual rendering ---
 let editorMapInstance = null;
 let editorMapLayoutKey = ''; // Tracks layout shape to know when to rebuild
@@ -837,49 +876,16 @@ function createTileKey() {
     const activeSlider = container.querySelector('.tile-grid-main');
     const savedScrollLeft = activeSlider ? activeSlider.scrollLeft : 0;
 
-    const labels = {
-        'X': 'Grass', 'SNW': 'Snow', 'SND': 'Sand', 'ICE': 'Ice', 'LAVA': 'Lava',
-        'O': 'Path', 'O[SNW]': 'Path Snow', 'O[SND]': 'Path Sand', 'S': 'Start',
-        'E': 'End', 'W': 'Water', 'M': 'Mountains', '-': 'Air',
-        'SND[BONE-1]': 'Bone 1', 'SND[BONE-2]': 'Bone 2',
-        'SND[BONE-3]': 'Bone 3', 'SND[BONE-4]': 'Bone 4',
-        'SND[CACTUS-1]': 'Cactus 1', 'SND[CACTUS-2]': 'Cactus 2',
-        'SND[CACTUS-3]': 'Cactus 3', 'SND[CACTUS-4]': 'Cactus 4',
-        'SND[PALM-1]': 'Palm 1', 'SND[PALM-2]': 'Palm 2',
-        'SND[PALM-3]': 'Palm 3', 'SND[PALM-4]': 'Palm 4',
-        'SNW[SPIKE-1]': 'Spike 1', 'SNW[SPIKE-2]': 'Spike 2',
-        'SNW[SPIKE-3]': 'Spike 3', 'SNW[SPIKE-4]': 'Spike 4',
-        'SNW[Snowman]': 'Snowman',
-        'W[Rock-1]': 'Rock 1', 'W[Rock-2]': 'Rock 2',
-        'W[Rock-3]': 'Rock 3', 'W[Rock-4]': 'Rock 4'
-    };
+    const labels = TILE_LABELS;
 
-    const terrainOrder = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-'];
-    const pathsOrder   = ['O', 'O[SNW]', 'O[SND]'];
-    const objectOrder  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'SNW[Snowman]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
-
-    const visibleTerrains = activeTileFilters.terrains ? terrainOrder.filter(t => labels[t]) : [];
-    const visiblePaths    = activeTileFilters.paths    ? pathsOrder.filter(t => labels[t])   : [];
-    const visibleObjects  = activeTileFilters.objects  ? objectOrder.filter(t => labels[t])  : [];
-
-    // Helper: tile type → CSS base class
-    const toBaseType = (type) => {
-        if (type === 'O[SNW]') return 'o-snw';
-        if (type === 'O[SND]') return 'o-snd';
-        if (/^SND\[BONE-/.test(type)) return 'snd-bone';
-        if (/^SND\[CACTUS-/.test(type)) return 'snd-cactus';
-        if (/^SND\[PALM-/.test(type)) return 'snd-palm';
-        if (/^SNW\[SPIKE-/.test(type)) return 'snw-spike';
-        if (type === 'SNW[Snowman]') return 'snw-snowman';
-        if (/^W\[Rock-/.test(type)) return 'w-rock';
-        return type.replace(/[\[\]]/g, '-').replace(/[0-9]/g, '').toLowerCase()
-                   .replace(/--+/g, '-').replace(/-$/, '') || '-';
-    };
+    const visibleTerrains = activeTileFilters.terrains ? TERRAIN_ORDER.filter(t => labels[t]) : [];
+    const visiblePaths    = activeTileFilters.paths    ? PATHS_ORDER.filter(t => labels[t])   : [];
+    const visibleObjects  = activeTileFilters.objects  ? OBJECT_ORDER.filter(t => labels[t])  : [];
 
     // Helper: generate one tile button
     const tileBtn = (type) => {
         const label = labels[type] || type;
-        const base  = toBaseType(type);
+        const base  = tileTypeToBaseClass(type);
         return `<div class="tile-item">
             <button class="tile-selector-btn tile-${base}" data-tile="${type}"
                     onclick="window.app.mapEditor.setTileType('${type}')">${label}</button>
@@ -902,6 +908,14 @@ function createTileKey() {
                         onclick="window.app.mapEditor.toggleTileFilter('paths')">Paths</button>
                 <button class="tile-filter-btn${fa('objects')}"
                         onclick="window.app.mapEditor.toggleTileFilter('objects')">Map Objects</button>
+            </div>
+            <div class="tile-search-wrapper">
+                <input type="text" id="tileSearchInput" class="tile-search-input" placeholder="Hledat dlaždici..."
+                       autocomplete="off" spellcheck="false"
+                       oninput="window.app.mapEditor.onTileSearchInput(this.value)"
+                       onkeydown="window.app.mapEditor.onTileSearchKeydown(event)"
+                       onblur="window.app.mapEditor.onTileSearchBlur()">
+                <div id="tileSearchSuggestions" class="tile-search-suggestions"></div>
             </div>
         </div>
         <div class="tile-slider-wrapper">
@@ -929,7 +943,7 @@ function createTileKey() {
     const countEl = document.getElementById('tileObjectCount');
     if (countEl) countEl.textContent = visibleTerrains.length + visiblePaths.length + visibleObjects.length;
     const totalEl = document.getElementById('tileObjectTotal');
-    if (totalEl) totalEl.textContent = terrainOrder.length + pathsOrder.length + objectOrder.length;
+    if (totalEl) totalEl.textContent = TERRAIN_ORDER.length + PATHS_ORDER.length + OBJECT_ORDER.length;
 
     const newSlider = document.getElementById('tileSlider');
     if (newSlider) {
@@ -941,6 +955,107 @@ function createTileKey() {
     }
 
     updateCurrentTileDisplay();
+}
+
+/**
+ * Renders the autocomplete suggestion list for the tile search box.
+ * Matches against both the tile's display label and its raw code.
+ */
+export function onTileSearchInput(query) {
+    const box = document.getElementById('tileSearchSuggestions');
+    if (!box) return;
+
+    const q = query.trim().toLowerCase();
+    tileSearchHighlightIndex = -1;
+
+    if (!q) {
+        tileSearchResults = [];
+        box.innerHTML = '';
+        box.classList.remove('tile-search-open');
+        return;
+    }
+
+    const allTypes = [...TERRAIN_ORDER, ...PATHS_ORDER, ...OBJECT_ORDER];
+    tileSearchResults = allTypes.filter(type => {
+        const label = TILE_LABELS[type] || type;
+        return label.toLowerCase().includes(q) || type.toLowerCase().includes(q);
+    }).slice(0, 15);
+
+    renderTileSearchSuggestions();
+}
+
+/**
+ * Redraws the suggestion dropdown from the current tileSearchResults/highlight state.
+ */
+function renderTileSearchSuggestions() {
+    const box = document.getElementById('tileSearchSuggestions');
+    if (!box) return;
+
+    if (tileSearchResults.length === 0) {
+        box.innerHTML = '<div class="tile-search-empty">Žádná shoda</div>';
+        box.classList.add('tile-search-open');
+        return;
+    }
+
+    box.innerHTML = tileSearchResults.map((type, i) => {
+        const label = TILE_LABELS[type] || type;
+        const base  = tileTypeToBaseClass(type);
+        const activeClass = i === tileSearchHighlightIndex ? ' tile-search-suggestion-active' : '';
+        return `<div class="tile-search-suggestion${activeClass}" data-index="${i}"
+                     onmousedown="window.app.mapEditor.selectTileSearchResult('${type}')">
+            <span class="tile-search-swatch tile-${base}"></span>${label}
+        </div>`;
+    }).join('');
+    box.classList.add('tile-search-open');
+}
+
+/**
+ * Handles ArrowUp/ArrowDown/Enter/Escape navigation inside the search box.
+ */
+export function onTileSearchKeydown(event) {
+    if (tileSearchResults.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        tileSearchHighlightIndex = (tileSearchHighlightIndex + 1) % tileSearchResults.length;
+        renderTileSearchSuggestions();
+    } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        tileSearchHighlightIndex = (tileSearchHighlightIndex - 1 + tileSearchResults.length) % tileSearchResults.length;
+        renderTileSearchSuggestions();
+    } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const type = tileSearchResults[tileSearchHighlightIndex] ?? tileSearchResults[0];
+        selectTileSearchResult(type);
+    } else if (event.key === 'Escape') {
+        event.target.blur();
+    }
+}
+
+/**
+ * Applies a chosen search result as the active tile type and closes the dropdown.
+ */
+export function selectTileSearchResult(type) {
+    setTileType(type);
+
+    const input = document.getElementById('tileSearchInput');
+    if (input) input.value = '';
+    tileSearchResults = [];
+    tileSearchHighlightIndex = -1;
+
+    const box = document.getElementById('tileSearchSuggestions');
+    if (box) { box.innerHTML = ''; box.classList.remove('tile-search-open'); }
+}
+
+/**
+ * Closes the suggestion dropdown shortly after the input loses focus
+ * (delayed so a click on a suggestion registers first).
+ */
+export function onTileSearchBlur() {
+    setTimeout(() => {
+        const box = document.getElementById('tileSearchSuggestions');
+        if (box) box.classList.remove('tile-search-open');
+    }, 150);
 }
 
 /**
@@ -959,42 +1074,7 @@ export function toggleTileFilter(filter) {
  * Updates the visual display of the currently selected tile type.
  */
 function getTileTypeLabel(type) {
-    const labels = {
-        'X': 'Grass',
-        'SNW': 'Snow',
-        'SND': 'Sand',
-        'ICE': 'Ice',
-        'LAVA': 'Lava',
-        'O': 'Path',
-        'O[SNW]': 'Path Snow',
-        'O[SND]': 'Path Sand',
-        'S': 'Start',
-        'E': 'End',
-        'W': 'Water',
-        'M': 'Mountains',
-        '-': 'Air',
-        'SND[BONE-1]': 'Bone 1',
-        'SND[BONE-2]': 'Bone 2',
-        'SND[BONE-3]': 'Bone 3',
-        'SND[BONE-4]': 'Bone 4',
-        'SND[CACTUS-1]': 'Cactus 1',
-        'SND[CACTUS-2]': 'Cactus 2',
-        'SND[CACTUS-3]': 'Cactus 3',
-        'SND[CACTUS-4]': 'Cactus 4',
-        'SND[PALM-1]': 'Palm 1',
-        'SND[PALM-2]': 'Palm 2',
-        'SND[PALM-3]': 'Palm 3',
-        'SND[PALM-4]': 'Palm 4',
-        'SNW[SPIKE-1]': 'Spike 1',
-        'SNW[SPIKE-2]': 'Spike 2',
-        'SNW[SPIKE-3]': 'Spike 3',
-        'SNW[SPIKE-4]': 'Spike 4',
-        'SNW[Snowman]': 'Snowman',
-        'W[Rock-1]': 'Rock 1',
-        'W[Rock-2]': 'Rock 2',
-        'W[Rock-3]': 'Rock 3',
-        'W[Rock-4]': 'Rock 4'
-    };
+    const labels = TILE_LABELS;
 
     if (labels[type]) {
         return labels[type];
@@ -1029,24 +1109,7 @@ function updateCurrentTileDisplay() {
     // Remove all existing tile-* classes (safer than trying to enumerate them)
     [...display.classList].filter(c => c.startsWith('tile-')).forEach(c => display.classList.remove(c));
 
-    // Derive CSS-safe baseType using the same logic as createTileKey
-    let baseType = currentTileType
-        .replace(/[\[\]]/g, '-')
-        .replace(/[0-9]/g, '')
-        .toLowerCase()
-        .replace(/--+/g, '-')
-        .replace(/-$/, '') || '-';
-
-    if (currentTileType === 'O[SNW]')   baseType = 'o-snw';
-    if (currentTileType === 'O[SND]')   baseType = 'o-snd';
-    if (/^SND\[BONE-/.test(currentTileType)) baseType = 'snd-bone';
-    if (/^SND\[CACTUS-/.test(currentTileType)) baseType = 'snd-cactus';
-    if (/^SND\[PALM-/.test(currentTileType)) baseType = 'snd-palm';
-    if (/^SNW\[SPIKE-/.test(currentTileType)) baseType = 'snw-spike';
-    if (currentTileType === 'SNW[Snowman]') baseType = 'snw-snowman';
-    if (/^W\[Rock-/.test(currentTileType)) baseType = 'w-rock';
-
-    display.classList.add(`tile-${baseType}`);
+    display.classList.add(`tile-${tileTypeToBaseClass(currentTileType)}`);
 }
 
 /**

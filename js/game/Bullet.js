@@ -90,10 +90,6 @@ export default class Bullet {
             this.active = false;
             return;
         }
-        if (tileType === 'SNW[Snowman]') {
-            this.active = false;
-            return;
-        }
         if (tileType === 'W[Rock-1]' || tileType === 'W[Rock-2]' || tileType === 'W[Rock-3]' || tileType === 'W[Rock-4]') {
             this.active = false;
             return;
