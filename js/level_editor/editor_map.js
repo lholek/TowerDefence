@@ -897,9 +897,19 @@ function createTileKey() {
 
     let html = `
         <div class="tile-editor-header">
-            <strong>Selected:</strong>
-            <span id="currentTileDisplay" class="current-tile-display"></span>
-            <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
+            <div class="tile-editor-header-row">
+                <strong>Selected:</strong>
+                <span id="currentTileDisplay" class="current-tile-display"></span>
+                <span id="tileCoordinates" class="tileCoordinates">X: - | Y: -</span>
+                <div class="tile-search-wrapper">
+                    <input type="text" id="tileSearchInput" class="tile-search-input" placeholder="Search tile..."
+                           autocomplete="off" spellcheck="false"
+                           oninput="window.app.mapEditor.onTileSearchInput(this.value)"
+                           onkeydown="window.app.mapEditor.onTileSearchKeydown(event)"
+                           onblur="window.app.mapEditor.onTileSearchBlur()">
+                    <div id="tileSearchSuggestions" class="tile-search-suggestions"></div>
+                </div>
+            </div>
             <div class="tile-key-filters">
                 <strong>Filters:</strong>
                 <button class="tile-filter-btn${fa('terrains')}"
@@ -908,14 +918,6 @@ function createTileKey() {
                         onclick="window.app.mapEditor.toggleTileFilter('paths')">Paths</button>
                 <button class="tile-filter-btn${fa('objects')}"
                         onclick="window.app.mapEditor.toggleTileFilter('objects')">Map Objects</button>
-            </div>
-            <div class="tile-search-wrapper">
-                <input type="text" id="tileSearchInput" class="tile-search-input" placeholder="Hledat dlaždici..."
-                       autocomplete="off" spellcheck="false"
-                       oninput="window.app.mapEditor.onTileSearchInput(this.value)"
-                       onkeydown="window.app.mapEditor.onTileSearchKeydown(event)"
-                       onblur="window.app.mapEditor.onTileSearchBlur()">
-                <div id="tileSearchSuggestions" class="tile-search-suggestions"></div>
             </div>
         </div>
         <div class="tile-slider-wrapper">
@@ -992,7 +994,7 @@ function renderTileSearchSuggestions() {
     if (!box) return;
 
     if (tileSearchResults.length === 0) {
-        box.innerHTML = '<div class="tile-search-empty">Žádná shoda</div>';
+        box.innerHTML = '<div class="tile-search-empty">No matches</div>';
         box.classList.add('tile-search-open');
         return;
     }
