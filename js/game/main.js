@@ -397,6 +397,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'SNW[Tree]':
             tile.classList.add('snow-tree');
             break;
+          case 'X[Log-1]':
+          case 'X[Log-2]':
+            tile.classList.add('log');
+            break;
+          case 'X[Well]':
+            tile.classList.add('well');
+            break;
+          case 'X[Bush]':
+            tile.classList.add('bush');
+            break;
           case 'W[Rock-1]':
           case 'W[Rock-2]':
           case 'W[Rock-3]':

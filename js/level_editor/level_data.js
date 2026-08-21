@@ -104,7 +104,7 @@ export function getCurrentMap() {
 }
 export let currentTileType = 'O'; 
 export const terrainTypes = ['-', 'HLG', 'BRG', 'O', 'X', 'W', 'M', 'S', 'E', 'SNW', 'SND', 'ICE', 'LAVA'];
-export const objectTypes  = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'X[Tree]', 'SNW[Tree]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
+export const objectTypes  = ['X[Tree]', 'X[Log-1]', 'X[Log-2]', 'X[Well]', 'X[Bush]', 'SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'SNW[Tree]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
 export const tileTypes    = [...terrainTypes, ...objectTypes];
 
 /**

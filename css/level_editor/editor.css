@@ -646,9 +646,24 @@ hr {
     color: #d8f0d8;
 }
 
+.tile-x-log {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
+.tile-x-well {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
+.tile-x-bush {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
 .tile-snw-tree {
-    background-color: #1c5c42;
-    color: #eef7ff;
+    background: linear-gradient(135deg, #2f7a4a 50%, #ffffff 50%);
+    color: black;
 }
 
 .tile-w-rock {

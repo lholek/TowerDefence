@@ -606,7 +606,7 @@ export default class Map {
         'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]',
         'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]',
         'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]',
-        'X[Tree]', 'SNW[Tree]',
+        'X[Tree]', 'SNW[Tree]', 'X[Log-1]', 'X[Log-2]', 'X[Well]', 'X[Bush]',
       ];
 
       if (NON_BUILDABLE.includes(tok)) return false;

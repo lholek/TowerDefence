@@ -13,10 +13,18 @@ E*               - End (E1, E2...) [Tree]
 W                - Water (impassable, non-buildable, shootable)
 M                - Mountain (impassable, non-buildable, non-shootable)
 -                - Air(impassable, non-buildable, shootable)
+HLG              - Holy Ground (impassable, non-buildable, shootable)
+BRG              - Burned Ground (impassable, non-buildable, shootable)
 SND[Bone-1..4]   - cant build towers, doesnt block arrows
 SND[Cactus-1..4] - cant build towers, blocks arrows
 SND[Palm-1..4]   - cant build towers, blocks arrows
 SNW[Spike-1..4]  - cant build towers, blocks arrows
+X[Tree]          - cant build towers, blocks arrows
+SNW[Tree]        - cant build towers, blocks arrows
+X[Log-1..2]      - cant build towers, blocks arrows (low, doesn't block tower vision)
+X[Well]          - cant build towers, blocks arrows and tower vision
+X[Bush]          - cant build towers, doesnt block arrows
+W[Rock-1..4]     - cant build towers, blocks arrows
 
 Pre-Beta IV:
 "TODO: SND[Cactus] - cant build towers, blocks arrows",
@@ -67,7 +75,13 @@ Pre-Beta IV:
  * @see _drawSandCactus - Cactuses Low/High
  * @see _drawSandPalm - Palms Low/High
  * @see _drawSnowSpike - Snow Spikes Low/High
- * 
+ * @see _drawLog - Log Stump/Fallen Trunk Low/High
+ * @see _drawWell - Well Low/High
+ * @see _drawBush - Bush Low/High
+ * @see _drawTree - Conifer Tree (grass) Low/High
+ * @see _drawSnowTree - Conifer Tree (snow) Low/High
+ * @see _drawWaterRock - Water Rocks Low/High
+ *
  * HELPERS:
  * @see _drawNaturalFlower - Flower Helper
  * @see _adjustColor - Color Helper
@@ -324,19 +338,30 @@ function _drawBurnedGround(ctx, x, y) {
     ctx.clip();
     ctx.translate(x, y);
 
-    // 1. BASE: Deep Scorched Red with Grain
-    ctx.fillStyle = "#3b0704";
+    // 1. BASE: Glassy obsidian black with a hint of purple in the grain
+    ctx.fillStyle = "#0c0a12";
     ctx.fillRect(0, 0, ts, ts);
 
-    // Add subtle noise/charcoal texture
-    ctx.globalAlpha = 0.2;
+    // Subtle glassy facets — slightly lighter purple-black blobs, not plain soot
+    ctx.globalAlpha = 0.25;
     for(let i=0; i<15; i++) {
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = "#1e1826";
         ctx.beginPath();
         ctx.arc(rng()*ts, rng()*ts, rng()*15, 0, Math.PI*2);
         ctx.fill();
     }
     ctx.globalAlpha = 1.0;
+
+    // 1b. GLASSY SHEEN: a soft diagonal highlight, like light catching polished glass
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const sheen = ctx.createLinearGradient(0, 0, ts * 0.7, ts * 0.5);
+    sheen.addColorStop(0,    "rgba(180, 160, 220, 0.20)");
+    sheen.addColorStop(0.35, "rgba(120, 110, 170, 0.06)");
+    sheen.addColorStop(1,    "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = sheen;
+    ctx.fillRect(0, 0, ts, ts);
+    ctx.restore();
 
     // 2. MOLTEN CRACKS: Multi-pass stroke for "Glow"
     ctx.shadowBlur = 10;
@@ -392,17 +417,17 @@ function _drawBurnedGroundLow(ctx, x, y) {
         ? () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1
         : () => Math.random();
 
-    // 0. Pozadí – jednolitá hnědá (#422006)
-    ctx.fillStyle = "#422006";
+    // 0. Pozadí – obsidiánová černá (#0c0a12)
+    ctx.fillStyle = "#0c0a12";
     ctx.fillRect(x, y, ts, ts);
 
-    // 1. Jemný spálený flek (tmavý uprostřed, mizí do hnědé)
+    // 1. Jemný lesklý flek (náznak skleněného odlesku uprostřed)
     const grad = ctx.createRadialGradient(
         x + ts/2, y + ts/2, ts * 0.1,
         x + ts/2, y + ts/2, ts * 0.55
     );
-    grad.addColorStop(0, "rgba(20,20,20,0.9)");
-    grad.addColorStop(0.6, "rgba(0,0,0,0.35)");
+    grad.addColorStop(0, "rgba(140,120,180,0.22)");
+    grad.addColorStop(0.6, "rgba(60,50,80,0.10)");
     grad.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(x, y, ts, ts);
@@ -1663,6 +1688,25 @@ function _prerenderRoad() {
                 if (tok === 'SNW[SPIKE-1]' || tok === 'SNW[SPIKE-2]' || tok === 'SNW[SPIKE-3]' || tok === 'SNW[SPIKE-4]') {
                     const vm = {'SNW[SPIKE-1]':1,'SNW[SPIKE-2]':2,'SNW[SPIKE-3]':3,'SNW[SPIKE-4]':4};
                     this._drawSnowSpike(ctx, worldX, worldY, vm[tok], this.graphicsSettings.objects);
+                    continue;
+                }
+
+                // --- LOGS (X[Log-1] stump / X[Log-2] fallen trunk) ---
+                if (tok === 'X[Log-1]' || tok === 'X[Log-2]') {
+                    const variant = tok === 'X[Log-2]' ? 2 : 1;
+                    this._drawLog(ctx, worldX, worldY, variant, this.graphicsSettings.objects);
+                    continue;
+                }
+
+                // --- WELL (X[Well]) ---
+                if (tok === 'X[Well]') {
+                    this._drawWell(ctx, worldX, worldY, this.graphicsSettings.objects);
+                    continue;
+                }
+
+                // --- BUSH (X[Bush]) ---
+                if (tok === 'X[Bush]') {
+                    this._drawBush(ctx, worldX, worldY, this.graphicsSettings.objects);
                     continue;
                 }
 
@@ -3516,6 +3560,523 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
 }
 
 /*
+_drawLog
+Tiles: X[Log-1], X[Log-2]
+Graphics: Low / High quality
+Log-1: an upright chopped tree stump ("pařez") with a ringed, cracked cut top.
+Log-2: a whole trunk lying fallen on the ground, one cut end showing rings.
+Both sit on grass. Cannot build towers, block arrows (see Bullet.js / Tower.js
+/ Map.js), but both are low enough that they don't block a tower's line of
+sight over them.
+*/
+function _drawLog(ctx, x, y, variant, quality) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    if (variant === 2) {
+        _drawLogFallen.call(this, ctx, x, y, quality, rng);
+    } else {
+        _drawLogStump.call(this, ctx, x, y, quality, rng);
+    }
+}
+
+function _drawLogStump(ctx, x, y, quality, rng) {
+    const ts = this.tileSize;
+    // Fixed, not randomized — the stump should look identical everywhere it's placed.
+    const cx      = x + ts * 0.5;
+    const baseY   = y + ts * 0.82;
+    const stumpW  = ts * 0.44;
+    const stumpH  = ts * 0.24;
+    const topRy   = ts * 0.14;
+    const topCy   = baseY - stumpH;
+
+    const COL_BARK_D = '#2c1a0d';
+    const COL_BARK_M = '#4a2f18';
+    const COL_BARK_L = '#6b4726';
+    const COL_WOOD_D = '#8a5a30';
+    const COL_WOOD_M = '#c08a4e';
+    const COL_WOOD_L = '#e0b573';
+    const COL_MOSS   = '#5a7a3a';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    // Drop shadow
+    if (quality !== 'low') {
+        ctx.fillStyle = 'rgba(0, 15, 0, 0.30)';
+        ctx.beginPath();
+        ctx.ellipse(cx + ts * 0.03, baseY + ts * 0.02, stumpW * 0.55, ts * 0.05, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Bark body — a squat trapezoid trunk
+    const barkPath = () => {
+        ctx.beginPath();
+        ctx.moveTo(cx - stumpW * 0.50, baseY);
+        ctx.lineTo(cx - stumpW * 0.42, baseY - stumpH);
+        ctx.lineTo(cx + stumpW * 0.42, baseY - stumpH);
+        ctx.lineTo(cx + stumpW * 0.50, baseY);
+        ctx.closePath();
+    };
+
+    barkPath();
+    if (quality === 'low') {
+        ctx.fillStyle = COL_BARK_M;
+        ctx.fill();
+    } else {
+        const bg = ctx.createLinearGradient(cx - stumpW * 0.5, 0, cx + stumpW * 0.5, 0);
+        bg.addColorStop(0,   COL_BARK_L);
+        bg.addColorStop(0.5, COL_BARK_M);
+        bg.addColorStop(1,   COL_BARK_D);
+        ctx.fillStyle = bg;
+        ctx.fill();
+
+        // Vertical bark grain
+        ctx.save();
+        barkPath();
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.28)';
+        ctx.lineWidth = Math.max(0.6, ts * 0.008);
+        for (let i = 0; i < 5; i++) {
+            const fx = -0.35 + i * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(cx + stumpW * fx, baseY);
+            ctx.lineTo(cx + stumpW * fx * 0.85, baseY - stumpH);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // Top face — cut wood with growth rings
+    ctx.beginPath();
+    ctx.ellipse(cx, topCy, stumpW * 0.42, topRy, 0, 0, Math.PI * 2);
+    if (quality === 'low') {
+        ctx.fillStyle = COL_WOOD_M;
+        ctx.fill();
+    } else {
+        const tg = ctx.createRadialGradient(cx, topCy, 2, cx, topCy, stumpW * 0.42);
+        tg.addColorStop(0,   COL_WOOD_L);
+        tg.addColorStop(0.6, COL_WOOD_M);
+        tg.addColorStop(1,   COL_WOOD_D);
+        ctx.fillStyle = tg;
+        ctx.fill();
+    }
+    ctx.strokeStyle = COL_BARK_D;
+    ctx.lineWidth = Math.max(1, ts * 0.012);
+    ctx.stroke();
+
+    if (quality !== 'low') {
+        // Growth rings + a crack
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(cx, topCy, stumpW * 0.42, topRy, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(90, 55, 20, 0.5)';
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        for (let i = 1; i <= 3; i++) {
+            ctx.beginPath();
+            ctx.ellipse(cx, topCy, stumpW * 0.42 * (i / 4), topRy * (i / 4), 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.strokeStyle = 'rgba(50, 30, 10, 0.6)';
+        ctx.lineWidth = Math.max(0.4, ts * 0.005);
+        ctx.beginPath();
+        ctx.moveTo(cx - stumpW * 0.30, topCy - topRy * 0.20);
+        ctx.lineTo(cx + stumpW * 0.25, topCy + topRy * 0.30);
+        ctx.stroke();
+        ctx.restore();
+
+        // Small moss patch clinging to the bark
+        ctx.fillStyle = COL_MOSS;
+        ctx.globalAlpha = 0.55;
+        ctx.beginPath();
+        ctx.ellipse(cx - stumpW * 0.28, baseY - stumpH * 0.35, stumpW * 0.14, stumpH * 0.16, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
+
+    ctx.restore();
+}
+
+function _drawLogFallen(ctx, x, y, quality, rng) {
+    const ts = this.tileSize;
+    const cx = x + ts * 0.5;
+    const cy = y + ts * 0.62;
+    // Fixed, not randomized — the fallen trunk should look and lean the same
+    // way everywhere it's placed, instead of a different tilt on every tile.
+    const angle  = -0.18;
+    const logLen = ts * 0.78;
+    const logTh  = ts * 0.24;
+
+    const COL_BARK_D = '#2c1a0d';
+    const COL_BARK_M = '#4a2f18';
+    const COL_BARK_L = '#6b4726';
+    const COL_WOOD_D = '#8a5a30';
+    const COL_WOOD_M = '#c08a4e';
+    const COL_WOOD_L = '#e0b573';
+    const COL_MOSS   = '#5a7a3a';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+
+    // Drop shadow
+    if (quality !== 'low') {
+        ctx.fillStyle = 'rgba(0, 15, 0, 0.28)';
+        ctx.beginPath();
+        ctx.ellipse(ts * 0.02, logTh * 0.65, logLen * 0.48, logTh * 0.35, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Trunk body — a capsule lying on its side
+    const capX = logLen / 2 - logTh * 0.3;
+    const bodyPath = () => {
+        ctx.beginPath();
+        ctx.moveTo(-logLen / 2, -logTh / 2);
+        ctx.lineTo(capX, -logTh / 2);
+        ctx.arc(capX, 0, logTh / 2, -Math.PI / 2, Math.PI / 2);
+        ctx.lineTo(-logLen / 2, logTh / 2);
+        ctx.arc(-logLen / 2, 0, logTh / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.closePath();
+    };
+
+    bodyPath();
+    if (quality === 'low') {
+        ctx.fillStyle = COL_BARK_M;
+        ctx.fill();
+    } else {
+        const bg = ctx.createLinearGradient(0, -logTh / 2, 0, logTh / 2);
+        bg.addColorStop(0,   COL_BARK_L);
+        bg.addColorStop(0.5, COL_BARK_M);
+        bg.addColorStop(1,   COL_BARK_D);
+        ctx.fillStyle = bg;
+        ctx.fill();
+
+        // Bark rings running around the trunk's length
+        ctx.save();
+        bodyPath();
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.25)';
+        ctx.lineWidth = Math.max(0.6, ts * 0.008);
+        for (let i = 0; i < 4; i++) {
+            const lx = -logLen * 0.32 + i * logLen * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(lx, -logTh * 0.5);
+            ctx.quadraticCurveTo(lx + logTh * 0.15, 0, lx, logTh * 0.5);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // Cut end cap — growth rings, showing this was chopped
+    ctx.beginPath();
+    ctx.ellipse(capX, 0, logTh * 0.42, logTh * 0.5, 0, 0, Math.PI * 2);
+    if (quality === 'low') {
+        ctx.fillStyle = COL_WOOD_M;
+        ctx.fill();
+    } else {
+        const tg = ctx.createRadialGradient(capX, 0, 1, capX, 0, logTh * 0.5);
+        tg.addColorStop(0,   COL_WOOD_L);
+        tg.addColorStop(0.6, COL_WOOD_M);
+        tg.addColorStop(1,   COL_WOOD_D);
+        ctx.fillStyle = tg;
+        ctx.fill();
+    }
+    ctx.strokeStyle = COL_BARK_D;
+    ctx.lineWidth = Math.max(1, ts * 0.010);
+    ctx.stroke();
+
+    if (quality !== 'low') {
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(capX, 0, logTh * 0.42, logTh * 0.5, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(90, 55, 20, 0.5)';
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        for (let i = 1; i <= 2; i++) {
+            ctx.beginPath();
+            ctx.ellipse(capX, 0, logTh * 0.42 * (i / 3), logTh * 0.5 * (i / 3), 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // Moss growing along the top of the trunk
+        ctx.fillStyle = COL_MOSS;
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.ellipse(-logLen * 0.10, -logTh * 0.28, logLen * 0.16, logTh * 0.14, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
+
+    ctx.restore();
+}
+
+/*
+_drawWell
+Tile: X[Well]
+Graphics: Low / High quality
+A round grey stone well wall with water inside. Cannot build towers, blocks
+arrows and a tower's line of sight (see Bullet.js / Tower.js / Map.js) — it's
+a solid raised stone structure.
+*/
+function _drawWell(ctx, x, y, quality) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    const cx = x + ts * 0.5;
+    const cy = y + ts * 0.54;
+    const outerRx = ts * 0.32, outerRy = ts * 0.24;
+    const innerRx = ts * 0.20, innerRy = ts * 0.15;
+    const wallH = ts * 0.16;
+
+    // Lighter, warmer limestone — reads as old hewn medieval stone rather than dark modern brick
+    const COL_STONE_D = '#6b6357';
+    const COL_STONE_M = '#a89e8a';
+    const COL_STONE_L = '#d8cdb2';
+    const COL_WATER_D = '#0b3a5e';
+    const COL_WATER_M = '#1f6b9e';
+    const COL_WATER_L = '#6fc8e8';
+    const COL_WOOD_D  = '#2c1a0d';
+    const COL_WOOD_M  = '#5a3a1c';
+    const COL_ROOF_D  = '#4a2418';
+    const COL_ROOF_M  = '#7a4028';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    // Drop shadow
+    if (quality !== 'low') {
+        ctx.fillStyle = 'rgba(0, 10, 5, 0.28)';
+        ctx.beginPath();
+        ctx.ellipse(cx + ts * 0.02, cy + wallH + ts * 0.03, outerRx * 1.02, outerRy * 0.85, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Wall skirt (front face of the stone ring, gives it height)
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + wallH, outerRx, outerRy, 0, 0, Math.PI * 2);
+    ctx.fillStyle = COL_STONE_D;
+    ctx.fill();
+
+    // Top rim — the stone ring
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, outerRx, outerRy, 0, 0, Math.PI * 2);
+    if (quality === 'low') {
+        ctx.fillStyle = COL_STONE_M;
+    } else {
+        const rg = ctx.createRadialGradient(cx - outerRx * 0.3, cy - outerRy * 0.3, 2, cx, cy, outerRx);
+        rg.addColorStop(0,   COL_STONE_L);
+        rg.addColorStop(0.6, COL_STONE_M);
+        rg.addColorStop(1,   COL_STONE_D);
+        ctx.fillStyle = rg;
+    }
+    ctx.fill();
+    ctx.strokeStyle = COL_STONE_D;
+    ctx.lineWidth = Math.max(1, ts * 0.010);
+    ctx.stroke();
+
+    if (quality !== 'low') {
+        // Stone block seams around the rim
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, outerRx, outerRy, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2 + rng() * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(a) * innerRx * 1.1, cy + Math.sin(a) * innerRy * 1.1);
+            ctx.lineTo(cx + Math.cos(a) * outerRx * 1.05, cy + Math.sin(a) * outerRy * 1.05);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // Water inside the ring
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, innerRx, innerRy, 0, 0, Math.PI * 2);
+    if (quality === 'low') {
+        ctx.fillStyle = COL_WATER_M;
+    } else {
+        const wg = ctx.createRadialGradient(cx, cy, 1, cx, cy, innerRx);
+        wg.addColorStop(0,   COL_WATER_L);
+        wg.addColorStop(0.6, COL_WATER_M);
+        wg.addColorStop(1,   COL_WATER_D);
+        ctx.fillStyle = wg;
+    }
+    ctx.fill();
+
+    if (quality !== 'low') {
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, innerRx, innerRy, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(200, 235, 255, 0.35)';
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, innerRx * 0.6, innerRy * 0.6, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // Specular glint on the water
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.beginPath();
+        ctx.ellipse(cx - innerRx * 0.3, cy - innerRy * 0.3, innerRx * 0.15, innerRy * 0.10, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Wooden well-house frame — two posts, a crossbeam and a small peaked roof.
+    // This is what actually sells the "medieval well" read, in both qualities.
+    const postLX  = cx - outerRx * 0.78;
+    const postRX  = cx + outerRx * 0.78;
+    const postTopY = cy - ts * 0.34;
+    const postW   = ts * 0.045;
+
+    ctx.fillStyle = COL_WOOD_M;
+    ctx.fillRect(postLX - postW / 2, postTopY, postW, cy - postTopY);
+    ctx.fillRect(postRX - postW / 2, postTopY, postW, cy - postTopY);
+    if (quality !== 'low') {
+        ctx.strokeStyle = COL_WOOD_D;
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        ctx.strokeRect(postLX - postW / 2, postTopY, postW, cy - postTopY);
+        ctx.strokeRect(postRX - postW / 2, postTopY, postW, cy - postTopY);
+    }
+
+    // Crossbeam
+    ctx.fillStyle = COL_WOOD_M;
+    ctx.fillRect(postLX - postW * 0.6, postTopY, (postRX - postLX) + postW * 1.2, ts * 0.030);
+
+    // Peaked roof
+    const roofPeakY    = postTopY - ts * 0.12;
+    const roofOverhang = ts * 0.05;
+    ctx.beginPath();
+    ctx.moveTo(postLX - postW * 0.6 - roofOverhang, postTopY);
+    ctx.lineTo(cx, roofPeakY);
+    ctx.lineTo(postRX + postW * 0.6 + roofOverhang, postTopY);
+    ctx.lineTo(postRX + postW * 0.6 + roofOverhang, postTopY + ts * 0.03);
+    ctx.lineTo(cx, roofPeakY + ts * 0.03);
+    ctx.lineTo(postLX - postW * 0.6 - roofOverhang, postTopY + ts * 0.03);
+    ctx.closePath();
+    if (quality === 'low') {
+        ctx.fillStyle = COL_ROOF_M;
+        ctx.fill();
+    } else {
+        const rfg = ctx.createLinearGradient(postLX, 0, postRX, 0);
+        rfg.addColorStop(0,   COL_ROOF_D);
+        rfg.addColorStop(0.5, COL_ROOF_M);
+        rfg.addColorStop(1,   COL_ROOF_D);
+        ctx.fillStyle = rfg;
+        ctx.fill();
+        ctx.strokeStyle = COL_WOOD_D;
+        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+/*
+_drawBush
+Tile: X[Bush]
+Graphics: Low / High quality
+A rounded shrub made of overlapping leafy lobes, sitting on grass. Doesn't
+block arrows and a tower can still see over/through it, but it's dense enough
+that a tower can't be built on it (see Map.js).
+*/
+function _drawBush(ctx, x, y, quality) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    const cx = x + ts * 0.5;
+    const baseY = y + ts * 0.80;
+
+    // Same dark conifer green as X[Tree]/SNW[Tree], so it reads as part of the same "grass" family
+    const COL_DEEP  = '#0c2a14';
+    const COL_MID   = '#1c5c2c';
+    const COL_LIT   = '#3f9048';
+    const COL_BERRY = '#c0392b';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    if (quality !== 'low') {
+        ctx.fillStyle = 'rgba(0, 15, 0, 0.28)';
+        ctx.beginPath();
+        ctx.ellipse(cx + ts * 0.02, baseY + ts * 0.02, ts * 0.32, ts * 0.06, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // A handful of overlapping rounded lobes forming a shrub silhouette
+    const lobes = [
+        { fx: -0.20, fy: -0.10, r: 0.20 },
+        { fx:  0.20, fy: -0.10, r: 0.20 },
+        { fx:  0.00, fy: -0.22, r: 0.22 },
+        { fx: -0.10, fy:  0.02, r: 0.17 },
+        { fx:  0.12, fy:  0.02, r: 0.17 },
+    ];
+
+    for (const lobe of lobes) {
+        const lx = cx + ts * lobe.fx + (rng() - 0.5) * ts * 0.02;
+        const ly = baseY + ts * lobe.fy + (rng() - 0.5) * ts * 0.02;
+        const r  = ts * lobe.r * (0.9 + rng() * 0.2);
+        ctx.beginPath();
+        ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        if (quality === 'low') {
+            ctx.fillStyle = COL_MID;
+            ctx.fill();
+            // Thin dark outline so each lobe stays readable without a shading gradient
+            ctx.strokeStyle = COL_DEEP;
+            ctx.lineWidth = Math.max(0.6, ts * 0.008);
+            ctx.stroke();
+        } else {
+            const g = ctx.createRadialGradient(lx - r * 0.3, ly - r * 0.3, 1, lx, ly, r);
+            g.addColorStop(0,    COL_LIT);
+            g.addColorStop(0.65, COL_MID);
+            g.addColorStop(1,    COL_DEEP);
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+    }
+
+    if (quality !== 'low') {
+        // A few berries for character
+        ctx.fillStyle = COL_BERRY;
+        for (let i = 0; i < 4; i++) {
+            const a  = rng() * Math.PI * 2;
+            const rr = ts * 0.18 * rng();
+            const bx = cx + Math.cos(a) * rr;
+            const by = baseY - ts * 0.10 + Math.sin(a) * rr * 0.6;
+            ctx.beginPath();
+            ctx.arc(bx, by, ts * 0.018, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    ctx.restore();
+}
+
+/*
 _drawTree / _drawSnowTree
 Tiles: X[Tree], SNW[Tree]
 Graphics: Low / High quality
@@ -3569,13 +4130,19 @@ function _drawOneConiferTree(ctx, cx, baseY, scale, quality, snowy, hJit) {
         ctx.fillRect(cx - ts * 0.022 * scale, baseY - trunkH, ts * 0.011 * scale, trunkH + ts * 0.015 * scale);
     }
 
+    // Low quality has no shading to hint which end is the top, so it gets a plain
+    // symmetric cone (no inward notch at the base) — with the notch, a flat single-color
+    // fill could read as upside-down. High quality keeps the notch for a fuller needle-tip
+    // silhouette, since the gradient/highlights make the correct orientation obvious.
     const tierPath = (t) => {
         ctx.beginPath();
         ctx.moveTo(cx - t.halfW, t.botY);
         ctx.quadraticCurveTo(cx - t.halfW * 0.35, t.botY - t.tH * 0.55, cx, t.apexY);
         ctx.quadraticCurveTo(cx + t.halfW * 0.35, t.botY - t.tH * 0.55, cx + t.halfW, t.botY);
-        ctx.lineTo(cx + t.halfW * 0.55, t.botY - t.tH * 0.18);
-        ctx.lineTo(cx - t.halfW * 0.55, t.botY - t.tH * 0.18);
+        if (quality !== 'low') {
+            ctx.lineTo(cx + t.halfW * 0.55, t.botY - t.tH * 0.18);
+            ctx.lineTo(cx - t.halfW * 0.55, t.botY - t.tH * 0.18);
+        }
         ctx.closePath();
     };
 
@@ -4310,6 +4877,9 @@ export const MapTextures = {
     _drawSandCactus,
     _drawSandPalm,
     _drawSnowSpike,
+    _drawLog,
+    _drawWell,
+    _drawBush,
     _drawTree,
     _drawSnowTree,
     _drawWaterRock,
