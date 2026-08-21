@@ -519,10 +519,26 @@ hr {
     border-radius: 4px;
     z-index: 2000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+    /* Themed scrollbar (Firefox) */
+    scrollbar-width: thin;
+    scrollbar-color: rgb(240, 198, 116) transparent;
 }
 
 .tile-search-suggestions.tile-search-open {
     display: block;
+}
+
+/* Themed scrollbar (Chrome/Safari/Edge) */
+.tile-search-suggestions::-webkit-scrollbar {
+    width: 6px;
+}
+.tile-search-suggestions::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+.tile-search-suggestions::-webkit-scrollbar-thumb {
+    background: rgb(240, 198, 116);
+    border-radius: 10px;
 }
 
 .tile-search-suggestion {

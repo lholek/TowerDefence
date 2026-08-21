@@ -15,6 +15,7 @@
         "Improved - Editor - MAP - Added text to tile instead of S,E,X,SND etc. ADD THERE FULL TEXT LIKE SNOW SAND atd.",
         "Improved - Editor - MAP - Small changes in selecotor - You can now see number of curent objects in the game",
         "Improved - Editor - MAP - Added filters for map terrains, pahts and Map objects",
+        "Improved - Editor - MAP - Added search of tiles by name",
         "Improved - Editor - MAP - Fixed bug - Tile cordinates shows where editores hovers",
         "Improved - Editor - WAVES - changed text of new type of enemy button",
         "-------------------------------------------------------------",
