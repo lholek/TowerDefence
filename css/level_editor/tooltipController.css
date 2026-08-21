@@ -38,3 +38,28 @@
     text-align: center; /* Vycentrovat text v tooltipu */
     transition: opacity 0.15s ease-out; /* Jemný efekt */
 }
+
+/* Wider two-column layout for the block/tile legend tooltip */
+#dynamic-tooltip:has(.tooltip-legend) {
+    max-width: 560px;
+    text-align: left;
+}
+
+.tooltip-legend ul {
+    margin: 2px 0 0;
+    padding-left: 0;
+    list-style: none;
+    column-count: 2;
+    column-gap: 18px;
+}
+
+.tooltip-legend li {
+    margin-bottom: 6px;
+    line-height: 1.35;
+    font-size: 12.5px;
+    break-inside: avoid;
+}
+
+.tooltip-legend li strong {
+    color: #f0c674;
+}

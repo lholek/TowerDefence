@@ -909,6 +909,7 @@ function createTileKey() {
                            onblur="window.app.mapEditor.onTileSearchBlur()">
                     <div id="tileSearchSuggestions" class="tile-search-suggestions"></div>
                 </div>
+                <i class="info-icon" data-tooltip="map-editor.tile-legend">i</i>
             </div>
             <div class="tile-key-filters">
                 <strong>Filters:</strong>

@@ -3344,15 +3344,26 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
         spikePath();
         ctx.clip();
 
-        // STEP 1: Ice core — dark-to-lit horizontal gradient
+        // STEP 1: Ice core — dark-to-lit horizontal gradient, translucent like real glass
+        // (alpha < 1 lets the snow mound/backdrop faintly bleed through the body)
         const coreGrad = ctx.createLinearGradient(-w / 2, 0, w / 2, 0);
-        coreGrad.addColorStop(0,    '#0a1825');
-        coreGrad.addColorStop(0.25, '#163350');
-        coreGrad.addColorStop(0.55, '#2a6080');
-        coreGrad.addColorStop(0.82, '#4a9ab8');
-        coreGrad.addColorStop(1,    '#163350');
+        coreGrad.addColorStop(0,    'rgba(8, 26, 42, 0.90)');
+        coreGrad.addColorStop(0.25, 'rgba(18, 58, 90, 0.88)');
+        coreGrad.addColorStop(0.55, 'rgba(34, 118, 164, 0.82)');
+        coreGrad.addColorStop(0.82, 'rgba(94, 208, 240, 0.76)');
+        coreGrad.addColorStop(1,    'rgba(18, 58, 90, 0.88)');
         ctx.fillStyle = coreGrad;
         ctx.fillRect(-w, -h - 2, w * 2.5, h + 4);
+
+        // STEP 1b: Glassy internal glint — soft diagonal light bloom for extra clarity
+        ctx.globalCompositeOperation = 'lighter';
+        const glintGrad = ctx.createLinearGradient(-w * 0.30, -h * 0.85, w * 0.35, -h * 0.10);
+        glintGrad.addColorStop(0,   'rgba(255, 255, 255, 0)');
+        glintGrad.addColorStop(0.5, 'rgba(224, 250, 255, 0.30)');
+        glintGrad.addColorStop(1,   'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = glintGrad;
+        ctx.fillRect(-w, -h - 2, w * 2.5, h + 4);
+        ctx.globalCompositeOperation = 'source-over';
 
         // STEP 2: Frosted surface — white-blue near tip, fading to nothing at base
         const frostGrad = ctx.createLinearGradient(0, -h, 0, 0);
@@ -3412,15 +3423,15 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
         ctx.stroke();
         ctx.globalAlpha = 1.0;
 
-        // STEP 7: Right rim light — the glass/ice edge sheen
-        ctx.globalAlpha = 0.80;
+        // STEP 7: Right rim light — the glass/ice edge sheen (brighter + slightly wider for a polished-glass edge)
+        ctx.globalAlpha = 0.92;
         const rimGrad = ctx.createLinearGradient(w / 2, 0, w / 2, -h);
         rimGrad.addColorStop(0,    'rgba(200, 240, 255, 0)');
-        rimGrad.addColorStop(0.20, '#cceeff');
+        rimGrad.addColorStop(0.20, '#d8f4ff');
         rimGrad.addColorStop(0.75, '#ffffff');
-        rimGrad.addColorStop(1,    'rgba(255, 255, 255, 0.15)');
+        rimGrad.addColorStop(1,    'rgba(255, 255, 255, 0.25)');
         ctx.strokeStyle = rimGrad;
-        ctx.lineWidth = Math.max(0.9, ts * 0.013);
+        ctx.lineWidth = Math.max(1.1, ts * 0.016);
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(w / 2, 0);
@@ -3581,6 +3592,17 @@ function _drawWaterRock(ctx, x, y, variant, quality) {
     }
 
     // ── HIGH quality shared helpers ──
+    // Block-scoped so these shadow the cold slate R_* constants above ONLY for the
+    // high-quality render — the low-quality path above keeps the original palette.
+    // Warmer, earthy granite tones that match the rest of the game's stone assets
+    // (mountains, road stones) instead of the previous cold blue-grey slate look.
+    {
+    const R_DEEP = '#241f1a';
+    const R_BASE = '#3c3226';
+    const R_MID  = '#5f5140';
+    const R_LIT  = '#83725a';
+    const R_HIGH = '#ab9a80';
+
     const bY = wY + ts*0.02;
 
     const drawRipples = (cx2, n = 3) => {
@@ -4011,6 +4033,7 @@ function _drawWaterRock(ctx, x, y, variant, quality) {
         }
         ctx.globalAlpha = 1.0; ctx.restore();
     }
+    } // end high-quality warm-palette block
 
     ctx.restore();
 }
