@@ -3745,7 +3745,7 @@ function _drawLogFallen(ctx, x, y, quality, rng) {
         ctx.lineTo(capX, -logTh / 2);
         ctx.arc(capX, 0, logTh / 2, -Math.PI / 2, Math.PI / 2);
         ctx.lineTo(-logLen / 2, logTh / 2);
-        ctx.arc(-logLen / 2, 0, logTh / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.arc(-logLen / 2, 0, logTh / 2, Math.PI / 2, -Math.PI / 2);
         ctx.closePath();
     };
 
@@ -3774,6 +3774,21 @@ function _drawLogFallen(ctx, x, y, quality, rng) {
             ctx.quadraticCurveTo(lx + logTh * 0.15, 0, lx, logTh * 0.5);
             ctx.stroke();
         }
+        ctx.restore();
+
+        // Soft round highlight on the far (uncut) end, so its dome reads clearly
+        // as rounded rather than just trailing off flat.
+        ctx.save();
+        bodyPath();
+        ctx.clip();
+        const domeHi = ctx.createRadialGradient(
+            -logLen / 2 - logTh * 0.10, -logTh * 0.12, 0,
+            -logLen / 2, 0, logTh * 0.6
+        );
+        domeHi.addColorStop(0, 'rgba(255, 240, 210, 0.35)');
+        domeHi.addColorStop(1, 'rgba(255, 240, 210, 0)');
+        ctx.fillStyle = domeHi;
+        ctx.fillRect(-logLen / 2 - logTh, -logTh, logTh * 2, logTh * 2);
         ctx.restore();
     }
 
@@ -3842,17 +3857,14 @@ function _drawWell(ctx, x, y, quality) {
     const innerRx = ts * 0.20, innerRy = ts * 0.15;
     const wallH = ts * 0.16;
 
-    // Lighter, warmer limestone — reads as old hewn medieval stone rather than dark modern brick
-    const COL_STONE_D = '#6b6357';
-    const COL_STONE_M = '#a89e8a';
-    const COL_STONE_L = '#d8cdb2';
-    const COL_WATER_D = '#0b3a5e';
-    const COL_WATER_M = '#1f6b9e';
-    const COL_WATER_L = '#6fc8e8';
-    const COL_WOOD_D  = '#2c1a0d';
-    const COL_WOOD_M  = '#5a3a1c';
-    const COL_ROOF_D  = '#4a2418';
-    const COL_ROOF_M  = '#7a4028';
+    // Dark weathered stone — old hewn medieval well blocks
+    const COL_STONE_D = '#2e2b26';
+    const COL_STONE_M = '#565148';
+    const COL_STONE_L = '#7d7666';
+    // Deep, murky well water
+    const COL_WATER_D = '#040f1a';
+    const COL_WATER_M = '#0d2c42';
+    const COL_WATER_L = '#3a7ba0';
 
     ctx.save();
     ctx.beginPath();
@@ -3941,53 +3953,6 @@ function _drawWell(ctx, x, y, quality) {
         ctx.fill();
     }
 
-    // Wooden well-house frame — two posts, a crossbeam and a small peaked roof.
-    // This is what actually sells the "medieval well" read, in both qualities.
-    const postLX  = cx - outerRx * 0.78;
-    const postRX  = cx + outerRx * 0.78;
-    const postTopY = cy - ts * 0.34;
-    const postW   = ts * 0.045;
-
-    ctx.fillStyle = COL_WOOD_M;
-    ctx.fillRect(postLX - postW / 2, postTopY, postW, cy - postTopY);
-    ctx.fillRect(postRX - postW / 2, postTopY, postW, cy - postTopY);
-    if (quality !== 'low') {
-        ctx.strokeStyle = COL_WOOD_D;
-        ctx.lineWidth = Math.max(0.5, ts * 0.006);
-        ctx.strokeRect(postLX - postW / 2, postTopY, postW, cy - postTopY);
-        ctx.strokeRect(postRX - postW / 2, postTopY, postW, cy - postTopY);
-    }
-
-    // Crossbeam
-    ctx.fillStyle = COL_WOOD_M;
-    ctx.fillRect(postLX - postW * 0.6, postTopY, (postRX - postLX) + postW * 1.2, ts * 0.030);
-
-    // Peaked roof
-    const roofPeakY    = postTopY - ts * 0.12;
-    const roofOverhang = ts * 0.05;
-    ctx.beginPath();
-    ctx.moveTo(postLX - postW * 0.6 - roofOverhang, postTopY);
-    ctx.lineTo(cx, roofPeakY);
-    ctx.lineTo(postRX + postW * 0.6 + roofOverhang, postTopY);
-    ctx.lineTo(postRX + postW * 0.6 + roofOverhang, postTopY + ts * 0.03);
-    ctx.lineTo(cx, roofPeakY + ts * 0.03);
-    ctx.lineTo(postLX - postW * 0.6 - roofOverhang, postTopY + ts * 0.03);
-    ctx.closePath();
-    if (quality === 'low') {
-        ctx.fillStyle = COL_ROOF_M;
-        ctx.fill();
-    } else {
-        const rfg = ctx.createLinearGradient(postLX, 0, postRX, 0);
-        rfg.addColorStop(0,   COL_ROOF_D);
-        rfg.addColorStop(0.5, COL_ROOF_M);
-        rfg.addColorStop(1,   COL_ROOF_D);
-        ctx.fillStyle = rfg;
-        ctx.fill();
-        ctx.strokeStyle = COL_WOOD_D;
-        ctx.lineWidth = Math.max(0.5, ts * 0.006);
-        ctx.stroke();
-    }
-
     ctx.restore();
 }
 
@@ -4007,7 +3972,10 @@ function _drawBush(ctx, x, y, quality) {
     const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
 
     const cx = x + ts * 0.5;
-    const baseY = y + ts * 0.80;
+    const cy = y + ts * 0.5;
+    // ~3x smaller than the original size, centered in the tile instead of sitting on a
+    // bottom baseline.
+    const S = 1 / 2;
 
     // Same dark conifer green as X[Tree]/SNW[Tree], so it reads as part of the same "grass" family
     const COL_DEEP  = '#0c2a14';
@@ -4023,40 +3991,68 @@ function _drawBush(ctx, x, y, quality) {
     if (quality !== 'low') {
         ctx.fillStyle = 'rgba(0, 15, 0, 0.28)';
         ctx.beginPath();
-        ctx.ellipse(cx + ts * 0.02, baseY + ts * 0.02, ts * 0.32, ts * 0.06, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx + ts * 0.02 * S, cy + ts * 0.30 * S, ts * 0.32 * S, ts * 0.06 * S, 0, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // A handful of overlapping rounded lobes forming a shrub silhouette
+    // Overlapping lobes merged into ONE path, so the whole cluster is filled/shaded as a
+    // single leafy mass under one shared light — separate per-lobe fills/gradients made it
+    // look like a cluster of bubbles instead of a bush.
     const lobes = [
-        { fx: -0.20, fy: -0.10, r: 0.20 },
-        { fx:  0.20, fy: -0.10, r: 0.20 },
-        { fx:  0.00, fy: -0.22, r: 0.22 },
-        { fx: -0.10, fy:  0.02, r: 0.17 },
-        { fx:  0.12, fy:  0.02, r: 0.17 },
+        { fx: -0.22, fy: -0.08, r: 0.20 },
+        { fx:  0.22, fy: -0.08, r: 0.20 },
+        { fx:  0.00, fy: -0.22, r: 0.23 },
+        { fx: -0.13, fy:  0.05, r: 0.18 },
+        { fx:  0.14, fy:  0.05, r: 0.18 },
+        { fx: -0.32, fy:  0.08, r: 0.13 },
+        { fx:  0.32, fy:  0.08, r: 0.13 },
     ];
 
-    for (const lobe of lobes) {
-        const lx = cx + ts * lobe.fx + (rng() - 0.5) * ts * 0.02;
-        const ly = baseY + ts * lobe.fy + (rng() - 0.5) * ts * 0.02;
-        const r  = ts * lobe.r * (0.9 + rng() * 0.2);
+    const clusterPath = () => {
         ctx.beginPath();
-        ctx.arc(lx, ly, r, 0, Math.PI * 2);
-        if (quality === 'low') {
-            ctx.fillStyle = COL_MID;
-            ctx.fill();
-            // Thin dark outline so each lobe stays readable without a shading gradient
-            ctx.strokeStyle = COL_DEEP;
-            ctx.lineWidth = Math.max(0.6, ts * 0.008);
-            ctx.stroke();
-        } else {
-            const g = ctx.createRadialGradient(lx - r * 0.3, ly - r * 0.3, 1, lx, ly, r);
-            g.addColorStop(0,    COL_LIT);
-            g.addColorStop(0.65, COL_MID);
-            g.addColorStop(1,    COL_DEEP);
-            ctx.fillStyle = g;
-            ctx.fill();
+        for (const lobe of lobes) {
+            const lx = cx + ts * lobe.fx * S;
+            const ly = cy + ts * lobe.fy * S;
+            const r  = ts * lobe.r * S;
+            ctx.moveTo(lx + r, ly);
+            ctx.arc(lx, ly, r, 0, Math.PI * 2);
         }
+    };
+
+    clusterPath();
+    if (quality === 'low') {
+        ctx.fillStyle = COL_MID;
+        ctx.fill();
+
+        // One offset shadow mass (not a per-lobe gradient) for a cheap depth cue
+        ctx.save();
+        clusterPath();
+        ctx.clip();
+        ctx.fillStyle = COL_DEEP;
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.ellipse(cx + ts * 0.09 * S, cy - ts * 0.02 * S, ts * 0.30 * S, ts * 0.20 * S, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+        ctx.restore();
+    } else {
+        const g = ctx.createLinearGradient(cx, cy - ts * 0.44 * S, cx, cy + ts * 0.30 * S);
+        g.addColorStop(0,    COL_LIT);
+        g.addColorStop(0.55, COL_MID);
+        g.addColorStop(1,    COL_DEEP);
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        // One shared soft highlight near the top, not one per lobe
+        ctx.save();
+        clusterPath();
+        ctx.clip();
+        const hi = ctx.createRadialGradient(cx - ts * 0.10 * S, cy - ts * 0.26 * S, 0, cx, cy - ts * 0.18 * S, ts * 0.32 * S);
+        hi.addColorStop(0, 'rgba(210, 255, 190, 0.35)');
+        hi.addColorStop(1, 'rgba(210, 255, 190, 0)');
+        ctx.fillStyle = hi;
+        ctx.fillRect(x, y, ts, ts);
+        ctx.restore();
     }
 
     if (quality !== 'low') {
@@ -4064,11 +4060,11 @@ function _drawBush(ctx, x, y, quality) {
         ctx.fillStyle = COL_BERRY;
         for (let i = 0; i < 4; i++) {
             const a  = rng() * Math.PI * 2;
-            const rr = ts * 0.18 * rng();
+            const rr = ts * 0.18 * S * rng();
             const bx = cx + Math.cos(a) * rr;
-            const by = baseY - ts * 0.10 + Math.sin(a) * rr * 0.6;
+            const by = cy - ts * 0.10 * S + Math.sin(a) * rr * 0.6;
             ctx.beginPath();
-            ctx.arc(bx, by, ts * 0.018, 0, Math.PI * 2);
+            ctx.arc(bx, by, ts * 0.018 * S, 0, Math.PI * 2);
             ctx.fill();
         }
     }
