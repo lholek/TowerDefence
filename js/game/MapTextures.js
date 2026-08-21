@@ -3688,18 +3688,22 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
         _drawOneConiferTree.call(this, ctx, cx, baseY, scale, quality, snowy, hJit);
     };
 
-    // 9 trees packed into a diamond (rhombus) — 4 corners + 4 in-between fillers + a
-    // center tree — drawn back-to-front so nearer/lower trees overlap the ones behind them.
+    // 9 trees filling a full 3x3 grid (including the corners) so the whole tile reads as
+    // packed forest instead of a diamond with empty corners — drawn back-to-front (row by
+    // row) so nearer/lower trees overlap the ones behind them.
     const slots = [
-        { fx: 0.50, fy: 0.20, scale: 1.20 },  // back
-        { fx: 0.32, fy: 0.34, scale: 0.95 },  // back-left filler
-        { fx: 0.68, fy: 0.34, scale: 0.95 },  // back-right filler
-        { fx: 0.16, fy: 0.54, scale: 1.34 },  // left
-        { fx: 0.84, fy: 0.54, scale: 1.34 },  // right
-        { fx: 0.50, fy: 0.56, scale: 1.05 },  // center filler
-        { fx: 0.30, fy: 0.72, scale: 1.15 },  // front-left filler
-        { fx: 0.70, fy: 0.72, scale: 1.15 },  // front-right filler
-        { fx: 0.50, fy: 0.84, scale: 1.54 },  // front — biggest, closest to the viewer
+        // back row (furthest, smallest)
+        { fx: 0.15, fy: 0.16, scale: 0.95 },
+        { fx: 0.50, fy: 0.14, scale: 1.10 },
+        { fx: 0.85, fy: 0.16, scale: 0.95 },
+        // middle row
+        { fx: 0.15, fy: 0.50, scale: 1.20 },
+        { fx: 0.50, fy: 0.48, scale: 1.05 },
+        { fx: 0.85, fy: 0.50, scale: 1.20 },
+        // front row (closest, biggest)
+        { fx: 0.15, fy: 0.84, scale: 1.40 },
+        { fx: 0.50, fy: 0.86, scale: 1.54 },
+        { fx: 0.85, fy: 0.84, scale: 1.40 },
     ];
     for (const slot of slots) {
         placeTree(slot.fx, slot.fy, slot.scale);
