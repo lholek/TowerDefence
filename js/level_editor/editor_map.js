@@ -36,13 +36,14 @@ const TILE_LABELS = {
     'SND[PALM-3]': 'Palm 3', 'SND[PALM-4]': 'Palm 4',
     'SNW[SPIKE-1]': 'Spike 1', 'SNW[SPIKE-2]': 'Spike 2',
     'SNW[SPIKE-3]': 'Spike 3', 'SNW[SPIKE-4]': 'Spike 4',
+    'X[Tree]': 'Tree', 'SNW[Tree]': 'Snow Tree',
     'W[Rock-1]': 'Rock 1', 'W[Rock-2]': 'Rock 2',
     'W[Rock-3]': 'Rock 3', 'W[Rock-4]': 'Rock 4'
 };
 
 const TERRAIN_ORDER = ['S', 'E', 'X', 'SNW', 'SND', 'ICE', 'LAVA', 'W', 'M', '-', 'HLG', 'BRG'];
 const PATHS_ORDER   = ['O', 'O[SNW]', 'O[SND]'];
-const OBJECT_ORDER   = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
+const OBJECT_ORDER   = ['SND[BONE-1]', 'SND[BONE-2]', 'SND[BONE-3]', 'SND[BONE-4]', 'SND[CACTUS-1]', 'SND[CACTUS-2]', 'SND[CACTUS-3]', 'SND[CACTUS-4]', 'SND[PALM-1]', 'SND[PALM-2]', 'SND[PALM-3]', 'SND[PALM-4]', 'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]', 'X[Tree]', 'SNW[Tree]', 'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]'];
 
 // Helper: tile type → CSS base class (shared by the key/legend, the current-tile display and the search box)
 function tileTypeToBaseClass(type) {

@@ -119,6 +119,8 @@
 .minimap-tile.lava{ background: #ff9955; }
 .minimap-tile.holy{ background: #eab308; }
 .minimap-tile.burned{ background: #3b0704; }
+.minimap-tile.tree{ background: #1c5c2c; }
+.minimap-tile.snow-tree{ background: #1c5c42; }
 .minimap-tile.snw-spike{ background: #1a3d5c; }
 /* mini map */
 

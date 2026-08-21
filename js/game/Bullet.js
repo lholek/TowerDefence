@@ -94,6 +94,10 @@ export default class Bullet {
             this.active = false;
             return;
         }
+        if (tileType === 'X[Tree]' || tileType === 'SNW[Tree]') {
+            this.active = false;
+            return;
+        }
 
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;

@@ -391,6 +391,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'BRG':
             tile.classList.add('burned');
             break;
+          case 'X[Tree]':
+            tile.classList.add('tree');
+            break;
+          case 'SNW[Tree]':
+            tile.classList.add('snow-tree');
+            break;
           case 'W[Rock-1]':
           case 'W[Rock-2]':
           case 'W[Rock-3]':

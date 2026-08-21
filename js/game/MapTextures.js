@@ -1666,6 +1666,21 @@ function _prerenderRoad() {
                     continue;
                 }
 
+                // --- CONIFER TREES (X[Tree] / SNW[Tree]) ---
+                if (tok === 'X[Tree]' || tok === 'SNW[Tree]') {
+                    const hasLeft  = c > 0 && String(this.grid[r][c - 1] ?? '') === tok;
+                    const hasRight = c < this.cols - 1 && String(this.grid[r][c + 1] ?? '') === tok;
+                    const hasUp    = r > 0 && String(this.grid[r - 1][c] ?? '') === tok;
+                    const hasDown  = r < this.rows - 1 && String(this.grid[r + 1][c] ?? '') === tok;
+                    const isTopRow = r === 0;
+                    if (tok === 'X[Tree]') {
+                        this._drawTree(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
+                    } else {
+                        this._drawSnowTree(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
+                    }
+                    continue;
+                }
+
                 // --- HOLY GROUND (HLG) ---
                 if (tok === 'HLG') {
                     if (this.graphicsSettings.terrain === 'low') {
@@ -3501,6 +3516,214 @@ function _drawSnowSpike(ctx, x, y, variant, quality) {
 }
 
 /*
+_drawTree / _drawSnowTree
+Tiles: X[Tree], SNW[Tree]
+Graphics: Low / High quality
+A small cluster of 4 stylized conifer/spruce silhouettes, arranged in a diamond
+(rhombus) layout, simulating a little patch of forest inside a single tile.
+Blocks arrows and tower line of sight (see Bullet.js / Tower.js), cannot build towers.
+"Joins in group": when a same-type tree tile sits on the immediate left/right/up/down,
+the tile's clip region is widened on that side and an extra tree is grown straddling
+the shared edge, so two adjacent tree tiles sprout trees INTO the seam between them —
+the forest reads as continuous instead of two separate clumps with a visible gap.
+*/
+// Vertical distance from a tree's baseline up to the tip of its tallest tier —
+// must stay in sync with the tier math in _drawOneConiferTree below (used to
+// figure out, ahead of drawing, how much headroom a given tree will need).
+function _coniferApexReach(ts, scale, hJit) {
+    const trunkH = ts * 0.075 * scale;
+    const treeH  = ts * 0.62 * scale * hJit;
+    return trunkH + 0.7056 * treeH;
+}
+
+function _drawOneConiferTree(ctx, cx, baseY, scale, quality, snowy, hJit) {
+    const ts = this.tileSize;
+
+    const trunkH = ts * 0.075 * scale;
+    const treeH  = ts * 0.62 * scale * hJit;
+
+    const COL_TRUNK   = '#3e2712';
+    const COL_TRUNK_L = '#6a4522';
+    const COL_DEEP  = snowy ? '#0c2a20' : '#0c2a14';
+    const COL_MID   = snowy ? '#1c5c42' : '#1c5c2c';
+    const COL_LIT   = snowy ? '#3f9068' : '#3f9048';
+    const COL_SNOWC = '#eef7ff';
+
+    // 3 tapering tiers stacked bottom-to-top, each overlapping the one below
+    const tierCount = 3;
+    const baseHalfW = ts * 0.20 * scale;
+    const baseTierH = treeH * 0.36;
+    const tiers = [];
+    for (let i = 0; i < tierCount; i++) {
+        const halfW = baseHalfW * (1 - i * 0.24);
+        const tH    = baseTierH * (1 - i * 0.10);
+        const botY  = baseY - trunkH - i * (baseTierH * 0.58);
+        tiers.push({ halfW, tH, botY, apexY: botY - tH });
+    }
+
+    // Trunk (mostly hidden under the bottom tier, peeks out at the base)
+    ctx.fillStyle = COL_TRUNK;
+    ctx.fillRect(cx - ts * 0.022 * scale, baseY - trunkH, ts * 0.044 * scale, trunkH + ts * 0.015 * scale);
+    if (quality !== 'low') {
+        ctx.fillStyle = COL_TRUNK_L;
+        ctx.fillRect(cx - ts * 0.022 * scale, baseY - trunkH, ts * 0.011 * scale, trunkH + ts * 0.015 * scale);
+    }
+
+    const tierPath = (t) => {
+        ctx.beginPath();
+        ctx.moveTo(cx - t.halfW, t.botY);
+        ctx.quadraticCurveTo(cx - t.halfW * 0.35, t.botY - t.tH * 0.55, cx, t.apexY);
+        ctx.quadraticCurveTo(cx + t.halfW * 0.35, t.botY - t.tH * 0.55, cx + t.halfW, t.botY);
+        ctx.lineTo(cx + t.halfW * 0.55, t.botY - t.tH * 0.18);
+        ctx.lineTo(cx - t.halfW * 0.55, t.botY - t.tH * 0.18);
+        ctx.closePath();
+    };
+
+    // Drop shadow (high quality only)
+    if (quality !== 'low') {
+        ctx.save();
+        ctx.translate(ts * 0.018 * scale, ts * 0.018 * scale);
+        ctx.fillStyle = 'rgba(0, 10, 5, 0.28)';
+        for (let i = tierCount - 1; i >= 0; i--) { tierPath(tiers[i]); ctx.fill(); }
+        ctx.restore();
+    }
+
+    // Tiers, drawn top-first so lower/wider tiers overlap the ones above them
+    for (let i = tierCount - 1; i >= 0; i--) {
+        const t = tiers[i];
+
+        if (quality === 'low') {
+            tierPath(t);
+            ctx.fillStyle = COL_MID;
+            ctx.fill();
+            continue;
+        }
+
+        tierPath(t);
+        const grad = ctx.createLinearGradient(cx - t.halfW, 0, cx + t.halfW, 0);
+        grad.addColorStop(0,    COL_LIT);
+        grad.addColorStop(0.45, COL_MID);
+        grad.addColorStop(1,    COL_DEEP);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Shadow facet on the right side of each tier
+        ctx.save();
+        tierPath(t);
+        ctx.clip();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = COL_DEEP;
+        ctx.beginPath();
+        ctx.moveTo(cx, t.apexY);
+        ctx.lineTo(cx + t.halfW, t.botY);
+        ctx.lineTo(cx + t.halfW * 0.4, t.botY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+        ctx.restore();
+
+        // Snow cap along the top edge of each tier
+        if (snowy) {
+            ctx.save();
+            tierPath(t);
+            ctx.clip();
+            ctx.fillStyle = COL_SNOWC;
+            ctx.beginPath();
+            ctx.moveTo(cx - t.halfW * 0.62, t.botY - t.tH * 0.30);
+            ctx.quadraticCurveTo(cx - t.halfW * 0.20, t.botY - t.tH * 0.70, cx, t.apexY + t.tH * 0.06);
+            ctx.quadraticCurveTo(cx + t.halfW * 0.22, t.botY - t.tH * 0.66, cx + t.halfW * 0.58, t.botY - t.tH * 0.32);
+            ctx.quadraticCurveTo(cx + t.halfW * 0.30, t.botY - t.tH * 0.46, cx, t.apexY + t.tH * 0.20);
+            ctx.quadraticCurveTo(cx - t.halfW * 0.28, t.botY - t.tH * 0.44, cx - t.halfW * 0.62, t.botY - t.tH * 0.30);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // Small ground tuft at the base of this one tree
+    ctx.fillStyle = snowy ? COL_SNOWC : COL_MID;
+    ctx.globalAlpha = snowy ? 0.75 : 0.45;
+    ctx.beginPath();
+    ctx.ellipse(cx, baseY + ts * 0.006, ts * 0.15 * scale, ts * 0.03 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+}
+
+function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, snowy) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+    const jit = () => (rng() - 0.5) * ts * 0.05;
+
+    // Base margin (always applied): trees are taller than one tile, so their thin canopy
+    // tips are allowed to softly overflow the tile edge like a real treetop would. Sides
+    // bordering a same-type tree get extra room on top of that for seam trees.
+    // Exception: the map's very first row has no canvas above it to overflow into — any
+    // upward overflow there would just get cut off — so it gets no upward margin at all,
+    // and every tree's height is clamped instead (see placeTree below).
+    const baseMargin = ts * 0.55;
+    const extL = baseMargin + (hasLeft  ? ts * 0.30 : 0);
+    const extR = baseMargin + (hasRight ? ts * 0.30 : 0);
+    const extU = isTopRow ? 0 : baseMargin + (hasUp ? ts * 0.30 : 0);
+    const extD = baseMargin + (hasDown  ? ts * 0.30 : 0);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x - extL, y - extU, ts + extL + extR, ts + extU + extD);
+    ctx.clip();
+
+    // Rolls this tree's height jitter, then places it — on the top row, baseY is pushed
+    // down just enough that the tallest tier's tip lands exactly on the tile's top edge
+    // instead of being cut off by the canvas boundary above it.
+    const placeTree = (fx, fy, scale) => {
+        const hJit = 0.86 + rng() * 0.26;
+        const cx = x + ts * fx + jit();
+        let baseY = y + ts * fy + jit() * 0.4;
+        if (isTopRow) {
+            const minBaseY = y + _coniferApexReach(ts, scale, hJit);
+            if (baseY < minBaseY) baseY = minBaseY;
+        }
+        _drawOneConiferTree.call(this, ctx, cx, baseY, scale, quality, snowy, hJit);
+    };
+
+    // 9 trees packed into a diamond (rhombus) — 4 corners + 4 in-between fillers + a
+    // center tree — drawn back-to-front so nearer/lower trees overlap the ones behind them.
+    const slots = [
+        { fx: 0.50, fy: 0.20, scale: 1.20 },  // back
+        { fx: 0.32, fy: 0.34, scale: 0.95 },  // back-left filler
+        { fx: 0.68, fy: 0.34, scale: 0.95 },  // back-right filler
+        { fx: 0.16, fy: 0.54, scale: 1.34 },  // left
+        { fx: 0.84, fy: 0.54, scale: 1.34 },  // right
+        { fx: 0.50, fy: 0.56, scale: 1.05 },  // center filler
+        { fx: 0.30, fy: 0.72, scale: 1.15 },  // front-left filler
+        { fx: 0.70, fy: 0.72, scale: 1.15 },  // front-right filler
+        { fx: 0.50, fy: 0.84, scale: 1.54 },  // front — biggest, closest to the viewer
+    ];
+    for (const slot of slots) {
+        placeTree(slot.fx, slot.fy, slot.scale);
+    }
+
+    // Seam trees: grow extra trunks INTO the gap toward each same-type neighbor tile
+    const jitFrac = () => (rng() - 0.5) * 0.05;
+    if (hasRight) placeTree(1.00 + rng() * 0.08, 0.55 + jitFrac(), 1.32);
+    if (hasLeft)  placeTree(0.00 - rng() * 0.08, 0.55 + jitFrac(), 1.32);
+    if (hasDown)  placeTree(0.50 + jitFrac(), 1.00 + rng() * 0.08, 1.32);
+    if (hasUp)    placeTree(0.50 + jitFrac(), 0.00 - rng() * 0.08, 1.08);
+
+    ctx.restore();
+}
+
+function _drawTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow) {
+    _drawConiferTree.call(this, ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, false);
+}
+
+function _drawSnowTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow) {
+    _drawConiferTree.call(this, ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, true);
+}
+
+/*
 _drawWaterRock
 Tiles: W[Rock-1..4]
 Graphics: Low / High quality
@@ -4083,5 +4306,7 @@ export const MapTextures = {
     _drawSandCactus,
     _drawSandPalm,
     _drawSnowSpike,
+    _drawTree,
+    _drawSnowTree,
     _drawWaterRock,
 };

@@ -641,6 +641,16 @@ hr {
     color: black;
 }
 
+.tile-x-tree {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
+.tile-snw-tree {
+    background-color: #1c5c42;
+    color: #eef7ff;
+}
+
 .tile-w-rock {
     background-color: #0b3a5e;
     color: #a8d8f0;
