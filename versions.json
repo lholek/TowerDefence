@@ -6,6 +6,7 @@
       "changes": [
         "Improved - UI - Added option to set Obejct quality in the Settings",
         "Improves - Map - New 32 tiles added to the game: LAVA, ICE, X[Tree], X[Log 1-2], X[Well], X[Bush], X[Dirt] (FarmLand), X[Hay] (Hay Field), SNW[Tree],SND[Bone 1-4], SND[Cactus 1-4], SND[Palm 1-4], SNW[Spike 1-4], W[Rock 1-4], Holy Ground, Burned Ground",
+        "Improved - Gameplay - Fixed path in Simple Roads II",
         "Improved - Graphics - Improved grass on High and Low settings",
         "Improved - Editor - New Improved Map Editor",
         "Improved - Editor - MAP - New Slider for tiles in editor",
