@@ -25,14 +25,6 @@ X[Log-1..2]      - cant build towers, blocks arrows (low, doesn't block tower vi
 X[Well]          - cant build towers, blocks arrows and tower vision
 X[Bush]          - cant build towers, doesnt block arrows
 W[Rock-1..4]     - cant build towers, blocks arrows
-
-Pre-Beta IV:
-"TODO: SND[Cactus] - cant build towers, blocks arrows",
-"TODO: SND[Palm] - cant build towers, blocks arrows",
-"TODO: SND[BONE] - cant build towers, doesnt block arrows",
-"TODO: X[Tree] - cant build towers, blocks arrows",
-"TODO: SNW[Tree] - cant build towers, blocks arrows",
-"TODO: SND[Palm] - cant build towers, blocks arrows",
 */
 
 /**
