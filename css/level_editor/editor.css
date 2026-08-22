@@ -771,12 +771,13 @@ hr {
     gap: 6px;
 }
 
+/* Same classic brown as the plain .btn tabs (Map, Towers, Waves, ...) */
 .btn-undo-redo {
     flex: 1;
-    background-color: #4a443b !important;
+    background-color: rgb(139, 69, 19) !important;
     color: rgb(243, 229, 171);
-    border: 2px solid #33302a !important;
-    box-shadow: #33302a 0px -2px 0px inset !important;
+    border: 3px solid rgb(92, 46, 14) !important;
+    box-shadow: rgb(92, 46, 14) 0px -3px 0px inset !important;
     border-radius: 5px;
     font-family: Cinzel, serif;
     font-weight: bold;
@@ -787,12 +788,12 @@ hr {
 }
 
 .btn-undo-redo:hover:not(:disabled) {
-    background-color: #5c554a !important;
+    background-color: #a0522d !important;
     box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.15),
-        0 3px 0 #211f1b,
-        0 0 10px rgba(243, 229, 171, 0.3) !important;
-    transform: translateY(-1px);
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        0 5px 0 #4a250b,
+        0 0 15px rgba(243, 229, 171, 0.4) !important;
+    transform: translateY(-2px);
 }
 
 .btn-undo-redo:active:not(:disabled) {
@@ -803,6 +804,20 @@ hr {
 .btn-undo-redo:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* Redo: arrow on its own line, label stacked underneath */
+.btn-redo-stacked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    gap: 2px;
+}
+
+.btn-redo-stacked .btn-icon {
+    font-size: 1.1em;
 }
 
 /* Brief highlight pulse on the editor panel that Undo/Redo just scrolled to */
