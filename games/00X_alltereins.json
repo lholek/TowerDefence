@@ -26,7 +26,7 @@
       ],
       "tileSize": 80,
       "layout": [
-              ["S1","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","E1"],
+              ["S1","O","O","O","O","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","O","E1"],
               ["X","X","X","X","X","SNW","SNW","SNW","SNW","SNW","SND","SND","SND","SND","SND","W","W","W","W","W","ICE","ICE","ICE","ICE","ICE","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","M","M","HLG","HLG","HLG","HLG","HLG","BRG","BRG","BRG","BRG","BRG"],
               ["X","X","X","X","X","SNW","SNW","SNW","SNW","SNW","SND","SND","SND","SND","SND","W","W","W","W","W","ICE","ICE","ICE","ICE","ICE","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","M","M","HLG","HLG","HLG","HLG","HLG","BRG","BRG","BRG","BRG","BRG"],
               ["X","X","X","X","X","SNW","SNW","SNW","SNW","SNW","SND","SND","SND","SND","SND","W","W","W","W","W","ICE","ICE","ICE","ICE","ICE","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","M","M","HLG","HLG","HLG","HLG","HLG","BRG","BRG","BRG","BRG","BRG"],
