@@ -15,6 +15,16 @@
     color: white;
 }
 
+/* Wraps the whole Map section (toolbar, canvas, tile drawing panel) right below the "Map"
+   heading in one bordered card, matching the same dark brown card style used elsewhere in
+   the editor (see .wave-card / .enemy-types-list-card in wave.css) for visual consistency. */
+.map-editor-card {
+    background-color: #2e261d;
+    border: 1px solid #5c2e0e;
+    border-radius: 8px;
+    padding: 12px;
+}
+
 /* Brown toolbar bar above the map canvas */
 .map-top-bar {
     display: flex;
