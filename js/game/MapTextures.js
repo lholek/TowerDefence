@@ -4093,7 +4093,7 @@ function _coniferApexReach(ts, scale, hJit) {
     return trunkH + 0.7056 * treeH;
 }
 
-function _drawOneConiferTree(ctx, cx, baseY, scale, quality, snowy, hJit) {
+function _drawOneConiferTree(ctx, cx, baseY, scale, quality, snowy, hJit, noTuft) {
     const ts = this.tileSize;
 
     const trunkH = ts * 0.075 * scale;
@@ -4203,13 +4203,16 @@ function _drawOneConiferTree(ctx, cx, baseY, scale, quality, snowy, hJit) {
         }
     }
 
-    // Small ground tuft at the base of this one tree
-    ctx.fillStyle = snowy ? COL_SNOWC : COL_MID;
-    ctx.globalAlpha = snowy ? 0.75 : 0.45;
-    ctx.beginPath();
-    ctx.ellipse(cx, baseY + ts * 0.006, ts * 0.15 * scale, ts * 0.03 * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
+    // Small ground tuft at the base of this one tree (skipped for seam trees whose base
+    // doesn't actually sit on this tree's own ground — see noTuft callers)
+    if (!noTuft) {
+        ctx.fillStyle = snowy ? COL_SNOWC : COL_MID;
+        ctx.globalAlpha = snowy ? 0.75 : 0.45;
+        ctx.beginPath();
+        ctx.ellipse(cx, baseY + ts * 0.006, ts * 0.15 * scale, ts * 0.03 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
 }
 
 function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, snowy) {
@@ -4245,7 +4248,7 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
     // Rolls this tree's height jitter, then places it — on the top row, baseY is pushed
     // down just enough that the tallest tier's tip lands exactly on the tile's top edge
     // instead of being cut off by the canvas boundary above it.
-    const placeTree = (fx, fy, scale) => {
+    const placeTree = (fx, fy, scale, noTuft) => {
         const hJit = 0.86 + rng() * 0.26;
         const cx = x + ts * fx + jit();
         let baseY = y + ts * fy + jit() * 0.4;
@@ -4253,12 +4256,24 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
             const minBaseY = y + _coniferApexReach(ts, scale, hJit);
             if (baseY < minBaseY) baseY = minBaseY;
         }
-        _drawOneConiferTree.call(this, ctx, cx, baseY, scale, quality, snowy, hJit);
+        _drawOneConiferTree.call(this, ctx, cx, baseY, scale, quality, snowy, hJit, noTuft);
     };
+
+    // Seam trees: grow extra trunks INTO the gap toward each same-type neighbor tile.
+    // Drawn FIRST (before the main grid below) so they sit visually behind the grid trees
+    // instead of on top of them. All four straddle a tile boundary rather than sitting on
+    // this tile's own ground, so they all skip the ground tuft — otherwise it renders as a
+    // stray white/green patch floating in the middle of the joined canopies between tiles.
+    const jitFrac = () => (rng() - 0.5) * 0.05;
+    if (hasRight) placeTree(1.00 + rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP, true);
+    if (hasLeft)  placeTree(0.00 - rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP, true);
+    if (hasDown)  placeTree(0.50 + jitFrac(), 1.00 + rng() * 0.08, 1.32 * SCALE_BUMP, true);
+    if (hasUp)    placeTree(0.50 + jitFrac(), 0.00 - rng() * 0.08, 1.08 * SCALE_BUMP, true);
 
     // 9 trees filling a full 3x3 grid (including the corners) so the whole tile reads as
     // packed forest instead of a diamond with empty corners — drawn back-to-front (row by
-    // row) so nearer/lower trees overlap the ones behind them.
+    // row) so nearer/lower trees overlap the ones behind them, and all overlap the seam
+    // trees drawn above since those are meant to peek out from behind them.
     const slots = [
         // back row (furthest, smallest)
         { fx: 0.15, fy: 0.16, scale: 0.95 },
@@ -4276,13 +4291,6 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
     for (const slot of slots) {
         placeTree(slot.fx, slot.fy, slot.scale * SCALE_BUMP);
     }
-
-    // Seam trees: grow extra trunks INTO the gap toward each same-type neighbor tile
-    const jitFrac = () => (rng() - 0.5) * 0.05;
-    if (hasRight) placeTree(1.00 + rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP);
-    if (hasLeft)  placeTree(0.00 - rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP);
-    if (hasDown)  placeTree(0.50 + jitFrac(), 1.00 + rng() * 0.08, 1.32 * SCALE_BUMP);
-    if (hasUp)    placeTree(0.50 + jitFrac(), 0.00 - rng() * 0.08, 1.08 * SCALE_BUMP);
 
     ctx.restore();
 }
