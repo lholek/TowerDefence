@@ -1,6 +1,11 @@
 import { currentLevelData, currentTileType, setCurrentTileType, tileTypes, terrainTypes, objectTypes, getCurrentMap, getNextAvailableMarker } from './level_data.js';
-import { modifyJson } from './json_functions.js';
+import { modifyJson as modifyJsonRaw } from './json_functions.js';
+import { beginManualRecord, commitManualRecord, cancelManualRecord } from './editor_history.js';
 import GameMap from '../game/Map.js';
+
+// Every modifyJson(...) call in this file edits the map, so tag it 'map' for the
+// Undo/Redo history automatically instead of touching every call site.
+const modifyJson = (modifyFn, successMessage) => modifyJsonRaw(modifyFn, successMessage, 'map');
 
 // Get references to elements (will be imported by main.js)
 let canvas, ctx, mapCanvasContainer, mapLayoutWrapper, tileKey;
@@ -323,7 +328,15 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 
 function handleMapDrawStart(e) {
     // If we are currently panning with the middle mouse button, ignore drawing attempt
-    if (camera.dragging) return; 
+    if (camera.dragging) return;
+
+    // Snapshot the map BEFORE any tile gets painted in this stroke. Tile painting mutates
+    // currentLevelData.maps[0].layout directly (see applyTileToCurrentPosition) for
+    // performance, well before handleMapDrawStop's modifyJson(...) call — so if we waited
+    // until then to record history, the "before" snapshot would already reflect the
+    // painted tiles. handleMapDrawStop() commits or cancels this pending snapshot once it
+    // knows whether the stroke actually changed anything.
+    beginManualRecord('map');
 
     // Left click (button 0)
     if (e.button === 0) {
@@ -362,11 +375,20 @@ function handleMapDrawStop() {
         // rebuilt exactly once — generating stable random variants for the
         // final tile configuration rather than re-rolling on every mouse move.
         resetEditorMap();
-        // Call modifyJson with an empty operation to sync the already-changed currentLevelData
-        // back to the JSON editor and trigger any required updates.
-        modifyJson(() => {}, `Map updated by drag-drawing.`, true);
+        // Sync the already-changed currentLevelData back to the JSON editor and trigger any
+        // required updates. History is NOT recorded here — call it directly (not through the
+        // local modifyJson wrapper) so it does not also snapshot state, since that would
+        // capture the state AFTER painting (the mutation already happened above) instead of
+        // before. The real "before this stroke" snapshot was captured in handleMapDrawStart.
+        modifyJsonRaw(() => {}, `Map updated by drag-drawing.`);
+        // Now that the sync succeeded, commit the pre-stroke snapshot onto the undo stack.
+        commitManualRecord();
         // Force a fresh render so the rebuilt instance is displayed immediately.
         renderMap();
+    } else {
+        // Nothing actually changed during this stroke (e.g. a click that re-placed the same
+        // tile type) — discard the pending snapshot so Undo doesn't get a no-op entry.
+        cancelManualRecord();
     }
 
     // 2. Clear drawing state

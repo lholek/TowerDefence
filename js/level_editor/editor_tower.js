@@ -1,7 +1,14 @@
 // js/level_editor/tower_editor.js
 
 import { currentLevelData } from './level_data.js'; // To access the tower data
-import { modifyJson, customConfirm } from './json_functions.js'; // Import both utilities
+import { modifyJson as modifyJsonRaw, customConfirm } from './json_functions.js'; // Import both utilities
+
+// Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
+// Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
+// card/field being touched) so Undo/Redo can jump to that exact spot instead of
+// just the whole Towers panel.
+const modifyJson = (modifyFn, successMessage, selector) =>
+    modifyJsonRaw(modifyFn, successMessage, { section: 'tower', selector });
 
 let contentContainer = null; 
 
@@ -179,7 +186,7 @@ export const towerEditor = (() => {
                     data.maps[0].towerTypes[towerId][key] = value;
                     // Re-render to update the DPS badge and Tile Range info
                     renderTowerRepeater(data.maps[0].towerTypes);
-                }, `Tower ${towerId}: ${key} updated.`);
+                }, `Tower ${towerId}: ${key} updated.`, `.tower-card[data-tower-id="${towerId}"] [data-key="${key}"]`);
             });
         });
     };
@@ -193,7 +200,7 @@ export const towerEditor = (() => {
             newTower.name = `New Tower ${newId}`; 
             data.maps[0].towerTypes[newId] = newTower;
             renderTowerRepeater(data.maps[0].towerTypes);
-        }, `New tower added with ID: ${newId}`);
+        }, `New tower added with ID: ${newId}`, `.tower-card[data-tower-id="${newId}"]`);
     };
 
     const copyTower = (towerId) => {
@@ -206,7 +213,7 @@ export const towerEditor = (() => {
             
             data.maps[0].towerTypes[newId] = towerCopy;
             renderTowerRepeater(data.maps[0].towerTypes);
-        }, `Tower ${towerId} copied to ${newId}`);
+        }, `Tower ${towerId} copied to ${newId}`, `.tower-card[data-tower-id="${newId}"]`);
     };
 
     const deleteTower = async (towerId) => {
@@ -222,7 +229,7 @@ export const towerEditor = (() => {
             delete data.maps[0].towerTypes[towerId];
             data.maps[0].towerTypes = reIndexTowerIds(data.maps[0].towerTypes);
             renderTowerRepeater(data.maps[0].towerTypes);
-        }, `Tower ${towerId} (${towerName}) deleted and IDs re-indexed.`);
+        }, `Tower ${towerId} (${towerName}) deleted and IDs re-indexed.`, `.tower-card[data-tower-id="${towerId}"]`);
     };
 
     return {

@@ -24,7 +24,13 @@
             <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
             <button class="btn active-tab" data-target="waveEditorPanel hr-wave">Waves</button>
             <button class="btn active-tab" data-target="abilityEditorPanel hr-ability">Abilities</button>
-            <button id="testMapBtn" class="btn text-center btn-test-map">Test Map</button>
+            <div class="test-map-group">
+                <div class="undo-redo-row">
+                    <button id="undoBtn" class="btn btn-undo-redo" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
+                    <button id="redoBtn" class="btn btn-undo-redo" title="Redo (Ctrl+Y)" disabled>↷ Redo</button>
+                </div>
+                <button id="testMapBtn" class="btn text-center btn-test-map">Test Map</button>
+            </div>
             <button id="shareMapBtn" class="btn btn-blue w-100">Share Map</button>
             <button id="toggleHelp" class="btn btn-help">Help: ON</button>
             <a href="/" class="btn btn-link text-center">Main Menu</a>

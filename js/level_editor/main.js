@@ -3,7 +3,8 @@ import * as jsonFunctions from './json_functions.js';
 import * as mapEditor from './editor_map.js';
 import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
 import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
-import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js'; 
+import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js';
+import * as editorHistory from './editor_history.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -21,7 +22,8 @@ window.app = {
     mapEditor: mapEditor,
     towerEditor: towerEditor,
     waveEditor: waveEditor,
-    abilityEditor: abilityEditor
+    abilityEditor: abilityEditor,
+    editorHistory: editorHistory
 };
 
 // --- Initialization ---
@@ -75,11 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initWaveEditor({ setStatus });
 
     // --- ABILITY EDITOR SETUP ---
-    initAbilityEditor(); 
+    initAbilityEditor();
     abilityEditor.renderAbilityRepeater(levelData.currentLevelData.maps[0].abilities);
 
     // -- call FinalJSON rewrite on reaload
     jsonFunctions.modifyJson(()=>{});
+
+    // --- UNDO/REDO HISTORY SETUP ---
+    // No historySection passed above, so that initial sync call isn't recorded as an edit.
+    editorHistory.setModuleReferences({
+        updateUIFromLoadedData: jsonFunctions.updateUIFromLoadedData,
+        setStatus
+    });
+    editorHistory.initHistoryButtons();
 
     /* Share button */
     const shareBtn = document.getElementById('shareMapBtn');

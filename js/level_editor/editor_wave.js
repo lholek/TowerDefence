@@ -1,7 +1,15 @@
 // js/level_editor/editor_wave.js
 
 import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access the wave data and default structure
-import { modifyJson, customConfirm, getAvailablePaths } from './json_functions.js'; // Import utilities
+import { modifyJson as modifyJsonRaw, customConfirm, getAvailablePaths } from './json_functions.js'; // Import utilities
+
+// Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
+// Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
+// wave/enemy/effect row being touched) and optionally a 5th arg (fallback container
+// selector, for the effects/damage repeaters which live outside the main wave list) so
+// Undo/Redo can jump to that exact spot instead of just the whole Waves panel.
+const modifyJson = (modifyFn, successMessage, selector, fallbackSelector) =>
+    modifyJsonRaw(modifyFn, successMessage, { section: 'wave', selector, fallbackSelector });
 
 let contentContainer = null; 
 let setStatus = () => {}; // Dependency Injection for status messages
@@ -451,6 +459,16 @@ export const waveEditor = (() => {
                 // Parse number inputs as float, otherwise use string value
                 const value = e.target.type === 'number' || e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
                 
+                let targetSelector = null;
+                if (enemyCard) {
+                    const wi = enemyCard.getAttribute('data-wave-index');
+                    const ei = enemyCard.getAttribute('data-enemy-index');
+                    targetSelector = `.enemy-card[data-wave-index="${wi}"][data-enemy-index="${ei}"] [data-key="${key}"]`;
+                } else if (waveCard) {
+                    const wi = waveCard.getAttribute('data-wave-index');
+                    targetSelector = `.wave-card[data-wave-index="${wi}"] [data-key="${key}"]`;
+                }
+
                 modifyJson((data) => {
                     const levels = data.maps[0].levels;
 
@@ -469,7 +487,7 @@ export const waveEditor = (() => {
                         const waveIndex = parseInt(waveCard.getAttribute('data-wave-index'));
                         levels[waveIndex][key] = value;
                     }
-                }, `Wave data updated: ${key} set to ${value}.`);
+                }, `Wave data updated: ${key} set to ${value}.`, targetSelector);
             });
         });
     };
@@ -480,6 +498,7 @@ export const waveEditor = (() => {
      * Adds a new wave (level) object to the end of the list.
      */
     const addWave = () => {
+        const newIndex = getCurrentMap().levels.length;
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const nextLevel = levels.length > 0 ? levels[levels.length - 1].level + 1 : 1;
@@ -500,9 +519,9 @@ export const waveEditor = (() => {
             levels.push(newWave);
             
             // Re-render the entire repeater to show the new wave
-            renderWaveRepeater(levels); 
+            renderWaveRepeater(levels);
 
-        }, `New Wave ${getCurrentMap().levels.length + 1} added.`);
+        }, `New Wave ${getCurrentMap().levels.length + 1} added.`, `.wave-card[data-wave-index="${newIndex}"]`);
     };
 
     /**
@@ -535,8 +554,8 @@ export const waveEditor = (() => {
 
             // 3. Re-render the repeater to reflect the deletion and new IDs
             renderWaveRepeater(levels);
-            
-        }, `Wave ${waveLevel} deleted and subsequent waves re-indexed.`);
+
+        }, `Wave ${waveLevel} deleted and subsequent waves re-indexed.`, `.wave-card[data-wave-index="${waveIndex}"]`);
     };
 
     /**
@@ -560,6 +579,7 @@ export const waveEditor = (() => {
             "coinReward": 1
         };
         
+        const newEnemyIndex = (wave.enemies || []).length;
         await modifyJson((data) => { // 💡 ADD await
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex]; // Get the modified wave reference
@@ -574,7 +594,7 @@ export const waveEditor = (() => {
             // Re-render the entire repeater to show the new enemy group
             renderWaveRepeater(levels);
 
-        }, `New enemy group added to Wave ${waveLevel}.`); 
+        }, `New enemy group added to Wave ${waveLevel}.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${newEnemyIndex}"]`);
     };
 
     /**
@@ -596,8 +616,8 @@ export const waveEditor = (() => {
             
             // Re-render the entire repeater to reflect the change and update the coin count
             renderWaveRepeater(levels);
-            
-        }, `Enemy group deleted from Wave ${waveLevel}.`); // Now uses waveLevel
+
+        }, `Enemy group deleted from Wave ${waveLevel}.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${enemyIndex}"]`); // Now uses waveLevel
     };
 
     /**
@@ -777,7 +797,7 @@ export const waveEditor = (() => {
     
         // Render the rows if effects exist
         effectsContainer.innerHTML = effects.map((effect, index) => `
-            <div class="effect-row">
+            <div class="effect-row" data-index="${index}">
     
                 <div class="flex-1">
                     <label>Enemy Type <i class="info-icon" data-tooltip="shake-effects.enemy-type">i</i></label>
@@ -807,6 +827,7 @@ export const waveEditor = (() => {
      * Adds a new blank effect entry
      */
     const addEffect = () => {
+        const newIndex = (getCurrentMap().enemyEffects || []).length;
         modifyJson((data) => {
             if (!data.maps[0].enemyEffects) data.maps[0].enemyEffects = [];
 
@@ -821,7 +842,7 @@ export const waveEditor = (() => {
             });
 
             renderEffectsRepeater();
-        }, "Added new enemy effect.");
+        }, "Added new enemy effect.", `#enemy-effects-repeater .effect-row[data-index="${newIndex}"]`, '#enemy-effects-repeater');
     };
 
     /**
@@ -837,10 +858,10 @@ export const waveEditor = (() => {
                 const val = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseFloat(value) : value;
                 effect[key] = val || 0;
             }
-        }, `Updated effect ${key}`);
+        }, `Updated effect ${key}`, `#enemy-effects-repeater .effect-row[data-index="${index}"]`, '#enemy-effects-repeater');
 
         // FIX: Re-render so the UI matches the data immediately
-        waveEditor.renderEffectsRepeater(); 
+        waveEditor.renderEffectsRepeater();
     };
     /**
      * Deletes an effect entry
@@ -849,7 +870,7 @@ export const waveEditor = (() => {
         modifyJson((data) => {
             data.maps[0].enemyEffects.splice(index, 1);
             renderEffectsRepeater();
-        }, "Deleted enemy effect.");
+        }, "Deleted enemy effect.", `#enemy-effects-repeater .effect-row[data-index="${index}"]`, '#enemy-effects-repeater');
     };
 
     /* Custom Enemy Damage */
@@ -880,7 +901,7 @@ export const waveEditor = (() => {
         }
 
         container.innerHTML = damageList.map((entry, index) => `
-            <div class="effect-row flex items-center gap-2 mb-2">
+            <div class="effect-row flex items-center gap-2 mb-2" data-index="${index}">
                 <div class="flex-1">
                     <label class="block text-xs">Enemy Type <i class="info-icon" data-tooltip="custom-enemy-damage.enemy-type">i</i></label>
                     <select class="enemy-custom-damage-row" onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'type', this.value)">
@@ -902,10 +923,11 @@ export const waveEditor = (() => {
     };
 
     const addEnemyDamage = () => {
+        const newIndex = (getCurrentMap().enemyDamage || []).length;
         modifyJson((data) => {
             if (!data.maps[0].enemyDamage) data.maps[0].enemyDamage = [];
             data.maps[0].enemyDamage.push({ type: "basic", damage: 1 });
-        }, "Added custom enemy damage rule");
+        }, "Added custom enemy damage rule", `#enemy-damage-repeater .effect-row[data-index="${newIndex}"]`, '#enemy-damage-repeater');
         renderDamageRepeater();
     };
 
@@ -914,15 +936,15 @@ export const waveEditor = (() => {
             if (!data.maps[0].enemyDamage) return;
             const val = key === 'damage' ? parseInt(value) : value;
             data.maps[0].enemyDamage[index][key] = val;
-            
+
             renderDamageRepeater();
-        }, `Updated enemy damage ${key}`);
+        }, `Updated enemy damage ${key}`, `#enemy-damage-repeater .effect-row[data-index="${index}"]`, '#enemy-damage-repeater');
     };
 
     const deleteEnemyDamage = (index) => {
         modifyJson((data) => {
             data.maps[0].enemyDamage.splice(index, 1);
-        }, "Deleted enemy damage rule");
+        }, "Deleted enemy damage rule", `#enemy-damage-repeater .effect-row[data-index="${index}"]`, '#enemy-damage-repeater');
         renderDamageRepeater();
     };
     /* Custom Enemy Damage */

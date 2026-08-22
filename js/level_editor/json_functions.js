@@ -1,4 +1,5 @@
 import { currentLevelData, updateCurrentLevelData, newWaveStructure, newAbilityStructure } from './level_data.js';
+import { recordHistory } from './editor_history.js';
 
 // The 'modules' object is the single source for references to all external components (editors, setStatus, etc.)
 let modules = {};
@@ -112,8 +113,12 @@ export function formatCompactLayout(jsonObject) {
  * Executes a modification function on the currentLevelData object 
  * and updates the editor with the new, compactly formatted JSON.
  */
-export function modifyJson(modifyFn, successMessage) {
-    
+export function modifyJson(modifyFn, successMessage, historySection = null) {
+
+    // 0. Snapshot the state as it was BEFORE this change, for Undo. Skipped when
+    // historySection is null (e.g. internal syncs that aren't real user edits).
+    recordHistory(historySection);
+
     // 1. Run the modification function on the clean object
     modifyFn(currentLevelData);
     
@@ -188,7 +193,14 @@ export function updateMapFromEditor() {
 
         // 3. Trigger All UI Re-renders
         
-        // A. Map Editor 
+        // A. Map Editor
+        // This is a wholesale data replacement (pasted/edited JSON), not an incremental
+        // tile paint, so force a full rebuild of the GameMap rendering instance — otherwise
+        // renderMap() only updates the in-memory grid and the canvas keeps showing the
+        // previously prerendered layers (road/grass/water/decorations) untouched.
+        if (modules.mapEditor && typeof modules.mapEditor.resetEditorMap === 'function') {
+            modules.mapEditor.resetEditorMap();
+        }
         if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
             modules.mapEditor.renderMap(mapData.layout || []);
         }
@@ -283,7 +295,7 @@ export function addWave() {
         newWave.level = nextLevel;
         
         data.maps[0].levels.push(newWave);
-    }, `Wave added! (Now level ${nextLevel})`); 
+    }, `Wave added! (Now level ${nextLevel})`, 'wave');
 }
 
 /**
@@ -300,8 +312,8 @@ export function addAbility() {
         newAbility.name = `New Ability ${newIndex + 1}`;
         
         abilities.push(newAbility);
-        
-    }, `Ability "New Ability" added!`);
+
+    }, `Ability "New Ability" added!`, 'ability');
 }
 
 export function updateUIFromLoadedData() {
@@ -314,6 +326,12 @@ export function updateUIFromLoadedData() {
     const mapData = currentLevelData.maps[0];
     
     // 1. Map Editor Update (Renders the new grid layout)
+    // Wholesale data replacement (Undo/Redo, loaded map) — force a full rebuild of the
+    // GameMap rendering instance so the prerendered layers (road/grass/water/decorations)
+    // actually reflect the restored grid instead of only updating the in-memory grid.
+    if (modules.mapEditor.resetEditorMap) {
+        modules.mapEditor.resetEditorMap();
+    }
     if (modules.mapEditor.renderMap) {
         modules.mapEditor.renderMap(mapData.layout);
     }
@@ -330,6 +348,14 @@ export function updateUIFromLoadedData() {
         // This is the specific fix for the enemy types input field
         if (modules.waveEditor.updateEnemyTypesEditor) {
             modules.waveEditor.updateEnemyTypesEditor();
+        }
+
+        if (modules.waveEditor.renderEffectsRepeater) {
+            modules.waveEditor.renderEffectsRepeater();
+        }
+
+        if (modules.waveEditor.renderDamageRepeater) {
+            modules.waveEditor.renderDamageRepeater();
         }
     }
 
@@ -354,23 +380,41 @@ export function updateUIFromLoadedData() {
  * Updates top-level map properties (name, startingCoins, startingLifes).
  * Called by the HTML inputs (e.g., onchange="...updateBasicInfo(...)")
  */
+const BASIC_INFO_INPUT_IDS = {
+    name: 'mapNameInput',
+    startingCoins: 'startingCoinsInput',
+    startingLifes: 'startingLifesInput',
+    tileSize: 'tileSizeInput',
+};
+
 export function updateBasicInfo(key, value) {
     modifyJson((data) => {
         data.maps[0][key] = value;
-    }, `Map property '${key}' updated to ${value}.`);
+    }, `Map property '${key}' updated to ${value}.`, {
+        section: 'basic',
+        selector: BASIC_INFO_INPUT_IDS[key] ? `#${BASIC_INFO_INPUT_IDS[key]}` : null,
+    });
 }
 
 /**
  * Updates properties inside the description array (descriptionText, difficulty).
  * Called by the HTML inputs.
  */
+const DESCRIPTION_INPUT_IDS = {
+    descriptionText: 'descriptionTextInput',
+    difficulty: 'difficultyInput',
+};
+
 export function updateDescription(key, value) {
     modifyJson((data) => {
         // Ensure description array exists
         if (!data.maps[0].description) data.maps[0].description = [{}];
-        
+
         data.maps[0].description[0][key] = value;
-    }, `Description '${key}' updated.`);
+    }, `Description '${key}' updated.`, {
+        section: 'basic',
+        selector: DESCRIPTION_INPUT_IDS[key] ? `#${DESCRIPTION_INPUT_IDS[key]}` : null,
+    });
 }
 
 /**
@@ -508,7 +552,7 @@ export function updateExtraLife(isChecked) {
         if (isChecked && (!data.maps[0].extraLifePrices || data.maps[0].extraLifePrices.length === 0)) {
             data.maps[0].extraLifePrices = [10, 25, 50, 75, 100, 150, 200];
         }
-    }, `Extra Life enabled set to ${isChecked}.`);
+    }, `Extra Life enabled set to ${isChecked}.`, { section: 'basic', selector: '#extraLifeCheckbox' });
 
 }
 
@@ -523,7 +567,7 @@ export function updateExtraLifePrices(valueString) {
 
     modifyJson((data) => {
         data.maps[0].extraLifePrices = pricesArray;
-    }, `Extra Life prices updated: [${pricesArray.join(', ')}]`);
+    }, `Extra Life prices updated: [${pricesArray.join(', ')}]`, { section: 'basic', selector: '#extraLifePricesInput' });
 }
 
 /**

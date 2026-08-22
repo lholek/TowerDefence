@@ -1,7 +1,14 @@
 // js/level_editor/editor_ability.js
 
 import { getCurrentMap } from './level_data.js'; // To access the abilities data
-import { modifyJson, customConfirm } from './json_functions.js'; // Import utilities
+import { modifyJson as modifyJsonRaw, customConfirm } from './json_functions.js'; // Import utilities
+
+// Every modifyJson(...) call in this file edits an ability, so tag it 'ability' for the
+// Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
+// card/field being touched) so Undo/Redo can jump to that exact spot instead of
+// just the whole Abilities panel.
+const modifyJson = (modifyFn, successMessage, selector) =>
+    modifyJsonRaw(modifyFn, successMessage, { section: 'ability', selector });
 
 let contentContainer = null; 
 
@@ -213,7 +220,7 @@ export const abilityEditor = (() => {
                 
                     modifyJson((data) => {
                         data.maps[0].abilities[abilityIndex].color = rgbaValue;
-                    }, `Ability ${abilityIndex} color updated to ${rgbaValue}`);
+                    }, `Ability ${abilityIndex} color updated to ${rgbaValue}`, `.ability-card[data-ability-index="${abilityIndex}"] .ability-color-section`);
                     return;
                 }
 
@@ -233,7 +240,7 @@ export const abilityEditor = (() => {
                     } else {
                         ability[fullKey] = value;
                     }
-                }, `Ability ${abilityIndex} (${fullKey}) updated.`);
+                }, `Ability ${abilityIndex} (${fullKey}) updated.`, `.ability-card[data-ability-index="${abilityIndex}"] [data-key="${fullKey}"]`);
             });
         });
     };
@@ -265,7 +272,7 @@ export const abilityEditor = (() => {
 
             abilities.push(newAbility);
             renderAbilityRepeater(abilities);
-        }, `Added new ${selectedType} ability.`);
+        }, `Added new ${selectedType} ability.`, `.ability-card[data-ability-index="${getCurrentMap().abilities.length}"]`);
     };
 
     // 3. Function to delete an ability
@@ -286,11 +293,11 @@ export const abilityEditor = (() => {
             
             // 1. Delete the ability by array index
             abilities.splice(abilityIndex, 1);
-        
+
             // 2. Re-render the repeater to reflect the deletion
             renderAbilityRepeater(abilities);
-            
-        }, `Ability ${abilityName} deleted.`);
+
+        }, `Ability ${abilityName} deleted.`, `.ability-card[data-ability-index="${abilityIndex}"]`);
     };
 
     const copyAbility = (index) => {
@@ -314,7 +321,7 @@ export const abilityEditor = (() => {
             renderAbilityRepeater(abilities);
 
             // Log inside the scope where 'sourceAbility' is known
-        }, `Copied ability at index ${index}`);
+        }, `Copied ability at index ${index}`, `.ability-card[data-ability-index="${index + 1}"]`);
     };
 
     const formatStat = (val, inverted = false) => {
