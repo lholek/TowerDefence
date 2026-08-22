@@ -661,6 +661,16 @@ hr {
     color: #d8f0d8;
 }
 
+.tile-x-dirt {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
+.tile-x-hay {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
 .tile-snw-tree {
     background: linear-gradient(135deg, #2f7a4a 50%, #ffffff 50%);
     color: black;

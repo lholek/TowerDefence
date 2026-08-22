@@ -124,6 +124,8 @@
 .minimap-tile.log{ background: #4a2f18; }
 .minimap-tile.well{ background: #5c5c66; }
 .minimap-tile.bush{ background: #2e6b2e; }
+.minimap-tile.dirt{ background: #4a331d; }
+.minimap-tile.hay{ background: #d1a836; }
 .minimap-tile.snw-spike{ background: #1a3d5c; }
 /* mini map */
 

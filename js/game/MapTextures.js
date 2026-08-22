@@ -25,6 +25,8 @@ X[Log-1..2]      - cant build towers, blocks arrows (low, doesn't block tower vi
 X[Well]          - cant build towers, blocks arrows and tower vision
 X[Bush]          - cant build towers, doesnt block arrows
 W[Rock-1..4]     - cant build towers, blocks arrows
+X[Dirt]          - can build towers, doesnt block arrows
+X[Hay]           - cant build towers, doesnt block arrows
 */
 
 /**
@@ -73,6 +75,9 @@ W[Rock-1..4]     - cant build towers, blocks arrows
  * @see _drawTree - Conifer Tree (grass) Low/High
  * @see _drawSnowTree - Conifer Tree (snow) Low/High
  * @see _drawWaterRock - Water Rocks Low/High
+ * @see _drawDirt - Dirt High
+ * @see _drawDirtLow - Dirt Low
+ * @see _drawHayField - Hay Field (grown on Dirt) Low/High
  *
  * HELPERS:
  * @see _drawNaturalFlower - Flower Helper
@@ -1699,6 +1704,26 @@ function _prerenderRoad() {
                 // --- BUSH (X[Bush]) ---
                 if (tok === 'X[Bush]') {
                     this._drawBush(ctx, worldX, worldY, this.graphicsSettings.objects);
+                    continue;
+                }
+
+                // --- DIRT (X[Dirt]) ---
+                if (tok === 'X[Dirt]') {
+                    if (this.graphicsSettings.terrain === 'low') {
+                        this._drawDirtLow(ctx, worldX, worldY);
+                    } else {
+                        this._drawDirt(ctx, worldX, worldY);
+                    }
+                    continue;
+                }
+
+                // --- HAY FIELD (X[Hay]) ---
+                if (tok === 'X[Hay]') {
+                    const hasLeft  = c > 0 && String(this.grid[r][c - 1] ?? '') === tok;
+                    const hasRight = c < this.cols - 1 && String(this.grid[r][c + 1] ?? '') === tok;
+                    const hasUp    = r > 0 && String(this.grid[r - 1][c] ?? '') === tok;
+                    const hasDown  = r < this.rows - 1 && String(this.grid[r + 1][c] ?? '') === tok;
+                    this._drawHayField(ctx, worldX, worldY, this.graphicsSettings.terrain, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown);
                     continue;
                 }
 
@@ -4065,6 +4090,204 @@ function _drawBush(ctx, x, y, quality) {
 }
 
 /*
+_drawDirt / _drawDirtLow
+Tiles: X[Dirt]
+Graphics: High / Low quality
+Plain tilled brown soil. Can build towers, doesn't block arrows — just a ground reskin
+(unlike Ice/Lava/Holy/Burned Ground, which are all special non-buildable surfaces).
+Also used as the base layer under X[Hay] (see _drawHayField below).
+*/
+function _drawDirt(ctx, x, y) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    const COL_DEEP = '#2c1e12';
+    const COL_MID  = '#4a331d';
+    const COL_LIT  = '#6b4a29';
+    const COL_HIGH = '#8a6338';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    const grad = ctx.createLinearGradient(x, y, x, y + ts);
+    grad.addColorStop(0,    COL_LIT);
+    grad.addColorStop(0.55, COL_MID);
+    grad.addColorStop(1,    COL_DEEP);
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, ts, ts);
+
+    // Darker clumps of turned soil
+    for (let i = 0; i < 6; i++) {
+        const cx = x + rng() * ts;
+        const cy = y + rng() * ts;
+        const r  = ts * (0.06 + rng() * 0.09);
+        ctx.fillStyle = 'rgba(18,10,5,0.28)';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, r, r * 0.55, rng() * Math.PI, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Small lit pebbles / dry crumbs
+    for (let i = 0; i < 8; i++) {
+        const cx = x + rng() * ts;
+        const cy = y + rng() * ts;
+        const r  = ts * (0.008 + rng() * 0.014);
+        ctx.fillStyle = COL_HIGH;
+        ctx.globalAlpha = 0.55;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+    }
+
+    // Furrow lines from tilling
+    ctx.strokeStyle = 'rgba(18,10,5,0.35)';
+    ctx.lineWidth = ts * 0.014;
+    for (let i = 0; i < 3; i++) {
+        const fy = y + ts * (0.2 + i * 0.3) + (rng() - 0.5) * ts * 0.06;
+        ctx.beginPath();
+        ctx.moveTo(x, fy);
+        ctx.quadraticCurveTo(x + ts * 0.5, fy + (rng() - 0.5) * ts * 0.08, x + ts, fy + (rng() - 0.5) * ts * 0.05);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function _drawDirtLow(ctx, x, y) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    const rnd = Math.abs(Math.sin(s0 * 9301 + 49297) * 10000) % 1;
+
+    ctx.fillStyle = '#4a331d';
+    ctx.fillRect(x, y, ts, ts);
+
+    ctx.fillStyle = 'rgba(18,10,5,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(x + ts * (0.25 + rnd * 0.4), y + ts * (0.3 + ((rnd * 7) % 1) * 0.4), ts * 0.22, ts * 0.14, 0, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+/*
+_drawHayField
+Tiles: X[Hay]
+Graphics: Low / High quality (terrain quality drives the Dirt base, objects quality
+drives the wheat detail — matching how each piece is used standalone elsewhere)
+A wheat field growing on tilled soil (see _drawDirt/_drawDirtLow above). Cannot build
+towers, doesn't block arrows. "Joins in group": a side bordering another X[Hay] tile
+skips the bare-dirt margin strip on that side, so adjacent Hay tiles read as one
+continuous field instead of two separate patches with a visible dividing line.
+*/
+function _drawHayField(ctx, x, y, terrainQuality, objectsQuality, hasLeft, hasRight, hasUp, hasDown) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 4321 ^ ty * 8765;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+
+    // Dirt base underneath the crop
+    if (terrainQuality === 'low') {
+        _drawDirtLow.call(this, ctx, x, y);
+    } else {
+        _drawDirt.call(this, ctx, x, y);
+    }
+
+    // Blades only ever grow UPWARD from their base, so a tuft rooted close to the tile's
+    // top edge has its blade tip reach even further up than its base — past y, straight
+    // into the clip rect boundary, which would either chop it off flush against the edge
+    // (no visible gap) or hide it entirely. Sides bordering another X[Hay] tile get the
+    // clip widened upward instead, so those near-top blades bleed into the neighbor tile
+    // above (drawn earlier in the row-by-row pass) instead of getting cut off, giving a
+    // real visual connection across the seam.
+    const extTop = hasUp ? ts * 0.4 : 0;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y - extTop, ts, ts + extTop);
+    ctx.clip();
+
+    const COL_STALK_DEEP = '#8a6a1f';
+    const COL_STALK_MID  = '#d1a836';
+    const COL_STALK_LIT  = '#f3d874';
+    const COL_HEAD       = '#b98a22';
+
+    // Lattice of wheat tufts, inset a small margin from the tile edges so the crop doesn't
+    // crowd right up against the border — EXCEPT on any side bordering another X[Hay] tile,
+    // where the lattice is stretched all the way to that edge (and slightly past it isn't
+    // needed since the neighbor tile draws its own matching lattice up to the same edge),
+    // so the two fields visually connect into one continuous patch across the seam.
+    const cols = 7, rows = 7;
+    const marginFrac = 0.09;
+    const loX = hasLeft  ? 0 : marginFrac;
+    const hiX = hasRight ? 1 : 1 - marginFrac;
+    const loY = hasUp    ? 0 : marginFrac;
+    const hiY = hasDown  ? 1 : 1 - marginFrac;
+    for (let ry = 0; ry < rows; ry++) {
+        for (let rx = 0; rx < cols; rx++) {
+            const fx = loX + (hiX - loX) * (rx + 0.5) / cols;
+            const fy = loY + (hiY - loY) * (ry + 0.5) / rows;
+            const jx = (rng() - 0.5) * ((hiX - loX) * ts / cols) * 0.7;
+            const jy = (rng() - 0.5) * ((hiY - loY) * ts / rows) * 0.7;
+            const bx = x + ts * fx + jx;
+            let by  = y + ts * fy + jy;
+            const h    = ts * (0.26 + rng() * 0.09);
+            const lean = (rng() - 0.5) * ts * 0.06;
+
+            // No neighbor to bleed into on this side: push the base down just enough that
+            // the blade tip stays clear of the top edge by the same margin used elsewhere,
+            // instead of getting hard-clipped flush against it.
+            if (!hasUp) {
+                const minTipY = y + ts * marginFrac;
+                if (by - h < minTipY) by = minTipY + h;
+            }
+
+            if (objectsQuality === 'low') {
+                ctx.fillStyle = COL_STALK_MID;
+                ctx.beginPath();
+                ctx.ellipse(bx, by - h * 0.3, ts * 0.045, h * 0.45, 0, 0, Math.PI * 2);
+                ctx.fill();
+                continue;
+            }
+
+            // Tiny root shadow grounds the tuft before the blades are drawn over it
+            ctx.fillStyle = COL_STALK_DEEP;
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.ellipse(bx, by, ts * 0.035, ts * 0.014, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+
+            // A few thin blades fanned slightly, plus a golden grain head on top
+            for (let b = -1; b <= 1; b++) {
+                ctx.strokeStyle = b === 0 ? COL_STALK_LIT : COL_STALK_MID;
+                ctx.lineWidth = ts * 0.016;
+                ctx.beginPath();
+                ctx.moveTo(bx + b * ts * 0.028, by);
+                ctx.quadraticCurveTo(bx + b * ts * 0.07 + lean * 0.5, by - h * 0.6, bx + b * ts * 0.045 + lean, by - h);
+                ctx.stroke();
+            }
+            ctx.fillStyle = COL_HEAD;
+            ctx.beginPath();
+            ctx.ellipse(bx + lean, by - h, ts * 0.028, ts * 0.062, lean * 0.02, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = COL_STALK_LIT;
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            ctx.ellipse(bx + lean - ts * 0.008, by - h - ts * 0.008, ts * 0.011, ts * 0.028, lean * 0.02, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    ctx.restore();
+}
+
+/*
 _drawTree / _drawSnowTree
 Tiles: X[Tree], SNW[Tree]
 Graphics: Low / High quality
@@ -4881,6 +5104,9 @@ export const MapTextures = {
     _drawLog,
     _drawWell,
     _drawBush,
+    _drawDirt,
+    _drawDirtLow,
+    _drawHayField,
     _drawTree,
     _drawSnowTree,
     _drawWaterRock,

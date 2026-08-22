@@ -407,6 +407,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'X[Bush]':
             tile.classList.add('bush');
             break;
+          case 'X[Dirt]':
+            tile.classList.add('dirt');
+            break;
+          case 'X[Hay]':
+            tile.classList.add('hay');
+            break;
           case 'W[Rock-1]':
           case 'W[Rock-2]':
           case 'W[Rock-3]':
