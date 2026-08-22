@@ -5,6 +5,7 @@ import { initialize as initTowerEditor, towerEditor } from './editor_tower.js';
 import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
 import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js';
 import * as editorHistory from './editor_history.js';
+import * as saveSlots from './editor_save_slots.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -23,7 +24,8 @@ window.app = {
     towerEditor: towerEditor,
     waveEditor: waveEditor,
     abilityEditor: abilityEditor,
-    editorHistory: editorHistory
+    editorHistory: editorHistory,
+    saveSlots: saveSlots
 };
 
 // --- Initialization ---
@@ -90,6 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus
     });
     editorHistory.initHistoryButtons();
+
+    // --- SAVE SLOTS SETUP ---
+    saveSlots.setModuleReferences({
+        updateUIFromLoadedData: jsonFunctions.updateUIFromLoadedData,
+        resetEditorMap: mapEditor.resetEditorMap,
+        resetHistory: editorHistory.resetHistory,
+        setStatus
+    });
+    saveSlots.initSaveSlots();
 
     /* Share button */
     const shareBtn = document.getElementById('shareMapBtn');

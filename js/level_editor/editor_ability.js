@@ -254,7 +254,7 @@ export const abilityEditor = (() => {
             } else {
                 abilities[abilityIndex][key] = value;
             }
-        }, `Ability ${abilityIndex} updated.`);
+        }, `Ability ${abilityIndex} updated.`, `.ability-card[data-ability-index="${abilityIndex}"] [data-key="${isNested ? key.join('.') : key}"]`);
     }
 
     // 2. Function to add a new ability

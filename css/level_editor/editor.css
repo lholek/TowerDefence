@@ -759,6 +759,80 @@ hr {
     box-shadow: #b8860b 0px -3px 0px inset, 0 0 10px rgba(240, 198, 116, 0.4) !important;
 }
 
+/* Save slots — bottom-left corner, load button + small save/delete buttons per slot */
+.save-slots {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 220px;
+}
+
+.save-slot-row {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-save-slot {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    text-transform: none;
+}
+
+.btn-save-slot.is-empty {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.btn-save-slot-save,
+.btn-save-slot-delete {
+    background-color: rgb(139, 69, 19) !important;
+    color: rgb(243, 229, 171);
+    border: 3px solid rgb(92, 46, 14) !important;
+    box-shadow: rgb(92, 46, 14) 0px -3px 0px inset !important;
+    border-radius: 5px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: 0.1s ease-in-out;
+    flex-shrink: 0;
+}
+
+.btn-save-slot-save:hover,
+.btn-save-slot-delete:hover {
+    background-color: #a0522d !important;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        0 5px 0 #4a250b,
+        0 0 15px rgba(243, 229, 171, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.btn-save-slot-save:active,
+.btn-save-slot-delete:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+.save-slots-info {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: rgb(243, 229, 171);
+    background-color: rgba(46, 38, 29, 0.9);
+    border: 1px solid #5c2e0e;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin: 0;
+}
+
 /* Undo/Redo, stacked directly above the Test Map button */
 .test-map-group {
     display: flex;

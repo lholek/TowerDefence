@@ -722,6 +722,7 @@ export const waveEditor = (() => {
      * Copies an entire wave (level) and all its enemy groups
      */
     const copyWave = (waveIndex) => {
+        const newIndex = getCurrentMap().levels.length;
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const waveToCopy = levels[waveIndex];
@@ -734,23 +735,24 @@ export const waveEditor = (() => {
 
             levels.push(newWave);
             renderWaveRepeater(levels);
-        }, `Wave copied as Level ${getCurrentMap().levels.length + 1}.`);
+        }, `Wave copied as Level ${getCurrentMap().levels.length + 1}.`, `.wave-card[data-wave-index="${newIndex}"]`);
     };
 
     /**
      * Copies a single enemy group within a specific wave
      */
     const copyEnemyGroup = (waveIndex, enemyIndex) => {
+        const newEnemyIndex = (getCurrentMap().levels[waveIndex]?.enemies || []).length;
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex];
             const groupToCopy = wave.enemies[enemyIndex];
-            
+
             const newGroup = JSON.parse(JSON.stringify(groupToCopy));
             wave.enemies.push(newGroup);
-            
+
             renderWaveRepeater(levels);
-        }, `Enemy group duplicated.`);
+        }, `Enemy group duplicated.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${newEnemyIndex}"]`);
     };
 
     const availablePaths = getAvailablePaths();

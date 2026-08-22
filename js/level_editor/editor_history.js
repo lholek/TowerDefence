@@ -50,6 +50,16 @@ export function setModuleReferences(refs) {
     modules = refs;
 }
 
+/**
+ * Wipes both stacks — used when a completely unrelated map is loaded (e.g. from a save
+ * slot), where "undo" pointing back into the previous map's history would make no sense.
+ */
+export function resetHistory() {
+    undoStack = [];
+    redoStack = [];
+    updateButtons();
+}
+
 function cloneState() {
     return JSON.parse(JSON.stringify(currentLevelData));
 }
