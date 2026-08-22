@@ -17,7 +17,7 @@
         "Improved - Editor - MAP - Editor now saves the selected graphics quality for tiles and backgrounds",
         "Improved - Editor - MAP - Added text to tile instead of S,E,X,SND etc. ADD THERE FULL TEXT LIKE SNOW SAND atd.",
         "Improved - Editor - MAP - Small changes in selecotor - You can now see number of curent objects in the game",
-        "Improved - Editor - MAP - Added filters for map terrains, pahts and Map objects",
+        "Improved - Editor - MAP - Added filters for map terrains, paths and Map objects",
         "Improved - Editor - MAP - Added search of tiles by name",
         "Improved - Editor - MAP - Fixed bug - Tile cordinates shows where editores hovers",
         "Improved - Editor - MAP - Added 32 new tiles in editor: LAVA, ICE, X[Tree], X[Log 1-2], X[Well], X[Bush], X[Dirt] (FarmLand), X[Hay] (Hay Field), SNW[Tree],SND[Bone 1-4], SND[Cactus 1-4], SND[Palm 1-4], SNW[Spike 1-4], W[Rock 1-4], Holy Ground, Burned Ground",
