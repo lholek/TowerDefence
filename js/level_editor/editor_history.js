@@ -25,6 +25,7 @@ const SCROLL_DURATION = 400; // ms — fast smooth scroll
 let undoStack = []; // [{ snapshot, section, selector, fallbackSelector }]
 let redoStack = [];
 let isApplyingHistory = false; // guards against re-entrant recordHistory during undo/redo
+let isBusy = false; // true while an Undo/Redo is mid-flight (scrolling, then applying)
 
 // section -> panel element id (used both to check visibility and as the last-resort scroll target)
 const PANEL_IDS = {
@@ -56,8 +57,31 @@ function cloneState() {
 function updateButtons() {
     const undoBtn = document.getElementById('undoBtn');
     const redoBtn = document.getElementById('redoBtn');
-    if (undoBtn) undoBtn.disabled = undoStack.length === 0;
-    if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+    if (undoBtn) undoBtn.disabled = isBusy || undoStack.length === 0;
+    if (redoBtn) redoBtn.disabled = isBusy || redoStack.length === 0;
+}
+
+/**
+ * Swaps a button's content for a small 3-dot "loading" indicator while an Undo/Redo is
+ * mid-flight, then restores its original content once it's done.
+ */
+function setButtonLoading(buttonId, loading) {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
+    if (loading) {
+        if (btn.dataset.originalContent === undefined) {
+            btn.dataset.originalContent = btn.innerHTML;
+        }
+        btn.innerHTML = '<span class="btn-dots"><i></i><i></i><i></i></span>';
+        btn.classList.add('is-loading');
+    } else {
+        if (btn.dataset.originalContent !== undefined) {
+            btn.innerHTML = btn.dataset.originalContent;
+            delete btn.dataset.originalContent;
+        }
+        btn.classList.remove('is-loading');
+    }
 }
 
 /**
@@ -201,11 +225,12 @@ function applyDataChange(snapshot) {
  * so the user sees the view arrive at the right spot before anything changes under them,
  * rather than the data flipping instantly and the page catching up afterwards.
  */
-function applySnapshot(snapshot, section, selector, fallbackSelector) {
+function applySnapshot(snapshot, section, selector, fallbackSelector, onComplete) {
     const panelId = PANEL_IDS[section];
 
     if (!panelId) {
         applyDataChange(snapshot);
+        if (onComplete) onComplete();
         return;
     }
 
@@ -223,12 +248,14 @@ function applySnapshot(snapshot, section, selector, fallbackSelector) {
             // so find the best target again in the post-change DOM before highlighting it.
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 highlightElement(resolveJumpTarget(section, selector, fallbackSelector));
+                if (onComplete) onComplete();
             }));
         }, SCROLL_DURATION + 50);
     }));
 }
 
 export function undo() {
+    if (isBusy) return;
     if (undoStack.length === 0) {
         if (modules.setStatus) modules.setStatus('Nothing to undo.', true);
         return;
@@ -237,12 +264,20 @@ export function undo() {
     redoStack.push({ snapshot: cloneState(), section: entry.section, selector: entry.selector, fallbackSelector: entry.fallbackSelector });
     if (redoStack.length > MAX_HISTORY) redoStack.shift();
 
-    applySnapshot(entry.snapshot, entry.section, entry.selector, entry.fallbackSelector);
-    if (modules.setStatus) modules.setStatus('Undo applied.');
-    updateButtons();
+    isBusy = true;
+    setButtonLoading('undoBtn', true);
+    updateButtons(); // disables both buttons for the duration (isBusy)
+
+    applySnapshot(entry.snapshot, entry.section, entry.selector, entry.fallbackSelector, () => {
+        isBusy = false;
+        setButtonLoading('undoBtn', false);
+        if (modules.setStatus) modules.setStatus('Undo applied.');
+        updateButtons();
+    });
 }
 
 export function redo() {
+    if (isBusy) return;
     if (redoStack.length === 0) {
         if (modules.setStatus) modules.setStatus('Nothing to redo.', true);
         return;
@@ -251,9 +286,16 @@ export function redo() {
     undoStack.push({ snapshot: cloneState(), section: entry.section, selector: entry.selector, fallbackSelector: entry.fallbackSelector });
     if (undoStack.length > MAX_HISTORY) undoStack.shift();
 
-    applySnapshot(entry.snapshot, entry.section, entry.selector, entry.fallbackSelector);
-    if (modules.setStatus) modules.setStatus('Redo applied.');
-    updateButtons();
+    isBusy = true;
+    setButtonLoading('redoBtn', true);
+    updateButtons(); // disables both buttons for the duration (isBusy)
+
+    applySnapshot(entry.snapshot, entry.section, entry.selector, entry.fallbackSelector, () => {
+        isBusy = false;
+        setButtonLoading('redoBtn', false);
+        if (modules.setStatus) modules.setStatus('Redo applied.');
+        updateButtons();
+    });
 }
 
 export function initHistoryButtons() {
