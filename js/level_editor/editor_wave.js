@@ -179,7 +179,7 @@ function addNewEnemyType() {
         renderEnemyTypeTags(); // Refresh tags
         waveEditor.renderWaveRepeater(data.maps[0].levels); // Update dropdowns in waves
         waveEditor.renderEffectsRepeater();
-    }, `Added enemy type: ${value}`);
+    }, `Added enemy type: ${value}`, '#enemyTypesTagsContainer');
 }
 
 
@@ -644,7 +644,7 @@ export const waveEditor = (() => {
             renderEnemyTypeTags(); // This function is accessible because it's in the outer scope
             waveEditor.renderWaveRepeater(data.maps[0].levels);
             waveEditor.renderEffectsRepeater();
-        }, `Removed enemy type: ${typeToRemove}`);
+        }, `Removed enemy type: ${typeToRemove}`, '#enemyTypesTagsContainer');
     };
 
     /* Grap enemy types */
@@ -712,7 +712,7 @@ export const waveEditor = (() => {
             renderEnemyTypeTags();
             waveEditor.renderWaveRepeater(data.maps[0].levels);
             waveEditor.renderEffectsRepeater();
-        }, `Reordered enemy types list.`);
+        }, `Reordered enemy types list.`, '#enemyTypesTagsContainer');
 
         handleDragEnd();
     }
