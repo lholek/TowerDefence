@@ -4220,17 +4220,22 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
     const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
     const jit = () => (rng() - 0.5) * ts * 0.05;
 
+    // Overall size bump (+30%) applied to every tree's scale below — the clip margins are
+    // widened by the same factor so the bigger canopies still have room to softly overflow
+    // into neighboring tiles instead of being cut off at the clip rect.
+    const SCALE_BUMP = 1.3;
+
     // Base margin (always applied): trees are taller than one tile, so their thin canopy
     // tips are allowed to softly overflow the tile edge like a real treetop would. Sides
     // bordering a same-type tree get extra room on top of that for seam trees.
     // Exception: the map's very first row has no canvas above it to overflow into — any
     // upward overflow there would just get cut off — so it gets no upward margin at all,
     // and every tree's height is clamped instead (see placeTree below).
-    const baseMargin = ts * 0.55;
-    const extL = baseMargin + (hasLeft  ? ts * 0.30 : 0);
-    const extR = baseMargin + (hasRight ? ts * 0.30 : 0);
-    const extU = isTopRow ? 0 : baseMargin + (hasUp ? ts * 0.30 : 0);
-    const extD = baseMargin + (hasDown  ? ts * 0.30 : 0);
+    const baseMargin = ts * 0.55 * SCALE_BUMP;
+    const extL = baseMargin + (hasLeft  ? ts * 0.30 * SCALE_BUMP : 0);
+    const extR = baseMargin + (hasRight ? ts * 0.30 * SCALE_BUMP : 0);
+    const extU = isTopRow ? 0 : baseMargin + (hasUp ? ts * 0.30 * SCALE_BUMP : 0);
+    const extD = baseMargin + (hasDown  ? ts * 0.30 * SCALE_BUMP : 0);
 
     ctx.save();
     ctx.beginPath();
@@ -4269,15 +4274,15 @@ function _drawConiferTree(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown,
         { fx: 0.85, fy: 0.84, scale: 1.40 },
     ];
     for (const slot of slots) {
-        placeTree(slot.fx, slot.fy, slot.scale);
+        placeTree(slot.fx, slot.fy, slot.scale * SCALE_BUMP);
     }
 
     // Seam trees: grow extra trunks INTO the gap toward each same-type neighbor tile
     const jitFrac = () => (rng() - 0.5) * 0.05;
-    if (hasRight) placeTree(1.00 + rng() * 0.08, 0.55 + jitFrac(), 1.32);
-    if (hasLeft)  placeTree(0.00 - rng() * 0.08, 0.55 + jitFrac(), 1.32);
-    if (hasDown)  placeTree(0.50 + jitFrac(), 1.00 + rng() * 0.08, 1.32);
-    if (hasUp)    placeTree(0.50 + jitFrac(), 0.00 - rng() * 0.08, 1.08);
+    if (hasRight) placeTree(1.00 + rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP);
+    if (hasLeft)  placeTree(0.00 - rng() * 0.08, 0.55 + jitFrac(), 1.32 * SCALE_BUMP);
+    if (hasDown)  placeTree(0.50 + jitFrac(), 1.00 + rng() * 0.08, 1.32 * SCALE_BUMP);
+    if (hasUp)    placeTree(0.50 + jitFrac(), 0.00 - rng() * 0.08, 1.08 * SCALE_BUMP);
 
     ctx.restore();
 }
