@@ -67,6 +67,38 @@ export function customConfirm(title, message) {
     });
 }
 
+// --- Cursor Warning Utility ---
+// A brief floating message anchored near the mouse cursor, used when a blocked action
+// (e.g. deleting the last remaining wave) needs to explain itself right where the user
+// clicked, instead of a modal confirm or the general status bar.
+let cursorWarningEl = null;
+let cursorWarningTimeout = null;
+
+export function showCursorWarning(message, event) {
+    if (!cursorWarningEl) {
+        cursorWarningEl = document.createElement('div');
+        cursorWarningEl.className = 'cursor-warning-tooltip';
+        document.body.appendChild(cursorWarningEl);
+    }
+
+    cursorWarningEl.textContent = message;
+
+    const x = (event && typeof event.clientX === 'number') ? event.clientX : window.innerWidth / 2;
+    const y = (event && typeof event.clientY === 'number') ? event.clientY : window.innerHeight / 2;
+    cursorWarningEl.style.left = `${x}px`;
+    cursorWarningEl.style.top = `${y}px`;
+
+    // Restart the fade-in even if a previous warning is still showing.
+    cursorWarningEl.classList.remove('is-visible');
+    void cursorWarningEl.offsetWidth;
+    cursorWarningEl.classList.add('is-visible');
+
+    clearTimeout(cursorWarningTimeout);
+    cursorWarningTimeout = setTimeout(() => {
+        cursorWarningEl.classList.remove('is-visible');
+    }, 1800);
+}
+
 /**
  * Stores references to the UI editor modules and utility functions.
  */

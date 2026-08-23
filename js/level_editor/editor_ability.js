@@ -1,7 +1,7 @@
 // js/level_editor/editor_ability.js
 
 import { getCurrentMap } from './level_data.js'; // To access the abilities data
-import { modifyJson as modifyJsonRaw, customConfirm } from './json_functions.js'; // Import utilities
+import { modifyJson as modifyJsonRaw } from './json_functions.js';
 
 // Every modifyJson(...) call in this file edits an ability, so tag it 'ability' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -278,16 +278,7 @@ export const abilityEditor = (() => {
     // 3. Function to delete an ability
     const deleteAbility = async (abilityIndex) => {
         const abilityName = getCurrentMap().abilities[abilityIndex].name;
-        
-        const confirmed = await customConfirm(
-            "Confirm Deletion",
-            `Are you sure you want to delete Ability ${abilityIndex}: ${abilityName}?`
-        );
-    
-        if (!confirmed) {
-            return;
-        }
-        
+
         await modifyJson((data) => {
             const abilities = data.maps[0].abilities;
             

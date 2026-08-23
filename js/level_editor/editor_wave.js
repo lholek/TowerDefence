@@ -1,7 +1,7 @@
 // js/level_editor/editor_wave.js
 
 import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access the wave data and default structure
-import { modifyJson as modifyJsonRaw, customConfirm, getAvailablePaths } from './json_functions.js'; // Import utilities
+import { modifyJson as modifyJsonRaw, getAvailablePaths, showCursorWarning } from './json_functions.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -444,7 +444,7 @@ export const waveEditor = (() => {
             button.addEventListener('click', async (e) => { // ADD async
                 // Get index from the button's data attribute
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
-                await deleteWave(waveIndex); // ADD await
+                await deleteWave(waveIndex, e);
             });
         });
 
@@ -454,7 +454,7 @@ export const waveEditor = (() => {
                 // Get indices from the button's data attributes
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
                 const enemyIndex = parseInt(e.target.getAttribute('data-enemy-index'), 10);
-                await deleteEnemyFromWave(waveIndex, enemyIndex); // ADD await
+                await deleteEnemyFromWave(waveIndex, enemyIndex, e);
             });
         });
     };
@@ -541,19 +541,16 @@ export const waveEditor = (() => {
      * Deletes an entire wave and re-indexes the remaining waves.
      * @param {number} waveIndex - The array index of the wave to delete.
      */
-    const deleteWave = async (waveIndex) => { 
-        // Get the wave level BEFORE the deletion prompt
-        const waveLevel = getCurrentMap().levels[waveIndex].level; 
-        
-        const confirmed = await customConfirm(
-            "Confirm Deletion",
-            `Are you sure you want to delete Wave ${waveLevel}? This will re-index subsequent waves.`
-        );
-
-        if (!confirmed) {
+    const deleteWave = async (waveIndex, event) => {
+        // At least one wave must always remain.
+        if (getCurrentMap().levels.length <= 1) {
+            showCursorWarning('There must always be at least one wave.', event);
             return;
         }
-        
+
+        // Get the wave level BEFORE deletion (for the history message)
+        const waveLevel = getCurrentMap().levels[waveIndex].level;
+
         await modifyJson((data) => {
             const levels = data.maps[0].levels;
             
@@ -615,10 +612,17 @@ export const waveEditor = (() => {
      * @param {number} waveIndex - The array index of the wave to modify.
      * @param {number} enemyIndex - The array index of the enemy group to delete.
      */
-    const deleteEnemyFromWave = async (waveIndex, enemyIndex) => { // ADD async
+    const deleteEnemyFromWave = async (waveIndex, enemyIndex, event) => {
+        // Each wave must always keep at least one enemy group.
+        const currentWave = getCurrentMap().levels[waveIndex];
+        if ((currentWave.enemies || []).length <= 1) {
+            showCursorWarning('Each wave must always have at least one enemy group.', event);
+            return;
+        }
+
         // FIX: Get the wave level from the current data *before* modifyJson
         const waveLevel = getCurrentMap().levels[waveIndex].level;
-        
+
         await modifyJson((data) => { // ADD await
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex];
@@ -644,13 +648,6 @@ export const waveEditor = (() => {
             setStatus("Cannot remove the last enemy type. At least one is required!", true);
             return;
         }
-
-        const confirmed = await customConfirm(
-            "Remove Type", 
-            `Are you sure you want to remove "${typeToRemove}"?`
-        );
-        
-        if (!confirmed) return;
 
         modifyJson((data) => {
             data.maps[0].enemyTypes = currentTypes.filter(t => t !== typeToRemove);

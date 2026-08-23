@@ -24,6 +24,8 @@
         "Improved - Editor - SETTINGS - New design for extra life settings",
         "Improved - Editor - WAVES - Editors can not set skin of the enemies in the groups",
         "Improved - Editor - WAVES - Changed text of new type of enemy button",
+        "Improved - Editor - Since Undo/Redo added removed conformation to remove enemy type, group and wave",
+        "Improved - Editor - Fixed bug where editor could delete all waves, all groups and all enemy types",
         "TODO: Improve - New Map ?"
       ]
     },

@@ -386,6 +386,28 @@ hr {
     color: #721c24;
 }
 
+/* Floating warning bubble anchored to the mouse cursor (e.g. "can't delete the last wave") */
+.cursor-warning-tooltip {
+    position: fixed;
+    transform: translate(-50%, -130%);
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #721c24;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 3000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.cursor-warning-tooltip.is-visible {
+    opacity: 1;
+}
+
 .d-none {
     display: none !important;
 }

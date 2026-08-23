@@ -1,7 +1,7 @@
 // js/level_editor/tower_editor.js
 
 import { currentLevelData } from './level_data.js'; // To access the tower data
-import { modifyJson as modifyJsonRaw, customConfirm } from './json_functions.js'; // Import both utilities
+import { modifyJson as modifyJsonRaw } from './json_functions.js';
 
 // Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -218,13 +218,7 @@ export const towerEditor = (() => {
 
     const deleteTower = async (towerId) => {
         const towerName = currentLevelData.maps[0].towerTypes[towerId].name;
-        const confirmed = await customConfirm(
-            "Confirm Deletion",
-            `Are you sure you want to delete Tower ${towerId}: ${towerName}? This will re-index all subsequent tower IDs.`
-        );
 
-        if (!confirmed) return;
-        
         await modifyJson((data) => {
             delete data.maps[0].towerTypes[towerId];
             data.maps[0].towerTypes = reIndexTowerIds(data.maps[0].towerTypes);
