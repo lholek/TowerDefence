@@ -142,6 +142,25 @@
                         </div>
                     </div>
 
+                    <div class="input-group mt-4">
+                        <label for="descriptionTextInput">📋 Description Text <i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
+                        <textarea id="descriptionTextInput" rows="3"
+                                  onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
+                    </div>
+
+                    <div class="input-row two-column-grid  mt-4">
+                        <div class="input-group">
+                            <label>Map Tile Size <i class="info-icon" data-tooltip="map-settings.tile-size">i</i></label>
+                            <input type="number" id="tileSizeInput" class="text-center" value="80" readonly title="Tile size for the map canvas."
+                                   onchange="window.app.jsonFunctions.updateBasicInfo('tileSize', parseInt(this.value))">
+                        </div>
+                        <div class="input-group">
+                            <label for="difficultyInput">Difficulty <i class="info-icon" data-tooltip="map-settings.difficulty">i</i></label>
+                            <input type="text" id="difficultyInput" class="text-center" value="⭐"
+                                   onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                        </div>
+                    </div>
+
                     <div class="input-row input-row-basic-stats">
                         <div class="input-group mt-4">
                             <label for="startingCoinsInput">🪙 Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
@@ -169,25 +188,6 @@
                                        onkeypress="if(event.key==='Enter'){event.preventDefault();window.app.jsonFunctions.addNewExtraLifePrice();}">
                                 <button id="add-extra-life-price-button" type="button" class="btn btn-green" onclick="window.app.jsonFunctions.addNewExtraLifePrice()">+ Add Price</button>
                             </div>
-                        </div>
-                    </div>
-
-                    <h3 class="mt-4">Map Description</h3>
-                    <div class="input-group mt-4">
-                        <label for="descriptionTextInput">📋 Description Text <i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
-                        <textarea id="descriptionTextInput" rows="3"
-                                  onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
-                    </div>
-                    <div class="input-row two-column-grid  mt-4">
-                        <div class="input-group">
-                            <label>Map Tile Size <i class="info-icon" data-tooltip="map-settings.tile-size">i</i></label>
-                            <input type="number" id="tileSizeInput" class="text-center" value="80" readonly title="Tile size for the map canvas."
-                                   onchange="window.app.jsonFunctions.updateBasicInfo('tileSize', parseInt(this.value))">
-                        </div>
-                        <div class="input-group">
-                            <label for="difficultyInput">Difficulty <i class="info-icon" data-tooltip="map-settings.difficulty">i</i></label>
-                            <input type="text" id="difficultyInput" class="text-center" value="⭐"
-                                   onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
                         </div>
                     </div>
                 </div>

@@ -38,11 +38,11 @@ h2, h3 {
 
 h2 {
     color: #f0c674;
-    font-size: 32px;
+    font-size: 40px;
     display: inline-block;
     padding-bottom: 4px;
     margin-bottom: 20px;
-    border-bottom: 3px solid #F0C6A1;
+    /* border-bottom: 3px solid #F0C6A1; */
     /* Adds a soft "aura" around the text and the border */
     text-shadow: 0 0 15px rgba(240, 198, 116, 0.3);
     filter: drop-shadow(0 4px 4px rgba(240, 161, 161, 0.2));
