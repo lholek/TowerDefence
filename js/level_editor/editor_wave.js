@@ -151,7 +151,7 @@ function renderEnemyTypeTags() {
              ondrop="window.app.waveEditor.handleDrop(event)">
             <span class="drag-handle"></span> 
             <span class="tag-text">${type}</span>
-            <button class="btn-remove-tag" onclick="window.app.waveEditor.removeEnemyType('${type}')">&times;</button>
+            <button class="btn-remove-tag" onclick="window.app.waveEditor.removeEnemyType('${type}', event)">&times;</button>
         </div>
     `).join('');
 }
@@ -640,12 +640,12 @@ export const waveEditor = (() => {
     /**
      * Removes a single enemy type with a safety check.
      */
-    const removeEnemyType = async (typeToRemove) => { // Change 'function' to 'const'
+    const removeEnemyType = async (typeToRemove, event) => {
         const currentTypes = getEnemyTypes();
 
         // Ensure at least one type remains
         if (currentTypes.length <= 1) {
-            setStatus("Cannot remove the last enemy type. At least one is required!", true);
+            showCursorWarning('There must always be at least one enemy type.', event);
             return;
         }
 
