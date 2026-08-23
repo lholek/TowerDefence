@@ -450,25 +450,149 @@ export function updateBasicInfoUI() {
 
     // --- IMPROVED EXTRA LIFE LOGIC ---
     const extraLifeCb = document.getElementById('extraLifeCheckbox');
-    const extraLifeInput = document.getElementById('extraLifePricesInput');
 
     // 1. Determine Logic: Default to TRUE if undefined
     const isExtraLifeEnabled = (map.extraLife !== undefined) ? map.extraLife : true;
-    
-    // 2. Determine Prices: Use JSON data. Default to empty string if no prices set yet
-    const currentPrices = map.extraLifePrices || [];
 
-    // 3. Update UI Elements
+    // 2. Update UI Elements
     if (extraLifeCb) {
         extraLifeCb.checked = isExtraLifeEnabled;
     }
 
-    if (extraLifeInput) {
-        // Only join if it's an array with items
-        extraLifeInput.value = (Array.isArray(currentPrices) && currentPrices.length > 0) ? currentPrices.join(', ') : ""; 
-        extraLifeInput.disabled = !isExtraLifeEnabled;   // Disable if unchecked
-    }
+    // 3. Price progression is now edited as reorderable boxes, not a text field.
+    renderExtraLifePriceTags();
     // ---------------------------------
+}
+
+/**
+ * Reads the 'extraLifePrices' array from the current map data.
+ * @returns {Array<number>} A shallow copy of the price progression.
+ */
+function getExtraLifePrices() {
+    return (currentLevelData.maps[0].extraLifePrices || []).slice();
+}
+
+/**
+ * Renders the small draggable boxes for the Extra Life price progression
+ * (same interaction pattern as the Enemy Types List tags).
+ */
+function renderExtraLifePriceTags() {
+    const container = document.getElementById('extraLifePricesTagsContainer');
+    if (!container) return;
+
+    const map = currentLevelData.maps[0];
+    const isEnabled = (map.extraLife !== undefined) ? map.extraLife : true;
+    const prices = getExtraLifePrices();
+
+    container.innerHTML = prices.map((price, index) => `
+        <div class="enemy-tag price-tag"
+             draggable="true"
+             data-index="${index}"
+             ondragstart="window.app.jsonFunctions.handlePriceDragStart(event)"
+             ondragover="window.app.jsonFunctions.handlePriceDragOver(event)"
+             ondragenter="window.app.jsonFunctions.handlePriceDragEnter(event)"
+             ondragleave="window.app.jsonFunctions.handlePriceDragLeave(event)"
+             ondragend="window.app.jsonFunctions.handlePriceDragEnd(event)"
+             ondrop="window.app.jsonFunctions.handlePriceDrop(event)">
+            <span class="drag-handle"></span>
+            <span class="tag-text">🪙${price}</span>
+            <button class="btn-remove-tag" onclick="window.app.jsonFunctions.removeExtraLifePrice(${index})">&times;</button>
+        </div>
+    `).join('');
+
+    const addInput = document.getElementById('newExtraLifePriceInput');
+    const addBtn = document.getElementById('add-extra-life-price-button');
+    if (addInput) addInput.disabled = !isEnabled;
+    if (addBtn) addBtn.disabled = !isEnabled;
+    container.classList.toggle('is-disabled', !isEnabled);
+}
+
+/**
+ * Adds a single new price to the end of the progression.
+ */
+export function addNewExtraLifePrice() {
+    const input = document.getElementById('newExtraLifePriceInput');
+    if (!input) return;
+
+    // Negative values are allowed on purpose — that step in the progression pays the
+    // player money instead of charging them.
+    const value = parseInt(input.value, 10);
+    if (isNaN(value)) {
+        modules.setStatus('Enter a valid whole number price.', true);
+        return;
+    }
+
+    modifyJson((data) => {
+        if (!Array.isArray(data.maps[0].extraLifePrices)) data.maps[0].extraLifePrices = [];
+        data.maps[0].extraLifePrices.push(value);
+    }, `Added extra life price: ${value}`, { section: 'basic', selector: '#extraLifePricesTagsContainer' });
+
+    input.value = '';
+}
+
+/**
+ * Removes a single price from the progression by its index.
+ */
+export function removeExtraLifePrice(index) {
+    const prices = getExtraLifePrices();
+    if (index < 0 || index >= prices.length) return;
+    const removed = prices[index];
+
+    modifyJson((data) => {
+        data.maps[0].extraLifePrices.splice(index, 1);
+    }, `Removed extra life price: ${removed}`, { section: 'basic', selector: '#extraLifePricesTagsContainer' });
+}
+
+/* Drag-to-reorder for the Extra Life price boxes (mirrors the Enemy Types List logic). */
+let draggedPriceIndex = null;
+
+export function handlePriceDragStart(e) {
+    const target = e.target.closest('.price-tag');
+    draggedPriceIndex = parseInt(target.getAttribute('data-index'));
+    target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedPriceIndex);
+}
+
+export function handlePriceDragEnter(e) {
+    const target = e.target.closest('.price-tag');
+    if (target && parseInt(target.getAttribute('data-index')) !== draggedPriceIndex) {
+        target.classList.add('drag-over');
+    }
+}
+
+export function handlePriceDragLeave(e) {
+    const target = e.target.closest('.price-tag');
+    if (target) target.classList.remove('drag-over');
+}
+
+export function handlePriceDragOver(e) {
+    e.preventDefault();
+    return false;
+}
+
+export function handlePriceDragEnd() {
+    document.querySelectorAll('.price-tag').forEach(t => t.classList.remove('dragging', 'drag-over'));
+    draggedPriceIndex = null;
+}
+
+export function handlePriceDrop(e) {
+    e.preventDefault();
+    const target = e.target.closest('.price-tag');
+    if (!target || draggedPriceIndex === null) { handlePriceDragEnd(); return; }
+
+    const targetIndex = parseInt(target.getAttribute('data-index'));
+    if (draggedPriceIndex === targetIndex) { handlePriceDragEnd(); return; }
+
+    const fromIndex = draggedPriceIndex; // capture before handlePriceDragEnd() clears it
+    modifyJson((data) => {
+        const prices = data.maps[0].extraLifePrices || [];
+        const [moved] = prices.splice(fromIndex, 1);
+        prices.splice(targetIndex, 0, moved);
+        data.maps[0].extraLifePrices = prices;
+    }, `Reordered extra life prices.`, { section: 'basic', selector: '#extraLifePricesTagsContainer' });
+
+    handlePriceDragEnd();
 }
 
 // --- NEW EXPORT UTILITIES ---
@@ -533,41 +657,16 @@ export function exportLevelData() {
  */
 // In js/level_editor/json_functions.js
 export function updateExtraLife(isChecked) {
-
-    const priceInput = document.getElementById('extraLifePricesInput');
-    if (priceInput) {
-        priceInput.disabled = !isChecked;
-        
-        // If we just enabled it and the field was empty, fill it with defaults for UX
-        if (isChecked && priceInput.value.trim() === '') {
-             priceInput.value = "10, 25, 50, 75, 100, 150, 200";
-        }
-    }
-
-    // 1. Update JSON
+    // Box enable/disable and any default-price fill-in are handled by
+    // renderExtraLifePriceTags(), called via updateBasicInfoUI() below.
     modifyJson((data) => {
         data.maps[0].extraLife = isChecked;
-        
-        // Optional: If checked but no prices exist yet, write the defaults to JSON immediately
+
+        // If checked but no prices exist yet, write sensible defaults immediately
         if (isChecked && (!data.maps[0].extraLifePrices || data.maps[0].extraLifePrices.length === 0)) {
             data.maps[0].extraLifePrices = [10, 25, 50, 75, 100, 150, 200];
         }
     }, `Extra Life enabled set to ${isChecked}.`, { section: 'basic', selector: '#extraLifeCheckbox' });
-
-}
-
-/**
- * Updates the 'extraLifePrices' array from a string.
- */
-export function updateExtraLifePrices(valueString) {
-    // Allow spaces after commas
-    const pricesArray = valueString.split(',')
-        .map(num => parseInt(num.trim()))
-        .filter(num => !isNaN(num)); // Remove empty or text entries
-
-    modifyJson((data) => {
-        data.maps[0].extraLifePrices = pricesArray;
-    }, `Extra Life prices updated: [${pricesArray.join(', ')}]`, { section: 'basic', selector: '#extraLifePricesInput' });
 }
 
 /**

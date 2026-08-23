@@ -27,7 +27,7 @@
       "description": "A toggle to enable or disable the 'Extra Life' purchase button."
     },
     "extra-lifes-prices": {
-      "description": "The price progression for extra lives. The last price will repeat indefinitely. Leave blank for default settings."
+      "description": "The price progression for extra lives, in purchase order. The last price will repeat indefinitely. Drag the boxes to reorder them, or use the + button to add more. A negative price pays the player money instead of charging them."
     },
     "description-text": {
       "description": "A brief overview or lore of the map shown in the menu as description."

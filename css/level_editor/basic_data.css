@@ -56,6 +56,73 @@
     margin-bottom: 10px;
 }
 
+/* Starting Coins (15%) / Starting Lifes (15%) / Extra Life (70%) row.
+   fr units (not %) so the fixed 20px gaps get subtracted before the 15:15:70 split is applied. */
+.input-row-basic-stats {
+    display: grid;
+    grid-template-columns: 20fr 20fr 60fr;
+}
+
+.input-row-basic-stats > .input-group {
+    /* Without this, a flex/grid item defaults to min-width:auto, which lets wide content
+       (the price tags row) force the column wider than its track instead of scrolling. */
+    min-width: 0;
+}
+
+/* Extra Life price progression boxes (same drag/reorder pattern and look as the Enemy Types List,
+   but laid out as a single horizontally-scrolling row since prices are ordered). */
+/* .tags-container.price-tags-container (both classes) so this beats the base
+   .tags-container { flex-wrap: wrap } rule in wave.css regardless of stylesheet order. */
+.tags-container.price-tags-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
+    min-height: 0;
+    padding: 6px 10px;
+    width: 96%;
+    max-width: 96%;
+}
+
+.tags-container.price-tags-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.tags-container.price-tags-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tags-container.price-tags-container::-webkit-scrollbar-thumb {
+    background-color: rgb(240, 198, 116);
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.enemy-tag.price-tag {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    font-size: 0.85rem;
+}
+
+.price-tag .tag-text {
+    font-family: inherit;
+}
+
+/* Right-align the number so it reads like a price, not left-hugging the box next to the Add button. */
+#newExtraLifePriceInput {
+    text-align: right;
+}
+
+#extraLifePricesTagsContainer.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#newExtraLifePriceInput::placeholder {
+    color: #ffffff;
+    opacity: 1;
+}
+
 .text-secondary {
     font-size: 0.9em;
     color: #999;
