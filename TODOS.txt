@@ -19,6 +19,7 @@ LONG TODOS:
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 ---------------------------------------------------------------------------------------------
 Pre-beta V.:
+  "TODO: Improve - Menu - New Game Selector ??",
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta IV ??]",
   "TODO: Improve - Hero Camping",
 
