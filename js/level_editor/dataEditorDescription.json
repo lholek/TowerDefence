@@ -82,10 +82,13 @@
     }
   },
   "wave-editor": {
-    "type": { 
-      "description": "Identifies the enemy type. Certain game effects may interact with specific types." 
+    "type": {
+      "description": "Identifies the enemy type. Certain game effects may interact with specific types."
     },
-    "count": { 
+    "skin": {
+      "description": "The visual appearance of enemies in this group. Leave on Random to let each enemy randomly appear as either Golem or Fiery Eye."
+    },
+    "count": {
       "description": "The number of enemies in this spawn group." 
     },
     "health": { 

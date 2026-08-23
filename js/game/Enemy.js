@@ -1,5 +1,5 @@
 export default class Enemy {
-  constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1, type='basic', damage = 1) {
+  constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1, type='basic', damage = 1, skin = null) {
     this.map = map;
     this.path = path;
     this.offsetX = offsetX;
@@ -20,13 +20,14 @@ export default class Enemy {
     this.size = 30;
     this.movingLeft = false;
 
-    // 50/50 šance na typ nepřítele
-    const rand = Math.random();
-    if (rand < 0.5) {
-        this.type = 'GOLEM';
+    // Visual skin: use the level-editor's explicit choice if set (GOLEM/EYE),
+    // otherwise fall back to a 50/50 random pick like before.
+    if (skin === 'GOLEM' || skin === 'EYE') {
+        this.type = skin;
     } else {
-        this.type = 'EYE';
-    } 
+        const rand = Math.random();
+        this.type = rand < 0.5 ? 'GOLEM' : 'EYE';
+    }
 
     // Getting quailty from local storage
     const settings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};

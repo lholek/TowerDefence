@@ -528,8 +528,9 @@ export default class Game {
         config.speed, 
         config.health, 
         config.coinReward,
-        config.type, 
-        customDamage
+        config.type,
+        customDamage,
+        config.skin
       ));
       const triggerLogShake = () => {
           const logBtn = document.getElementById('gameLogBtn');

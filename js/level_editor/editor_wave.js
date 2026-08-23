@@ -211,7 +211,20 @@ export const waveEditor = (() => {
                     </select>
                 </label>
 
-    
+                <label class="editor-row mt-1">
+                    <span class="label-text">
+                        Skin
+                        <i class="info-icon" data-tooltip="wave-editor.skin">i</i>
+                    </span>
+
+                    <select data-key="skin" class="input-enemy-type">
+                        <option value="" ${!enemy.skin ? 'selected' : ''}>Random</option>
+                        <option value="GOLEM" ${enemy.skin === 'GOLEM' ? 'selected' : ''}>Golem</option>
+                        <option value="EYE" ${enemy.skin === 'EYE' ? 'selected' : ''}>Fiery Eye</option>
+                    </select>
+                </label>
+
+
                 <div class="card-body-inner">
     
                     <label class="editor-row">
