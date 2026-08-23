@@ -2,7 +2,6 @@
     background-color: #2e261d;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #5c2e0e;
 }
 
 .enemy-card {
@@ -38,7 +37,6 @@
 
 .enemy-types-list-card {
     background-color: #2e261d;
-    border: 1px solid #5c2e0e;
     border-radius: 8px;
     padding: 12px;
 }

@@ -20,7 +20,6 @@
    the editor (see .wave-card / .enemy-types-list-card in wave.css) for visual consistency. */
 .map-editor-card {
     background-color: #2e261d;
-    border: 1px solid #5c2e0e;
     border-radius: 8px;
     padding: 12px;
 }
