@@ -136,14 +136,14 @@
                 <div class="editor-description">
                     <div class="input-row">
                         <div class="input-group mt-4">
-                            <label for="mapNameInput">🗺️ Map Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
+                            <label for="mapNameInput">🗺️ Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
                             <input type="text" id="mapNameInput" value="EDIT TITLE"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('name', this.value)">
                         </div>
                     </div>
 
                     <div class="input-group mt-4">
-                        <label for="descriptionTextInput">📋 Description Text <i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
+                        <label for="descriptionTextInput">📋 Description<i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
                         <textarea id="descriptionTextInput" rows="3"
                                   onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
                     </div>
@@ -172,6 +172,9 @@
                             <input type="number" id="startingLifesInput" value="1" min="1"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', parseInt(this.value))">
                         </div>
+                    </div>
+
+                    <div class="input-row mt-4">
                         <div class="input-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="extraLifeCheckbox" class="extraLifeCheckbox" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
@@ -184,7 +187,7 @@
                             </label>
                             <div id="extraLifePricesTagsContainer" class="tags-container price-tags-container mb-2"></div>
                             <div class="input-group-inline input-aling-center">
-                                <input type="number" id="newExtraLifePriceInput" placeholder="Price (e.g. 50, or -10 to refund)" class="input-medium"
+                                <input type="number" id="newExtraLifePriceInput" placeholder="Price" class="input-medium"
                                        onkeypress="if(event.key==='Enter'){event.preventDefault();window.app.jsonFunctions.addNewExtraLifePrice();}">
                                 <button id="add-extra-life-price-button" type="button" class="btn btn-green" onclick="window.app.jsonFunctions.addNewExtraLifePrice()">+ Add Price</button>
                             </div>

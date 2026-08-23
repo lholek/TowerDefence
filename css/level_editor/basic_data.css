@@ -8,6 +8,9 @@
 
 .input-row .input-group {
     flex-grow: 1;
+    /* Without this, a flex item defaults to min-width:auto, which lets wide content
+       (e.g. the price tags row) force the item wider than the row instead of scrolling. */
+    min-width: 0;
 }
 
 /* For fields that need more columns */
@@ -56,17 +59,11 @@
     margin-bottom: 10px;
 }
 
-/* Starting Coins (15%) / Starting Lifes (15%) / Extra Life (70%) row.
-   fr units (not %) so the fixed 20px gaps get subtracted before the 15:15:70 split is applied. */
+/* Starting Coins / Starting Lifes row: 50/50 split. Extra Life now lives in its own
+   full-width row right below (see the plain .input-row it's wrapped in, in the HTML). */
 .input-row-basic-stats {
     display: grid;
-    grid-template-columns: 20fr 20fr 60fr;
-}
-
-.input-row-basic-stats > .input-group {
-    /* Without this, a flex/grid item defaults to min-width:auto, which lets wide content
-       (the price tags row) force the column wider than its track instead of scrolling. */
-    min-width: 0;
+    grid-template-columns: 1fr 1fr;
 }
 
 /* Extra Life price progression boxes (same drag/reorder pattern and look as the Enemy Types List,
@@ -110,7 +107,7 @@
 
 /* Right-align the number so it reads like a price, not left-hugging the box next to the Add button. */
 #newExtraLifePriceInput {
-    text-align: right;
+    text-align: left;
 }
 
 #extraLifePricesTagsContainer.is-disabled {
