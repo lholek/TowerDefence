@@ -10,9 +10,18 @@ export default class Map {
 
         // If editorMode, install a deterministic PRNG for the duration of prerenders
         let _origRandom = null;
+        const EDITOR_RNG_SEED = 123456789;
+        let _seed = EDITOR_RNG_SEED;
+        // Rewinds the deterministic PRNG back to its fixed starting point. Used right
+        // before generating the locked mountain variant (see below) so its shape never
+        // depends on how many random draws everything ELSE (water fog patches, road/grass
+        // texture noise, etc. — whose count varies with unrelated map content) happened
+        // to consume earlier in this same construction. Without this, editing anything
+        // on the map — even something with no mountains involved — could shift the
+        // shared random stream and make the mountains re-roll a different jagged shape.
+        const _resetEditorRng = () => { _seed = EDITOR_RNG_SEED; };
         if (this.editorMode) {
             _origRandom = Math.random;
-            let _seed = 123456789;
             Math.random = function() {
                 // LCG: deterministic sequence
                 _seed = (_seed * 1664525 + 1013904223) >>> 0;
@@ -199,12 +208,17 @@ export default class Map {
                     if (saveWL) this.waterLayer = saveWL;
                 } catch (e) { this.editorWaterLow = this.editorWaterLow || null; this.editorWaterHigh = this.editorWaterHigh || null; }
 
-                // Mountains
+                // Mountains — rewind the deterministic PRNG right before touching anything
+                // mountain-related, so their jagged shape is always generated from the same
+                // fixed starting point regardless of how much randomness everything else in
+                // this construction (water fog, road/grass texture noise, ...) consumed first.
+                _resetEditorRng();
                 try { this.editorMountainLow = typeof this._preRenderMountainLow === 'function' ? this._preRenderMountainLow(this.tileSize) : null; } catch(e){ this.editorMountainLow = null; }
                 try { this.editorMountainHigh = typeof this._preRenderMountainHigh === 'function' ? this._preRenderMountainHigh(this.tileSize) : null; } catch(e){ this.editorMountainHigh = null; }
-                
+
                 // Editor lock: generate and cache a single mountain variant for the whole editor session.
                 try {
+                    _resetEditorRng();
                     this.mountainSet = [this._preRenderMountainParts(this.tileSize, 1.0)];
                     if (!this.cachedMountainLow) this.cachedMountainLow = this._preRenderMountainLow(this.tileSize);
                     if (!this.cachedMountainHigh) this.cachedMountainHigh = this._preRenderMountainHigh(this.tileSize);
