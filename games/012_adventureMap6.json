@@ -1,0 +1,109 @@
+{
+  "maps": [
+    {
+      "name": "Crossroads of Realms",
+      "startingCoins": 250,
+      "startingLifes": 5,
+      "extraLife": true,
+      "extraLifePrices": [
+        10,
+        25,
+        50,
+        75,
+        100,
+        150,
+        200
+      ],
+      "description": [
+        {
+          "descriptionText": "Edit description",
+          "level count": 1,
+          "difficulty": "⭐⭐⭐⭐⭐",
+          "map_size": "35x25",
+          "tower types": 1,
+          "abilites": "Lava Floor🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Hay]","X[Hay]","W","W","W","W","ICE","ICE","M","M","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","W","W[Rock-4]","W","ICE","ICE","M","M","M","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X[CutTree]","X[CutTree]","X[CutTree]","X[CutTree]","X[CutTree]","X[CutTree]","X[CutTree]","X[Tree]","X[Tree]","X[Tree]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","W","W","W","ICE","ICE","M","M","M","M","SNW[CutTree]","SNW[CutTree]","SNW[CutTree]","BRG","SNW[CutTree]","SNW[Tree]","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X[CutTree]","BRG","S1","BRG","X","X[Log-2]","X[Bush]","X[CutTree]","X[Tree]","X[Tree]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","W","W","W","W","ICE","M","M","M","M","ICE","SNW","SNW[CutTree]","BRG","S2","BRG","SNW[CutTree]","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","O","BRG","BRG","X","-","X[CutTree]","X[Tree]","X[Dirt]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","W","W","W","W[Rock-1]","ICE","M","M","M","ICE","ICE","ICE","SNW","SNW","O[SNW]","O[SNW]","BRG","SNW[CutTree]","SNW[CutTree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X","X[Log-2]","O","O","X","X","-","-","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Hay]","W","W[Rock-2]","W","W","W","ICE","M","M","ICE","ICE","SNW[SPIKE-4]","SNW[SPIKE-1]","SNW","SNW","O[SNW]","SNW","SNW","SNW[CutTree]","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","X[Log-1]","O","X","X","X[Well]","-","X[Dirt]","X[Dirt]","X[Dirt]","W","W","W","W","W","W[Rock-3]","W","W","M","ICE","SNW[SPIKE-4]","SNW[SPIKE-4]","SNW[SPIKE-1]","-","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW","SNW[Tree]","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","X","O","X","-","-","-","X[Dirt]","X[Dirt]","W","W","W","W","W","W","W","W","W","ICE","SNW[SPIKE-3]","SNW[SPIKE-4]","SNW[SPIKE-1]","-","-","O[SNW]","SNW","SNW","SNW","SNW","SNW[Tree]","M","SNW[Tree]"],
+              ["X[Tree]","X[Tree]","X[Tree]","-","-","O","O","-","-","-","W","W","W","W[Rock-3]","W","W","W","W","W","W","W","ICE","ICE","ICE","-","-","O[SNW]","O[SNW]","-","-","-","M","M","M","M"],
+              ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","-","-","O","-","-","W","W","W","W","W","W","W","W","W","W","W","W","W","W","ICE","-","-","O[SNW]","-","-","-","M","M","M","M","M"],
+              ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","-","O","-","-","W","W[Rock-4]","W","W","W","W","W","W","W","W","W","W","W","W","W","W","-","O[SNW]","-","-","-","-","M","M","M","M"],
+              ["-","-","X[Tree]","X[Tree]","-","-","O[SNW]","O[SNW]","-","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","-","M","-","-","-","-","-","-","-","-"],
+              ["-","-","-","-","-","-","O[SNW]","-","-","W","W","W[Rock-1]","W","W","W","W","W","W","W","W","W","W","W","W","W","W","O[SNW]","-","-","-","-","-","-","-","-"],
+              ["-","-","-","-","-","-","O[SNW]","-","-","-","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","-","O[SNW]","-","-","-","-","-","-","X","X"],
+              ["-","-","-","-","-","-","O[SNW]","-","-","-","-","W","W","W","W","W","W","W","W","W","W","W","W","W","-","-","O[SNW]","-","-","-","-","-","X","X","X"],
+              ["-","-","-","-","-","-","O[SNW]","-","-","-","-","W","W","W","W","W","W","W","W","W","W","W","W","-","-","-","O","O","-","-","-","X","X","X","X"],
+              ["-","-","-","-","-","-","O[SNW]","-","-","-","-","-","W","W","W","W","W","W","W","W","W","W","W","-","-","-","-","O","-","X","X","X","HLG","E3","X"],
+              ["SND","SND","SND","SND","SND","SND","O[SNW]","-","-","-","-","-","-","W","W","W","W","W","W","W","W","W","-","-","-","-","-","O","X","X","X","HLG","HLG","O","X"],
+              ["SND","SND","SND[BONE-4]","SND","SND[BONE-1]","SND","O[SNW]","SND","-","-","-","-","-","-","W","W","W","W","W","W","W","-","-","-","-","-","X","O","X","X","HLG","HLG","HLG","O","X"],
+              ["SND","SND","BRG","SND","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","-","-","-","-","-","-","W","W","W","-","-","-","-","-","-","X","X","O","X","X","X","HLG","X","O","X"],
+              ["SND","SND","S3","O[SND]","O[SND]","SND","SND","SND[CACTUS-2]","-","O[SND]","-","-","-","-","-","-","-","W","-","-","-","-","X","X","HLG","X","X","O","O","O","O","O","O","O","X"],
+              ["SND","SND","SND","BRG","BRG","SND[CACTUS-1]","SND","SND","SND","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O","-","-","X","X","HLG","HLG","HLG","HLG","X","O","-","X","HLG","HLG","X","X","X"],
+              ["SND","SND","BRG","SND","SND","SND[BONE-3]","SND","SND","SND","SND","-","-","-","-","-","-","-","O","-","X","X","HLG","HLG","E1","HLG","X","X","O","X","HLG","E2","HLG","HLG","X","X"],
+              ["SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","-","-","-","-","-","-","-","O","O","O","O","O","O","O","O","O","O","O","O","O","O","HLG","X","X","X"],
+              ["SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","-","-","-","-","-","-","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X","X"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            }
+          ]
+        }
+      ],
+      "enemyEffects": []
+    }
+  ]
+}
