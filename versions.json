@@ -14,6 +14,7 @@
         "Improved - Editor - Added 5 save slots for maps in the editor",
         "Improved - Editor - MAP - New Slider for tiles in editor",
         "Improved - Editor - MAP - Updated editor tiles to match in-game visuals",
+        "Improved - Editor - MAP - Added loading dots when editor is rebuilding the map",
         "Improved - Editor - MAP - Added selection of low/high graphics for editor tiles",
         "Improved - Editor - MAP - Editor now saves the selected graphics quality for tiles and backgrounds",
         "Improved - Editor - MAP - Added text to tile instead of S,E,X,SND etc. ADD THERE FULL TEXT LIKE SNOW SAND atd.",
