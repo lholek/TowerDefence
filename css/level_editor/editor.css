@@ -453,6 +453,54 @@ hr {
     cursor: grabbing;
 }
 
+/* Custom loading cursor: replaces the mouse pointer with 3 bouncing dots right where it is
+   while a terrain edit is being committed. The map's prerendered layers/decorations (trees,
+   mountains, water, portals...) get rebuilt once per finished brush stroke, which can take a
+   moment on larger maps — this makes that wait visible instead of the editor looking frozen.
+   left/top are set (in editor_map.js) to the last known mouse position, and the real cursor
+   is hidden (canvas.style.cursor = 'none') for the duration so this visually replaces it
+   rather than sitting next to it. translate(-50%,-50%) centers this element on that point. */
+.editor-cursor-spinner {
+    /* Stays in the render tree at all times (display never toggles) so its dots' CSS
+       animation keeps running continuously in the background — that way, whenever it's
+       shown, it's already mid-motion instead of possibly needing to (re)start an animation
+       on a just-unhidden element, which is what was making it look static/stuck. Visibility
+       is controlled purely via opacity/visibility below. */
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+}
+
+.editor-cursor-spinner.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Same bouncing-dots motion as the Undo/Redo buttons (see .btn-dots / @keyframes
+   btn-dots-bounce below), just bigger and bolder so it reads clearly over any tile. */
+.editor-cursor-spinner i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ffffff !important;
+    border: 2px solid rgb(92, 46, 14);
+    box-sizing: border-box;
+    display: inline-block;
+    animation: btn-dots-bounce 1s infinite ease-in-out both;
+}
+
+.editor-cursor-spinner i:nth-child(1) { animation-delay: -0.32s; }
+.editor-cursor-spinner i:nth-child(2) { animation-delay: -0.16s; }
+.editor-cursor-spinner i:nth-child(3) { animation-delay: 0s; }
+
 .editor-key-container {
     margin-top: 15px;
     padding: 10px;

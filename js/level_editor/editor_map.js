@@ -91,6 +91,60 @@ let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
 let activeDrawTileType = null; // Locks the tile type for the current drag session
 let pendingTiles = []; // Tiles changed during current draw stroke, before full prerender rebuild
+let lastPointerClientX = 0; // Last known mouse position, so the custom "loading cursor" (see
+let lastPointerClientY = 0; // below) can replace the real cursor at the exact spot it was.
+
+// --- Custom loading cursor (see .editor-cursor-spinner in editor.css) ---
+// Replaces the mouse cursor with 3 bouncing dots while handleMapDrawStop's full map rebuild
+// is running. That rebuild is synchronous and blocks the main thread, so we defer it a
+// couple of frames after showing the cursor to give the browser an actual chance to paint
+// it first — otherwise it would be set to "visible" and torn down again without ever
+// appearing on screen.
+//
+// The rebuild itself blocks the main thread for its whole duration, so the dot-bounce
+// animation cannot actually progress while it runs — it would otherwise look frozen for
+// that whole time and only "jump" once, right when the block finishes. To make the motion
+// read as smooth/alive rather than stuck, hideSpinner() enforces a minimum visible time
+// (MIN_SPINNER_VISIBLE_MS) measured from when it was shown: once the (now fast, ~100-300ms)
+// rebuild finishes, the main thread is free again, so any remaining time in that minimum
+// plays out as genuine, unblocked, smoothly animating frames before the dots disappear.
+let spinnerEl = null;
+let spinnerShownAt = 0;
+const MIN_SPINNER_VISIBLE_MS = 500;
+function ensureSpinnerEl() {
+    if (!spinnerEl) {
+        spinnerEl = document.createElement('div');
+        spinnerEl.className = 'editor-cursor-spinner';
+        // Same 3-dot bounce used by the Undo/Redo buttons (.btn-dots), just white/bigger.
+        for (let i = 0; i < 3; i++) {
+            spinnerEl.appendChild(document.createElement('i'));
+        }
+        document.body.appendChild(spinnerEl);
+    }
+    return spinnerEl;
+}
+function showSpinnerAt(x, y) {
+    const el = ensureSpinnerEl();
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.classList.add('is-visible');
+    spinnerShownAt = performance.now();
+    // Hide the real cursor over the canvas so the dots visually ARE the cursor, not an
+    // overlay next to it.
+    if (canvas) canvas.style.cursor = 'none';
+}
+function hideSpinner() {
+    if (!spinnerEl) return;
+    const restoreCursor = () => { if (canvas) canvas.style.cursor = ''; };
+    const elapsed = performance.now() - spinnerShownAt;
+    const remaining = MIN_SPINNER_VISIBLE_MS - elapsed;
+    if (remaining > 0) {
+        setTimeout(() => { spinnerEl.classList.remove('is-visible'); restoreCursor(); }, remaining);
+    } else {
+        spinnerEl.classList.remove('is-visible');
+        restoreCursor();
+    }
+}
 
 // --- Dynamic Brush State ---
 let brushShape = 'square'; // 'square', 'diamond', or 'circle'
@@ -329,6 +383,9 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 // --- Interaction Handlers (Drawing/Erasing) ---
 
 function handleMapDrawStart(e) {
+    lastPointerClientX = e.clientX;
+    lastPointerClientY = e.clientY;
+
     // If we are currently panning with the middle mouse button, ignore drawing attempt
     if (camera.dragging) return;
 
@@ -372,21 +429,30 @@ function handleMapDrawStop() {
     if (hasDrawn && (isDrawingLeft || isDrawingRight)) {
         // Clear pending highlight before full rebuild so the final render shows clean tiles.
         pendingTiles = [];
-        // Reset the GameMap instance so that ALL prerender layers (road, grass,
-        // water, mountains, trees, portals, holy/burned ground, shores) are
-        // rebuilt exactly once — generating stable random variants for the
-        // final tile configuration rather than re-rolling on every mouse move.
-        resetEditorMap();
-        // Sync the already-changed currentLevelData back to the JSON editor and trigger any
-        // required updates. History is NOT recorded here — call it directly (not through the
-        // local modifyJson wrapper) so it does not also snapshot state, since that would
-        // capture the state AFTER painting (the mutation already happened above) instead of
-        // before. The real "before this stroke" snapshot was captured in handleMapDrawStart.
-        modifyJsonRaw(() => {}, `Map updated by drag-drawing.`);
-        // Now that the sync succeeded, commit the pre-stroke snapshot onto the undo stack.
-        commitManualRecord();
-        // Force a fresh render so the rebuilt instance is displayed immediately.
-        renderMap();
+
+        // The rebuild below is synchronous and can take a noticeable moment on larger maps,
+        // so replace the mouse cursor with the custom loading dots right where it currently
+        // is, and defer the actual work by two animation frames — that gives the browser an
+        // actual paint cycle to draw it before the main thread gets blocked by the rebuild.
+        showSpinnerAt(lastPointerClientX, lastPointerClientY);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            // Reset the GameMap instance so that ALL prerender layers (road, grass,
+            // water, mountains, trees, portals, holy/burned ground, shores) are
+            // rebuilt exactly once — generating stable random variants for the
+            // final tile configuration rather than re-rolling on every mouse move.
+            resetEditorMap();
+            // Sync the already-changed currentLevelData back to the JSON editor and trigger any
+            // required updates. History is NOT recorded here — call it directly (not through the
+            // local modifyJson wrapper) so it does not also snapshot state, since that would
+            // capture the state AFTER painting (the mutation already happened above) instead of
+            // before. The real "before this stroke" snapshot was captured in handleMapDrawStart.
+            modifyJsonRaw(() => {}, `Map updated by drag-drawing.`);
+            // Now that the sync succeeded, commit the pre-stroke snapshot onto the undo stack.
+            commitManualRecord();
+            // Force a fresh render so the rebuilt instance is displayed immediately.
+            renderMap();
+            hideSpinner();
+        }));
     } else {
         // Nothing actually changed during this stroke (e.g. a click that re-placed the same
         // tile type) — discard the pending snapshot so Undo doesn't get a no-op entry.
@@ -402,9 +468,12 @@ function handleMapDrawStop() {
 }
 
 function handleMapDrawMove(e) {
+    lastPointerClientX = e.clientX;
+    lastPointerClientY = e.clientY;
+
     // If panning is active, do not draw
-    if (camera.dragging) return; 
-    
+    if (camera.dragging) return;
+
     let tileApplied = false;
     
     // Apply tile if the left button is held down
