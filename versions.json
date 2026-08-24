@@ -27,6 +27,7 @@
         "Improved - Editor - WAVES - Changed text of new type of enemy button",
         "Improved - Editor - Since Undo/Redo added removed conformation to remove enemy type, group and wave",
         "Improved - Editor - Fixed bug where editor could delete all waves, all groups and all enemy types",
+        "Improved - Editor - Added live thousands separator (space) to fields for better readability",
         "TODO: Improve - New Map ?"
       ]
     },

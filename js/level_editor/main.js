@@ -6,6 +6,7 @@ import { initialize as initWaveEditor, waveEditor } from './editor_wave.js';
 import { initialize as initAbilityEditor, abilityEditor } from './editor_ability.js';
 import * as editorHistory from './editor_history.js';
 import * as saveSlots from './editor_save_slots.js';
+import { attachThousandsFormatting, parseThousands } from './number_format.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -25,7 +26,8 @@ window.app = {
     waveEditor: waveEditor,
     abilityEditor: abilityEditor,
     editorHistory: editorHistory,
-    saveSlots: saveSlots
+    saveSlots: saveSlots,
+    numberFormat: { parseThousands } // exposed for inline onchange="..." handlers in level_editor.html
 };
 
 // --- Initialization ---
@@ -38,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapCanvasContainer = document.getElementById('mapCanvasContainer');
     const mapLayoutWrapper = document.getElementById('mapLayoutWrapper');
     const tileKey = document.getElementById('tileKey');
+
+    // Live "1 000"-style thousands-separator formatting for every .input-thousands
+    // field, wherever it gets re-rendered (wave/tower/ability editors). Delegated
+    // once on the document so dynamically re-rendered rows keep working.
+    attachThousandsFormatting(document);
 
     // 2. Pass core utilities to json_functions
     // CRITICAL: Passing all editor modules so json_functions can refresh the UI

@@ -2,6 +2,7 @@
 
 import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access the wave data and default structure
 import { modifyJson as modifyJsonRaw, getAvailablePaths, showCursorWarning } from './json_functions.js';
+import { formatNumber, parseThousands } from './number_format.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -229,17 +230,17 @@ export const waveEditor = (() => {
     
                     <label class="editor-row">
                         <span class="label-text">⭐ Count <i class="info-icon" data-tooltip="wave-editor.count">i</i></span>
-                        <input type="number" data-key="count" value="${enemy.count}" min="1">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="count" value="${formatNumber(enemy.count)}">
                     </label>
-    
+
                     <label class="editor-row">
                         <span class="label-text">❤️ Health <i class="info-icon" data-tooltip="wave-editor.health">i</i></span>
-                        <input type="number" data-key="health" value="${enemy.health}" min="1">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="health" value="${formatNumber(enemy.health)}">
                     </label>
     
                     <label class="editor-row">
                         <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="wave-editor.speed">i</i></span>
-                        <input type="number" data-key="speed" value="${enemy.speed}" step="0.01" min="0.01">
+                        <input type="text" inputmode="decimal" class="input-thousands" data-key="speed" value="${formatNumber(enemy.speed)}">
                     </label>
     
                     <label class="editor-row">
@@ -256,17 +257,17 @@ export const waveEditor = (() => {
     
                     <label class="editor-row">
                         <span class="label-text">🕒 Interval <i class="info-icon" data-tooltip="wave-editor.interval">i</i></span>
-                        <input type="text" data-key="interval" value="${enemy.interval}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="interval" value="${formatNumber(enemy.interval)}">
                     </label>
-    
+
                     <label class="editor-row">
                         <span class="label-text">⏳ First Delay <i class="info-icon" data-tooltip="wave-editor.first-delay">i</i></span>
-                        <input type="text" data-key="firstDelay" value="${enemy.firstDelay}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="firstDelay" value="${formatNumber(enemy.firstDelay)}">
                     </label>
     
                     <label class="editor-row">
                         <span class="label-text">🪙 Coin Reward <i class="info-icon" data-tooltip="wave-editor.coin-reward">i</i></span>
-                        <input type="number" data-key="coinReward" value="${enemy.coinReward}" min="0">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="coinReward" value="${formatNumber(enemy.coinReward)}">
                     </label>
     
                 </div>
@@ -410,7 +411,7 @@ export const waveEditor = (() => {
                         <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
                             <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="Notes about wave...">
                         </label>
-                        <h4>Enemies (Total Coins: 🪙 ${totalCoins})</h4>
+                        <h4>Enemies (Total Coins: 🪙 ${formatNumber(totalCoins)})</h4>
                         <div class="header-actions">
                             <button class="btn btn-copy" onclick="window.app.waveEditor.copyWave(${waveIndex})">📋</button>
                             <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
@@ -469,8 +470,10 @@ export const waveEditor = (() => {
                 const enemyCard = e.target.closest('.enemy-card');
                 const waveCard = e.target.closest('.wave-card');
                 const key = e.target.getAttribute('data-key');
-                // Parse number inputs as float, otherwise use string value
-                const value = e.target.type === 'number' || e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+                // Parse number inputs as float, thousands-formatted fields as int, otherwise use string value
+                const value = e.target.classList.contains('input-thousands')
+                    ? parseThousands(e.target.value)
+                    : (e.target.type === 'number' || e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value);
                 
                 let targetSelector = null;
                 if (enemyCard) {
@@ -820,13 +823,13 @@ export const waveEditor = (() => {
     
                 <div class="flex-1">
                     <label>Shake Duration (ms) <i class="info-icon" data-tooltip="shake-effects.shake-duration">i</i></label>
-                    <input type="number" value="${effect.shakeDuration || 0}" step="100" 
+                    <input type="text" inputmode="numeric" class="input-thousands" value="${formatNumber(effect.shakeDuration || 0)}"
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
                 </div>
     
                 <div class="flex-1">
                     <label>Shake Intensity (px) <i class="info-icon" data-tooltip="shake-effects.shake-intensity">i</i></label>
-                    <input type="number" value="${effect.shakeIntensity || 0}" step="0.5" 
+                    <input type="text" inputmode="decimal" class="input-thousands" value="${formatNumber(effect.shakeIntensity || 0)}"
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
                 </div>
     
@@ -867,7 +870,7 @@ export const waveEditor = (() => {
 
             if (effect) {
                 // Convert to number if it's shake data
-                const val = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseFloat(value) : value;
+                const val = (key === 'shakeDuration' || key === 'shakeIntensity') ? parseThousands(value) : value;
                 effect[key] = val || 0;
             }
         }, `Updated effect ${key}`, `#enemy-effects-repeater .effect-row[data-index="${index}"]`, '#enemy-effects-repeater');
@@ -922,7 +925,7 @@ export const waveEditor = (() => {
                 </div>
                 <div class="flex-1">
                     <label class="block text-xs">Damage <i class="info-icon" data-tooltip="custom-enemy-damage.damage">i</i></label>
-                    <input type="number" class="w-full p-1" value="${entry.damage || 1}" min="1" 
+                    <input type="text" inputmode="numeric" class="w-full p-1 input-thousands" value="${formatNumber(entry.damage || 1)}"
                            onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'damage', this.value)">
                 </div>
                 <button class="btn btn-delete bg-red-500 p-1 text-white" onclick="window.app.waveEditor.deleteEnemyDamage(${index})">X</button>
@@ -946,7 +949,7 @@ export const waveEditor = (() => {
     const updateEnemyDamage = (index, key, value) => {
         modifyJson((data) => {
             if (!data.maps[0].enemyDamage) return;
-            const val = key === 'damage' ? parseInt(value) : value;
+            const val = key === 'damage' ? parseThousands(value) : value;
             data.maps[0].enemyDamage[index][key] = val;
 
             renderDamageRepeater();

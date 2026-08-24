@@ -2,6 +2,7 @@
 
 import { getCurrentMap } from './level_data.js'; // To access the abilities data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
+import { formatNumber, parseThousands } from './number_format.js';
 
 // Every modifyJson(...) call in this file edits an ability, so tag it 'ability' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -116,12 +117,12 @@ export const abilityEditor = (() => {
 
                 <label class="editor-row">
                     <span class="label-text">Cooldown (ms) <i class="info-icon" data-tooltip="ability.cooldown">i</i></span>
-                    <input type="number" data-key="cooldown" value="${ability.cooldown}" min="1000">
+                    <input type="text" inputmode="numeric" class="input-thousands" data-key="cooldown" value="${formatNumber(ability.cooldown)}">
                 </label>
 
                 <label class="editor-row">
                     <span class="label-text">Duration (ms) <i class="info-icon" data-tooltip="ability.duration">i</i></span>
-                    <input type="number" data-key="effectDuration" value="${ability.effectDuration}" min="0">
+                    <input type="text" inputmode="numeric" class="input-thousands" data-key="effectDuration" value="${formatNumber(ability.effectDuration)}">
                 </label>
 
                 ${isFury ? `
@@ -137,33 +138,33 @@ export const abilityEditor = (() => {
                         
                         <label class="editor-row">
                             <span class="label-text">Dmg Mul <i class="info-icon" data-tooltip="ability.towers-fury-damage-multiplier">i</i></span>
-                            <input type="number" step="0.1" min="1" data-key="modifiers.damage_mul" value="${ability.modifiers?.damage_mul || 1}">
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.damage_mul" value="${formatNumber(ability.modifiers?.damage_mul || 1)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">Speed Mul <i class="info-icon" data-tooltip="ability.towers-fury-speed-multiplier">i</i></span>
-                            <input type="number" step="0.1" min="1" data-key="modifiers.speed_mul" value="${ability.modifiers?.speed_mul || 1}" min="0.1">
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.speed_mul" value="${formatNumber(ability.modifiers?.speed_mul || 1)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury-fire-rate">i</i></span>
-                            <input type="number" step="0.05" data-key="modifiers.fireRate_mul" value="${ability.modifiers?.fireRate_mul || 1}" min="0.01">
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.fireRate_mul" value="${formatNumber(ability.modifiers?.fireRate_mul || 1)}">
                         </label>
                     </div>
                 ` : `
                     <label class="editor-row">
                         <span class="label-text">Damage <i class="info-icon" data-tooltip="ability.lava-floor-damage">i</i></span>
-                        <input type="number" data-key="damage" value="${ability.damage || 0}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage" value="${formatNumber(ability.damage || 0)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor-damage-frequency">i</i></span>
-                        <input type="number" data-key="damage_every" value="${ability.damage_every || 0}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage_every" value="${formatNumber(ability.damage_every || 0)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.lava-floor-selection-count">i</i></span>
-                        <input type="number" data-key="selectionCount" value="${ability.selectionCount || 1}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="selectionCount" value="${formatNumber(ability.selectionCount || 1)}">
                     </label>
                 `}
             </div>
@@ -229,7 +230,9 @@ export const abilityEditor = (() => {
                 if (!fullKey) return;
 
                 const parts = fullKey.split('.');
-                let value = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                let value = e.target.classList.contains('input-thousands')
+                    ? parseThousands(e.target.value)
+                    : (e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value);
 
                 modifyJson((data) => {
                     const ability = data.maps[0].abilities[abilityIndex];

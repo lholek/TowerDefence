@@ -1,5 +1,6 @@
 import { currentLevelData, updateCurrentLevelData, newWaveStructure, newAbilityStructure } from './level_data.js';
 import { recordHistory } from './editor_history.js';
+import { formatNumber } from './number_format.js';
 
 // The 'modules' object is the single source for references to all external components (editors, setStatus, etc.)
 let modules = {};
@@ -273,8 +274,8 @@ export function updateMapFromEditor() {
         let mapDifficulty = mapData.description[0].difficulty;
 
         document.querySelector("#mapNameInput").value = mapTitle;
-        document.querySelector("#startingCoinsInput").value = mapStartingCoins;
-        document.querySelector("#startingLifesInput").value = mapstartingLifes;
+        document.querySelector("#startingCoinsInput").value = formatNumber(mapStartingCoins);
+        document.querySelector("#startingLifesInput").value = formatNumber(mapstartingLifes);
         document.querySelector("#descriptionTextInput").value = mapDescription;
         document.querySelector("#tileSizeInput").value = mapTileSize;
         document.querySelector("#difficultyInput").value = mapDifficulty;
@@ -466,8 +467,8 @@ export function updateBasicInfoUI() {
 
     // 3. Update Editable Inputs (Top-level)
     setVal('mapNameInput', map.name);
-    setVal('startingCoinsInput', map.startingCoins);
-    setVal('startingLifesInput', map.startingLifes);
+    setVal('startingCoinsInput', formatNumber(map.startingCoins));
+    setVal('startingLifesInput', formatNumber(map.startingLifes));
     setVal('tileSizeInput', map.tileSize); // Read-only in your HTML, but good to set
 
     // 4. Update Description Inputs

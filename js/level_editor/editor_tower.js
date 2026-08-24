@@ -2,6 +2,7 @@
 
 import { currentLevelData } from './level_data.js'; // To access the tower data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
+import { formatNumber, parseThousands } from './number_format.js';
 
 // Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -105,35 +106,35 @@ export const towerEditor = (() => {
                     <div class="card-body">
                         <label class="editor-row">
                             <span class="label-text">🪙 Price <i class="info-icon" data-tooltip="tower-editor.price">i</i></span>
-                            <input type="number" name="price" data-key="price" value="${tower.price}" min="0">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="price" data-key="price" value="${formatNumber(tower.price)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">⚔️ Damage <i class="info-icon" data-tooltip="tower-editor.damage">i</i></span>
-                            <input type="number" name="damage" data-key="damage" value="${tower.damage}" min="0">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="damage" data-key="damage" value="${formatNumber(tower.damage)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">🕐 Fire Rate <i class="info-icon" data-tooltip="tower-editor.fire-rate">i</i></span>
-                            <input type="number" name="fire_rate" data-key="fireRate" value="${tower.fireRate}" min="1">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="fire_rate" data-key="fireRate" value="${formatNumber(tower.fireRate)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">🎯 Range <i class="info-icon" data-tooltip="tower-editor.range">i</i></span>
                             <div class="input-group">
-                                <input type="number" name="range" data-key="range" value="${tower.range}" min="1">
+                                <input type="text" inputmode="numeric" class="input-thousands" name="range" data-key="range" value="${formatNumber(tower.range)}">
                                 <span class="range-tile-info">(${rangeInTiles} tiles)</span>
                             </div>
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="tower-editor.speed">i</i></span>
-                            <input type="number" name="speed" data-key="speed" value="${tower.speed}" min="1">
+                            <input type="text" inputmode="decimal" class="input-thousands" name="speed" data-key="speed" value="${formatNumber(tower.speed)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">💰 Sell Price <i class="info-icon" data-tooltip="tower-editor.sell-price">i</i></span>
-                            <input type="number" name="sell_price" data-key="sellPrice" value="${tower.sellPrice}" min="0">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="sell_price" data-key="sellPrice" value="${formatNumber(tower.sellPrice)}">
                         </label>
 
                         <label class="editor-row card-body-tower-color">
@@ -180,8 +181,10 @@ export const towerEditor = (() => {
                 const card = e.target.closest('.tower-card');
                 const towerId = card.getAttribute('data-tower-id');
                 const key = e.target.getAttribute('data-key');
-                const value = e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
-                
+                const value = e.target.classList.contains('input-thousands')
+                    ? parseThousands(e.target.value)
+                    : (e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value);
+
                 modifyJson((data) => {
                     data.maps[0].towerTypes[towerId][key] = value;
                     // Re-render to update the DPS badge and Tile Range info

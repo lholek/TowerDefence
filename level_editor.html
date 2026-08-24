@@ -163,13 +163,13 @@
                     <div class="input-row input-row-basic-stats">
                         <div class="input-group mt-4">
                             <label for="startingCoinsInput">🪙 Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
-                            <input type="number" id="startingCoinsInput" value="0" min="0"
-                                   onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', parseInt(this.value))">
+                            <input type="text" inputmode="numeric" class="input-thousands" id="startingCoinsInput" value="0"
+                                   onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', window.app.numberFormat.parseThousands(this.value))">
                         </div>
                         <div class="input-group mt-4">
                             <label for="startingLifesInput">❤️ Starting Lifes<i class="info-icon" data-tooltip="map-settings.starting-lifes">i</i></label>
-                            <input type="number" id="startingLifesInput" value="1" min="1"
-                                   onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', parseInt(this.value))">
+                            <input type="text" inputmode="numeric" class="input-thousands" id="startingLifesInput" value="1"
+                                   onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', window.app.numberFormat.parseThousands(this.value))">
                         </div>
                     </div>
 
