@@ -21,8 +21,8 @@ SND[Palm-1..4]   - cant build towers, blocks arrows
 SNW[Spike-1..4]  - cant build towers, blocks arrows
 X[Tree]          - cant build towers, blocks arrows
 SNW[Tree]        - cant build towers, blocks arrows
-X[Log-1..2]      - cant build towers, blocks arrows (low, doesn't block tower vision)
-X[Well]          - cant build towers, blocks arrows and tower vision
+X[Log-1..2]      - cant build towers, doesnt block arrows or tower vision
+X[Well]          - cant build towers, blocks tower vision, doesnt block arrows
 X[Bush]          - cant build towers, doesnt block arrows
 W[Rock-1..4]     - cant build towers, blocks arrows
 X[Dirt]          - can build towers, doesnt block arrows
@@ -3601,9 +3601,8 @@ Tiles: X[Log-1], X[Log-2]
 Graphics: Low / High quality
 Log-1: an upright chopped tree stump ("pařez") with a ringed, cracked cut top.
 Log-2: a whole trunk lying fallen on the ground, one cut end showing rings.
-Both sit on grass. Cannot build towers, block arrows (see Bullet.js / Tower.js
-/ Map.js), but both are low enough that they don't block a tower's line of
-sight over them.
+Both sit on grass. Cannot build towers (see Map.js), but both are low enough
+that they don't block arrows in flight or a tower's line of sight over them.
 */
 function _drawLog(ctx, x, y, variant, quality) {
     const ts = this.tileSize;
@@ -3994,9 +3993,9 @@ function _drawSnowCutForest(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDow
 _drawWell
 Tile: X[Well]
 Graphics: Low / High quality
-A round grey stone well wall with water inside. Cannot build towers, blocks
-arrows and a tower's line of sight (see Bullet.js / Tower.js / Map.js) — it's
-a solid raised stone structure.
+A round grey stone well wall with water inside. Cannot build towers and
+blocks a tower's line of sight (see Tower.js / Map.js) — it's a solid raised
+stone structure — but is low enough that arrows still fly over it.
 */
 function _drawWell(ctx, x, y, quality) {
     const ts = this.tileSize;

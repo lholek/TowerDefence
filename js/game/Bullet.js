@@ -98,14 +98,6 @@ export default class Bullet {
             this.active = false;
             return;
         }
-        if (tileType === 'X[Log-1]' || tileType === 'X[Log-2]') {
-            this.active = false;
-            return;
-        }
-        if (tileType === 'X[Well]') {
-            this.active = false;
-            return;
-        }
 
         const dx = this.target.x - this.x;
         const dy = this.target.y - this.y;
