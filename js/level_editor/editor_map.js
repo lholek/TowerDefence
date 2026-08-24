@@ -523,7 +523,8 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     // 2. Build or rebuild the GameMap instance when the layout shape changes.
     //    We use TILE_SIZE from the editor so the scale matches 1:1.
     const layoutKey = `${rows}x${cols}`;
-    if (!editorMapInstance || editorMapLayoutKey !== layoutKey) {
+    const isNewInstance = !editorMapInstance || editorMapLayoutKey !== layoutKey;
+    if (isNewInstance) {
         editorMapInstance = new GameMap(canvas, layout, TILE_SIZE, { editor: true });
 
         // GameMap registers its own drag/zoom listeners on the canvas in its constructor.
@@ -567,7 +568,15 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
         // swallow — editor should continue even if pruning fails
     }
 
-    // Editor: generate static preview assets for LOW and HIGH and store them
+    // Editor: generate static preview assets for LOW and HIGH and store them.
+    // Only do this the ONE time a fresh instance is actually built (isNewInstance) —
+    // this whole block redraws mountains/trees/water/portals from scratch (the Life
+    // Tree alone rolls ~1800 leaf placements), so running it on every renderMap() call
+    // — including every mousemove tick during a live brush stroke — was the actual
+    // cause of painting feeling like it takes several seconds. The docblock above (see
+    // "We do NOT re-call _prerenderRoad ... during live drawing") already states this
+    // exact intent; this block just wasn't honoring it.
+    if (isNewInstance) {
     try {
         const ts = TILE_SIZE;
 
@@ -717,6 +726,7 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
 
     } catch (err) {
         // continue even if asset capture fails
+    }
     }
 
     // 3. Sync the editor camera → GameMap camera so pan/zoom is shared.

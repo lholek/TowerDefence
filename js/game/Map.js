@@ -3,10 +3,33 @@ import { MapTextures } from './MapTextures.js';
 
 const SPECIAL_TILE_VISUAL_OFFSET = 6;
 
+// Editor-only cache, shared across every `new Map(...)` instance in this module (the
+// editor throws away and rebuilds the whole instance on every single edit — see the
+// comment in editor_map.js's renderMap()). The assets cached here (mountains, the E*
+// Life Tree, snow/sand grain textures, ...) depend only on tileSize + graphicsSettings,
+// never on the map's own layout, and their generation is now seeded deterministically
+// (see _resetEditorRng below) — so for a given tileSize/settings combo the result is
+// always byte-for-byte identical. Without this cache, every edit was redrawing all of
+// them from scratch (the Life Tree alone rolls ~1800 leaf placements), which is exactly
+// the "takes several seconds after I draw something" slowdown. Keyed by
+// `_editorAssetCacheKey`; invalidated automatically whenever tileSize or graphicsSettings
+// change (a new key just means a cache miss, not a stale hit).
+let _editorAssetCache = null;
+let _editorAssetCacheKey = null;
+
 export default class Map {
     constructor(canvas, layout, tileSize = 80, opts = {}) {
         this.graphicsSettings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
         this.editorMode = Boolean(opts.editor);
+
+        // Cache key for the settings-only (never grid-dependent) editor assets below.
+        // Any change to tileSize/graphicsSettings naturally produces a different key,
+        // which is treated as a cache miss further down — no explicit invalidation needed.
+        const editorCacheKey = this.editorMode ? tileSize + '|' + JSON.stringify(this.graphicsSettings) : null;
+        if (this.editorMode && _editorAssetCacheKey !== editorCacheKey) {
+            _editorAssetCache = {};
+            _editorAssetCacheKey = editorCacheKey;
+        }
 
         // If editorMode, install a deterministic PRNG for the duration of prerenders
         let _origRandom = null;
@@ -57,7 +80,6 @@ export default class Map {
         } else {
             this._generateGrassTiles();
         }
-
         if (!this.editorMode && this.grassVariants && this.grassVariants.length > 1) {
             for (let r = 0; r < this.rows; r++) {
                 for (let c = 0; c < this.cols; c++) {
@@ -125,7 +147,7 @@ export default class Map {
         }
 
         // AAA Atmosphere settings
-        this.sunDir = { x: 1, y: 1 }; 
+        this.sunDir = { x: 1, y: 1 };
         this.shadowOpacity = 0.4;
 
         // BAKE THE ROAD (Now safe because grass images exist)
@@ -147,10 +169,23 @@ export default class Map {
             } catch (e) {}
         }
 
-        // Editor mode: generate one static canvas per object/version and attach
-        if (this.editorMode) {
+        // Editor mode: generate one static canvas per object/version and attach.
+        // These assets depend only on tileSize/graphicsSettings — never on the map's own
+        // layout — and their generation is now fully deterministic (see _resetEditorRng),
+        // so once built for the current editorCacheKey they're just reused on every later
+        // edit instead of being redrawn from scratch — without it, every full instance
+        // rebuild redrew ALL of this (the Life Tree alone rolls ~1800 leaf placements)
+        // even though the result never changes.
+        if (this.editorMode && _editorAssetCache.editorTreeLow !== undefined) {
+            Object.assign(this, _editorAssetCache);
+        } else if (this.editorMode) {
             try {
-                // Trees
+                // Trees (the E* "Life Tree" — the X[Tree]/SNW[Tree] forest clusters are
+                // already stable: they use their own per-tile position-seeded RNG in
+                // MapTextures.js instead of Math.random, so edits elsewhere never affect them).
+                // _preRenderTreeHigh alone rolls ~1800 Math.random() calls for leaf placement,
+                // so reset right before it — same reasoning as the mountains reset below.
+                _resetEditorRng();
                 try {
                     this.editorTreeLow = typeof this._preRenderTreeLow === 'function' ? this._preRenderTreeLow(this.tileSize) : null;
                 } catch (e) { this.editorTreeLow = null; }
@@ -194,8 +229,9 @@ export default class Map {
                     if (save) this.grassVariants = save;
                 } catch (e) { this.editorGrassLow = this.editorGrassLow || null; this.editorGrassHigh = this.editorGrassHigh || null; }
 
-                // Water capture
+                // Water capture (fog patch count/position is randomized in _prerenderWaterHigh)
                 try {
+                    _resetEditorRng();
                     const saveWL = this.waterLayer;
                     if (typeof this._prerenderWater === 'function') this._prerenderWater();
                     const wLow = document.createElement('canvas'); wLow.width = this.tileSize; wLow.height = this.tileSize;
@@ -229,6 +265,7 @@ export default class Map {
                 // Editor lock: pre-generate deterministic snow, sand, ice and lava textures now,
                 // so later render() doesn't create a random variant on first paint.
                 try {
+                    _resetEditorRng();
                     this.snowTexture = this.graphicsSettings.terrain === 'low'
                         ? this._preRenderSnowLow(this.tileSize)
                         : this._preRenderSnowHigh(this.tileSize);
@@ -242,6 +279,18 @@ export default class Map {
             } catch (e) {
                 // ignore editor asset generation errors
             }
+
+            // Save everything just generated so the next edit's Map instance can skip
+            // straight to the Object.assign hit above instead of redrawing it all again.
+            Object.assign(_editorAssetCache, {
+                editorTreeLow: this.editorTreeLow, editorTreeHigh: this.editorTreeHigh,
+                editorPortalLow: this.editorPortalLow, editorPortalHigh: this.editorPortalHigh,
+                editorGrassLow: this.editorGrassLow, editorGrassHigh: this.editorGrassHigh,
+                editorWaterLow: this.editorWaterLow, editorWaterHigh: this.editorWaterHigh,
+                editorMountainLow: this.editorMountainLow, editorMountainHigh: this.editorMountainHigh,
+                mountainSet: this.mountainSet, cachedMountainLow: this.cachedMountainLow, cachedMountainHigh: this.cachedMountainHigh,
+                snowTexture: this.snowTexture, sandTexture: this.sandTexture,
+            });
         }
 
         // 7. INPUTS & FINAL SETUP
@@ -253,11 +302,21 @@ export default class Map {
         this.canvas.style.cursor = 'grab';
 
         // Getting quailty from local storage
-        const treeQuality = this.graphicsSettings.trees || 'low';
-        if (treeQuality === 'low') {
-            this.cachedTree = this._preRenderTreeLow(this.tileSize);
+        if (this.editorMode && _editorAssetCache.cachedTree !== undefined) {
+            // Same asset cache as above — reuse instead of redrawing.
+            this.cachedTree = _editorAssetCache.cachedTree;
         } else {
-            this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+            // Reset the deterministic PRNG first (editor mode only — a no-op in-game, where
+            // Math.random is untouched and this.cachedTree SHOULD get fresh randomness) so
+            // the Life Tree used for E* tiles doesn't keep re-rolling a different look.
+            if (this.editorMode) _resetEditorRng();
+            const treeQuality = this.graphicsSettings.trees || 'low';
+            if (treeQuality === 'low') {
+                this.cachedTree = this._preRenderTreeLow(this.tileSize);
+            } else {
+                this.cachedTree = this._preRenderTreeHigh(this.tileSize);
+            }
+            if (this.editorMode) _editorAssetCache.cachedTree = this.cachedTree;
         }
 
         this.clampCamera();
