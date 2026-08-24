@@ -27,6 +27,8 @@ X[Bush]          - cant build towers, doesnt block arrows
 W[Rock-1..4]     - cant build towers, blocks arrows
 X[Dirt]          - can build towers, doesnt block arrows
 X[Hay]           - cant build towers, doesnt block arrows
+X[CutTree]       - cant build towers, doesnt block arrows
+SNW[CutTree]     - cant build towers, doesnt block arrows
 */
 
 /**
@@ -74,6 +76,8 @@ X[Hay]           - cant build towers, doesnt block arrows
  * @see _drawBush - Bush Low/High
  * @see _drawTree - Conifer Tree (grass) Low/High
  * @see _drawSnowTree - Conifer Tree (snow) Low/High
+ * @see _drawCutForest - Cut Forest / Stump Clearing (grass) Low/High
+ * @see _drawSnowCutForest - Cut Forest / Stump Clearing (snow) Low/High
  * @see _drawWaterRock - Water Rocks Low/High
  * @see _drawDirt - Dirt High
  * @see _drawDirtLow - Dirt Low
@@ -1738,6 +1742,21 @@ function _prerenderRoad() {
                         this._drawTree(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
                     } else {
                         this._drawSnowTree(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
+                    }
+                    continue;
+                }
+
+                // --- CUT FOREST / STUMP CLEARING (X[CutTree] / SNW[CutTree]) ---
+                if (tok === 'X[CutTree]' || tok === 'SNW[CutTree]') {
+                    const hasLeft  = c > 0 && String(this.grid[r][c - 1] ?? '') === tok;
+                    const hasRight = c < this.cols - 1 && String(this.grid[r][c + 1] ?? '') === tok;
+                    const hasUp    = r > 0 && String(this.grid[r - 1][c] ?? '') === tok;
+                    const hasDown  = r < this.rows - 1 && String(this.grid[r + 1][c] ?? '') === tok;
+                    const isTopRow = r === 0;
+                    if (tok === 'X[CutTree]') {
+                        this._drawCutForest(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
+                    } else {
+                        this._drawSnowCutForest(ctx, worldX, worldY, this.graphicsSettings.objects, hasLeft, hasRight, hasUp, hasDown, isTopRow);
                     }
                     continue;
                 }
@@ -3603,12 +3622,29 @@ function _drawLog(ctx, x, y, variant, quality) {
 function _drawLogStump(ctx, x, y, quality, rng) {
     const ts = this.tileSize;
     // Fixed, not randomized — the stump should look identical everywhere it's placed.
-    const cx      = x + ts * 0.5;
-    const baseY   = y + ts * 0.82;
-    const stumpW  = ts * 0.44;
-    const stumpH  = ts * 0.24;
-    const topRy   = ts * 0.14;
-    const topCy   = baseY - stumpH;
+    const cx    = x + ts * 0.5;
+    const baseY = y + ts * 0.82;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+    _drawOneStump(ctx, ts, cx, baseY, 1, quality, false);
+    ctx.restore();
+}
+
+/*
+_drawOneStump
+Shared chopped-stump silhouette (bark trapezoid + cut top with growth rings), reused
+both by X[Log-1]'s single fixed stump above and by the X[CutTree]/SNW[CutTree] stump
+clusters below. `scale` sizes the whole stump relative to a tile; `snowy` swaps the
+bark-side moss patch for a light dusting of snow on the cut top and bark instead.
+*/
+function _drawOneStump(ctx, ts, cx, baseY, scale, quality, snowy) {
+    const stumpW = ts * 0.44 * scale;
+    const stumpH = ts * 0.24 * scale;
+    const topRy  = ts * 0.14 * scale;
+    const topCy  = baseY - stumpH;
 
     const COL_BARK_D = '#2c1a0d';
     const COL_BARK_M = '#4a2f18';
@@ -3617,17 +3653,13 @@ function _drawLogStump(ctx, x, y, quality, rng) {
     const COL_WOOD_M = '#c08a4e';
     const COL_WOOD_L = '#e0b573';
     const COL_MOSS   = '#5a7a3a';
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x, y, ts, ts);
-    ctx.clip();
+    const COL_SNOWC  = '#eef7ff';
 
     // Drop shadow
     if (quality !== 'low') {
         ctx.fillStyle = 'rgba(0, 15, 0, 0.30)';
         ctx.beginPath();
-        ctx.ellipse(cx + ts * 0.03, baseY + ts * 0.02, stumpW * 0.55, ts * 0.05, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx + ts * 0.03 * scale, baseY + ts * 0.02 * scale, stumpW * 0.55, ts * 0.05 * scale, 0, 0, Math.PI * 2);
         ctx.fill();
     }
 
@@ -3658,7 +3690,7 @@ function _drawLogStump(ctx, x, y, quality, rng) {
         barkPath();
         ctx.clip();
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.28)';
-        ctx.lineWidth = Math.max(0.6, ts * 0.008);
+        ctx.lineWidth = Math.max(0.6, ts * 0.008 * scale);
         for (let i = 0; i < 5; i++) {
             const fx = -0.35 + i * 0.18;
             ctx.beginPath();
@@ -3684,7 +3716,7 @@ function _drawLogStump(ctx, x, y, quality, rng) {
         ctx.fill();
     }
     ctx.strokeStyle = COL_BARK_D;
-    ctx.lineWidth = Math.max(1, ts * 0.012);
+    ctx.lineWidth = Math.max(1, ts * 0.012 * scale);
     ctx.stroke();
 
     if (quality !== 'low') {
@@ -3694,30 +3726,51 @@ function _drawLogStump(ctx, x, y, quality, rng) {
         ctx.ellipse(cx, topCy, stumpW * 0.42, topRy, 0, 0, Math.PI * 2);
         ctx.clip();
         ctx.strokeStyle = 'rgba(90, 55, 20, 0.5)';
-        ctx.lineWidth = Math.max(0.5, ts * 0.006);
+        ctx.lineWidth = Math.max(0.5, ts * 0.006 * scale);
         for (let i = 1; i <= 3; i++) {
             ctx.beginPath();
             ctx.ellipse(cx, topCy, stumpW * 0.42 * (i / 4), topRy * (i / 4), 0, 0, Math.PI * 2);
             ctx.stroke();
         }
         ctx.strokeStyle = 'rgba(50, 30, 10, 0.6)';
-        ctx.lineWidth = Math.max(0.4, ts * 0.005);
+        ctx.lineWidth = Math.max(0.4, ts * 0.005 * scale);
         ctx.beginPath();
         ctx.moveTo(cx - stumpW * 0.30, topCy - topRy * 0.20);
         ctx.lineTo(cx + stumpW * 0.25, topCy + topRy * 0.30);
         ctx.stroke();
         ctx.restore();
 
-        // Small moss patch clinging to the bark
-        ctx.fillStyle = COL_MOSS;
-        ctx.globalAlpha = 0.55;
-        ctx.beginPath();
-        ctx.ellipse(cx - stumpW * 0.28, baseY - stumpH * 0.35, stumpW * 0.14, stumpH * 0.16, 0.3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1.0;
-    }
+        if (snowy) {
+            // A light dusting of snow settled on the flat cut top instead of moss.
+            ctx.save();
+            ctx.beginPath();
+            ctx.ellipse(cx, topCy, stumpW * 0.42, topRy, 0, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.fillStyle = COL_SNOWC;
+            ctx.globalAlpha = 0.55;
+            ctx.beginPath();
+            ctx.ellipse(cx - stumpW * 0.06, topCy - topRy * 0.30, stumpW * 0.30, topRy * 0.55, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+            ctx.restore();
 
-    ctx.restore();
+            // Small snow cap clinging to the bark, where the moss patch would sit
+            ctx.fillStyle = COL_SNOWC;
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            ctx.ellipse(cx - stumpW * 0.28, baseY - stumpH * 0.35, stumpW * 0.14, stumpH * 0.16, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        } else {
+            // Small moss patch clinging to the bark
+            ctx.fillStyle = COL_MOSS;
+            ctx.globalAlpha = 0.55;
+            ctx.beginPath();
+            ctx.ellipse(cx - stumpW * 0.28, baseY - stumpH * 0.35, stumpW * 0.14, stumpH * 0.16, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
 }
 
 function _drawLogFallen(ctx, x, y, quality, rng) {
@@ -3851,6 +3904,90 @@ function _drawLogFallen(ctx, x, y, quality, rng) {
     }
 
     ctx.restore();
+}
+
+/*
+_drawCutForest / _drawSnowCutForest
+Tiles: X[CutTree], SNW[CutTree]
+Graphics: Low / High quality
+A little clearing of chopped stumps, sitting in EXACTLY the 9-slot 3x3 layout
+_drawConiferTree fills a X[Tree]/SNW[Tree] tile with — one stump per spot a tree would
+have stood, sized off that same tree's scale (STUMP_RATIO below), so a cut tile reads
+as "this exact patch of forest, chopped down" rather than a generic decoration. Cannot
+build towers, does NOT block arrows or a tower's line of sight (see Bullet.js /
+Tower.js), unlike the living tree tiles it's a low-value variant of.
+hasLeft/hasRight/hasUp/hasDown/isTopRow are accepted (same call signature as
+_drawTree/_drawSnowTree in Map.js's render loop) but unused: stumps are short and
+stay fully inside their own tile, so there's no tall canopy that needs to visually
+merge across the seam into a neighboring tile the way live trees do.
+*/
+function _drawStumpCluster(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, snowy) {
+    const ts = this.tileSize;
+    const tx = (x / ts) | 0, ty = (y / ts) | 0;
+    const s0 = tx * 1234 ^ ty * 5678;
+    let si = 1;
+    const rng = () => Math.abs(Math.sin(s0 + si++ * 9301 + 49297) * 10000) % 1;
+    const jit = () => (rng() - 0.5) * ts * 0.05;
+
+    // Same overall size bump _drawConiferTree applies to every tree's scale, and the
+    // fraction of a tree's scale a chopped stump keeps once its trunk and canopy are
+    // gone — a stump reads as a bit wider than the bare trunk (root flare + bark), but
+    // nowhere near as wide as the living tree's canopy was.
+    const SCALE_BUMP = 1.3;
+    const STUMP_RATIO = 0.25;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, ts, ts);
+    ctx.clip();
+
+    // A couple of stray wood chips/branch bits scattered on the ground (high quality only)
+    if (quality !== 'low') {
+        ctx.fillStyle = '#4a2f18';
+        ctx.globalAlpha = 0.4;
+        for (let i = 0; i < 3; i++) {
+            const chipX = x + ts * (0.15 + rng() * 0.7);
+            const chipY = y + ts * (0.60 + rng() * 0.32);
+            const chipW = ts * (0.07 + rng() * 0.04);
+            ctx.save();
+            ctx.translate(chipX, chipY);
+            ctx.rotate(rng() * Math.PI);
+            ctx.fillRect(-chipW / 2, -ts * 0.007, chipW, ts * 0.014);
+            ctx.restore();
+        }
+        ctx.globalAlpha = 1.0;
+    }
+
+    // The exact same 9 tree-slot positions/scales as _drawConiferTree's grid (see
+    // `slots` there), drawn back-to-front (farther/smaller first) so nearer stumps
+    // overlap the ones behind them, just like the trees they replaced did.
+    const slots = [
+        { fx: 0.15, fy: 0.16, scale: 0.95 },
+        { fx: 0.50, fy: 0.14, scale: 1.10 },
+        { fx: 0.85, fy: 0.16, scale: 0.95 },
+        { fx: 0.15, fy: 0.50, scale: 1.20 },
+        { fx: 0.50, fy: 0.48, scale: 1.05 },
+        { fx: 0.85, fy: 0.50, scale: 1.20 },
+        { fx: 0.15, fy: 0.84, scale: 1.40 },
+        { fx: 0.50, fy: 0.86, scale: 1.54 },
+        { fx: 0.85, fy: 0.84, scale: 1.40 },
+    ];
+    for (const slot of slots) {
+        const treeScale = slot.scale * SCALE_BUMP;
+        const cx = x + ts * slot.fx + jit();
+        const baseY = y + ts * slot.fy + jit() * 0.4;
+        _drawOneStump(ctx, ts, cx, baseY, treeScale * STUMP_RATIO, quality, snowy);
+    }
+
+    ctx.restore();
+}
+
+function _drawCutForest(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow) {
+    _drawStumpCluster.call(this, ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, false);
+}
+
+function _drawSnowCutForest(ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow) {
+    _drawStumpCluster.call(this, ctx, x, y, quality, hasLeft, hasRight, hasUp, hasDown, isTopRow, true);
 }
 
 /*
@@ -5109,5 +5246,7 @@ export const MapTextures = {
     _drawHayField,
     _drawTree,
     _drawSnowTree,
+    _drawCutForest,
+    _drawSnowCutForest,
     _drawWaterRock,
 };

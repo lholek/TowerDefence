@@ -692,7 +692,17 @@ hr {
     color: #d8f0d8;
 }
 
+.tile-x-cuttree {
+    background-color: #1c5c2c;
+    color: #d8f0d8;
+}
+
 .tile-snw-tree {
+    background-color: #ffffff;
+    color: black;
+}
+
+.tile-snw-cuttree {
     background-color: #ffffff;
     color: black;
 }
