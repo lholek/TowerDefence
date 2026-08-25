@@ -628,7 +628,7 @@ export default class Game {
         item.style.setProperty('--tower-color', type.color || '#fff');
 
         const dps = (type.damage * 1000 / type.fireRate).toFixed(1);
-        const sellPrice = type.sellPrice || Math.floor(type.price / 2);
+        const sellPrice = type.sellPrice;
 
         // 2. Generate zoomed tower image
         const tempTower = new Tower(this, this.map, 0, 0, type);

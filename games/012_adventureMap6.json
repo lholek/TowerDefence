@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Adventure Map VI (Crossroads of Realms)",
-      "startingCoins": 100,
+      "startingCoins": 100000000,
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
@@ -48,7 +48,7 @@
               ["SND","W","W","W[Rock-4]","W","X","O","X","W","W","W","W","X[Tree]","HLG","O","O","O","HLG","E1","X[CutTree]","X[Tree]","X[Tree]","W","W","W","W","W","X","X","O","X","X","X","X[Tree]","X[Tree]"],
               ["SND","SND","SND","W","W","SND","O[SND]","SND","W","W","W[Rock-2]","W","X[Tree]","X[Tree]","HLG","HLG","O","HLG","O","X[CutTree]","X[CutTree]","X[Tree]","W","W","W","W","W","X","X","O","O","O","X","X","X[Tree]"],
               ["SND","SND[PALM-4]","SND","SND","SND","SND","O[SND]","SND","W","W","W","W","W","X[Tree]","X[Tree]","HLG","O","O","O","HLG","X[CutTree]","X","X","W","X","X","X","X","X","X","X","O","O","X","X"],
-              ["SND","SND","SND","SND[PALM-3]","SND","SND","O[SND]","SND","SND","SND","W","W","W[Rock-4]","W","X[Tree]","X[Tree]","HLG","HLG","O","O","X[Log-1]","X","X","X[Log-2]","X","O","O","O","X","X[Bush]","X","X","O","O","X"],
+              ["SND","SND","SND","SND[PALM-3]","SND","SND","O[SND]","SND","SND","SND","W","W","W[Rock-4]","W","X[Tree]","X[Tree]","HLG","HLG","O","O","X[Log-1]","X","X","X[Log-2]","X","O","O","O","X","X[Bush]","X[Log-1]","X","O","O","X"],
               ["SND","SND","SND[BONE-4]","SND","SND[BONE-1]","SND","O[SND]","SND","SND[CACTUS-3]","SND","SND","W","W","W","W","X[Tree]","X[CutTree]","X[CutTree]","X","O","X","X","X[Well]","X","O","O","X","O","O","X","X","X","X","O","X"],
               ["SND","SND","BRG","SND","O[SND]","O[SND]","O[SND]","SND","SND","SND","SND[CACTUS-4]","SND","W","W","W","W","X[CutTree]","X","X","O","O","X","X","X","O","X[Dirt]","X[Dirt]","X[Dirt]","O","O","O","O","O","O","X"],
               ["SND","LAVA","S3","O[SND]","O[SND]","SND","O[SND]","O[SND]","O[SND]","O[SND]","SND","SND","SND","X[Bush]","X","X","X[Log-2]","X","X","X","O","O","O","X","O","X[Dirt]","X[Hay]","X[Hay]","X[Hay]","X[Dirt]","X[Dirt]","X","X","O","X"],
@@ -83,9 +83,9 @@
         "001": {
           "name": "Wooden Watchtower",
           "price": 50,
-          "damage": 10,
-          "fireRate": 800,
-          "range": 400,
+          "damage": 25,
+          "fireRate": 900,
+          "range": 360,
           "color": "#8b6f47",
           "sellPrice": 25,
           "speed": 2
@@ -93,72 +93,72 @@
         "002": {
           "name": "Stone Bastion",
           "price": 100,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 50,
+          "fireRate": 800,
+          "range": 450,
           "color": "#808080",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 50,
+          "speed": 3
         },
         "003": {
           "name": "Iron Fortress",
           "price": 300,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 125,
+          "fireRate": 650,
+          "range": 600,
           "color": "#36454e",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 150,
+          "speed": 3.5
         },
         "004": {
           "name": "Mage's Tower",
           "price": 750,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 250,
+          "fireRate": 500,
+          "range": 700,
           "color": "#9370db",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 250,
+          "speed": 4.5
         },
         "005": {
           "name": "Dragon's Sanctum",
           "price": 1200,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 500,
+          "fireRate": 400,
+          "range": 850,
           "color": "#ff6346",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 300,
+          "speed": 6
         },
         "006": {
           "name": "Starlight Tower",
           "price": 2000,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 1000,
+          "fireRate": 350,
+          "range": 900,
           "color": "#ffd700",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 400,
+          "speed": 6
         },
         "007": {
           "name": "Divine Tower\t",
           "price": 4000,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 2000,
+          "fireRate": 300,
+          "range": 1200,
           "color": "#00ced1",
-          "sellPrice": 0,
-          "speed": 0
+          "sellPrice": 500,
+          "speed": 8
         },
         "008": {
           "name": "Redeemer's Tower",
           "price": 8000,
-          "damage": 0,
-          "fireRate": 0,
-          "range": 0,
+          "damage": 4000,
+          "fireRate": 250,
+          "range": 1500,
           "color": "#ffffff",
           "sellPrice": 0,
-          "speed": 0
+          "speed": 10
         }
       },
       "levels": [
