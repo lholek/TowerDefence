@@ -26,7 +26,7 @@
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
-          "abilites": "Lava Floor🌋"
+          "abilites": "Mage's flames🌋, Redeemer's fire🌋, Mage's Arrows🏹, Redeemer's fury🏹"
         }
       ],
       "tileSize": 80,
@@ -62,20 +62,69 @@
           "_comment": "cooldown - 30000",
           "id": "lava_floor",
           "configId": "lava_floor",
-          "name": "Lava Floor",
+          "name": "Mage's flames",
           "description": "Damage - 250dmg / 0.25s",
           "description_text": "3 tile before and after selected tile",
           "type": "targeted",
           "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
-          "damage_every": 250,
+          "damage": 200,
+          "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 10000,
-          "effectDuration": 5000,
-          "color": "rgba(245, 164, 66, 0.6)",
+          "cooldown": 45000,
+          "effectDuration": 15000,
+          "color": "rgba(44, 131, 186, 0.6)",
           "ui": {
             "icon": "🌋"
+          }
+        },
+        {
+          "id": "lava_floor",
+          "configId": "lava_floor_1787685972957",
+          "name": "Redeemer's fire",
+          "type": "targeted",
+          "selectionCount": 11,
+          "damage": 500,
+          "damage_every": 250,
+          "cooldown": 120000,
+          "effectDuration": 40000,
+          "color": "rgba(148, 41, 119, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1787685977515",
+          "name": "Mage's Arrows",
+          "type": "global",
+          "cooldown": 45000,
+          "effectDuration": 15000,
+          "color": "rgba(255, 250, 250, 1)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 2.5,
+            "speed_mul": 2.5,
+            "fireRate_mul": 0.85
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1787685978660",
+          "name": "Redeemer's fury",
+          "type": "global",
+          "cooldown": 120000,
+          "effectDuration": 40000,
+          "color": "#rgba(255, 255, 255, 0.75)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 4,
+            "speed_mul": 4,
+            "fireRate_mul": 0.7
           }
         }
       ],
