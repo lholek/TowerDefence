@@ -87,6 +87,10 @@ export const towerEditor = (() => {
             const tower = towerTypes[towerId];
             const TILE_SIZE = 80; // Base size
             const rangeInTiles = (tower.range / TILE_SIZE).toFixed(1);
+            // Bullet.js moves bullets by `speed * (deltaTime / (1000/144))` px per frame, i.e.
+            // `speed` is px per 1/144s reference frame — so over a full second that's speed*144
+            // pixels, which converts to tiles/s by dividing by the tile size.
+            const speedInTilesPerSec = ((tower.speed * 144) / TILE_SIZE).toFixed(1);
 
             // Formula: Damage / (FireRate in seconds)
             const dps = tower.fireRate > 0 ? ((tower.damage / tower.fireRate) * 1000).toFixed(1) : 0;
@@ -129,7 +133,10 @@ export const towerEditor = (() => {
 
                         <label class="editor-row">
                             <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="tower-editor.speed">i</i></span>
-                            <input type="text" inputmode="decimal" class="input-thousands" name="speed" data-key="speed" value="${formatNumber(tower.speed)}">
+                            <div class="input-group">
+                                <input type="text" inputmode="decimal" class="input-thousands" name="speed" data-key="speed" value="${formatNumber(tower.speed)}">
+                                <span class="range-tile-info speed-tile-info">(${speedInTilesPerSec} tiles/s)</span>
+                            </div>
                         </label>
 
                         <label class="editor-row">
@@ -187,7 +194,7 @@ export const towerEditor = (() => {
 
                 modifyJson((data) => {
                     data.maps[0].towerTypes[towerId][key] = value;
-                    // Re-render to update the DPS badge and Tile Range info
+                    // Re-render to update the DPS badge and Tile Range / Tile Speed info
                     renderTowerRepeater(data.maps[0].towerTypes);
                 }, `Tower ${towerId}: ${key} updated.`, `.tower-card[data-tower-id="${towerId}"] [data-key="${key}"]`);
             });
