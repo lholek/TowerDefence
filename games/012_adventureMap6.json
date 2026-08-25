@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Adventure Map VI (Crossroads of Realms)",
-      "startingCoins": 100000000,
+      "startingCoins": 50,
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
@@ -216,12 +216,12 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
+              "count": 3,
               "health": 100,
               "speed": 1,
-              "path": "S1E1",
+              "path": "S1E2",
               "interval": 1000,
-              "coinReward": 1,
+              "coinReward": 3,
               "firstDelay": 0
             }
           ]
@@ -229,7 +229,10 @@
       ],
       "enemyEffects": [],
       "enemyTypes": [
-        "basic"
+        "starter",
+        "speeder",
+        "tanker",
+        "shaker"
       ]
     }
   ]
