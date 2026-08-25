@@ -716,15 +716,17 @@ export function getAvailablePaths() {
     layout.forEach(row => {
         row.forEach(tile => {
             if (typeof tile === 'string') {
-                if (tile.startsWith('S') && !tile.startsWith('SND[') && tile !== 'SNW' && tile !== 'SND') starts.add(tile);
-                if (tile.startsWith('E')) ends.add(tile);
+                if (/^S\d+$/.test(tile)) starts.add(tile);
+                if (/^E\d+$/.test(tile)) ends.add(tile);
             }
         });
     });
 
+    const numericSort = (a, b) => parseInt(a.slice(1), 10) - parseInt(b.slice(1), 10);
+
     const paths = [];
-    const sortedStarts = Array.from(starts).sort();
-    const sortedEnds = Array.from(ends).sort();
+    const sortedStarts = Array.from(starts).sort(numericSort);
+    const sortedEnds = Array.from(ends).sort(numericSort);
 
     sortedStarts.forEach(s => {
         sortedEnds.forEach(e => {
