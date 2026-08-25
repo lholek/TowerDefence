@@ -2,7 +2,7 @@
   "maps": [
     {
       "name": "Adventure Map VI (Crossroads of Realms)",
-      "startingCoins": 50,
+      "startingCoins": 100,
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
@@ -22,7 +22,7 @@
       "description": [
         {
           "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
-          "level count": 1,
+          "level count": 3,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
@@ -71,7 +71,7 @@
           "damage": 200,
           "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
-          "cooldown": 45000,
+          "cooldown": 90000,
           "effectDuration": 15000,
           "color": "rgba(44, 131, 186, 0.6)",
           "ui": {
@@ -216,13 +216,124 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 3,
-              "health": 100,
+              "count": 4,
+              "health": 200,
               "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 200,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 200,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 1000,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "tanker",
+              "count": 1,
+              "health": 500,
+              "speed": 0.75,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 4000,
+              "coinReward": 6,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "starter",
+              "count": 1,
+              "health": 500,
+              "speed": 0.75,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": 4000,
+              "coinReward": 6
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 300,
+              "speed": 1.1,
+              "path": "S1E1",
+              "interval": 950,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 300,
+              "speed": 1.1,
+              "path": "S2E2",
+              "interval": 950,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 300,
+              "speed": 1.1,
+              "path": "S3E3",
+              "interval": 950,
+              "firstDelay": 0,
+              "coinReward": 6
+            },
+            {
+              "type": "dmg_2",
+              "count": 1,
+              "health": 600,
+              "speed": 1.15,
               "path": "S1E2",
               "interval": 1000,
-              "coinReward": 3,
-              "firstDelay": 0
+              "firstDelay": 3800,
+              "coinReward": 8
+            },
+            {
+              "type": "dmg_2",
+              "count": 1,
+              "health": 600,
+              "speed": 1.15,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": 3800,
+              "coinReward": 8
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 2
             }
           ]
         }
@@ -232,7 +343,14 @@
         "starter",
         "speeder",
         "tanker",
-        "shaker"
+        "shaker",
+        "dmg_2"
+      ],
+      "enemyDamage": [
+        {
+          "type": "dmg_2",
+          "damage": 2
+        }
       ]
     }
   ]
