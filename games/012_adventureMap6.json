@@ -1,8 +1,8 @@
 {
   "maps": [
     {
-      "name": "Crossroads of Realms",
-      "startingCoins": 250,
+      "name": "Adventure Map VI (Crossroads of Realms)",
+      "startingCoins": 100,
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
@@ -21,11 +21,11 @@
       ],
       "description": [
         {
-          "descriptionText": "Edit description",
+          "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
           "level count": 1,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
-          "tower types": 1,
+          "tower types": 8,
           "abilites": "Lava Floor🌋"
         }
       ],
@@ -44,7 +44,7 @@
               ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X","O","X","X[Tree]","W","W[Rock-4]","W","W","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","W","W","W","W","W","SNW[CutTree]","SNW","O[SNW]","O[SNW]","SNW","SNW[SPIKE-3]","W","W","M","M","M"],
               ["-","W","X[Tree]","X[Tree]","X","X","O","X","X[Bush]","W","W","W","X[Tree]","X[Tree]","HLG","HLG","HLG","HLG","X[Tree]","X[Tree]","W","W","W[Rock-3]","W","W","SNW[SPIKE-1]","SNW","O[SNW]","O[SNW]","SNW","SNW","W","W","W","-"],
               ["-","W","W","W","X[Log-1]","X","O","X","W","W","W","X[Tree]","X[Tree]","HLG","HLG","HLG","E3","HLG","X[Tree]","X[Tree]","W","W","W[Rock-1]","W","W","W","SNW","SNW","O[SNW]","O[SNW]","X","W","W","W","-"],
-              ["-","W","W[Rock-1]","W","W","X","O","X","W","W[Rock-1]","W","X[Tree]","X[Tree]","HLG","E2","X","O","HLG","X[Tree]","X[Tree]","X[Tree]","W","W","W","W[Rock-4]","W","W","X","X","O[SNW]","X","X","X[Tree]","X[Tree]","X[Tree]"],
+              ["-","W","W[Rock-1]","W","W","X","O","X","W","W[Rock-1]","W","X[Tree]","X[Tree]","HLG","E2","X","O","HLG","X[Tree]","X[Tree]","X[Tree]","W","W","W","W[Rock-4]","W","W","X","X","O","X","X","X[Tree]","X[Tree]","X[Tree]"],
               ["SND","W","W","W[Rock-4]","W","X","O","X","W","W","W","W","X[Tree]","HLG","O","O","O","HLG","E1","X[CutTree]","X[Tree]","X[Tree]","W","W","W","W","W","X","X","O","X","X","X","X[Tree]","X[Tree]"],
               ["SND","SND","SND","W","W","SND","O[SND]","SND","W","W","W[Rock-2]","W","X[Tree]","X[Tree]","HLG","HLG","O","HLG","O","X[CutTree]","X[CutTree]","X[Tree]","W","W","W","W","W","X","X","O","O","O","X","X","X[Tree]"],
               ["SND","SND[PALM-4]","SND","SND","SND","SND","O[SND]","SND","W","W","W","W","W","X[Tree]","X[Tree]","HLG","O","O","O","HLG","X[CutTree]","X","X","W","X","X","X","X","X","X","X","O","O","X","X"],
@@ -81,14 +81,84 @@
       ],
       "towerTypes": {
         "001": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 50,
-          "fireRate": 400,
-          "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
+          "name": "Wooden Watchtower",
+          "price": 50,
+          "damage": 10,
+          "fireRate": 800,
+          "range": 400,
+          "color": "#8b6f47",
+          "sellPrice": 25,
           "speed": 2
+        },
+        "002": {
+          "name": "Stone Bastion",
+          "price": 100,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#808080",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "003": {
+          "name": "Iron Fortress",
+          "price": 300,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#36454e",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "004": {
+          "name": "Mage's Tower",
+          "price": 750,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#9370db",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "005": {
+          "name": "Dragon's Sanctum",
+          "price": 1200,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#ff6346",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "006": {
+          "name": "Starlight Tower",
+          "price": 2000,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#ffd700",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "007": {
+          "name": "Divine Tower\t",
+          "price": 4000,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#00ced1",
+          "sellPrice": 0,
+          "speed": 0
+        },
+        "008": {
+          "name": "Redeemer's Tower",
+          "price": 8000,
+          "damage": 0,
+          "fireRate": 0,
+          "range": 0,
+          "color": "#ffffff",
+          "sellPrice": 0,
+          "speed": 0
         }
       },
       "levels": [
@@ -108,7 +178,10 @@
           ]
         }
       ],
-      "enemyEffects": []
+      "enemyEffects": [],
+      "enemyTypes": [
+        "basic"
+      ]
     }
   ]
 }
