@@ -101,10 +101,10 @@
       "description": "The route enemies follow. Example: S1→E1 means they move from Start 1 to Exit 1." 
     },
     "interval": { 
-      "description": "The time interval between spawning each enemy in the group." 
+      "description": "The time interval between spawning each enemy in the group in milliseconds." 
     },
     "first-delay": { 
-      "description": "The delay before the first enemy of this group appears." 
+      "description": "The delay before the first enemy of this group appears in milliseconds." 
     },
     "coin-reward": { 
       "description": "The amount of gold awarded for defeating one enemy from this group." 
