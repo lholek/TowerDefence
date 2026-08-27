@@ -14,6 +14,7 @@
         "Improved - Editor - Added undo and redo buttons to the editor",
         "Improved - Editor - Added 5 save slots for maps in the editor",
         "Improved - Editor - New items on left and right side of the editor are now hiddable to give more space for editor",
+        "Improved - Editor - Added new item to the left side of the editor that shows map layout and highlights the paths if editor is editing path of the enemies",
         "Improved - Editor - MAP - New Slider for tiles in editor",
         "Improved - Editor - MAP - Updated editor tiles to match in-game visuals",
         "Improved - Editor - MAP - Added loading dots when editor is rebuilding the map",

@@ -802,28 +802,12 @@ hr {
     font-weight: bold;
 }
 
-/* --- Right-side fixed sidebar stack: Map Preview (top) + Menu (bottom) ---
-   One fixed anchor for both, so Map Preview naturally sits "above" Menu
-   without any hardcoded height guess — the stack's bottom edge stays pinned
-   and its total height (both panels + gap) grows upward from there. */
-.right-panels-stack {
+/* --- Editor Tabs (aka "Menu") — fixed bottom-right corner --- */
+.editor-tabs {
     position: fixed;
     right: 30px;
     bottom: 20px;
     z-index: 1002;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px;
-}
-
-/* --- Editor Tabs (aka "Menu") ---
-   No longer position:fixed itself — it's a normal flex item inside
-   .right-panels-stack above, which carries the fixed placement. Stays
-   `position: relative` so its .panel-toggle-tab child still anchors to this
-   panel's own box (not the shared stack). */
-.editor-tabs {
-    position: relative;
     margin-bottom: 0;
     gap: 10px;
     justify-content: center; /* Center the buttons */
@@ -842,13 +826,17 @@ hr {
     transform: translateX(calc(100% + 30px));
 }
 
-/* --- Map Preview panel — same treatment as Menu, stacked above it inside
-   .right-panels-stack. Shows a scaled-down version of the game's own
+/* --- Map Preview panel — fixed top-right corner (its own corner, separate
+   from Menu below). Shows a scaled-up version of the game's own
    map-selection minimap (see editor_map_preview.js), updating live as the
-   layout changes. */
+   layout changes. Sized 20% larger than the other sidebar panels (220px)
+   since it's the one thing here you actually want to read detail off of. */
 .map-preview-panel {
-    position: relative;
-    width: 220px;
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 1002;
+    width: calc(220px * 1.2);
     box-sizing: border-box;
     background-color: var(--main-bg-color);
     padding: 14px;
@@ -869,6 +857,13 @@ hr {
     border-radius: 6px;
     overflow: hidden;
     border: 1px solid #5c2e0e;
+}
+
+/* Live route highlight — lit up in green by editor_map_preview.js's
+   highlightPath() while hovering/focusing a Path field in the Wave editor. */
+.minimap-tile.route-highlight {
+    background: #39ff6a !important;
+    box-shadow: 0 0 4px rgba(57, 255, 106, 0.9);
 }
 
 .minimap-tile.path { background: #8B6D4F; }
@@ -938,10 +933,9 @@ hr {
 
 /* --- Shared "drawer handle" tab for all 3 collapsible panels (Menu, Map
    Preview, Save Slots) --- Positioned absolutely relative to its own panel
-   (each panel is a `position` context — fixed for Save Slots, relative for
-   Menu/Map Preview inside the fixed .right-panels-stack), hanging off the
-   panel's outer edge so it keeps poking into view even while the panel itself
-   is slid off-screen via .is-collapsed above. */
+   (each one is `position: fixed`, which is itself a valid positioning
+   context), hanging off the panel's outer edge so it keeps poking into view
+   even while the panel itself is slid off-screen via .is-collapsed above. */
 .panel-toggle-tab {
     position: absolute;
     top: 50%;

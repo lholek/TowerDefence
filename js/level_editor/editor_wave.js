@@ -3,6 +3,7 @@
 import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access the wave data and default structure
 import { modifyJson as modifyJsonRaw, getAvailablePaths, showCursorWarning } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
+import { highlightPath, clearHighlight } from './editor_map_preview.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -346,17 +347,27 @@ export const waveEditor = (() => {
                 }
             };
         
-            input.onfocus = () => { activeIndex = -1; showSuggestions(); };
-            input.oninput = () => { activeIndex = -1; showSuggestions(); };
-        
+            input.oninput = () => { activeIndex = -1; showSuggestions(); highlightPath(input.value); };
+
             dropdown.onclick = (e) => {
                 if (e.target.classList.contains('path-option')) {
                     input.value = e.target.innerText;
                     dropdown.style.display = 'none';
                     input.dispatchEvent(new Event('change', { bubbles: true }));
+                    highlightPath(input.value);
                 }
             };
-        
+
+            // The "magic": trace the hovered suggestion's route in green on the Map Preview
+            // panel; falls back to the field's own current value when the mouse leaves the
+            // dropdown, so the preview still shows something meaningful rather than going
+            // blank while you're still deciding.
+            dropdown.addEventListener('mouseover', (e) => {
+                const option = e.target.closest('.path-option');
+                if (option) highlightPath(option.textContent);
+            });
+            dropdown.addEventListener('mouseleave', () => highlightPath(input.value));
+
             // Cleanup: hide on click-away
             const clickAway = (e) => {
                 if (!input.contains(e.target) && !dropdown.contains(e.target)) {
@@ -364,11 +375,13 @@ export const waveEditor = (() => {
                     document.removeEventListener('mousedown', clickAway);
                 }
             };
-            input.onfocus = () => { 
-                activeIndex = -1; 
-                showSuggestions(); 
+            input.onfocus = () => {
+                activeIndex = -1;
+                showSuggestions();
+                highlightPath(input.value);
                 document.addEventListener('mousedown', clickAway);
             };
+            input.addEventListener('blur', clearHighlight);
         });
     };
 

@@ -1,23 +1,77 @@
 // js/level_editor/editor_map_preview.js
 //
-// Collapsible "Map Preview" panel (stacked above the Menu panel — see
-// .right-panels-stack / #mapPreviewPanel in level_editor.html) showing the
-// same colored-by-terrain minimap used on the game's own map-selection screen
-// (see renderMinimap() in js/game/main.js), just scaled down to fit the
-// editor's fixed sidebar stack.
+// Collapsible "Map Preview" panel (fixed top-right — see #mapPreviewPanel in
+// level_editor.html) showing the same colored-by-terrain minimap used on the
+// game's own map-selection screen (see renderMinimap() in js/game/main.js),
+// just scaled up slightly to fit its own corner of the editor.
 //
 // renderMapPreview() redraws the grid from the current layout — call it after
 // any edit that could change the layout. Wired up in json_functions.js's
 // central modifyJson()/updateMapFromEditor(), not per-mousemove, so this never
 // redraws during a live brush-drag — only once per committed change, exactly
 // like the game's own preview only redraws when you pick a different map.
+//
+// highlightPath(key) lets other modules (the Wave editor's path autocomplete)
+// light up one specific "S1E2"-style route in green on demand, e.g. on
+// hover/focus of the enemy Path field.
 
 import { currentLevelData } from './level_data.js';
 
 let gridEl = null;
+let currentCells = []; // flat array of { el, tile }, row-major, matches the last render
+let cols = 0;
 
 function getLayout() {
     return currentLevelData?.maps?.[0]?.layout || null;
+}
+
+/**
+ * Simple BFS pathfinder over the map's path tiles (O / O[SND] / O[SNW] / S# / E#).
+ * Mirrors Map.js's findPathBFS, kept as its own small copy here so this panel
+ * has no dependency on the much heavier GameMap canvas instance.
+ */
+function findPathBFS(layout, start, end) {
+    const rowsCount = layout.length;
+    const colsCount = layout[0].length;
+    const inBounds = (r, c) => r >= 0 && r < rowsCount && c >= 0 && c < colsCount;
+    const isWalkable = (r, c) => /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/.test(String(layout[r][c] ?? ''));
+
+    const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]]; // [deltaCol, deltaRow]
+    const seen = Array.from({ length: rowsCount }, () => Array(colsCount).fill(false));
+    const prev = Array.from({ length: rowsCount }, () => Array(colsCount).fill(null));
+    const queue = [{ r: start.row, c: start.col }];
+    seen[start.row][start.col] = true;
+
+    while (queue.length) {
+        const cur = queue.shift();
+        if (cur.r === end.row && cur.c === end.col) break;
+        for (const [dc, dr] of dirs) {
+            const nr = cur.r + dr, nc = cur.c + dc;
+            if (!inBounds(nr, nc) || seen[nr][nc] || !isWalkable(nr, nc)) continue;
+            seen[nr][nc] = true;
+            prev[nr][nc] = cur;
+            queue.push({ r: nr, c: nc });
+        }
+    }
+
+    if (!seen[end.row][end.col]) return null;
+
+    const path = [];
+    let cur = { r: end.row, c: end.col };
+    while (cur) {
+        path.push(cur);
+        cur = prev[cur.r][cur.c];
+    }
+    return path.reverse();
+}
+
+function findMarker(layout, key) {
+    for (let r = 0; r < layout.length; r++) {
+        for (let c = 0; c < layout[r].length; c++) {
+            if (String(layout[r][c]) === key) return { row: r, col: c };
+        }
+    }
+    return null;
 }
 
 /**
@@ -81,19 +135,56 @@ export function renderMapPreview() {
     }
 
     const rows = layout.length;
-    const cols = layout[0].length;
+    cols = layout[0].length;
     gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     gridEl.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     gridEl.style.aspectRatio = `${cols} / ${rows}`;
     gridEl.innerHTML = '';
+    currentCells = [];
 
     const fragment = document.createDocumentFragment();
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            const tile = document.createElement('div');
-            tile.className = `minimap-tile ${classifyTile(String(layout[r][c] ?? '-'))}`;
-            fragment.appendChild(tile);
+            const tile = String(layout[r][c] ?? '-');
+            const cell = document.createElement('div');
+            cell.className = `minimap-tile ${classifyTile(tile)}`;
+            fragment.appendChild(cell);
+            currentCells.push({ el: cell, tile });
         }
     }
     gridEl.appendChild(fragment);
+}
+
+/**
+ * Highlights one S#E# route (e.g. "S1E2") in green by lighting up the BFS
+ * path between them on top of the already-rendered grid. Clears any previous
+ * highlight first. No-op (just clears) if the key doesn't parse or no path
+ * exists between the two points.
+ */
+export function highlightPath(pathKey) {
+    clearHighlight();
+    if (!gridEl || !pathKey || !currentCells.length) return;
+
+    const match = /^(S\d+)(E\d+)$/.exec(String(pathKey).trim());
+    if (!match) return;
+
+    const layout = getLayout();
+    if (!layout || !layout.length) return;
+
+    const start = findMarker(layout, match[1]);
+    const end = findMarker(layout, match[2]);
+    if (!start || !end) return;
+
+    const route = findPathBFS(layout, start, end);
+    if (!route) return;
+
+    route.forEach(({ r, c }) => {
+        const cell = currentCells[r * cols + c];
+        if (cell) cell.el.classList.add('route-highlight');
+    });
+}
+
+/** Clears any active highlightPath() overlay. */
+export function clearHighlight() {
+    currentCells.forEach(({ el }) => el.classList.remove('route-highlight'));
 }
