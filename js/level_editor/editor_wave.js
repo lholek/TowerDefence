@@ -327,23 +327,27 @@ export const waveEditor = (() => {
                     e.preventDefault();
                     activeIndex = (activeIndex + 1) % filtered.length;
                     renderSuggestions(filtered);
-                } 
+                    highlightPath(filtered[activeIndex]);
+                }
                 else if (e.key === 'ArrowUp') {
                     e.preventDefault();
                     activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
                     renderSuggestions(filtered);
-                } 
+                    highlightPath(filtered[activeIndex]);
+                }
                 else if (e.key === 'Enter') {
                     if (activeIndex > -1 && filtered[activeIndex]) {
                         e.preventDefault();
                         input.value = filtered[activeIndex];
                         dropdown.style.display = 'none';
                         input.dispatchEvent(new Event('change', { bubbles: true }));
+                        highlightPath(input.value);
                     }
                 }
                 else if (e.key === 'Escape') {
                     dropdown.style.display = 'none';
                     input.blur();
+                    highlightPath(input.value);
                 }
             };
         
