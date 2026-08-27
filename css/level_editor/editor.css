@@ -897,6 +897,15 @@ hr {
     background-color: #4a3c2a;
 }
 
+/* Small heading for the Menu / Save Slots panels — overrides the generic 26px
+   h3 default (sized for the main content panels) with something that fits
+   these narrow fixed sidebars. */
+.panel-title {
+    font-size: 1rem;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
 /* Save Slots sits at the left edge, so its handle hangs off its right side. */
 .save-slots .panel-toggle-tab {
     right: -31px;
