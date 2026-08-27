@@ -977,7 +977,7 @@ hr {
    their left side. */
 .editor-tabs .panel-toggle-tab,
 .map-preview-panel .panel-toggle-tab {
-    left: -31px;
+    left: -30px;
     border-right: none;
     border-radius: 8px 0 0 8px;
 }
