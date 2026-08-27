@@ -802,18 +802,28 @@ hr {
     font-weight: bold;
 }
 
-/* --- Editor Tabs --- */
+/* --- Editor Tabs (aka "Menu") --- */
 .editor-tabs {
     margin-bottom: 20px;
     z-index: 1002;
-    display: flex;
     gap: 10px;
     justify-content: center; /* Center the buttons */
     position: fixed;
     right: 30px;
     bottom: 20px;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+    background-color: var(--main-bg-color);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    transition: transform 0.3s ease;
+}
+
+/* Slides the whole Menu panel off-screen to the right, leaving only its
+   .panel-toggle-tab handle poking out at the edge to bring it back. */
+.editor-tabs.is-collapsed {
+    transform: translateX(calc(100% + 30px));
 }
 
 .active-tab {
@@ -848,6 +858,57 @@ hr {
     flex-direction: column;
     gap: 8px;
     max-width: 220px;
+    background-color: var(--main-bg-color);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    transition: transform 0.3s ease;
+}
+
+/* Slides the whole Save Slots panel off-screen to the left, leaving only its
+   .panel-toggle-tab handle poking out at the edge to bring it back. */
+.save-slots.is-collapsed {
+    transform: translateX(calc(-100% - 20px));
+}
+
+/* --- Shared "drawer handle" tab for both fixed panels (Menu + Save Slots) ---
+   Positioned absolutely relative to its panel (both panels are already
+   `position: fixed`, which is itself a valid positioning context), hanging off
+   the panel's outer edge so it keeps poking into view even while the panel
+   itself is slid off-screen via .is-collapsed above. */
+.panel-toggle-tab {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 50px;
+    background-color: var(--main-bg-color);
+    border: 1px solid #333;
+    color: #f0c674;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.panel-toggle-tab:hover {
+    background-color: #4a3c2a;
+}
+
+/* Save Slots sits at the left edge, so its handle hangs off its right side. */
+.save-slots .panel-toggle-tab {
+    right: -31px;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Menu sits at the right edge, so its handle hangs off its left side. */
+.editor-tabs .panel-toggle-tab {
+    left: -31px;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
 }
 
 .save-slot-row {

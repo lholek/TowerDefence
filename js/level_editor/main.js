@@ -152,6 +152,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /* Toggle Help Button */
 
+    /* Collapsible fixed panels: Save Slots (bottom-left) + Menu (bottom-right).
+       Each has a small .panel-toggle-tab handle that slides it off-screen and
+       back; state is remembered per panel via localStorage, same pattern as
+       the Help toggle above. */
+    const setupCollapsiblePanel = (panelId, toggleId, storageKey) => {
+        const panel = document.getElementById(panelId);
+        const toggleBtn = document.getElementById(toggleId);
+        if (!panel || !toggleBtn) return;
+
+        if (localStorage.getItem(storageKey) === 'true') {
+            panel.classList.add('is-collapsed');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const collapsed = panel.classList.toggle('is-collapsed');
+            localStorage.setItem(storageKey, collapsed);
+        });
+    };
+
+    setupCollapsiblePanel('saveSlotsPanel', 'saveSlotsToggle', 'saveSlotsCollapsed');
+    setupCollapsiblePanel('editorMenuPanel', 'editorMenuToggle', 'editorMenuCollapsed');
+    /* Collapsible fixed panels */
+
     // Inside your DOMContentLoaded listener:
     const editorBgSelect = document.getElementById('backgroundSelect');
     const clouds = document.getElementById('cloudsLayer');
