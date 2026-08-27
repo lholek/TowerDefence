@@ -48,25 +48,31 @@
     <div class="editor-container box">
         <h1 class="title cl-primary text-center">The CZSrna's Tower Defence – Map Editor</h1>
         <h2 class="subtitle"></h2>
-        <div class="editor-tabs" id="editorMenuPanel">
-            <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu">☰</button>
-            <h3 class="panel-title">Menu</h3>
-            <button class="btn active-tab" data-target="mapEditorPanel hr-map">Map</button>
-            <button class="btn active-tab" data-target="basicInfoEditorPanel hr-settings">Map Settings</button>
-            <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
-            <button class="btn active-tab" data-target="waveEditorPanel hr-wave">Waves</button>
-            <button class="btn active-tab" data-target="abilityEditorPanel hr-ability">Abilities</button>
-            <div class="test-map-group">
-                <div class="undo-redo-row">
-                    <button id="undoBtn" class="btn btn-undo-redo" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
-                    <button id="redoBtn" class="btn btn-undo-redo btn-redo-stacked" title="Redo (Ctrl+Y)" disabled><span class="btn-icon">↷</span><span class="btn-label">Redo</span></button>
-                </div>
-                <button id="testMapBtn" class="btn text-center btn-test-map">Test Map</button>
+        <div class="right-panels-stack">
+            <div class="map-preview-panel" id="mapPreviewPanel">
+                <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview">🗺️</button>
+                <h3 class="panel-title">Map Preview</h3>
+                <div id="mapPreviewMinimap" class="map-preview-minimap"></div>
             </div>
-            <button id="shareMapBtn" class="btn btn-blue w-100">Share Map</button>
-            <button id="toggleHelp" class="btn btn-help">Help: ON</button>
-            <a href="/" class="btn btn-link text-center">Main Menu</a>
-
+            <div class="editor-tabs" id="editorMenuPanel">
+                <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu">☰</button>
+                <h3 class="panel-title">Menu</h3>
+                <button class="btn active-tab" data-target="mapEditorPanel hr-map">Map</button>
+                <button class="btn active-tab" data-target="basicInfoEditorPanel hr-settings">Map Settings</button>
+                <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
+                <button class="btn active-tab" data-target="waveEditorPanel hr-wave">Waves</button>
+                <button class="btn active-tab" data-target="abilityEditorPanel hr-ability">Abilities</button>
+                <div class="test-map-group">
+                    <div class="undo-redo-row">
+                        <button id="undoBtn" class="btn btn-undo-redo" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
+                        <button id="redoBtn" class="btn btn-undo-redo btn-redo-stacked" title="Redo (Ctrl+Y)" disabled><span class="btn-icon">↷</span><span class="btn-label">Redo</span></button>
+                    </div>
+                    <button id="testMapBtn" class="btn text-center btn-test-map">Test Map</button>
+                </div>
+                <button id="shareMapBtn" class="btn btn-blue w-100">Share Map</button>
+                <button id="toggleHelp" class="btn btn-help">Help: ON</button>
+                <a href="/" class="btn btn-link text-center">Main Menu</a>
+            </div>
         </div>
 
         <div class="editor-panels-container">

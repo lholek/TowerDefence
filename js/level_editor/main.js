@@ -7,6 +7,7 @@ import { initialize as initAbilityEditor, abilityEditor } from './editor_ability
 import * as editorHistory from './editor_history.js';
 import * as saveSlots from './editor_save_slots.js';
 import { attachThousandsFormatting, parseThousands } from './number_format.js';
+import * as mapPreview from './editor_map_preview.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -27,6 +28,7 @@ window.app = {
     abilityEditor: abilityEditor,
     editorHistory: editorHistory,
     saveSlots: saveSlots,
+    mapPreview: mapPreview,
     numberFormat: { parseThousands } // exposed for inline onchange="..." handlers in level_editor.html
 };
 
@@ -48,13 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Pass core utilities to json_functions
     // CRITICAL: Passing all editor modules so json_functions can refresh the UI
-    jsonFunctions.setModuleReferences({ 
-        editor, 
+    jsonFunctions.setModuleReferences({
+        editor,
         setStatus,
         mapEditor: mapEditor,
         towerEditor: towerEditor,
         waveEditor: waveEditor,
-        abilityEditor: abilityEditor 
+        abilityEditor: abilityEditor,
+        mapPreview: mapPreview
     });
 
     // 3. Initialize map editor with references
@@ -77,7 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Initial map render and interaction setup
     mapEditor.renderMap(levelData.currentLevelData.maps[0].layout);
     mapEditor.setupMapInteractions();
-    
+
+    // --- MAP PREVIEW PANEL SETUP ---
+    mapPreview.renderMapPreview();
+
+
     // --- TOWER EDITOR SETUP ---
     initTowerEditor(); 
     towerEditor.renderTowerRepeater(levelData.currentLevelData.maps[0].towerTypes);
@@ -173,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupCollapsiblePanel('saveSlotsPanel', 'saveSlotsToggle', 'saveSlotsCollapsed');
     setupCollapsiblePanel('editorMenuPanel', 'editorMenuToggle', 'editorMenuCollapsed');
+    setupCollapsiblePanel('mapPreviewPanel', 'mapPreviewToggle', 'mapPreviewCollapsed');
     /* Collapsible fixed panels */
 
     // Inside your DOMContentLoaded listener:

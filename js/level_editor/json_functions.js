@@ -173,6 +173,13 @@ export function modifyJson(modifyFn, successMessage, historySection = null) {
     if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
         modules.mapEditor.renderMap(currentLevelData.maps[0].layout);
     }
+    // Refresh the always-visible Map Preview panel too — cheap enough to redo on every
+    // commit (tower/wave/ability edits included), and only actual layout edits change what
+    // it draws. Deliberately hooked here (not in editor_map.js's renderMap) so it does NOT
+    // redraw on every mousemove during a live brush-drag, only once per committed change.
+    if (modules.mapPreview && typeof modules.mapPreview.renderMapPreview === 'function') {
+        modules.mapPreview.renderMapPreview();
+    }
     if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
         modules.towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes || {});
     }
@@ -237,7 +244,10 @@ export function updateMapFromEditor() {
         if (modules.mapEditor && typeof modules.mapEditor.renderMap === 'function') {
             modules.mapEditor.renderMap(mapData.layout || []);
         }
-        
+        if (modules.mapPreview && typeof modules.mapPreview.renderMapPreview === 'function') {
+            modules.mapPreview.renderMapPreview();
+        }
+
         // B. Tower Editor
         if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
             modules.towerEditor.renderTowerRepeater(mapData.towerTypes || {});
@@ -368,7 +378,10 @@ export function updateUIFromLoadedData() {
     if (modules.mapEditor.renderMap) {
         modules.mapEditor.renderMap(mapData.layout);
     }
-    
+    if (modules.mapPreview && modules.mapPreview.renderMapPreview) {
+        modules.mapPreview.renderMapPreview();
+    }
+
     // 2. Tower Editor Update (Renders the new tower list)
     if (modules.towerEditor.renderTowerRepeater) {
         modules.towerEditor.renderTowerRepeater(mapData.towerTypes);

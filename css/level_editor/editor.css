@@ -802,15 +802,31 @@ hr {
     font-weight: bold;
 }
 
-/* --- Editor Tabs (aka "Menu") --- */
-.editor-tabs {
-    margin-bottom: 20px;
-    z-index: 1002;
-    gap: 10px;
-    justify-content: center; /* Center the buttons */
+/* --- Right-side fixed sidebar stack: Map Preview (top) + Menu (bottom) ---
+   One fixed anchor for both, so Map Preview naturally sits "above" Menu
+   without any hardcoded height guess — the stack's bottom edge stays pinned
+   and its total height (both panels + gap) grows upward from there. */
+.right-panels-stack {
     position: fixed;
     right: 30px;
     bottom: 20px;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+/* --- Editor Tabs (aka "Menu") ---
+   No longer position:fixed itself — it's a normal flex item inside
+   .right-panels-stack above, which carries the fixed placement. Stays
+   `position: relative` so its .panel-toggle-tab child still anchors to this
+   panel's own box (not the shared stack). */
+.editor-tabs {
+    position: relative;
+    margin-bottom: 0;
+    gap: 10px;
+    justify-content: center; /* Center the buttons */
     display: flex;
     flex-direction: column;
     background-color: var(--main-bg-color);
@@ -825,6 +841,55 @@ hr {
 .editor-tabs.is-collapsed {
     transform: translateX(calc(100% + 30px));
 }
+
+/* --- Map Preview panel — same treatment as Menu, stacked above it inside
+   .right-panels-stack. Shows a scaled-down version of the game's own
+   map-selection minimap (see editor_map_preview.js), updating live as the
+   layout changes. */
+.map-preview-panel {
+    position: relative;
+    width: 220px;
+    box-sizing: border-box;
+    background-color: var(--main-bg-color);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    transition: transform 0.3s ease;
+}
+
+.map-preview-panel.is-collapsed {
+    transform: translateX(calc(100% + 30px));
+}
+
+.map-preview-minimap {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* overwritten inline once the real map size is known */
+    background: #1a1a1a;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #5c2e0e;
+}
+
+.minimap-tile.path { background: #8B6D4F; }
+.minimap-tile.block { background: #3F7D3C; }
+.minimap-tile.sky { background: transparent; }
+.minimap-tile.water { background: #0b3a5e; }
+.minimap-tile.mountain { background: #5a6363; }
+.minimap-tile.sand { background: #c2b280; }
+.minimap-tile.snow { background: #f0f8ff; }
+.minimap-tile.ice { background: #9fd4f0; }
+.minimap-tile.lava { background: #ff9955; }
+.minimap-tile.holy { background: #eab308; }
+.minimap-tile.burned { background: #3b0704; }
+.minimap-tile.tree { background: #1c5c2c; }
+.minimap-tile.snow-tree { background: #1c5c42; }
+.minimap-tile.log { background: #4a2f18; }
+.minimap-tile.well { background: #5c5c66; }
+.minimap-tile.bush { background: #2e6b2e; }
+.minimap-tile.dirt { background: #4a331d; }
+.minimap-tile.hay { background: #d1a836; }
+.minimap-tile.snw-spike { background: #1a3d5c; }
 
 .active-tab {
     /* Základní barvy pro aktivní tab */
@@ -871,11 +936,12 @@ hr {
     transform: translateX(calc(-100% - 20px));
 }
 
-/* --- Shared "drawer handle" tab for both fixed panels (Menu + Save Slots) ---
-   Positioned absolutely relative to its panel (both panels are already
-   `position: fixed`, which is itself a valid positioning context), hanging off
-   the panel's outer edge so it keeps poking into view even while the panel
-   itself is slid off-screen via .is-collapsed above. */
+/* --- Shared "drawer handle" tab for all 3 collapsible panels (Menu, Map
+   Preview, Save Slots) --- Positioned absolutely relative to its own panel
+   (each panel is a `position` context — fixed for Save Slots, relative for
+   Menu/Map Preview inside the fixed .right-panels-stack), hanging off the
+   panel's outer edge so it keeps poking into view even while the panel itself
+   is slid off-screen via .is-collapsed above. */
 .panel-toggle-tab {
     position: absolute;
     top: 50%;
@@ -913,8 +979,10 @@ hr {
     border-radius: 0 8px 8px 0;
 }
 
-/* Menu sits at the right edge, so its handle hangs off its left side. */
-.editor-tabs .panel-toggle-tab {
+/* Menu and Map Preview both sit at the right edge, so their handles hang off
+   their left side. */
+.editor-tabs .panel-toggle-tab,
+.map-preview-panel .panel-toggle-tab {
     left: -31px;
     border-right: none;
     border-radius: 8px 0 0 8px;
