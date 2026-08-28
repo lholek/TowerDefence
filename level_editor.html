@@ -172,7 +172,7 @@
                     <div class="input-row input-row-basic-stats">
                         <div class="input-group mt-4">
                             <label for="startingCoinsInput">🪙 Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
-                            <input type="text" inputmode="numeric" class="input-thousands" id="startingCoinsInput" value="0"
+                            <input type="text" inputmode="numeric" class="input-thousands" id="startingCoinsInput" value="0" data-json-stepper="starting_coins"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', window.app.numberFormat.parseThousands(this.value))">
                         </div>
                         <div class="input-group mt-4">

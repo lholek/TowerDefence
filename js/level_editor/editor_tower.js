@@ -3,6 +3,7 @@
 import { currentLevelData } from './level_data.js'; // To access the tower data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
+import { initJsonSteppers } from './JsonStepper.js';
 
 // Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -110,17 +111,17 @@ export const towerEditor = (() => {
                     <div class="card-body">
                         <label class="editor-row">
                             <span class="label-text">🪙 Price <i class="info-icon" data-tooltip="tower-editor.price">i</i></span>
-                            <input type="text" inputmode="numeric" class="input-thousands" name="price" data-key="price" value="${formatNumber(tower.price)}">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="price" data-key="price" data-json-stepper="tower_price" value="${formatNumber(tower.price)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">⚔️ Damage <i class="info-icon" data-tooltip="tower-editor.damage">i</i></span>
-                            <input type="text" inputmode="numeric" class="input-thousands" name="damage" data-key="damage" value="${formatNumber(tower.damage)}">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="damage" data-key="damage" data-json-stepper="tower_damage" value="${formatNumber(tower.damage)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">🕐 Fire Rate <i class="info-icon" data-tooltip="tower-editor.fire-rate">i</i></span>
-                            <input type="text" inputmode="numeric" class="input-thousands" name="fire_rate" data-key="fireRate" value="${formatNumber(tower.fireRate)}">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="fire_rate" data-key="fireRate" data-json-stepper="tower_fire_rate" value="${formatNumber(tower.fireRate)}">
                         </label>
 
                         <label class="editor-row">
@@ -134,14 +135,14 @@ export const towerEditor = (() => {
                         <label class="editor-row">
                             <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="tower-editor.speed">i</i></span>
                             <div class="input-group">
-                                <input type="text" inputmode="decimal" class="input-thousands" name="speed" data-key="speed" value="${formatNumber(tower.speed)}">
+                                <input type="text" inputmode="decimal" class="input-thousands" name="speed" data-key="speed" data-json-stepper="tower_speed" value="${formatNumber(tower.speed)}">
                                 <span class="range-tile-info speed-tile-info">(${speedInTilesPerSec} tiles/s)</span>
                             </div>
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">💰 Sell Price <i class="info-icon" data-tooltip="tower-editor.sell-price">i</i></span>
-                            <input type="text" inputmode="numeric" class="input-thousands" name="sell_price" data-key="sellPrice" value="${formatNumber(tower.sellPrice)}">
+                            <input type="text" inputmode="numeric" class="input-thousands" name="sell_price" data-key="sellPrice" data-json-stepper="tower_sell_price" value="${formatNumber(tower.sellPrice)}">
                         </label>
 
                         <label class="editor-row card-body-tower-color">
@@ -157,6 +158,10 @@ export const towerEditor = (() => {
         attachChangeListeners();
         attachDeleteListeners();
         attachCopyListeners();
+        // Rebuilding innerHTML above throws away any previous stepper wrap
+        // (this whole card list re-renders on every field change, to refresh
+        // the DPS badge etc.), so re-wrap the fresh .json-stepper inputs here.
+        initJsonSteppers(contentContainer);
     };
 
     // --- Event Listeners ---

@@ -52,6 +52,14 @@ function readValue(input) {
 }
 
 function applyStep(input, direction, settings) {
+    // Some panels (e.g. the tower cards) rebuild their whole innerHTML on
+    // every 'change' - including the one this function is about to dispatch
+    // - which detaches this exact input from the document. A still-running
+    // hold-repeat interval must not keep stepping (and dispatching more
+    // 'change' events, re-triggering that same rebuild) against that now-dead
+    // node forever, so bail out as soon as it's no longer connected.
+    if (!input.isConnected) return false;
+
     const { step, min, max } = settings;
     const next = Math.min(max, Math.max(min, readValue(input) + direction * step));
     input.value = String(next);
@@ -61,6 +69,7 @@ function applyStep(input, direction, settings) {
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
     input.focus();
+    return true;
 }
 
 /** Wires press-and-hold auto-repeat onto a stepper button. Pointer Events
@@ -80,7 +89,9 @@ function bindHold(btn, input, direction, settings) {
     const start = () => {
         applyStep(input, direction, settings);
         timer = setTimeout(() => {
-            timer = setInterval(() => applyStep(input, direction, settings), REPEAT_INTERVAL);
+            timer = setInterval(() => {
+                if (!applyStep(input, direction, settings)) clearTimer();
+            }, REPEAT_INTERVAL);
         }, REPEAT_DELAY);
     };
 

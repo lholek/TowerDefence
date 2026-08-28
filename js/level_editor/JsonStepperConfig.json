@@ -2,5 +2,29 @@
   "starting_lifes": {
     "step": 1,
     "min": 0
+  },
+  "starting_coins": {
+    "step": 1,
+    "min": 0
+  },
+  "tower_price": {
+    "step": 10,
+    "min": 0
+  },
+  "tower_damage": {
+    "step": 10,
+    "min": 0
+  },
+  "tower_fire_rate": {
+    "step": 100,
+    "min": 0
+  },
+  "tower_speed": {
+    "step": 1,
+    "min": 0
+  },
+  "tower_sell_price": {
+    "step": 10,
+    "min": 0
   }
 }
