@@ -12,12 +12,12 @@
   "tower_price": {
     "step": 10,
     "min": 0,
-    "hold": false
+    "hold": true
   },
   "tower_damage": {
     "step": 10,
     "min": 0,
-    "hold": false
+    "hold": true
   },
   "tower_fire_rate": {
     "step": 100,
@@ -27,7 +27,7 @@
   "tower_range": {
     "step": 100,
     "min": 0,
-    "hold": false
+    "hold": true
   },
   "tower_speed": {
     "step": 1,
@@ -37,6 +37,6 @@
   "tower_sell_price": {
     "step": 10,
     "min": 0,
-    "hold": false
+    "hold": true
   }
 }
