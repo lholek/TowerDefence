@@ -22,7 +22,7 @@
   "tower_fire_rate": {
     "step": 100,
     "min": 0,
-    "hold": false
+    "hold": true
   },
   "tower_range": {
     "step": 100,

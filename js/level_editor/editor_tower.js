@@ -3,7 +3,7 @@
 import { currentLevelData } from './level_data.js'; // To access the tower data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
-import { initJsonSteppers } from './JsonStepper.js';
+import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
 
 // Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -32,6 +32,12 @@ export const initialize = () => {
     if (!contentContainer) {
         console.error("Tower Editor Error: Element #towerEditorContent not found.");
     }
+
+    // A JsonStepper hold skips the innerHTML rebuild below (see attachChangeListeners)
+    // for as long as it's running, so catch back up with one rebuild once it lets go.
+    document.addEventListener(RELEASE_EVENT, () => {
+        towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes);
+    });
 };
 
 /**
@@ -199,8 +205,13 @@ export const towerEditor = (() => {
 
                 modifyJson((data) => {
                     data.maps[0].towerTypes[towerId][key] = value;
-                    // Re-render to update the DPS badge and Tile Range / Tile Speed info
-                    renderTowerRepeater(data.maps[0].towerTypes);
+                    // Re-render to update the DPS badge and Tile Range / Tile Speed info -
+                    // except mid-hold (see initialize()'s RELEASE_EVENT listener), where
+                    // rebuilding this input's row out from under a running JsonStepper
+                    // hold would orphan its repeat timer after just one step.
+                    if (!isStepperHoldActive()) {
+                        renderTowerRepeater(data.maps[0].towerTypes);
+                    }
                 }, `Tower ${towerId}: ${key} updated.`, `.tower-card[data-tower-id="${towerId}"] [data-key="${key}"]`);
             });
         });

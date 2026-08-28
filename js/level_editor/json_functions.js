@@ -1,6 +1,7 @@
 import { currentLevelData, updateCurrentLevelData, newWaveStructure, newAbilityStructure } from './level_data.js';
 import { recordHistory } from './editor_history.js';
 import { formatNumber } from './number_format.js';
+import { isStepperHoldActive } from './JsonStepper.js';
 
 // The 'modules' object is the single source for references to all external components (editors, setStatus, etc.)
 let modules = {};
@@ -180,14 +181,22 @@ export function modifyJson(modifyFn, successMessage, historySection = null) {
     if (modules.mapPreview && typeof modules.mapPreview.renderMapPreview === 'function') {
         modules.mapPreview.renderMapPreview();
     }
-    if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
-        modules.towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes || {});
-    }
-    if (modules.waveEditor && typeof modules.waveEditor.renderWaveRepeater === 'function') {
-        modules.waveEditor.renderWaveRepeater(currentLevelData.maps[0].levels || []);
-    }
-    if (modules.abilityEditor && typeof modules.abilityEditor.renderAbilityRepeater === 'function') {
-        modules.abilityEditor.renderAbilityRepeater(currentLevelData.maps[0].abilities || []);
+    // These three rebuild their whole innerHTML on every single call - fine normally,
+    // but while a JsonStepper hold is running (isStepperHoldActive()) that would tear
+    // down the exact input/button the hold is running on, orphaning its repeat timer
+    // after just one step. Skip them for the gesture's duration; JsonStepper fires its
+    // RELEASE_EVENT on release, which each editor listens for to catch up with one
+    // rebuild once it's safe to.
+    if (!isStepperHoldActive()) {
+        if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
+            modules.towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes || {});
+        }
+        if (modules.waveEditor && typeof modules.waveEditor.renderWaveRepeater === 'function') {
+            modules.waveEditor.renderWaveRepeater(currentLevelData.maps[0].levels || []);
+        }
+        if (modules.abilityEditor && typeof modules.abilityEditor.renderAbilityRepeater === 'function') {
+            modules.abilityEditor.renderAbilityRepeater(currentLevelData.maps[0].abilities || []);
+        }
     }
     // ✅ Ensure basic info fields (like extra life) refresh after any change
     updateBasicInfoUI();

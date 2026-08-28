@@ -33,6 +33,24 @@ const WRAPPED_ATTR = 'data-json-stepper-ready';
 const CONFIG_URL = new URL('./JsonStepperConfig.json', import.meta.url);
 const REPEAT_DELAY = 450;   // ms held before auto-repeat kicks in
 const REPEAT_INTERVAL = 90; // ms between steps while held
+export const RELEASE_EVENT = 'jsonstepper:release';
+
+// Separate from editor_history.js's undo-batch (which deliberately opens only
+// AFTER the first step, so Undo captures the right "before" state): render
+// suppression has to start BEFORE the first step instead, or that first
+// step's own (correctly un-suppressed) re-render tears down the input/button
+// before the hold even has a chance to reach auto-repeat. One hold-capable
+// button at a time in practice, so a single module-level flag is enough.
+let holdInProgress = false;
+
+/** True while a hold:true button's press-and-hold gesture is in progress
+ *  (from the moment it's pressed to the moment it's released) - repeater
+ *  panels that rebuild their whole innerHTML on every field change check
+ *  this to skip that rebuild for the WHOLE gesture, first step included,
+ *  keeping the held input alive so its repeat timer never runs orphaned. */
+export function isStepperHoldActive() {
+    return holdInProgress;
+}
 
 let configPromise = null;
 
@@ -90,11 +108,24 @@ function bindHold(btn, input, direction, settings) {
         clearTimeout(timer);
         clearInterval(timer);
         timer = null;
-        endHistoryBatch(); // no-op if a batch was never opened (e.g. hold:false, or released before the delay)
+        if (settings.hold && holdInProgress) {
+            holdInProgress = false;
+            endHistoryBatch();
+            // Let repeaters that skipped their rebuild during the whole gesture
+            // (see holdInProgress's doc comment above) catch up now that it's safe to.
+            document.dispatchEvent(new CustomEvent(RELEASE_EVENT));
+        }
     };
 
     const start = () => {
-        applyStep(input, direction, settings); // this one records normally - it's the "before" state for Undo
+        // Suppress repeaters' re-renders from THIS step onward (see holdInProgress's
+        // doc comment above) - has to be set before the very first applyStep() call,
+        // since that first step's dispatched 'change' runs synchronously and would
+        // otherwise trigger an un-suppressed rebuild that tears the input down before
+        // the hold ever reaches auto-repeat.
+        if (settings.hold) holdInProgress = true;
+
+        applyStep(input, direction, settings); // history still records this one normally - it's the "before" state for Undo
         if (!settings.hold) return; // config says this field steps once per press, no auto-repeat
         beginHistoryBatch(); // every further repeated step below collapses into that one entry
         timer = setTimeout(() => {
