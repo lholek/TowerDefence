@@ -26,6 +26,9 @@ let undoStack = []; // [{ snapshot, section, selector, fallbackSelector }]
 let redoStack = [];
 let isApplyingHistory = false; // guards against re-entrant recordHistory during undo/redo
 let isBusy = false; // true while an Undo/Redo is mid-flight (scrolling, then applying)
+let isBatching = false; // true while a burst of modifyJson() calls from one continuous
+                         // gesture (e.g. holding a JsonStepper button) should collapse
+                         // into the single history entry the first call already recorded
 
 // section -> panel element id (used both to check visibility and as the last-resort scroll target)
 const PANEL_IDS = {
@@ -111,11 +114,28 @@ function normalizeTarget(target) {
  */
 export function recordHistory(target) {
     const normalized = normalizeTarget(target);
-    if (!normalized || isApplyingHistory) return;
+    if (!normalized || isApplyingHistory || isBatching) return;
     undoStack.push({ snapshot: cloneState(), ...normalized });
     if (undoStack.length > MAX_HISTORY) undoStack.shift();
     redoStack = [];
     updateButtons();
+}
+
+/**
+ * Call right after the FIRST modifyJson() of a continuous gesture (that one
+ * still records normally, capturing the "before" state) to suppress
+ * recordHistory() for every further modifyJson() call until endHistoryBatch()
+ * — e.g. holding a JsonStepper's +/- button: only the very first step should
+ * open a new history entry, not one per repeated step. Always pair with
+ * endHistoryBatch() once the gesture ends (release, or the target going
+ * away), however it ends, so recording doesn't stay suppressed forever.
+ */
+export function beginHistoryBatch() {
+    isBatching = true;
+}
+
+export function endHistoryBatch() {
+    isBatching = false;
 }
 
 // --- Manual recording (for edits that mutate currentLevelData directly, outside of

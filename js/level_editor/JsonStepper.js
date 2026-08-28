@@ -12,16 +12,22 @@
 //
 // The attribute's value IS the lookup key into JsonStepperConfig.json - no
 // guessing it from the input's id/class, it's just stated explicitly on the
-// element. Nothing about step size, min or max is written in markup or JS:
-// that config entry is the single source of truth for the field's numbers -
-// the same `step` value both drives the +/- math AND is what the hover
-// tooltip shows, so there's only ever one place to change it.
+// element. Nothing about step size, min, max or hold-to-repeat is written in
+// markup or JS: that config entry is the single source of truth for the
+// field's behaviour - the same `step` value both drives the +/- math AND is
+// what the hover tooltip shows, and `hold` (true/false) toggles whether
+// holding the button auto-repeats or it only steps once per press.
 //
 // A button press only ever edits `input.value` and re-fires the input's own
 // 'input' + 'change' events, exactly as if the value had been typed by hand.
 // It never touches the JSON itself — whatever's already wired to the field
 // (thousands formatting, the onchange handler that writes into the level
-// JSON, ...) keeps working unmodified.
+// JSON, ...) keeps working unmodified. The one exception is Undo/Redo: a held
+// repeat run is wrapped in a history batch (see editor_history.js) so the
+// whole hold - e.g. lives climbing from 10 to 110 - undoes in one step back
+// to 10, not one Undo per intermediate tick.
+
+import { beginHistoryBatch, endHistoryBatch } from './editor_history.js';
 
 const WRAPPED_ATTR = 'data-json-stepper-ready';
 const CONFIG_URL = new URL('./JsonStepperConfig.json', import.meta.url);
@@ -84,10 +90,13 @@ function bindHold(btn, input, direction, settings) {
         clearTimeout(timer);
         clearInterval(timer);
         timer = null;
+        endHistoryBatch(); // no-op if a batch was never opened (e.g. hold:false, or released before the delay)
     };
 
     const start = () => {
-        applyStep(input, direction, settings);
+        applyStep(input, direction, settings); // this one records normally - it's the "before" state for Undo
+        if (!settings.hold) return; // config says this field steps once per press, no auto-repeat
+        beginHistoryBatch(); // every further repeated step below collapses into that one entry
         timer = setTimeout(() => {
             timer = setInterval(() => {
                 if (!applyStep(input, direction, settings)) clearTimer();
@@ -168,6 +177,7 @@ export async function initJsonSteppers(root = document) {
             step: entry?.step ?? 1,
             min: entry?.min ?? -Infinity,
             max: entry?.max ?? Infinity,
+            hold: entry?.hold ?? false,
         };
 
         const wrap = document.createElement('div');

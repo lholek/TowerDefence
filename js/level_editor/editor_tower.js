@@ -127,7 +127,7 @@ export const towerEditor = (() => {
                         <label class="editor-row">
                             <span class="label-text">🎯 Range <i class="info-icon" data-tooltip="tower-editor.range">i</i></span>
                             <div class="input-group">
-                                <input type="text" inputmode="numeric" class="input-thousands" name="range" data-key="range" value="${formatNumber(tower.range)}">
+                                <input type="text" inputmode="numeric" class="input-thousands" name="range" data-key="range" data-json-stepper="tower_range" value="${formatNumber(tower.range)}">
                                 <span class="range-tile-info">(${rangeInTiles} tiles)</span>
                             </div>
                         </label>
