@@ -146,7 +146,10 @@ function makeButton(symbol, direction, input, settings) {
     // Hover tooltip uses the same UI as the ℹ️ info-icons (TooltipController),
     // just fed a runtime-computed value instead of a JSON-description lookup -
     // the delta text is derived straight from `settings.step`, never re-typed.
-    btn.dataset.tooltipText = `${direction > 0 ? '+' : '-'}${settings.step}`;
+    // No visual change to the button itself - hold:true just earns an extra
+    // hint appended to that same tooltip text, straight off settings.hold.
+    const delta = `${direction > 0 ? '+' : '-'}${settings.step}`;
+    btn.dataset.tooltipText = settings.hold ? `${delta} (hold to increase faster)` : delta;
     btn.setAttribute('aria-label', direction > 0 ? `Increase by ${settings.step}` : `Decrease by ${settings.step}`);
     btn.tabIndex = -1; // keep tab order landing on the input, not the buttons
 
