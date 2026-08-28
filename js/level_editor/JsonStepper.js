@@ -84,13 +84,27 @@ function bindHold(btn, input, direction, settings) {
         }, REPEAT_DELAY);
     };
 
+    const isOverButton = (e) => {
+        const rect = btn.getBoundingClientRect();
+        return e.clientX >= rect.left && e.clientX <= rect.right
+            && e.clientY >= rect.top && e.clientY <= rect.bottom;
+    };
+
     btn.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return; // left click / primary touch only
         startedByPointer = true;
+        // Captured so a drag-off-then-release still reliably reaches this
+        // button's 'pointerup' (instead of getting lost over some other
+        // element) - but capture also means 'pointerleave' stops firing for
+        // boundary crossing, so leaving the button is instead detected by
+        // hand below, off the still-delivered 'pointermove'.
         btn.setPointerCapture?.(e.pointerId);
         start();
     });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((evt) => {
+    btn.addEventListener('pointermove', (e) => {
+        if (timer !== null && !isOverButton(e)) clearTimer();
+    });
+    ['pointerup', 'pointercancel'].forEach((evt) => {
         btn.addEventListener(evt, clearTimer);
     });
     btn.addEventListener('click', () => {
