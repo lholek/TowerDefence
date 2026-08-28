@@ -149,7 +149,8 @@ function makeButton(symbol, direction, input, settings) {
     // No visual change to the button itself - hold:true just earns an extra
     // hint appended to that same tooltip text, straight off settings.hold.
     const delta = `${direction > 0 ? '+' : '-'}${settings.step}`;
-    btn.dataset.tooltipText = settings.hold ? `${delta} (hold to increase faster)` : delta;
+    const holdHint = direction > 0 ? 'hold to increase faster' : 'hold to decrease faster';
+    btn.dataset.tooltipText = settings.hold ? `${delta} (${holdHint})` : delta;
     btn.setAttribute('aria-label', direction > 0 ? `Increase by ${settings.step}` : `Decrease by ${settings.step}`);
     btn.tabIndex = -1; // keep tab order landing on the input, not the buttons
 
