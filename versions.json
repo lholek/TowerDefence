@@ -37,6 +37,7 @@
         "Improved - Editor - Fixed descriptions of the editor fields",
         "TODO: Improve - Editor - Added stepper that allows the user to change the number of fields by clicking the + or - buttons",
         "TODO: Improve - Editor - Fill stepper whit values",
+        "TODO: Improve - Editor - Stepper works but needs to be added to all other fields in the editor",
         "TODO: Improve - Gameplay - Build Adventure Map VI which will include new tiles"
       ]
     },
