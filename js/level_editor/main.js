@@ -7,6 +7,7 @@ import { initialize as initAbilityEditor, abilityEditor } from './editor_ability
 import * as editorHistory from './editor_history.js';
 import * as saveSlots from './editor_save_slots.js';
 import { attachThousandsFormatting, parseThousands } from './number_format.js';
+import { initJsonSteppers } from './JsonStepper.js';
 import * as mapPreview from './editor_map_preview.js';
 
 // Global utility function
@@ -47,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // field, wherever it gets re-rendered (wave/tower/ability editors). Delegated
     // once on the document so dynamically re-rendered rows keep working.
     attachThousandsFormatting(document);
+
+    // +/- stepper buttons for any .json-stepper field (currently: Starting Lifes).
+    initJsonSteppers(document);
 
     // 2. Pass core utilities to json_functions
     // CRITICAL: Passing all editor modules so json_functions can refresh the UI

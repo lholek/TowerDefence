@@ -35,6 +35,8 @@
         "Improved - Editor - Fixed bug where editor could delete all waves, all groups and all enemy types",
         "Improved - Editor - Added live thousands separator (space) to fields for better readability",
         "Improved - Editor - Fixed descriptions of the editor fields",
+        "TODO: Improve - Editor - Added stepper that allows the user to change the number of fields by clicking the + or - buttons",
+        "TODO: Improve - Editor - Fill stepper whit values",
         "TODO: Improve - Gameplay - Build Adventure Map VI which will include new tiles"
       ]
     },

@@ -1,0 +1,74 @@
+/* css/level_editor/JsonStepper.css
+ *
+ * Visuals for the JsonStepper.js +/- component. The −/+ buttons live inside
+ * the SAME bordered/rounded box as the input (not floated on top of it), so
+ * there's nothing to overflow the field: `.json-stepper-wrap` draws the
+ * border/background that a plain input would normally draw itself, the
+ * input becomes a borderless flex child inside it, and `overflow: hidden`
+ * clips the button group to the rounded corners.
+ */
+
+.json-stepper-wrap {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 3px; /* same spacing under the label as a plain .input-group input */
+    background-color: #967456;
+    border: 1px solid #555;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.json-stepper-wrap input[data-json-stepper] {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 8px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent;
+    color: #f0f0f0;
+}
+
+.json-stepper-wrap input[data-json-stepper]:focus {
+    outline: none;
+}
+
+/* Minus + plus grouped together as one unit, glued to the input's right edge. */
+.json-stepper-btn-group {
+    display: flex;
+    flex: 0 0 auto;
+}
+
+.json-stepper-btn {
+    flex: 0 0 20px;
+    width: 20px;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.35);
+    background-color: #f0c674;
+    color: #3a2c17;
+    font-size: 0.8rem;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    touch-action: manipulation;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.json-stepper-btn:hover {
+    background-color: #f7d68f;
+}
+
+.json-stepper-btn:active {
+    background-color: #d9ac54;
+}
+
+.json-stepper-btn:focus-visible {
+    outline: 2px solid #f0c674;
+    outline-offset: -2px;
+}

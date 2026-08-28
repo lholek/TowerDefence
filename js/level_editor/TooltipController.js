@@ -31,13 +31,21 @@ class TooltipController {
     }
 
     initEventListeners() {
-        // Listen for mouseover on any element with data-tooltip attribute
+        // Listen for mouseover on any element with a data-tooltip (JSON-backed,
+        // looked up by "section.item" path) or data-tooltip-text (already-known
+        // literal string, e.g. computed at runtime) attribute.
         document.addEventListener('mouseover', (e) => {
-            const target = e.target.closest('[data-tooltip]');
-            if (target) {
-                const key = target.getAttribute('data-tooltip');
-                this.show(key, e);
+            const target = e.target.closest('[data-tooltip], [data-tooltip-text]');
+            if (!target) return;
+
+            const customText = target.getAttribute('data-tooltip-text');
+            if (customText !== null) {
+                this.showCustom(customText, e);
+                return;
             }
+
+            const key = target.getAttribute('data-tooltip');
+            this.show(key, e);
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -47,10 +55,19 @@ class TooltipController {
         });
 
         document.addEventListener('mouseout', (e) => {
-            if (e.target.closest('[data-tooltip]')) {
+            if (e.target.closest('[data-tooltip], [data-tooltip-text]')) {
                 this.hide();
             }
         });
+    }
+
+    // Shows an already-known literal string, bypassing the JSON lookup entirely.
+    // Same tooltip element/styling as show(), just a different content source -
+    // each caller picks exactly one of the two, never both for the same value.
+    showCustom(text, event) {
+        this.tooltipElement.innerHTML = `<div class="tooltip-desc">${text}</div>`;
+        this.tooltipElement.style.display = 'block';
+        this.position(event);
     }
 
     show(path, event) {
