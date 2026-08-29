@@ -191,6 +191,7 @@ function addNewEnemyType() {
         renderEnemyTypeTags(); // Refresh tags
         waveEditor.renderWaveRepeater(data.maps[0].levels); // Update dropdowns in waves
         waveEditor.renderEffectsRepeater();
+        waveEditor.renderDamageRepeater(); // Update dropdown in Custom Enemy Damage
     }, `Added enemy type: ${value}`, '#enemyTypesTagsContainer');
 }
 
@@ -704,6 +705,7 @@ export const waveEditor = (() => {
             renderEnemyTypeTags(); // This function is accessible because it's in the outer scope
             waveEditor.renderWaveRepeater(data.maps[0].levels);
             waveEditor.renderEffectsRepeater();
+            waveEditor.renderDamageRepeater(); // Update dropdown in Custom Enemy Damage
         }, `Removed enemy type: ${typeToRemove}`, '#enemyTypesTagsContainer');
     };
 
