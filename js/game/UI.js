@@ -1,10 +1,35 @@
 const returnButton = document.getElementById('returnButton');
 const returnPopup = document.getElementById('returnPopup');
 const confirmReturn = document.getElementById('confirmReturn');
+const confirmRestart = document.getElementById('confirmRestart');
 const cancelReturn = document.getElementById('cancelReturn');
+
+// Leave/Restart are destructive (they throw away the run in progress), so both
+// require a second click: the first just "arms" the button (turns it red and
+// swaps its label to "Sure?"); the second actually performs the action.
+// Only one button may be armed at a time - arming one disarms the other.
+const CONFIRM_LABEL = 'Sure?';
+
+function disarmDangerButtons() {
+    [confirmReturn, confirmRestart].forEach(btn => {
+        btn.textContent = btn.dataset.label;
+        btn.classList.remove('is-armed');
+    });
+}
+
+function isArmed(btn) {
+    return btn.classList.contains('is-armed');
+}
+
+function armDangerButton(btn) {
+    disarmDangerButtons();
+    btn.textContent = CONFIRM_LABEL;
+    btn.classList.add('is-armed');
+}
 
 returnButton.addEventListener('click', () => {
     returnPopup.style.display = 'flex';
+    disarmDangerButtons();
     // Only pause if the game is NOT already paused
     if (window.game && !window.game.paused) {
         window.game.togglePause();
@@ -13,6 +38,7 @@ returnButton.addEventListener('click', () => {
 
 cancelReturn.addEventListener('click', () => {
     returnPopup.style.display = 'none';
+    disarmDangerButtons();
     // Only unpause if the game WAS paused (and we are resuming)
     if (window.game && window.game.paused) {
         window.game.togglePause();
@@ -20,10 +46,18 @@ cancelReturn.addEventListener('click', () => {
 });
 
 confirmReturn.addEventListener('click', () => {
+  if (!isArmed(confirmReturn)) {
+    armDangerButton(confirmReturn);
+    return;
+  }
+
   // 1. Kill the game logic completely
-  if (game) {
-    game.destroy(); 
-    game = null; // Important: Clear the reference
+  // (was reading an undeclared bare `game` - always threw a ReferenceError and
+  // silently aborted the rest of this handler; use window.game like the other
+  // handlers in this file do)
+  if (window.game) {
+    window.game.destroy();
+    window.game = null; // Important: Clear the reference
   }
 
   // 2. Hide all Game UIs
@@ -31,7 +65,7 @@ confirmReturn.addEventListener('click', () => {
   document.getElementById('mainContainer').style.display = 'none'; // The game area
   document.getElementById('selectionIndicator').style.display =  'none';
 
-  
+
   // 3. Show the Menu UIs
   document.getElementById('startOverlay').style.display = 'flex';
   document.getElementById('title').style.display = 'block';
@@ -40,6 +74,20 @@ confirmReturn.addEventListener('click', () => {
   // 4. Reset Speed UI to 1x
   const gameSpeedSelect = document.getElementById('gameSpeedSelect');
   if (gameSpeedSelect) gameSpeedSelect.value = "1";
+
+  disarmDangerButtons();
+});
+
+confirmRestart.addEventListener('click', () => {
+  if (!isArmed(confirmRestart)) {
+    armDangerButton(confirmRestart);
+    return;
+  }
+
+  // Confirmed: wipe the current run and boot the same map fresh again.
+  returnPopup.style.display = 'none';
+  disarmDangerButtons();
+  window.restartCurrentGame?.();
 });
 
 // === BUILD MODE SWITCHER ===

@@ -4,6 +4,8 @@
       "version": "Pre-Beta IV.",
       "release": "-",
       "changes": [
+        "Improved - UX - Added option to Restart the game in the Pause Menu",
+        "Improved - UX - You need to confirm when you want to restart the game or return to the main menu",
         "Improved - UI - Added option to set Object quality in the Settings",
         "Improved - Map - New 34 tiles added to the game: LAVA, ICE, X[Tree], X[CutTree], X[Log 1-2], X[Well], X[Bush], X[Dirt] (FarmLand), X[Hay] (Hay Field), SNW[Tree], SNW[CutTree], SND[Bone 1-4], SND[Cactus 1-4], SND[Palm 1-4], SNW[Spike 1-4], W[Rock 1-4], Holy Ground, Burned Ground",
         "Improved - Gameplay - Fixed path in Simple Roads II",

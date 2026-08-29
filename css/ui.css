@@ -51,6 +51,15 @@
   border-radius: 6px;
 }
 
+/* Leave/Restart require a second click to confirm - while "armed" (waiting on
+   that second click) the button turns red and reads "Sure?" so it's obvious
+   the next click is the real one. */
+.btn-danger-confirm.is-armed {
+  background-color: #b32d2d !important;
+  border-color: #7a1f1f;
+  color: #fff;
+}
+
 .bg-gold {
     background-color: gold !important;
 }

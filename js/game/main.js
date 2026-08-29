@@ -176,6 +176,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle pause after leave window (již existující funkce)
     window.addEventListener('blur', pauseOnBlur);
 
+    // Remembers whichever map (preset URL string, or parsed file JSON object) is
+    // currently in play, so Restart (see window.restartCurrentGame below) can
+    // reload the exact same map without the user having to reselect it.
+    let currentMapSource = null;
+
+    // Tears down the running game (if any) and boots a fresh one from mapSource.
+    // Shared by the Start button and the pause menu's Restart button.
+    function startGame(mapSource) {
+        // 1. Show loading
+        loadingOverlay.style.display = 'flex';
+        document.getElementById('startOverlay').style.display = 'none';
+
+        return new Promise((resolve) => {
+            setTimeout(async () => {
+                try {
+                    // 2. Kill the old game (this replaces the canvas)
+                    if (game) {
+                        game.destroy();
+                    }
+
+                    // 3. FIND THE FRESH CANVAS (The one created by destroy)
+                    const freshCanvas = document.getElementById('gameCanvas');
+
+                    // 4. Start the NEW game on the NEW canvas
+                    game = new Game(freshCanvas);
+                    window.game = game; // Essential for UI.js to work
+
+                    await game.loadGameData(mapSource);
+                    game.start();
+                    document.getElementById('mainContainer').style.display = 'block'; // The game area
+                    document.getElementById('selectionIndicator').style.display = 'block';
+
+                    const towerBtn = document.getElementById('towerModeBtn');
+                    const abilityBtn = document.getElementById('abilityModeBtn');
+
+                    towerBtn?.click();
+
+                    towerBtn?.classList.add('active');
+                    abilityBtn?.classList.remove('active');
+
+                    loadingOverlay.style.display = 'none';
+                } catch (error) {
+                    console.error("Game start failed:", error);
+                    loadingOverlay.style.display = 'none';
+                }
+                resolve();
+            }, 50);
+        });
+    }
+
+    // Exposed for UI.js's pause-menu "Restart" button, which has no direct
+    // access to this module's closure (game, currentMapSource, startGame).
+    window.restartCurrentGame = () => {
+        if (!currentMapSource) return;
+        return startGame(currentMapSource);
+    };
+
     // --- Logika tlačítka Start Game (s podporou souboru) ---
     startBtn.addEventListener('click', async () => {
         // 1. Get the map data (preset or file)
@@ -183,43 +240,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         let mapSource = isFileModeActive ? await loadMapDataFromFile(mapFileInput.files[0]) : mapSelect.value;
         if (!mapSource) return;
 
-        // 2. Show loading
-        loadingOverlay.style.display = 'flex';
-        document.getElementById('startOverlay').style.display = 'none';
-
-        setTimeout(async () => {
-            try {
-                // 3. Kill the old game (this replaces the canvas)
-                if (game) {
-                    game.destroy(); 
-                }
-
-                // 4. FIND THE FRESH CANVAS (The one created by destroy)
-                const freshCanvas = document.getElementById('gameCanvas');
-
-                // 5. Start the NEW game on the NEW canvas
-                game = new Game(freshCanvas);
-                window.game = game; // Essential for UI.js to work
-
-                await game.loadGameData(mapSource);
-                game.start();
-                document.getElementById('mainContainer').style.display = 'block'; // The game area
-                document.getElementById('selectionIndicator').style.display = 'block';
-
-                const towerBtn = document.getElementById('towerModeBtn');
-                const abilityBtn = document.getElementById('abilityModeBtn');
-
-                towerBtn?.click();
-
-                towerBtn?.classList.add('active');
-                abilityBtn?.classList.remove('active');
-                
-                loadingOverlay.style.display = 'none';
-            } catch (error) {
-                console.error("Game start failed:", error);
-                loadingOverlay.style.display = 'none';
-            }
-        }, 50);
+        currentMapSource = mapSource;
+        await startGame(mapSource);
     });
 
     // --- Existující funkce pro pauzu ---
