@@ -4,6 +4,7 @@ import { getCurrentMap, newWaveStructure } from './level_data.js'; // To access 
 import { modifyJson as modifyJsonRaw, getAvailablePaths, showCursorWarning } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
 import { highlightPath, clearHighlight } from './editor_map_preview.js';
+import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -105,6 +106,14 @@ export const initialize = (refs) => {
 
     // Tohle vynutí vykreslení hned při startu
     waveEditor.renderDamageRepeater();
+
+    // A JsonStepper hold skips the Effects/Damage rebuilds above for as long as
+    // it's running (see updateEffect/updateEnemyDamage's isStepperHoldActive()
+    // guards), so catch back up with one rebuild once it lets go.
+    document.addEventListener(RELEASE_EVENT, () => {
+        waveEditor.renderEffectsRepeater();
+        waveEditor.renderDamageRepeater();
+    });
 };
 
 // --- Utility Functions ---
@@ -840,19 +849,22 @@ export const waveEditor = (() => {
     
                 <div class="flex-1">
                     <label>Shake Duration (ms) <i class="info-icon" data-tooltip="shake-effects.shake-duration">i</i></label>
-                    <input type="text" inputmode="numeric" class="input-thousands" value="${formatNumber(effect.shakeDuration || 0)}"
+                    <input type="text" inputmode="numeric" class="input-thousands" data-json-stepper="shake_duration" value="${formatNumber(effect.shakeDuration || 0)}"
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeDuration', this.value)">
                 </div>
-    
+
                 <div class="flex-1">
                     <label>Shake Intensity (px) <i class="info-icon" data-tooltip="shake-effects.shake-intensity">i</i></label>
-                    <input type="text" inputmode="decimal" class="input-thousands" value="${formatNumber(effect.shakeIntensity || 0)}"
+                    <input type="text" inputmode="decimal" class="input-thousands" data-json-stepper="shake_intensity" value="${formatNumber(effect.shakeIntensity || 0)}"
                            onchange="window.app.waveEditor.updateEffect(${index}, 'shakeIntensity', this.value)">
                 </div>
     
                 <button class="btn btn-delete" onclick="window.app.waveEditor.deleteEffect(${index})">X</button>
             </div>
         `).join('');
+        // Rebuilding innerHTML above throws away any previous stepper wrap
+        // (see editor_tower.js), so re-wrap the fresh .json-stepper inputs here.
+        initJsonSteppers(effectsContainer);
     };
 
     /**
@@ -892,8 +904,12 @@ export const waveEditor = (() => {
             }
         }, `Updated effect ${key}`, `#enemy-effects-repeater .effect-row[data-index="${index}"]`, '#enemy-effects-repeater');
 
-        // FIX: Re-render so the UI matches the data immediately
-        waveEditor.renderEffectsRepeater();
+        // FIX: Re-render so the UI matches the data immediately - except mid-hold
+        // (see JsonStepper.js's isStepperHoldActive()), where rebuilding this row
+        // out from under a running hold would orphan its repeat timer after one step.
+        if (!isStepperHoldActive()) {
+            waveEditor.renderEffectsRepeater();
+        }
     };
     /**
      * Deletes an effect entry
@@ -942,7 +958,7 @@ export const waveEditor = (() => {
                 </div>
                 <div class="flex-1">
                     <label class="block text-xs">Damage <i class="info-icon" data-tooltip="custom-enemy-damage.damage">i</i></label>
-                    <input type="text" inputmode="numeric" class="w-full p-1 input-thousands" value="${formatNumber(entry.damage || 1)}"
+                    <input type="text" inputmode="numeric" class="w-full p-1 input-thousands" data-json-stepper="enemy_damage" value="${formatNumber(entry.damage ?? 1)}"
                            onchange="window.app.waveEditor.updateEnemyDamage(${index}, 'damage', this.value)">
                 </div>
                 <button class="btn btn-delete bg-red-500 p-1 text-white" onclick="window.app.waveEditor.deleteEnemyDamage(${index})">X</button>
@@ -952,6 +968,9 @@ export const waveEditor = (() => {
             container.innerHTML = '<p style="color:#888;">No custom damage rules defined. Click "Add Custom Damage" to start.</p>';
             return; // Now it updates the UI before returning
         }
+        // Rebuilding innerHTML above throws away any previous stepper wrap
+        // (see editor_tower.js), so re-wrap the fresh .json-stepper inputs here.
+        initJsonSteppers(container);
     };
 
     const addEnemyDamage = () => {
@@ -969,7 +988,12 @@ export const waveEditor = (() => {
             const val = key === 'damage' ? parseThousands(value) : value;
             data.maps[0].enemyDamage[index][key] = val;
 
-            renderDamageRepeater();
+            // Except mid-hold (see JsonStepper.js's isStepperHoldActive()), where
+            // rebuilding this row out from under a running hold would orphan its
+            // repeat timer after just one step.
+            if (!isStepperHoldActive()) {
+                renderDamageRepeater();
+            }
         }, `Updated enemy damage ${key}`, `#enemy-damage-repeater .effect-row[data-index="${index}"]`, '#enemy-damage-repeater');
     };
 

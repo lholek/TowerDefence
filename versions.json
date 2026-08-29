@@ -36,10 +36,9 @@
         "Improved - Editor - Added live thousands separator (space) to fields for better readability",
         "Improved - Editor - Fixed descriptions of the editor fields",
         "TODO: Improve - Editor - Added stepper that allows the user to change the number of fields by clicking the + or - buttons",
-        "TODO: Improve - Editor - Stepper - works and tested on MAP SETTINGS, TOWERS",
         "TODO: Improve - Editor - WAVES - fix bug that sometimes it doesnt select the path after click",
         "TODO: Improve - Editor - Stepper - needs to be implemented and tested on WAVES",
-        "TODO: Improve - Editor - Added minimum and maximum values to the stepper for fields that require it",
+        "TODO: Improve - Editor - Add short description at the top of the editor that explains what the editor is for and how to use it",
         "TODO: Improve - Gameplay - Build Adventure Map VI which will include new tiles"
       ]
     },

@@ -77,5 +77,19 @@
     "step": 0.1,
     "min": 0.01,
     "hold": false
+  },
+  "shake_duration": {
+    "step": 1000,
+    "min": 100,
+    "hold": true
+  },
+  "shake_intensity": {
+    "step": 1,
+    "min": 1,
+    "hold": true
+  },
+  "enemy_damage": {
+    "step": 1,
+    "hold": true
   }
 }
