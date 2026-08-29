@@ -528,33 +528,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const importedData = await loadMapFromHash(customMapHash);
 
         if (importedData) {
-            // 1. UI Cleanup: Hide overlays and titles
-            document.getElementById('startOverlay').style.display = 'none';
+            // UI Cleanup: hide the start-menu titles (startGame() below already
+            // hides startOverlay, boots the game, and shows the game container).
             if(document.getElementById('title')) document.getElementById('title').style.display = 'none';
             if(document.getElementById('subtitle')) document.getElementById('subtitle').style.display = 'none';
 
-            // 2. Kill old game if it exists (replaces the canvas)
-            if (game) {
-                game.destroy(); 
-            }
-
-            // 3. Get the FRESH canvas created by destroy()
-            const freshCanvas = document.getElementById('gameCanvas');
-
-            // 4. Initialize Game properly
-            game = new Game(freshCanvas);
-            window.game = game; // Essential for UI.js and global pause listeners
-            game.setSpeed(1);
-
-            await game.loadGameData(importedData);
-            game.start();
-
-            // 5. Show the game container and force UI state
-            document.getElementById('mainContainer').style.display = 'block';
-            document.getElementById('selectionIndicator').style.display =  'block';
+            // Remember this map so the pause menu's Restart button can reload it too -
+            // without this, restarting a URL-shared custom map had nothing to restart
+            // (currentMapSource stayed null) and left the game stuck/broken.
+            currentMapSource = importedData;
+            await startGame(importedData);
 
             // This ensures the shop/abilities buttons are responsive
-            document.getElementById('showTowersBtn')?.click(); 
+            document.getElementById('showTowersBtn')?.click();
         } else {
             window.history.replaceState({}, document.title, window.location.pathname);
             errorPopupController.open();
