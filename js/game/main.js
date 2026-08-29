@@ -216,6 +216,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     towerBtn?.classList.add('active');
                     abilityBtn?.classList.remove('active');
 
+                    // New Game instances default to 1x (see Game.js's constructor),
+                    // but the <select> keeps whatever the player last picked - sync
+                    // it back to 1x so the dropdown matches the actual game speed.
+                    if (gameSpeedSelect) gameSpeedSelect.value = "1";
+
                     loadingOverlay.style.display = 'none';
                 } catch (error) {
                     console.error("Game start failed:", error);
