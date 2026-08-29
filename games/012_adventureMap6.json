@@ -22,7 +22,7 @@
       "description": [
         {
           "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
-          "level count": 8,
+          "level count": 9,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
@@ -716,8 +716,84 @@
           "level": 8,
           "enemies": [
             {
+              "type": "dmg_2",
+              "count": 7,
+              "health": 4000,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 750,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "starter",
+              "count": 7,
+              "health": 4000,
+              "speed": 1.5,
+              "path": "S2E2",
+              "interval": 750,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "starter",
+              "count": 7,
+              "health": 4000,
+              "speed": 1.5,
+              "path": "S3E3",
+              "interval": 750,
+              "firstDelay": 0,
+              "coinReward": 12
+            },
+            {
+              "type": "tanker",
+              "count": 7,
+              "health": 10000,
+              "speed": 0.85,
+              "path": "S3E2",
+              "interval": 1000,
+              "firstDelay": 7000,
+              "coinReward": 14,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "dmg_2",
+              "count": 4,
+              "health": 4000,
+              "speed": 1.4,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": 7000,
+              "coinReward": 16
+            },
+            {
+              "type": "dmg_3",
+              "count": 4,
+              "health": 4000,
+              "speed": 1.4,
+              "path": "S2E1",
+              "interval": 1000,
+              "firstDelay": 7000,
+              "coinReward": 16
+            },
+            {
+              "type": "starter",
+              "count": 5,
+              "health": 4000,
+              "speed": 1.5,
+              "path": "S3E1",
+              "interval": 800,
+              "firstDelay": 14000,
+              "coinReward": 12
+            }
+          ]
+        },
+        {
+          "level": 9,
+          "enemies": [
+            {
               "type": "basic",
-              "count": 10,
+              "count": 10000,
               "health": 200,
               "speed": 1.5,
               "path": "S1E1",
@@ -741,6 +817,7 @@
         "tanker",
         "shaker",
         "dmg_2",
+        "dmg_3",
         "boss_lvl_5",
         "double"
       ],
@@ -751,6 +828,10 @@
         },
         {
           "type": "boss_lvl_5",
+          "damage": 3
+        },
+        {
+          "type": "dmg_3",
           "damage": 3
         }
       ]
