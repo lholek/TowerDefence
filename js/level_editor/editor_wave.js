@@ -363,6 +363,18 @@ export const waveEditor = (() => {
         
             input.oninput = () => { activeIndex = -1; showSuggestions(); highlightPath(input.value); };
 
+            // Without this, mousedown on a suggestion blurs the input BEFORE the click
+            // fires. If the user had typed filter text, that blur commits it as a native
+            // "change" with the half-typed value, which re-renders the whole wave list
+            // and yanks the very option element out from under the pointer - so the
+            // click (and the real selection) never happens until a second click.
+            // preventDefault() on mousedown keeps focus in the input so none of that fires.
+            dropdown.onmousedown = (e) => {
+                if (e.target.classList.contains('path-option')) {
+                    e.preventDefault();
+                }
+            };
+
             dropdown.onclick = (e) => {
                 if (e.target.classList.contains('path-option')) {
                     input.value = e.target.innerText;
