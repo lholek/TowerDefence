@@ -22,7 +22,7 @@
       "description": [
         {
           "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
-          "level count": 9,
+          "level count": 11,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
@@ -824,22 +824,234 @@
             },
             {
               "type": "tanker",
-              "count": 1,
+              "count": 3,
               "health": 12000,
               "speed": 0.8,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": 8000,
               "coinReward": 17
+            },
+            {
+              "type": "starter",
+              "count": 6,
+              "health": 4500,
+              "speed": 1.55,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 8000,
+              "coinReward": 14
+            },
+            {
+              "type": "speeder",
+              "count": 4,
+              "health": 2800,
+              "speed": 1.9,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": 8000,
+              "coinReward": 16,
+              "skin": "EYE"
+            },
+            {
+              "type": "starter",
+              "count": 7,
+              "health": 4500,
+              "speed": 1.55,
+              "path": "S1E2",
+              "interval": 850,
+              "firstDelay": 17000,
+              "coinReward": 14
+            },
+            {
+              "type": "starter",
+              "count": 7,
+              "health": 4500,
+              "speed": 1.55,
+              "path": "S2E3",
+              "interval": 850,
+              "firstDelay": 17000,
+              "coinReward": 14
+            }
+          ]
+        },
+        {
+          "level": 10,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.6,
+              "path": "S1E1",
+              "interval": 800,
+              "firstDelay": 0,
+              "coinReward": 15
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.6,
+              "path": "S2E2",
+              "interval": 800,
+              "firstDelay": 0,
+              "coinReward": 15
+            },
+            {
+              "type": "basic",
+              "count": 7,
+              "health": 5000,
+              "speed": 1.6,
+              "path": "S3E3",
+              "interval": 800,
+              "firstDelay": 0,
+              "coinReward": 15
+            },
+            {
+              "type": "tanker",
+              "count": 6,
+              "health": 14000,
+              "speed": 0.8,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 6500,
+              "coinReward": 20,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 6,
+              "health": 14000,
+              "speed": 0.8,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 6500,
+              "coinReward": 20,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 6,
+              "health": 14000,
+              "speed": 0.8,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 6500,
+              "coinReward": 20,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 4000,
+              "speed": 1.4,
+              "path": "S1E1",
+              "interval": 100,
+              "firstDelay": 15000,
+              "coinReward": 18,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 4000,
+              "speed": 1.4,
+              "path": "S2E2",
+              "interval": 100,
+              "firstDelay": 15000,
+              "coinReward": 18,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 4000,
+              "speed": 1.4,
+              "path": "S3E3",
+              "interval": 100,
+              "firstDelay": 15000,
+              "coinReward": 18,
+              "skin": "EYE"
+            },
+            {
+              "type": "speeder",
+              "count": 6,
+              "health": 3000,
+              "speed": 1.9,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": 20000,
+              "coinReward": 20
+            },
+            {
+              "type": "speeder",
+              "count": 6,
+              "health": 3000,
+              "speed": 1.9,
+              "path": "S3E1",
+              "interval": 1000,
+              "firstDelay": 20000,
+              "coinReward": 20
+            },
+            {
+              "type": "boss_lvl_10",
+              "count": 1,
+              "health": 30000,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 29000,
+              "coinReward": 200
+            },
+            {
+              "type": "boss_lvl_10",
+              "count": 1,
+              "health": 30000,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 29000,
+              "coinReward": 200
+            },
+            {
+              "type": "boss_lvl_10",
+              "count": 1,
+              "health": 30000,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 29000,
+              "coinReward": 200
+            }
+          ]
+        },
+        {
+          "level": 11,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10000,
+              "health": 200,
+              "speed": 1.5,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 2
             }
           ]
         }
       ],
       "enemyEffects": [
         {
-          "type": "starter",
+          "type": "shaker",
           "shakeDuration": 3000,
           "shakeIntensity": 5
+        },
+        {
+          "type": "boss_lvl_10",
+          "shakeDuration": 4000,
+          "shakeIntensity": 7
         }
       ],
       "enemyTypes": [
@@ -852,7 +1064,8 @@
         "boss_lvl_5",
         "double",
         "snake",
-        "super-tank"
+        "super-tank",
+        "boss_lvl_10"
       ],
       "enemyDamage": [
         {
@@ -866,6 +1079,10 @@
         {
           "type": "dmg_3",
           "damage": 3
+        },
+        {
+          "type": "boss_lvl_10",
+          "damage": 5
         }
       ]
     }
