@@ -86,6 +86,23 @@ function clampToSettings(value, settings) {
     return Math.min(settings.max, Math.max(settings.min, value));
 }
 
+/** Number of decimal digits in a step value, e.g. 0.1 -> 1, 10 -> 0. */
+function stepDecimals(step) {
+    const str = String(step);
+    const dot = str.indexOf('.');
+    return dot === -1 ? 0 : str.length - dot - 1;
+}
+
+/** Rounds to the step's own decimal precision, so repeatedly adding a
+ *  fractional step (e.g. 0.1) can't drift into IEEE754 float noise like
+ *  6.199999999999999 - it snaps back to a clean 6.2 every time. */
+function roundToStep(value, step) {
+    const decimals = stepDecimals(step);
+    if (decimals === 0) return Math.round(value);
+    const factor = 10 ** decimals;
+    return Math.round(value * factor) / factor;
+}
+
 function applyStep(input, direction, settings) {
     // Some panels (e.g. the tower cards) rebuild their whole innerHTML on
     // every 'change' - including the one this function is about to dispatch
@@ -95,7 +112,8 @@ function applyStep(input, direction, settings) {
     // node forever, so bail out as soon as it's no longer connected.
     if (!input.isConnected) return false;
 
-    const next = clampToSettings(readValue(input) + direction * settings.step, settings);
+    const stepped = roundToStep(readValue(input) + direction * settings.step, settings.step);
+    const next = clampToSettings(stepped, settings);
     input.value = String(next);
 
     // Re-dispatch as if the user had typed the new value: lets any existing

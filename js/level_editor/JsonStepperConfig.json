@@ -16,22 +16,22 @@
   },
   "tower_damage": {
     "step": 10,
-    "min": 0,
+    "min": 1,
     "hold": true
   },
   "tower_fire_rate": {
     "step": 100,
-    "min": 0,
+    "min": 1,
     "hold": true
   },
   "tower_range": {
     "step": 100,
-    "min": 0,
+    "min": 1,
     "hold": true
   },
   "tower_speed": {
     "step": 1,
-    "min": 0,
+    "min": 0.1,
     "hold": false
   },
   "tower_sell_price": {
@@ -42,26 +42,39 @@
   "ability_cooldown": {
     "step": 1000,
     "min": 1,
-    "hold": false
+    "hold": true
   },
   "ability_duration": {
     "step": 1000,
     "min": 1,
-    "hold": false
+    "hold": true
   },
   "lava_floor_damage": {
     "step": 100,
     "min": 1,
-    "hold": false
+    "hold": true
   },
   "lava_floor_damage_frequency": {
     "step": 100,
     "min": 1,
-    "hold": false
+    "hold": true
   },
   "lava_floor_selection_count": {
     "step": 1,
     "min": 1,
+    "hold": true
+  },
+  "fury_damage_mul": {
+    "step": 0.1,
+    "min": 0.01,
+    "hold": false
+  },
+  "fury_speed_mul": {
+    "step": 0.1,
+    "hold": false
+  },
+  "fury_fire_rate_mul": {
+    "step": 0.1,
     "hold": false
   }
 }

@@ -136,27 +136,27 @@ export const abilityEditor = (() => {
                 ${isFury ? `
                     <div class="ability-fury-modifiers">
                         <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                            <div class="stat-row">${formatStat(ability.modifiers?.damage_mul || 1)} <span class="stat-label">Damage</span></div>
+                            <div class="stat-row">${formatStat(ability.modifiers?.damage_mul ?? 1)} <span class="stat-label">Damage</span></div>
                             <div class="stat-row">
-                                ${formatStat(ability.modifiers?.speed_mul || 1)} <span class="stat-label">Speed</span> | 
-                                ${formatStat(ability.modifiers?.fireRate_mul || 1, true)} <span class="stat-label">Fire Rate</span>
+                                ${formatStat(ability.modifiers?.speed_mul ?? 1)} <span class="stat-label">Speed</span> |
+                                ${formatStat(ability.modifiers?.fireRate_mul ?? 1, true)} <span class="stat-label">Fire Rate</span>
                             </div>
                         </div>
                         <p style="font-weight: bold; font-size: 0.8em; margin: 5px 0;">MODIFIERS (1.0 = 0% Bonus)</p>
-                        
+
                         <label class="editor-row">
-                            <span class="label-text">Dmg Mul <i class="info-icon" data-tooltip="ability.towers-fury-damage-multiplier">i</i></span>
-                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.damage_mul" value="${formatNumber(ability.modifiers?.damage_mul || 1)}">
+                            <span class="label-text">Damage Multiplier <i class="info-icon" data-tooltip="ability.towers-fury-damage-multiplier">i</i></span>
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.damage_mul" data-json-stepper="fury_damage_mul" value="${formatNumber(ability.modifiers?.damage_mul ?? 1)}">
                         </label>
 
                         <label class="editor-row">
-                            <span class="label-text">Speed Mul <i class="info-icon" data-tooltip="ability.towers-fury-speed-multiplier">i</i></span>
-                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.speed_mul" value="${formatNumber(ability.modifiers?.speed_mul || 1)}">
+                            <span class="label-text">Speed Multiplier <i class="info-icon" data-tooltip="ability.towers-fury-speed-multiplier">i</i></span>
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.speed_mul" data-json-stepper="fury_speed_mul" value="${formatNumber(ability.modifiers?.speed_mul ?? 1)}">
                         </label>
 
                         <label class="editor-row">
                             <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury-fire-rate">i</i></span>
-                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.fireRate_mul" value="${formatNumber(ability.modifiers?.fireRate_mul || 1)}">
+                            <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.fireRate_mul" data-json-stepper="fury_fire_rate_mul" value="${formatNumber(ability.modifiers?.fireRate_mul ?? 1)}">
                         </label>
                     </div>
                 ` : `
@@ -166,7 +166,7 @@ export const abilityEditor = (() => {
                     </label>
 
                     <label class="editor-row">
-                        <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor-damage-frequency">i</i></span>
+                        <span class="label-text">Frequency (ms) <i class="info-icon" data-tooltip="ability.lava-floor-damage-frequency">i</i></span>
                         <input type="text" inputmode="numeric" class="input-thousands" data-key="damage_every" data-json-stepper="lava_floor_damage_frequency" value="${formatNumber(ability.damage_every || 0)}">
                     </label>
 
