@@ -639,7 +639,7 @@
               "path": "S1E3",
               "interval": 1000,
               "firstDelay": 12000,
-              "coinReward": 1,
+              "coinReward": 13,
               "skin": "EYE"
             }
           ]
