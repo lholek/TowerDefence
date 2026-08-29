@@ -290,6 +290,12 @@ export async function initJsonSteppers(root = document) {
 
         const wrap = document.createElement('div');
         wrap.className = 'json-stepper-wrap';
+        // Callers can flag an input with an extra class (e.g. "json-stepper-enemy")
+        // to have it carried over onto the wrap, since the wrap - not the input -
+        // is the flex box whose width actually needs constraining.
+        if (input.classList.contains('json-stepper-enemy')) {
+            wrap.classList.add('json-stepper-enemy');
+        }
         input.parentNode.insertBefore(wrap, input);
 
         const btnGroup = document.createElement('div');

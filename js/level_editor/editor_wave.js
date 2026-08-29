@@ -107,10 +107,11 @@ export const initialize = (refs) => {
     // Tohle vynutí vykreslení hned při startu
     waveEditor.renderDamageRepeater();
 
-    // A JsonStepper hold skips the Effects/Damage rebuilds above for as long as
-    // it's running (see updateEffect/updateEnemyDamage's isStepperHoldActive()
-    // guards), so catch back up with one rebuild once it lets go.
+    // A JsonStepper hold skips the Wave/Effects/Damage rebuilds above for as long
+    // as it's running (see attachChangeListeners/updateEffect/updateEnemyDamage's
+    // isStepperHoldActive() guards), so catch back up with one rebuild once it lets go.
     document.addEventListener(RELEASE_EVENT, () => {
+        waveEditor.renderWaveRepeater(getCurrentMap().levels);
         waveEditor.renderEffectsRepeater();
         waveEditor.renderDamageRepeater();
     });
@@ -240,17 +241,17 @@ export const waveEditor = (() => {
     
                     <label class="editor-row">
                         <span class="label-text">⭐ Count <i class="info-icon" data-tooltip="wave-editor.count">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="count" value="${formatNumber(enemy.count)}">
+                        <input type="text" inputmode="numeric" class="input-thousands json-stepper-enemy" data-key="count" data-json-stepper="wave_count" value="${formatNumber(enemy.count)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">❤️ Health <i class="info-icon" data-tooltip="wave-editor.health">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="health" value="${formatNumber(enemy.health)}">
+                        <input type="text" inputmode="numeric" class="input-thousands json-stepper-enemy" data-key="health" data-json-stepper="wave_health" value="${formatNumber(enemy.health)}">
                     </label>
-    
+
                     <label class="editor-row">
                         <span class="label-text">🗲 Speed <i class="info-icon" data-tooltip="wave-editor.speed">i</i></span>
-                        <input type="text" inputmode="decimal" class="input-thousands" data-key="speed" value="${formatNumber(enemy.speed)}">
+                        <input type="text" inputmode="decimal" class="input-thousands json-stepper-enemy" data-key="speed" data-json-stepper="wave_speed" value="${formatNumber(enemy.speed)}">
                     </label>
     
                     <label class="editor-row">
@@ -267,17 +268,17 @@ export const waveEditor = (() => {
     
                     <label class="editor-row">
                         <span class="label-text">🕒 Interval <i class="info-icon" data-tooltip="wave-editor.interval">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="interval" value="${formatNumber(enemy.interval)}">
+                        <input type="text" inputmode="numeric" class="input-thousands json-stepper-enemy" data-key="interval" data-json-stepper="wave_interval" value="${formatNumber(enemy.interval)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">⏳ First Delay <i class="info-icon" data-tooltip="wave-editor.first-delay">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="firstDelay" value="${formatNumber(enemy.firstDelay)}">
+                        <input type="text" inputmode="numeric" class="input-thousands json-stepper-enemy" data-key="firstDelay" data-json-stepper="wave_first_delay" value="${formatNumber(enemy.firstDelay)}">
                     </label>
-    
+
                     <label class="editor-row">
                         <span class="label-text">🪙 Coin Reward <i class="info-icon" data-tooltip="wave-editor.coin-reward">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="coinReward" value="${formatNumber(enemy.coinReward)}">
+                        <input type="text" inputmode="numeric" class="input-thousands json-stepper-enemy" data-key="coinReward" data-json-stepper="wave_coin_reward" value="${formatNumber(enemy.coinReward)}">
                     </label>
     
                 </div>
@@ -458,6 +459,9 @@ export const waveEditor = (() => {
         attachChangeListeners();
         attachDeleteListeners();
         setupPathAutocomplete();
+        // Rebuilding innerHTML above throws away any previous stepper wrap
+        // (see editor_tower.js), so re-wrap the fresh .json-stepper inputs here.
+        initJsonSteppers(contentContainer);
     };
 
     // --- Interaction Functions ---
@@ -521,8 +525,13 @@ export const waveEditor = (() => {
 
                         if(levels[waveIndex]?.enemies?.[enemyIndex]) {
                             levels[waveIndex].enemies[enemyIndex][key] = value;
-                            // Re-render the repeater to update the Total Coins label
-                            renderWaveRepeater(levels);
+                            // Re-render the repeater to update the Total Coins label -
+                            // except mid-hold (see JsonStepper.js's isStepperHoldActive()),
+                            // where rebuilding this row out from under a running hold would
+                            // orphan its repeat timer after just one step.
+                            if (!isStepperHoldActive()) {
+                                renderWaveRepeater(levels);
+                            }
                         }
                     } else if (waveCard) {
                         // Handle wave property change (e.g., _comment)

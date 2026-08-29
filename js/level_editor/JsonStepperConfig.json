@@ -91,5 +91,35 @@
   "enemy_damage": {
     "step": 1,
     "hold": true
+  },
+  "wave_count": {
+    "step": 1,
+    "min": 1,
+    "hold": true
+  },
+  "wave_health": {
+    "step": 1000,
+    "min": 1,
+    "hold": true
+  },
+  "wave_speed": {
+    "step": 0.1,
+    "min": 0.1,
+    "hold": true
+  },
+  "wave_interval": {
+    "step": 1000,
+    "min": 0,
+    "hold": true
+  },
+  "wave_first_delay": {
+    "step": 1000,
+    "min": 0,
+    "hold": true
+  },
+  "wave_coin_reward": {
+    "step": 1,
+    "min": 0,
+    "hold": true
   }
 }
