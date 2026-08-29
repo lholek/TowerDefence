@@ -222,7 +222,21 @@ function installClampListener() {
     }, true);
 }
 
-function makeButton(symbol, direction, input, settings) {
+/**
+ * Builds the "[Min value: x, Max value: y]" suffix for a stepper button's
+ * tooltip - only whichever of the two bounds are actually set in
+ * JsonStepperConfig.json (not applyStep()'s -Infinity/Infinity stand-ins for
+ * "unset"), so the printed number can never drift from the one the buttons
+ * themselves enforce. Returns '' when neither bound is configured.
+ */
+function buildRangeHintText(entry) {
+    const parts = [];
+    if (entry?.min !== undefined) parts.push(`Min value: ${entry.min}`);
+    if (entry?.max !== undefined) parts.push(`Max value: ${entry.max}`);
+    return parts.length ? ` [${parts.join(', ')}]` : '';
+}
+
+function makeButton(symbol, direction, input, settings, rangeHintText) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = `json-stepper-btn ${direction > 0 ? 'json-stepper-plus' : 'json-stepper-minus'}`;
@@ -232,10 +246,12 @@ function makeButton(symbol, direction, input, settings) {
     // just fed a runtime-computed value instead of a JSON-description lookup -
     // the delta text is derived straight from `settings.step`, never re-typed.
     // No visual change to the button itself - hold:true just earns an extra
-    // hint appended to that same tooltip text, straight off settings.hold.
+    // hint appended to that same tooltip text, straight off settings.hold, and
+    // the configured min/max (if any) tags along after that.
     const delta = `${direction > 0 ? '+' : '-'}${settings.step}`;
     const holdHint = direction > 0 ? 'hold to increase faster' : 'hold to decrease faster';
-    btn.dataset.tooltipText = settings.hold ? `${delta} (${holdHint})` : delta;
+    const base = settings.hold ? `${delta} (${holdHint})` : delta;
+    btn.dataset.tooltipText = `${base}${rangeHintText}`;
     btn.setAttribute('aria-label', direction > 0 ? `Increase by ${settings.step}` : `Decrease by ${settings.step}`);
     btn.tabIndex = -1; // keep tab order landing on the input, not the buttons
 
@@ -270,6 +286,7 @@ export async function initJsonSteppers(root = document) {
             hold: entry?.hold ?? false,
         };
         stepperSettings.set(input, settings);
+        const rangeHintText = buildRangeHintText(entry);
 
         const wrap = document.createElement('div');
         wrap.className = 'json-stepper-wrap';
@@ -277,8 +294,8 @@ export async function initJsonSteppers(root = document) {
 
         const btnGroup = document.createElement('div');
         btnGroup.className = 'json-stepper-btn-group';
-        btnGroup.appendChild(makeButton('−', -1, input, settings));
-        btnGroup.appendChild(makeButton('+', 1, input, settings));
+        btnGroup.appendChild(makeButton('−', -1, input, settings, rangeHintText));
+        btnGroup.appendChild(makeButton('+', 1, input, settings, rangeHintText));
 
         wrap.appendChild(input);
         wrap.appendChild(btnGroup);
