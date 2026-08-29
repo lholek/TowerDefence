@@ -793,13 +793,44 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 10000,
-              "health": 200,
-              "speed": 1.5,
+              "count": 6,
+              "health": 4500,
+              "speed": 1.55,
+              "path": "S1E2",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 14
+            },
+            {
+              "type": "snake",
+              "count": 8,
+              "health": 3000,
+              "speed": 1.25,
+              "path": "S2E2",
+              "interval": 100,
+              "firstDelay": 0,
+              "coinReward": 16,
+              "skin": "EYE"
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 4500,
+              "speed": 1.55,
+              "path": "S3E1",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 14
+            },
+            {
+              "type": "tanker",
+              "count": 1,
+              "health": 12000,
+              "speed": 0.8,
               "path": "S1E1",
               "interval": 1000,
-              "firstDelay": 0,
-              "coinReward": 2
+              "firstDelay": 8000,
+              "coinReward": 17
             }
           ]
         }
@@ -819,7 +850,9 @@
         "dmg_2",
         "dmg_3",
         "boss_lvl_5",
-        "double"
+        "double",
+        "snake",
+        "super-tank"
       ],
       "enemyDamage": [
         {
