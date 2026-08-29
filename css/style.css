@@ -454,7 +454,7 @@ canvas {
     display: grid;
     grid-template-columns: repeat(2, 0fr);
     grid-auto-rows: auto;
-    gap: 7px;
+    gap: 4px 7px;
 
     /* Center the whole grid block */
     place-content: center;
@@ -462,7 +462,7 @@ canvas {
     align-items: center;
 
     /* Make text smaller */
-    font-size: 0.9em;
+    font-size: 0.82em;
     font-weight: bold;
 
     opacity: 0;
