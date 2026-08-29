@@ -52,6 +52,12 @@ export function isStepperHoldActive() {
     return holdInProgress;
 }
 
+// Settings per wrapped input, keyed so the global clamp listener below (which
+// only ever sees the DOM element, not the closure that built it) can look up
+// the same min/max it was configured with.
+const stepperSettings = new WeakMap();
+let clampListenerInstalled = false;
+
 let configPromise = null;
 
 /** Fetches JsonStepperConfig.json once and caches the promise. */
@@ -75,6 +81,11 @@ function readValue(input) {
     return Number.isNaN(num) ? 0 : num;
 }
 
+/** Clamps a numeric value into a settings entry's [min, max] range. */
+function clampToSettings(value, settings) {
+    return Math.min(settings.max, Math.max(settings.min, value));
+}
+
 function applyStep(input, direction, settings) {
     // Some panels (e.g. the tower cards) rebuild their whole innerHTML on
     // every 'change' - including the one this function is about to dispatch
@@ -84,8 +95,7 @@ function applyStep(input, direction, settings) {
     // node forever, so bail out as soon as it's no longer connected.
     if (!input.isConnected) return false;
 
-    const { step, min, max } = settings;
-    const next = Math.min(max, Math.max(min, readValue(input) + direction * step));
+    const next = clampToSettings(readValue(input) + direction * settings.step, settings);
     input.value = String(next);
 
     // Re-dispatch as if the user had typed the new value: lets any existing
@@ -168,6 +178,32 @@ function bindHold(btn, input, direction, settings) {
     });
 }
 
+/**
+ * Enforces each stepper input's configured min/max against manually-typed
+ * values too, not just the +/- buttons (applyStep() only clamps its own
+ * step math, so typing a value by hand bypassed it entirely). Installed once,
+ * globally, as a single capture-phase 'change' listener on `document`: for an
+ * ancestor listener the capturing phase always runs before the target's own
+ * phase, regardless of which was registered first, so this sees the field's
+ * value and snaps it back in range before the editor's own 'change' handler
+ * (registered directly on the input) reads it to save into the JSON.
+ */
+function installClampListener() {
+    if (clampListenerInstalled) return;
+    clampListenerInstalled = true;
+
+    document.addEventListener('change', (e) => {
+        const input = e.target;
+        if (!input.hasAttribute?.('data-json-stepper')) return;
+        const settings = stepperSettings.get(input);
+        if (!settings) return;
+
+        const raw = readValue(input);
+        const clamped = clampToSettings(raw, settings);
+        if (clamped !== raw) input.value = String(clamped);
+    }, true);
+}
+
 function makeButton(symbol, direction, input, settings) {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -197,6 +233,7 @@ function makeButton(symbol, direction, input, settings) {
  * @param {Document|HTMLElement} [root]
  */
 export async function initJsonSteppers(root = document) {
+    installClampListener();
     const config = await loadConfig();
 
     root.querySelectorAll('[data-json-stepper]').forEach((input) => {
@@ -214,6 +251,7 @@ export async function initJsonSteppers(root = document) {
             max: entry?.max ?? Infinity,
             hold: entry?.hold ?? false,
         };
+        stepperSettings.set(input, settings);
 
         const wrap = document.createElement('div');
         wrap.className = 'json-stepper-wrap';

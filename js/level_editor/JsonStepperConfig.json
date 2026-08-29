@@ -1,7 +1,7 @@
 {
   "starting_lifes": {
     "step": 1,
-    "min": 0,
+    "min": 1,
     "hold": true
   },
   "starting_coins": {
@@ -38,5 +38,30 @@
     "step": 10,
     "min": 0,
     "hold": true
+  },
+  "ability_cooldown": {
+    "step": 1000,
+    "min": 1,
+    "hold": false
+  },
+  "ability_duration": {
+    "step": 1000,
+    "min": 1,
+    "hold": false
+  },
+  "lava_floor_damage": {
+    "step": 100,
+    "min": 1,
+    "hold": false
+  },
+  "lava_floor_damage_frequency": {
+    "step": 100,
+    "min": 1,
+    "hold": false
+  },
+  "lava_floor_selection_count": {
+    "step": 1,
+    "min": 1,
+    "hold": false
   }
 }

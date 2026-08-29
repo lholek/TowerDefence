@@ -3,6 +3,7 @@
 import { getCurrentMap } from './level_data.js'; // To access the abilities data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
+import { initJsonSteppers, RELEASE_EVENT } from './JsonStepper.js';
 
 // Every modifyJson(...) call in this file edits an ability, so tag it 'ability' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -56,8 +57,15 @@ export const initialize = () => {
     const addAbilityButton = document.getElementById('add-ability-button');
     if (addAbilityButton) {
         // Attach the public function to the button
-        addAbilityButton.addEventListener('click', abilityEditor.addAbility); 
+        addAbilityButton.addEventListener('click', abilityEditor.addAbility);
     }
+
+    // A JsonStepper hold skips json_functions.js's rebuild of this panel for
+    // as long as it's running (see modifyJson's isStepperHoldActive() guard),
+    // so catch back up with one rebuild once it lets go.
+    document.addEventListener(RELEASE_EVENT, () => {
+        abilityEditor.renderAbilityRepeater(getCurrentMap().abilities);
+    });
 };
 // --- Main Ability Editor Public Interface ---
 
@@ -117,12 +125,12 @@ export const abilityEditor = (() => {
 
                 <label class="editor-row">
                     <span class="label-text">Cooldown (ms) <i class="info-icon" data-tooltip="ability.cooldown">i</i></span>
-                    <input type="text" inputmode="numeric" class="input-thousands" data-key="cooldown" value="${formatNumber(ability.cooldown)}">
+                    <input type="text" inputmode="numeric" class="input-thousands" data-key="cooldown" data-json-stepper="ability_cooldown" value="${formatNumber(ability.cooldown)}">
                 </label>
 
                 <label class="editor-row">
                     <span class="label-text">Duration (ms) <i class="info-icon" data-tooltip="ability.duration">i</i></span>
-                    <input type="text" inputmode="numeric" class="input-thousands" data-key="effectDuration" value="${formatNumber(ability.effectDuration)}">
+                    <input type="text" inputmode="numeric" class="input-thousands" data-key="effectDuration" data-json-stepper="ability_duration" value="${formatNumber(ability.effectDuration)}">
                 </label>
 
                 ${isFury ? `
@@ -154,17 +162,17 @@ export const abilityEditor = (() => {
                 ` : `
                     <label class="editor-row">
                         <span class="label-text">Damage <i class="info-icon" data-tooltip="ability.lava-floor-damage">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage" value="${formatNumber(ability.damage || 0)}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage" data-json-stepper="lava_floor_damage" value="${formatNumber(ability.damage || 0)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">Dmg Frequency <i class="info-icon" data-tooltip="ability.lava-floor-damage-frequency">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage_every" value="${formatNumber(ability.damage_every || 0)}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="damage_every" data-json-stepper="lava_floor_damage_frequency" value="${formatNumber(ability.damage_every || 0)}">
                     </label>
 
                     <label class="editor-row">
                         <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.lava-floor-selection-count">i</i></span>
-                        <input type="text" inputmode="numeric" class="input-thousands" data-key="selectionCount" value="${formatNumber(ability.selectionCount || 1)}">
+                        <input type="text" inputmode="numeric" class="input-thousands" data-key="selectionCount" data-json-stepper="lava_floor_selection_count" value="${formatNumber(ability.selectionCount || 1)}">
                     </label>
                 `}
             </div>
@@ -175,6 +183,9 @@ export const abilityEditor = (() => {
         contentContainer.innerHTML = html;
         attachChangeListeners();
         attachDeleteListeners();
+        // Rebuilding innerHTML above throws away any previous stepper wrap,
+        // so re-wrap the fresh .json-stepper inputs here (see editor_tower.js).
+        initJsonSteppers(contentContainer);
     };
         
     const attachDeleteListeners = () => {
