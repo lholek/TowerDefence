@@ -18,9 +18,15 @@ LONG TODOS:
 ---------------------------------------------------------------------------------------------
 Pre-beta V.:
   "TODO: Improve - PERFORMANCE BOOST"
+    - Mostly not about content, purely engine perf. Target: 40 enemies + 20 towers + 2 concurrent Towers Fury, sustained 120+ FPS.
+    - Tower targeting (Tower.js): sort in-range candidates by distance, run checkLineOfSight() only from nearest outward with early-exit (same "nearest with clear LOS" result, fewer LOS checks). Consider a spatial grid so a tower only scans nearby enemies instead of the whole list.
+    - Bullet terrain check (Bullet.js): replace the chained === blocking-tile comparisons with a Set lookup; skip the check entirely while a bullet stays inside the same tile it was last checked in.
+    - Towers Fury multiplier (Tower.js): compute once per frame (Game/AbilityManager), pass the result into each tower's update() instead of every tower re-scanning all abilities.
+    - updateUI() batching (Game.js): call it once after the enemies.filter() pass instead of once per kill/escape in the same frame.
+    - All of the above should be behavior-preserving (same target picked, same bullet collision moment, same buffs, same final UI values) - pure implementation speedups, not gameplay changes.
   "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
   "TODO: Improve - Menu - New Game Selector ??",
-  "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta IV ??]",
+  "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta V ??]",
   "TODO: Improve - Hero Camping",
 
 Beta 1.0
