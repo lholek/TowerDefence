@@ -12,13 +12,13 @@ LONG TODOS:
   " + bulding time" , " + zvuky stavění"
 + New Ability - 'Lightining strikes, strikes directly enemies'
 + New Ability - 'Swamp'
-  "TODO: Improve - PERFORMANCE BOOST"
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
   "???TODO: New Ability - 'Freeze'",
-  "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
 ---------------------------------------------------------------------------------------------
 Pre-beta V.:
+  "TODO: Improve - PERFORMANCE BOOST"
+  "TODO: Improve - Gameplay - Improve arrow calculations to improve Performance",
   "TODO: Improve - Menu - New Game Selector ??",
   "TODO: Improve - Do something about LORE maybe first campaign?? [Pre-beta IV ??]",
   "TODO: Improve - Hero Camping",
