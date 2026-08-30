@@ -607,6 +607,13 @@
   justify-content: center;
 }
 
+/* Match the pause menu's smaller button size (the generic .btn is 12px/24px,
+   and .overlay-content button below bumps font-size up to 1.2rem) */
+.final-status-button-grid button {
+  border-radius: 6px;
+  font-size: 13.3333px;
+}
+
 /* Custom class for the 2-column stats layout */
 .stats-grid-container {
     display: grid;

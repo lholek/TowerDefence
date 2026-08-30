@@ -481,7 +481,10 @@ export default class Game {
                   ⏱️ Time Elapsed: ${timeString}
               </div>
             </div>
-                <button id="btnContinueToMenu" class="btn btn-primary">Main Menu</button>
+                <div class="final-status-button-grid">
+                    <button id="btnRestartFromEnd" class="btn btn-primary">Restart</button>
+                    <button id="btnContinueToMenu" class="btn btn-primary">Main Menu</button>
+                </div>
         </div>
     `;
 
@@ -493,7 +496,14 @@ export default class Game {
         overlay.classList.add('d-none');
         const gameSpeedSelect = document.getElementById('gameSpeedSelect');
         if (gameSpeedSelect) gameSpeedSelect.value = "1";
-        this.resetGameToMenu(); 
+        this.resetGameToMenu();
+    };
+
+    // Restart - unlike the pause menu's Restart, this one needs no "Sure?"
+    // confirmation: the run is already over, there's nothing left to lose.
+    document.getElementById('btnRestartFromEnd').onclick = () => {
+        overlay.classList.add('d-none');
+        window.restartCurrentGame?.();
     };
   }
 
