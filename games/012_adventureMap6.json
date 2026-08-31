@@ -21,8 +21,8 @@
       ],
       "description": [
         {
-          "descriptionText": "6th Adventure map - Fiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
-          "level count": 16,
+          "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
+          "level count": 17,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
@@ -1615,13 +1615,137 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 10000,
-              "health": 200,
-              "speed": 1.5,
+              "count": 6,
+              "health": 20000,
+              "speed": 1.8,
+              "path": "S1E1",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 36
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 20000,
+              "speed": 1.8,
+              "path": "S2E2",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 36
+            },
+            {
+              "type": "basic",
+              "count": 6,
+              "health": 20000,
+              "speed": 1.8,
+              "path": "S3E3",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 36
+            },
+            {
+              "type": "tanker",
+              "count": 4,
+              "health": 50000,
+              "speed": 0.8,
+              "path": "S1E3",
+              "interval": 700,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 4,
+              "health": 50000,
+              "speed": 0.8,
+              "path": "S2E3",
+              "interval": 700,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 4,
+              "health": 50000,
+              "speed": 0.8,
+              "path": "S3E3",
+              "interval": 700,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 9000,
+              "coinReward": 45,
+              "skin": "EYE"
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 9000,
+              "coinReward": 45,
+              "skin": "EYE"
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 9000,
+              "coinReward": 45,
+              "skin": "EYE"
+            },
+            {
+              "type": "super-tank",
+              "count": 1,
+              "health": 100000,
+              "speed": 0.6,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 12000,
+              "coinReward": 100,
+              "skin": "GOLEM"
+            }
+          ]
+        },
+        {
+          "level": 17,
+          "enemies": [
+            {
+              "type": "double",
+              "count": 6,
+              "health": 30000,
+              "speed": 1.6,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 2
+              "coinReward": 38,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "double",
+              "count": 6,
+              "health": 30000,
+              "speed": 1.6,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 0,
+              "coinReward": 38,
+              "skin": "GOLEM"
             }
           ]
         }
