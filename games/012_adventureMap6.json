@@ -1733,7 +1733,7 @@
               "path": "S2E1",
               "interval": 700,
               "firstDelay": 0,
-              "coinReward": 38
+              "coinReward": 40
             },
             {
               "type": "tanker",
@@ -1743,7 +1743,7 @@
               "path": "S3E3",
               "interval": 700,
               "firstDelay": 0,
-              "coinReward": 42,
+              "coinReward": 45,
               "skin": "GOLEM"
             },
             {
@@ -1754,7 +1754,7 @@
               "path": "S1E2",
               "interval": 700,
               "firstDelay": 0,
-              "coinReward": 40,
+              "coinReward": 42,
               "skin": "EYE"
             },
             {
@@ -1765,7 +1765,7 @@
               "path": "S1E1",
               "interval": 100,
               "firstDelay": 5000,
-              "coinReward": 40,
+              "coinReward": 45,
               "skin": "EYE"
             },
             {
@@ -1776,7 +1776,7 @@
               "path": "S2E2",
               "interval": 100,
               "firstDelay": 5000,
-              "coinReward": 40,
+              "coinReward": 45,
               "skin": "EYE"
             },
             {
@@ -1787,7 +1787,7 @@
               "path": "S3E3",
               "interval": 100,
               "firstDelay": 5000,
-              "coinReward": 40,
+              "coinReward": 45,
               "skin": "EYE"
             },
             {
@@ -1797,8 +1797,8 @@
               "speed": 1.85,
               "path": "S1E1",
               "interval": 700,
-              "firstDelay": 0,
-              "coinReward": 38
+              "firstDelay": 8000,
+              "coinReward": 40
             },
             {
               "type": "starter",
@@ -1807,8 +1807,8 @@
               "speed": 1.85,
               "path": "S2E2",
               "interval": 700,
-              "firstDelay": 0,
-              "coinReward": 38
+              "firstDelay": 8000,
+              "coinReward": 40
             },
             {
               "type": "starter",
@@ -1817,8 +1817,8 @@
               "speed": 1.85,
               "path": "S3E3",
               "interval": 700,
-              "firstDelay": 0,
-              "coinReward": 38
+              "firstDelay": 8000,
+              "coinReward": 40
             }
           ]
         },
@@ -1827,13 +1827,13 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 10,
-              "health": 200,
-              "speed": 1.5,
+              "count": 7,
+              "health": 40000,
+              "speed": 1.9,
               "path": "S1E1",
-              "interval": 1000,
+              "interval": 750,
               "firstDelay": 0,
-              "coinReward": 2
+              "coinReward": 45
             }
           ]
         }
