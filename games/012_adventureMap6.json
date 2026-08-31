@@ -22,7 +22,7 @@
       "description": [
         {
           "descriptionText": "6th Adventure map\nFiery portal opened in this part of the realm. Our sacred trees are the most important things to protect. Without this protection, we are done. Only the bravest strategists and generals can save our land... Face massive waves of enemies in the map featuring brand new terrains.",
-          "level count": 17,
+          "level count": 18,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x25",
           "tower types": 8,
@@ -1726,26 +1726,114 @@
           "level": 17,
           "enemies": [
             {
-              "type": "double",
-              "count": 6,
+              "type": "basic",
+              "count": 7,
               "health": 30000,
-              "speed": 1.6,
-              "path": "S1E1",
-              "interval": 1000,
+              "speed": 1.85,
+              "path": "S2E1",
+              "interval": 700,
               "firstDelay": 0,
-              "coinReward": 38,
+              "coinReward": 38
+            },
+            {
+              "type": "tanker",
+              "count": 6,
+              "health": 70000,
+              "speed": 0.85,
+              "path": "S3E3",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 42,
               "skin": "GOLEM"
             },
             {
-              "type": "double",
+              "type": "speeder",
+              "count": 7,
+              "health": 15000,
+              "speed": 2.3,
+              "path": "S1E2",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 40,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S1E1",
+              "interval": 100,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S2E2",
+              "interval": 100,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 25000,
+              "speed": 1.6,
+              "path": "S3E3",
+              "interval": 100,
+              "firstDelay": 5000,
+              "coinReward": 40,
+              "skin": "EYE"
+            },
+            {
+              "type": "starter",
               "count": 6,
               "health": 30000,
-              "speed": 1.6,
+              "speed": 1.85,
+              "path": "S1E1",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 38
+            },
+            {
+              "type": "starter",
+              "count": 6,
+              "health": 30000,
+              "speed": 1.85,
+              "path": "S2E2",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 38
+            },
+            {
+              "type": "starter",
+              "count": 6,
+              "health": 30000,
+              "speed": 1.85,
+              "path": "S3E3",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 38
+            }
+          ]
+        },
+        {
+          "level": 18,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 10,
+              "health": 200,
+              "speed": 1.5,
               "path": "S1E1",
               "interval": 1000,
               "firstDelay": 0,
-              "coinReward": 38,
-              "skin": "GOLEM"
+              "coinReward": 2
             }
           ]
         }
