@@ -1938,14 +1938,140 @@
           "level": 19,
           "enemies": [
             {
+              "type": "shaker",
+              "count": 1,
+              "health": 50000,
+              "speed": 1.75,
+              "path": "S1E1",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 56
+            },
+            {
               "type": "basic",
-              "count": 10,
+              "count": 8,
               "health": 45000,
               "speed": 1.95,
               "path": "S1E1",
-              "interval": 1000,
+              "interval": 850,
               "firstDelay": 0,
-              "coinReward": 2
+              "coinReward": 48
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 45000,
+              "speed": 1.95,
+              "path": "S2E1",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 48
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 45000,
+              "speed": 1.95,
+              "path": "S3E1",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 48
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S1E3",
+              "interval": 100,
+              "firstDelay": 8000,
+              "coinReward": 52,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S2E3",
+              "interval": 100,
+              "firstDelay": 8000,
+              "coinReward": 52,
+              "skin": "EYE"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S3E3",
+              "interval": 100,
+              "firstDelay": 8000,
+              "coinReward": 52,
+              "skin": "EYE"
+            },
+            {
+              "type": "super-tank-dmg-4",
+              "count": 1,
+              "health": 250000,
+              "speed": 0.6,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 18000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "super-tank-dmg-4",
+              "count": 1,
+              "health": 250000,
+              "speed": 0.6,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 18000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "super-tank-dmg-4",
+              "count": 1,
+              "health": 250000,
+              "speed": 0.6,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 18000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 23000,
+              "coinReward": 70
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 23000,
+              "coinReward": 70
+            },
+            {
+              "type": "dmg_3",
+              "count": 3,
+              "health": 45000,
+              "speed": 1.7,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 23000,
+              "coinReward": 70
             }
           ]
         },
@@ -1954,13 +2080,33 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 10,
+              "count": 8,
               "health": 50000,
               "speed": 2,
               "path": "S1E1",
-              "interval": 1000,
+              "interval": 700,
               "firstDelay": 0,
-              "coinReward": 2
+              "coinReward": 50
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 50000,
+              "speed": 2,
+              "path": "S2E2",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 50
+            },
+            {
+              "type": "basic",
+              "count": 8,
+              "health": 50000,
+              "speed": 2,
+              "path": "S3E3",
+              "interval": 700,
+              "firstDelay": 0,
+              "coinReward": 50
             }
           ]
         }
@@ -1993,6 +2139,7 @@
         "double",
         "snake",
         "super-tank",
+        "super-tank-dmg-4",
         "boss_lvl_10",
         "boss_lvl_15"
       ],
