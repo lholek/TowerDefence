@@ -2107,6 +2107,173 @@
               "interval": 700,
               "firstDelay": 0,
               "coinReward": 50
+            },
+            {
+              "type": "speeder",
+              "count": 8,
+              "health": 30000,
+              "speed": 3,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 8000,
+              "coinReward": 60,
+              "skin": "EYE"
+            },
+            {
+              "type": "speeder",
+              "count": 8,
+              "health": 30000,
+              "speed": 3,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 8000,
+              "coinReward": 60,
+              "skin": "EYE"
+            },
+            {
+              "type": "speeder",
+              "count": 8,
+              "health": 30000,
+              "speed": 3,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 8000,
+              "coinReward": 60,
+              "skin": "EYE"
+            },
+            {
+              "type": "super-tank",
+              "count": 3,
+              "health": 300000,
+              "speed": 0.65,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 20000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "super-tank",
+              "count": 3,
+              "health": 300000,
+              "speed": 0.65,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 20000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "super-tank",
+              "count": 3,
+              "health": 300000,
+              "speed": 0.65,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 20000,
+              "coinReward": 300,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 50000,
+              "speed": 1.75,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 28000,
+              "coinReward": 70
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 50000,
+              "speed": 1.75,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 28000,
+              "coinReward": 70
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 50000,
+              "speed": 1.75,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 28000,
+              "coinReward": 70
+            },
+            {
+              "type": "boss_lvl_20",
+              "count": 1,
+              "health": 500000,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "firstDelay": 40000,
+              "coinReward": 2000
+            },
+            {
+              "type": "boss_lvl_20",
+              "count": 1,
+              "health": 500000,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 40000,
+              "coinReward": 2000
+            },
+            {
+              "type": "boss_lvl_20",
+              "count": 1,
+              "health": 500000,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 40000,
+              "coinReward": 2000
+            },
+            {
+              "type": "boss_lvl_20_speeder",
+              "count": 1,
+              "health": 100000,
+              "speed": 2,
+              "path": "S1E3",
+              "interval": 1000,
+              "firstDelay": 45000,
+              "coinReward": 2000,
+              "skin": "EYE"
+            },
+            {
+              "type": "boss_lvl_20_tanker",
+              "count": 1,
+              "health": 500000,
+              "speed": 0.6,
+              "path": "S2E3",
+              "interval": 1000,
+              "firstDelay": 45000,
+              "coinReward": 2000
+            },
+            {
+              "type": "boss_lvl_20_snake",
+              "count": 7,
+              "health": 50000,
+              "speed": 1.2,
+              "path": "S3E3",
+              "interval": 100,
+              "firstDelay": 45000,
+              "coinReward": 300
+            },
+            {
+              "type": "boss_final",
+              "count": 1,
+              "health": 1000000,
+              "speed": 1,
+              "path": "S1E2",
+              "interval": 1000,
+              "firstDelay": 60000,
+              "coinReward": 5000
             }
           ]
         }
@@ -2126,6 +2293,16 @@
           "type": "boss_lvl_15",
           "shakeDuration": 5000,
           "shakeIntensity": 9
+        },
+        {
+          "type": "boss_lvl_20",
+          "shakeDuration": 4000,
+          "shakeIntensity": 7
+        },
+        {
+          "type": "boss_final",
+          "shakeDuration": 5000,
+          "shakeIntensity": 10
         }
       ],
       "enemyTypes": [
@@ -2141,7 +2318,12 @@
         "super-tank",
         "super-tank-dmg-4",
         "boss_lvl_10",
-        "boss_lvl_15"
+        "boss_lvl_15",
+        "boss_lvl_20",
+        "boss_lvl_20_speeder",
+        "boss_lvl_20_tanker",
+        "boss_lvl_20_snake",
+        "boss_final"
       ],
       "enemyDamage": [
         {
@@ -2163,6 +2345,26 @@
         {
           "type": "boss_lvl_15",
           "damage": 7
+        },
+        {
+          "type": "boss_lvl_20",
+          "damage": 10
+        },
+        {
+          "type": "boss_lvl_20_speeder",
+          "damage": 5
+        },
+        {
+          "type": "boss_lvl_20_tanker",
+          "damage": 5
+        },
+        {
+          "type": "boss_lvl_20_snake",
+          "damage": 3
+        },
+        {
+          "type": "boss_final",
+          "damage": 1000
         }
       ]
     }
