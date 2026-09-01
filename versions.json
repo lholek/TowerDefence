@@ -18,7 +18,7 @@
         "Improved - Editor - GLOBAL - Slightly improved visuals of the editor",
         "Improved - Editor - GLOBAL - Added undo and redo buttons to the editor",
         "Improved - Editor - GLOBAL - Added 5 save slots for maps in the editor",
-        "Improved - Editor - GLOBAL - New items on left and right side of the editor are now hiddable to give more space for editor",
+        "Improved - Editor - GLOBAL - New items on left and right side of the editor are now hideable to give more space for editor",
         "Improved - Editor - GLOBAL - Added new item to the left side of the editor that shows map layout and highlights the paths if editor is editing path of the enemies",
         "Improved - Editor - GLOBAL - Since Undo/Redo was added, removed the confirmation prompt for removing an enemy type, group or wave",
         "Improved - Editor - GLOBAL - Fixed bug where editor could delete all waves, all groups and all enemy types",
@@ -41,8 +41,8 @@
         "Improved - Editor - WAVES - You can now see the real speed of tower arrows in the editor",
         "Improved - Editor - WAVES - You can now set the skin of enemies within a group",
         "Improved - Editor - WAVES - Changed the text of the 'new enemy type' button",
-        "Improved - Editor - WAVES - Fixed bug that when editor added new Enmemy type it didnt update custom enemy damage instanly",
-        "Improved - Editor - WAVES - fixed bug that sometimes it doesnt select the path after click"
+        "Improved - Editor - WAVES - Fixed bug that when editor added new Enemy type it didn't update custom enemy damage instantly",
+        "Improved - Editor - WAVES - Fixed bug that sometimes it doesn't select the path after click"
       ]
     },
     {
