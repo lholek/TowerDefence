@@ -38,7 +38,7 @@
         "Improved - Editor - MAP - Added 34 new tiles in editor: LAVA, ICE, X[Tree], X[CutTree], X[Log 1-2], X[Well], X[Bush], X[Dirt] (FarmLand), X[Hay] (Hay Field), SNW[Tree], SNW[CutTree], SND[Bone 1-4], SND[Cactus 1-4], SND[Palm 1-4], SNW[Spike 1-4], W[Rock 1-4], Holy Ground, Burned Ground",
         "Improved - Editor - SETTINGS - New design for extra life settings",
         "Improved - Editor - TOWERS - Fixed bug when sometimes it show bad sell price of the towers",
-        "Improved - Editor - WAVES - You can now see the real speed of tower arrows in the editor",
+        "Improved - Editor - WAVES - You can now see the real speed of arrows of the towers in the editor",
         "Improved - Editor - WAVES - You can now set the skin of enemies within a group",
         "Improved - Editor - WAVES - Changed the text of the 'new enemy type' button",
         "Improved - Editor - WAVES - Fixed bug that when editor added new Enemy type it didn't update custom enemy damage instantly",
