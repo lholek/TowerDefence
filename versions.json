@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": "Pre-Beta IV.",
-      "release": "-",
+      "release": "2026-09-03",
       "changes": [
         "Improved - UX - Added option to Restart the game in the Pause Menu",
         "Improved - UX - You need to confirm when you want to restart the game or return to the main menu",
