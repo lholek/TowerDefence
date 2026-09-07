@@ -10,6 +10,25 @@ function formatVersionDate(dateStr) {
     return `${parts[2]}. ${parts[1]}. ${parts[0]}`;
 }
 
+// Renders one entry of a "changes" array.
+// A plain string becomes a normal <li>.
+// An object like { "Main menu": ["Updated image in the main menu"] } becomes
+// a <li> with the key as the bullet text and its array rendered as a nested <ul>.
+function renderChangeEntry(entry) {
+    if (typeof entry === 'string') {
+        return `<li>${entry}</li>`;
+    }
+    if (entry && typeof entry === 'object') {
+        return Object.entries(entry).map(([category, subItems]) => {
+            const subList = (Array.isArray(subItems) ? subItems : [subItems])
+                .map(renderChangeEntry)
+                .join('');
+            return `<li>${category}<ul>${subList}</ul></li>`;
+        }).join('');
+    }
+    return '';
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     
     // 1. Initialize our Global Controller (Pass null for button because we have multiple buttons)
@@ -65,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               </h3>
               <div class="version-content" style="display: ${isFirstVersion ? 'block' : 'none'}">
                 <div class="text-center cl-primary ml-n15">(${displayDate})</div>
-                <ul>${v.changes.map(c => `<li>${c}</li>`).join('')}</ul>
+                <ul>${v.changes.map(renderChangeEntry).join('')}</ul>
               </div>
             `;
 

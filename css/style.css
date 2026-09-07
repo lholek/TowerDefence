@@ -503,33 +503,35 @@ canvas {
     /* Společné nastavení pozadí */
     background-repeat: no-repeat !important;
     background-size: cover !important;
-    background-position: center center !important;
+    /* Kotví obrázek nahoru - při ořezu (cover) tak mizí tráva dole,
+       ne strom/věž nahoře, které jsou blízko horního okraje obrázku */
+    background-position: center top !important;
     background-attachment: fixed;
-    
-    /* Výchozí obrázek (pro 16:9 a užší) */
-    background-image: url('../assets/images/menu_background_16_9.png') !important;
 
-    /* Renderování */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+    /* Výchozí obrázek (pro 16:9 a užší) */
+    background-image: url('../assets/images/menu_new_background_21_9.png') !important;
+
+    /* Renderování - hladké škálování pro fotorealistické pozadí
+       (crisp-edges je určeno pro pixel-art a zde jen zdůrazňovalo hranatost) */
+    image-rendering: auto;
 }
 
-/* Detekce UltraWide monitoru (poměr stran širší než 2:1) */
+/* Detekce UltraWide monitoru (poměr stran širší než 2:1)
+   Používá menu_background_UHD.png - jediný obrázek, který má skutečně
+   širokoúhlý poměr stran (2,38:1) a vysoké rozlišení (4300px), takže
+   na ultra-wide monitorech nedochází k ořezu stromu/věže a obraz zůstává ostrý. */
 @media (min-aspect-ratio: 2/1) {
     .overlay-center,
     .overlay-full {
-        /* Cesta k širší verzi obrázku */
-        background-image: url('../assets/images/menu_background_21_9.png') !important;
-        width: 100vw;
-        height: 100vh;
-        background-size: cover;
+        background-image: url('../assets/images/menu_background_UHD.png') !important;
     }
 }
+
 .overlay-center {
-    background: rgba(30, 30, 30, 0.95);
+    background-color: rgba(30, 30, 30, 0.95);
 }
 .overlay-full {
-    background: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 #overlayContent {
     background: var(--main-bg-color);;

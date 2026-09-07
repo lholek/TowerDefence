@@ -43,6 +43,11 @@
   margin-left: 10px; /* Adjusted to give ball room */
 }
 
+/* Nested <ul> (sub-points) gets a little breathing room from the parent bullet's text above it */
+#versionList ul ul {
+  padding-top: 6px;
+}
+
 #versionList ul li {
   position: relative;
   padding-left: 25px;   /* Space between line and text */
@@ -54,6 +59,15 @@
 
 /* Fix: Remove line after last item AND prevent it from poking out the top */
 #versionList ul li:last-child {
+  border-left-color: transparent;
+}
+
+/* Fix: When there's only ONE item, it's both first and last child.
+   The :first-child rule below sets a border-image gradient which paints
+   OVER border-left-color, so the transparent color above isn't enough on
+   its own to hide the line - the border-image has to be cleared too. */
+#versionList ul li:first-child:last-child {
+  border-image: none;
   border-left-color: transparent;
 }
 
