@@ -5,8 +5,13 @@
       "release": "-",
       "changes": [
         {
-          "<b>MAIN MENU</b>": [
+          "<b>Main Menu</b>": [
             "Updated image in the main menu background"
+          ]
+        },
+        {
+          "<b>Versions</b>": [
+            "Versions have sections now, whit updates under each section"
           ]
         },
         "TODO: Improve - Performance boost ?",
