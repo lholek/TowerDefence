@@ -512,7 +512,7 @@ canvas {
     background-attachment: fixed;
 
     /* Výchozí obrázek (pro 16:9 a užší) */
-    background-image: url('../assets/images/menu_new_background_21_9.webp') !important;
+    background-image: url('../assets/images/menu_new_background_21_9.png') !important;
 
     /* Renderování - hladké škálování pro fotorealistické pozadí
        (crisp-edges je určeno pro pixel-art a zde jen zdůrazňovalo hranatost) */
