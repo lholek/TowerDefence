@@ -15,6 +15,9 @@
             "'Version History' have sections now, whit updates under each section"
           ]
         },
+        "TODO: Improve - Smooth animations for menu - Fade in/out, slide in/out for popups",
+        "TODO: Improve - Smooth animations for settings - switching low/high graphics settings",
+        "TODO: Improve - More Design upgrades ?",
         "TODO: Improve - Performance boost ?",
         "TODO: Improve - Lore update ?",
         "TODO: Improve - Foreach enemy is now ctx.restore() - toto zpomaluje hru - řádek 555 Enemy.js - ctx.restore() - zkontrolovat jestli je to nutné"
