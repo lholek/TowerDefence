@@ -322,7 +322,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const editorButton = document.querySelector(".editorButton");
     if (editorButton) {
         editorButton.addEventListener('click', () => {
-            window.location.href = 'level_editor.html'; 
+            window.location.href = 'level_editor.html';
+        });
+    }
+
+    // --- Hide/Show Menu button (lets the player see the full background image) ---
+    const toggleMenuBtn = document.getElementById('toggleMenuBtn');
+    const menuContainer = document.querySelector('.menu-container');
+    if (toggleMenuBtn && menuContainer) {
+        toggleMenuBtn.addEventListener('click', () => {
+            const isHidden = menuContainer.classList.toggle('menu-hidden');
+            toggleMenuBtn.textContent = isHidden ? 'Show Menu' : 'Hide Menu';
         });
     }
 

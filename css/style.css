@@ -532,6 +532,21 @@ canvas {
     text-align: center;
 }
 
+/* Hide/Show Menu button - pinned to the bottom-left corner of the start
+   overlay, independent of the centered .menu-container flex layout, so it
+   stays put (and stays clickable) even while the menu itself is hidden. */
+.menu-toggle-btn {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    z-index: 200;
+}
+
+/* When the menu is hidden, .menu-container gets this class from JS */
+.menu-container.menu-hidden {
+    display: none;
+}
+
 /* Styled dropdown for start overlay */
 .styled-select {
   padding: 8px 12px;
