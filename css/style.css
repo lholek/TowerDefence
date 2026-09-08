@@ -490,10 +490,11 @@ canvas {
 .overlay-center,
 .overlay-full {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    /* inset místo top/left + width:100vw/height:100vh -
+       100vw počítá i se šířkou scrollbaru, takže při jeho zobrazení
+       přesahoval fixed prvek (a s ním cover pozadí) mimo viditelné okno.
+       inset:0 vždy přesně vyplní viewport bez ohledu na scrollbar. */
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -502,29 +503,20 @@ canvas {
     
     /* Společné nastavení pozadí */
     background-repeat: no-repeat !important;
+    /* contain místo cover - obrázek (věž, strom, golem) se NIKDY neořízne,
+       vždy je vidět celý. Když poměr stran obrazovky nesedí s obrázkem,
+       doplní se tmavé pruhy (splynou s background-color níže / nočním nebem
+       na obrázku), místo aby něco důležitého mizelo mimo okraj. */
     background-size: cover !important;
-    /* Kotví obrázek nahoru - při ořezu (cover) tak mizí tráva dole,
-       ne strom/věž nahoře, které jsou blízko horního okraje obrázku */
-    background-position: center top !important;
+    background-position: center center !important;
     background-attachment: fixed;
 
     /* Výchozí obrázek (pro 16:9 a užší) */
-    background-image: url('../assets/images/menu_new_background_21_9.png') !important;
+    background-image: url('../assets/images/menu_new_background_21_9.webp') !important;
 
     /* Renderování - hladké škálování pro fotorealistické pozadí
        (crisp-edges je určeno pro pixel-art a zde jen zdůrazňovalo hranatost) */
     image-rendering: auto;
-}
-
-/* Detekce UltraWide monitoru (poměr stran širší než 2:1)
-   Používá menu_background_UHD.png - jediný obrázek, který má skutečně
-   širokoúhlý poměr stran (2,38:1) a vysoké rozlišení (4300px), takže
-   na ultra-wide monitorech nedochází k ořezu stromu/věže a obraz zůstává ostrý. */
-@media (min-aspect-ratio: 2/1) {
-    .overlay-center,
-    .overlay-full {
-        background-image: url('../assets/images/menu_background_UHD.png') !important;
-    }
 }
 
 .overlay-center {
