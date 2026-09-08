@@ -6,7 +6,8 @@
       "changes": [
         {
           "<b>Main Menu</b>": [
-            "Updated image in the main menu background"
+            "New background image for the main menu",
+            "Option to hide the menu and titles to see the background image fully"
           ]
         },
         {

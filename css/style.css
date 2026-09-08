@@ -542,8 +542,10 @@ canvas {
     z-index: 200;
 }
 
-/* When the menu is hidden, .menu-container gets this class from JS */
-.menu-container.menu-hidden {
+/* When "Hide Image" is toggled off, .menu-container AND .titles (title +
+   subtitle) get this class from JS so the background image shows fully */
+.menu-container.menu-hidden,
+.titles.menu-hidden {
     display: none;
 }
 

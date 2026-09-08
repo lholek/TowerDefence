@@ -326,13 +326,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- Hide/Show Menu button (lets the player see the full background image) ---
+    // --- Show/Hide Image button (lets the player see the full background image) ---
     const toggleMenuBtn = document.getElementById('toggleMenuBtn');
     const menuContainer = document.querySelector('.menu-container');
+    const titlesContainer = document.querySelector('.titles');
     if (toggleMenuBtn && menuContainer) {
         toggleMenuBtn.addEventListener('click', () => {
             const isHidden = menuContainer.classList.toggle('menu-hidden');
-            toggleMenuBtn.textContent = isHidden ? 'Show Menu' : 'Hide Menu';
+            if (titlesContainer) titlesContainer.classList.toggle('menu-hidden', isHidden);
+            toggleMenuBtn.textContent = isHidden ? 'Hide Image' : 'Show Image';
         });
     }
 
