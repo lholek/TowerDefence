@@ -895,22 +895,46 @@
 
 .segmented-control {
   display: flex;
+  position: relative; /* anchors the sliding thumb below */
   background: #967456; /* Tmavé pozadí */
   color: #ffffff;
   font-weight: 700;
   border-radius: 6px;
   padding: 2px;
-  
+
+}
+
+/* Sliding "thumb" behind the Low/High buttons - always exactly half the
+   control's width (there are always 2 options), and just moves/fades via
+   transform instead of each button's background flashing independently.
+   .is-high (toggled by updateGraphicsUI() in UI.js) decides which side. */
+.segmented-control::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  width: calc(50% - 2px);
+  background-color: #8B4513;
+  border-radius: 4px;
+  transition: transform 0.25s ease;
+  transform: translateX(0%);
+}
+
+.segmented-control.is-high::before {
+  transform: translateX(100%);
 }
 
 .segmented-control button {
+  position: relative; /* sits above the sliding thumb (z-index via stacking) */
+  z-index: 1;
   background: transparent;
   border: none;
   color: #ffffff;
   padding: 5px 15px;
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.2s;
+  transition: color 0.2s, opacity 0.2s;
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -923,7 +947,8 @@
 }
 
 .segmented-control button.active {
-    background-color: #8B4513 !important; /* Use your primary blue */
+    /* Color still highlighted, but the background itself now comes from the
+       sliding ::before thumb instead of snapping on per-button */
     color: #f3e5ab !important;
 }
 
@@ -934,7 +959,6 @@
 
 .segmented-control button:hover {
     opacity: 1;
-    background-color: rgba(255,255,255,0.1);
 }
 
 .segmented-control button.active:hover {

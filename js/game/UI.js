@@ -296,6 +296,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const setting = control.dataset.setting;
       const value = currentGraphics[setting];
 
+      // Slides the .segmented-control::before "thumb" to the Low/High side
+      // (see css/ui.css) - covers individual clicks AND the "Switch All to
+      // Low/High" bulk buttons, since both funnel through this function.
+      control.classList.toggle('is-high', value === 'high');
+
       control.querySelectorAll('button').forEach(btn => {
         if (btn.dataset.value === value) {
           btn.classList.add('active');
