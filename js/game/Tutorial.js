@@ -9,11 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only fetch if we haven't loaded it yet
         if (tutorialPopup.innerHTML === "") {
             try {
-                // no-store: avoids the browser silently serving a stale
-                // cached copy (e.g. from before the last edit), which is
-                // what caused pages / controls to go "missing" before even
-                // though the actual file on disk was fine.
-                const response = await fetch('./html/tutorial.html', { cache: 'no-store' });
+                // cache: 'no-store' + a unique ?v= query string on every load:
+                // belt-and-suspenders against any layer (browser cache, a dev
+                // server's own caching, a proxy) silently serving a stale
+                // copy - which is what caused pages/controls to go "missing"
+                // before even though the file on disk was fine. Note this
+                // only helps on a genuine page reload - it can't fix a tab
+                // that already has old content sitting in tutorialPopup's
+                // innerHTML from earlier in the same session (see the guard
+                // above); that needs an actual page refresh, not just
+                // re-clicking the button.
+                const response = await fetch(`./html/tutorial.html?v=${Date.now()}`, { cache: 'no-store' });
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status} ${response.statusText} while fetching html/tutorial.html`);
                 }

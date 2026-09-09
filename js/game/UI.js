@@ -394,14 +394,6 @@ async function loadVersion() {
 
       // Update title
       document.title = `The CZSrna's Tower Defence – ${versionString}`;
-
-      // Update subtitle-bottom-left element
-      const subtitleEl = document.querySelector('.subtitle-bottom-left');
-      if (subtitleEl) {
-        subtitleEl.textContent = versionString;
-      } else {
-        console.warn('Element with class "subtitle-bottom-left" not found.');
-      }
     } else {
       console.warn('versions.json structure invalid or empty.');
     }
@@ -411,7 +403,7 @@ async function loadVersion() {
 }
 
 // Execute the function when the DOM is loaded
-// This ensures all elements queried above (document.title, .subtitle-bottom-left) exist.
+// This ensures document.title's target (the <title> element) exists.
 document.addEventListener("DOMContentLoaded", loadVersion);
 
 // Inside your settings save event listener

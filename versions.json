@@ -22,6 +22,11 @@
             "'Version History' have sections now, whit updates under each section"
           ]
         },
+        {
+          "<b>How to play</b>": [
+            "'How to play' have arrows to switch between pages or you can use keyboard arrows (← / →) or (A / D) to switch between pages"
+          ]
+        },
         "TODO: Improve - More Design upgrades ?",
         "TODO: Improve - Performance boost ?",
         "TODO: Improve - Lore update ?",

@@ -86,12 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const res = await fetch('versions.json'); 
             const data = await res.json();
             const currentVersion = data.versions[0].version;
-            
-            // Update all version displays
-            document.querySelectorAll('.subtitle-bottom-left').forEach(el => {
-                el.textContent = currentVersion;
-            });
-            
+
             // Update page title
             document.title = `The CZSrna's Tower Defence – ${currentVersion}`;
             
