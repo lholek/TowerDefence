@@ -24,10 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(`HTTP ${response.status} ${response.statusText} while fetching html/tutorial.html`);
                 }
                 const html = await response.text();
-                if (!html.includes('id="page-4"')) {
-                    throw new Error('Fetched tutorial.html but it is missing expected content (stale cache?)');
+                // Check that all pages (id="page-0" .. id="page-{N-1}") are present.
+                for (let i = 0; i < totalPages; i++) {
+                    if (!html.includes(`id="page-${i}"`)) {
+                        throw new Error(`tutorial.html is missing page-${i}`);
+                    }
                 }
                 tutorialPopup.innerHTML = html;
+                const pagesContainer = tutorialPopup.querySelector('#tutorialPages');
+                const pages = Array.from(tutorialPopup.querySelectorAll('.tutorial-page'));
+                if (!pagesContainer || pages.length !== totalPages) {
+                    throw new Error('Tutorial markup is missing one or more pages');
+                }
+                // Keep every page as a direct child so a malformed fragment
+                // cannot hide page-4 inside the page-3 d-none container.
+                pages.forEach(page => pagesContainer.appendChild(page));
                 setupControls();
             } catch (err) {
                 console.error("Failed to load tutorial:", err);
