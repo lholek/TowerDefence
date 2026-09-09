@@ -11,6 +11,11 @@
           ]
         },
         {
+          "<b>Main Menu</b>": [
+            "Popups now have unified behavior - can be closed by clicking the overlay or pressing ESC"
+          ]
+        },
+        {
           "<b>Version History</b>": [
             "'Version History' have sections now, whit updates under each section"
           ]

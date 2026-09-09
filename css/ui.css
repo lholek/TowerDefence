@@ -777,7 +777,6 @@
 /* Tutorial Popup Styles */
 .tutorial-card {
     background: var(--main-bg-color); /* Your requested variable */
-    border: 2px solid #468bb0;
     padding: 30px;
     border-radius: 12px;
     width: 650px;
@@ -1136,16 +1135,7 @@
 }
 
 /* --- Error: overlay --- */
-  .error-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.94);
-  z-index: 2000;
-  justify-content: center;
-  align-items: center;
-}
+/* Backdrop itself now comes from the shared .menu-popup-overlay (popups.css) */
 
 .error-overlay-content {
     background: var(--main-bg-color);

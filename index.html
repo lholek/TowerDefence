@@ -64,7 +64,7 @@
 
       <!-- How to play ? -->
       <button id="openTutorialBtn" class="btn btn-menu-full">How to Play ?</button>
-      <div id="tutorialPopup" class="lore-overlay" style="display:none;"></div>
+      <div id="tutorialPopup" class="menu-popup-overlay"></div>
 
       <h2 class="title title-select-map">Select map</h2>
       <!-- Styled select on its own row -->
@@ -100,7 +100,7 @@
       <div id="mapInfo" class="mapInfo"></div>
 
       <!-- ⚙️ Settings Popup -->
-      <div id="settingsPopup" class="settings-popup hidden">
+      <div id="settingsPopup" class="menu-popup-overlay">
         <div class="settings-content">
           <h2 class="cl-primary">Settings</h2>
         
@@ -230,7 +230,7 @@
       </div>
 
       <!-- 🎨 LorePopup -->
-      <div id="lorePopup" class="lore-overlay">
+      <div id="lorePopup" class="menu-popup-overlay">
         <div class="scroll-container">
           <div class="scroll-roll top-roll"></div>
               
@@ -423,7 +423,7 @@
   </div>
 
   <!-- Version History Popup -->
-  <div id="versionPopup">
+  <div id="versionPopup" class="menu-popup-overlay">
     <div id="versionPopupContent" class="popup-content">
       <h2 class="text-center cl-primary">Version History</h2>
       <div id="versionList"></div>
@@ -462,7 +462,7 @@
   </div>
 
   <!-- Map Error Popup -->
-  <div id="errorPopup" class="error-overlay" class="popup-content" >
+  <div id="errorPopup" class="menu-popup-overlay">
     <div class="error-overlay-content">
         <h2 id="errorTitle" class="error-overlay-title text-center cl-primary">Map Error</h2>
         <p id="errorMessage" class="error-overlay-message">The shared map link is invalid or corrupted.</p>

@@ -1,28 +1,10 @@
-/* Overlay Background */
-.lore-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.94);
-  z-index: 2000;
-  justify-content: center;
-  align-items: center;
-}
-
-/* The main container */
+/* The main container - entrance animation is now handled uniformly for all
+   popups by PopupController.js (see menu-popup-overlay in popups.css) */
 .scroll-container {
-  animation: unroll 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-  transform-origin: top;
   position: relative;
   width: 90%;
   max-width: 550px;
   filter: drop-shadow(0 40px 60px rgba(0,0,0,1));
-}
-
-@keyframes unroll {
-    from { transform: scaleY(0); opacity: 0; }
-    to { transform: scaleY(1); opacity: 1; }
 }
 
 /* realistic Dark Ancient Wood with Deep Grooves */
