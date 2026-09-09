@@ -784,14 +784,66 @@
     position: relative;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
     color: white;
-    overflow-x: hidden;
+    /* visible (not hidden) so the arrows below can straddle/overflow past
+       the card's own edge instead of getting clipped at it */
+    overflow-x: visible;
 }
 
 .close-tutorial {
     position: absolute; right: 20px; top: 15px;
     font-size: 28px; cursor: pointer; color: #888;
+    background: none;
+    border: none;
+    line-height: 1;
+    padding: 0;
+    z-index: 2;
 }
 .close-tutorial:hover { color: #fff; }
+
+/* Prev/Next arrows - overlaid on the sides of the card, vertically centered
+   on the card itself (not the visible content), so they stay in the same
+   spot regardless of how tall each page's content is. Also operable via
+   ArrowLeft/ArrowRight or A/D (see Tutorial.js). */
+.tutorial-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 4px; /* square, like .btn - not circular */
+    background: rgb(139, 69, 19);
+    border: 2px solid #5c2e0e;
+    color: #f3e5ab;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s, opacity 0.15s;
+    z-index: 20; /* above the card content/tip-boxes */
+}
+
+.tutorial-arrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+.tutorial-arrow:hover {
+    background: #a0522d;
+}
+
+.tutorial-arrow:active {
+    transform: translateY(-50%) scale(0.9);
+}
+
+/* Straddle the card's edge exactly (half in / half out) instead of sitting
+   flush inside it - offset by half the button's own width (44px / 2). */
+.tutorial-arrow-left { left: -22px; }
+.tutorial-arrow-right { right: -22px; }
+
+/* Hidden (not just dimmed) at the first/last page - no wrap-around */
+.tutorial-arrow[hidden] {
+    display: none;
+}
 
 .hotkey-grid {
     display: grid;
@@ -849,11 +901,6 @@
     font-size: 0.9em;
 }
 
-.tutorial-footer {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-between;
-}
 /* *** TUTORIAL *** */
 
 /* *** Import Error *** */
