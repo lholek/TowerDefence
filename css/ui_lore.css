@@ -1,10 +1,43 @@
-/* The main container - entrance animation is now handled uniformly for all
-   popups by PopupController.js (see menu-popup-overlay in popups.css) */
+/* The main container - entrance animation is normally handled uniformly for
+   all popups by PopupController.js (see menu-popup-overlay in popups.css),
+   but Lore overrides that generic "pop" scale below with its own "unroll"
+   animation - fitting for a parchment scroll. */
 .scroll-container {
   position: relative;
   width: 90%;
   max-width: 550px;
   filter: drop-shadow(0 40px 60px rgba(0,0,0,1));
+}
+
+/* Unroll animation: the whole scroll (both wooden rolls + the parchment
+   between them) grows downward from the top roll, like it's being unrolled,
+   instead of popping in evenly from the center like other popups.
+   #lorePopup > :first-child beats the generic .menu-popup-overlay rule
+   (popups.css) on specificity, so it can override both the transform AND
+   the timing - the unroll reads much better slow than the quick generic
+   pop the other popups use, so it gets its own (longer) durations instead
+   of the shared --popup-open-ms/--popup-close-ms. */
+#lorePopup > :first-child {
+  transform-origin: top center;
+  transform: scaleY(0);
+  /* Keep opacity fading on the same quick timing as every other popup
+     (--popup-close-ms from popups.css) - only the unroll itself is slow. */
+  transition: transform 350ms ease-in,
+              opacity var(--popup-close-ms) ease-in;
+}
+/* Opening uses a keyframe animation (not a transition) so the pacing can be
+   pinned exactly: 80% of the unroll happens in the first 1500ms, then the
+   last 20% stretches out over another 500ms - a plain easing curve can't
+   hit that split precisely, keyframe stops can. `forwards` holds the end
+   state once done; closing still just transitions back via the rule above. */
+#lorePopup.is-open > :first-child {
+  animation: lore-unroll 400ms ease-out forwards;
+  transition: opacity var(--popup-open-ms) ease-out;
+}
+@keyframes lore-unroll {
+  0%   { transform: scaleY(0); }
+  75%  { transform: scaleY(0.8); }  /* 1500ms of the 2000ms total */
+  100% { transform: scaleY(1); }    /* remaining 500ms */
 }
 
 /* realistic Dark Ancient Wood with Deep Grooves */
