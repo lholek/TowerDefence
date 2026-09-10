@@ -7,12 +7,8 @@
         {
           "<b>Main Menu</b>": [
             "New background image for the main menu",
-            "Option to hide the menu and titles to see the background image fully"
-          ]
-        },
-        {
-          "<b>Main Menu</b>": [
-            "Popups now have unified behavior - can be closed by clicking the overlay or pressing ESC",
+            "Option to hide the menu and titles to see the background image fully",
+            "Popups now have unified behavior - can be closed by clicking the overlay, pressing close or pressing ESC",
             "Popups now have smooth fade in/out animations",
             "Setting now have smooth fade in/out animations when switching between low/high graphics settings"
           ]

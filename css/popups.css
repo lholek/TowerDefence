@@ -52,3 +52,23 @@
     transition: opacity var(--popup-open-ms) ease-out,
                 transform var(--popup-open-ms) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+/* Small "×" close button, top-right corner of a popup's card - same look as
+   the tutorial's .close-tutorial (css/ui.css), reused here by Settings,
+   Version History and Lore. The card it sits in needs `position: relative`.
+   Wiring is automatic: PopupController already binds any `.close-btn` found
+   inside the popup to close() (see PopupController.js). */
+.popup-close-x {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #888;
+    background: none;
+    border: none;
+    line-height: 1;
+    padding: 0;
+    z-index: 2;
+}
+.popup-close-x:hover { color: #fff; }

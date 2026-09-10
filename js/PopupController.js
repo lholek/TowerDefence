@@ -42,11 +42,13 @@ class PopupController {
             }
         });
 
-        // Close logic: Standard close buttons found inside the popup
-        const closeBtn = this.popup.querySelector('.close-btn, #closeVersionPopup, #closeSettingsBtn, #closeLore');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => this.close());
-        }
+        // Close logic: Standard close buttons found inside the popup.
+        // querySelectorAll (not querySelector) - a popup can have more than
+        // one close trigger at once (e.g. Settings has both its corner "×"
+        // and a text "Close" button at the bottom), and all of them need to
+        // work, not just whichever comes first in the DOM.
+        const closeBtns = this.popup.querySelectorAll('.close-btn, #closeVersionPopup, #closeSettingsBtn, #closeLore');
+        closeBtns.forEach(closeBtn => closeBtn.addEventListener('click', () => this.close()));
     }
 
     open() {

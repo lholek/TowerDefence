@@ -6,28 +6,30 @@
   text-align: left;
   max-width: 1000px;
   color: #fff;
+  position: relative; /* anchors the "×" close button in the corner */
+}
+
+/* The list itself scrolls (not the whole card) so the heading and the "×"
+   close button stay put and reachable while scrolling a long history. */
+#versionList {
+  margin-top: 10px;
   max-height: 500px;
-  overflow-y: auto; /* Use auto for cleaner behavior */
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #f0c674 transparent;
 }
 
 /* Webkit scrollbar styles */
-#versionPopupContent::-webkit-scrollbar {
+#versionList::-webkit-scrollbar {
   width: 8px;
 }
-#versionPopupContent::-webkit-scrollbar-track {
+#versionList::-webkit-scrollbar-track {
   background: #333;
   border-radius: 4px;
 }
-#versionPopupContent::-webkit-scrollbar-thumb {
+#versionList::-webkit-scrollbar-thumb {
   background: #f0c674;
   border-radius: 4px;
-}
-
-/* versionList Section - FIXED */
-#versionList {
-  margin-top: 10px;
 }
 
 #versionList h3 {

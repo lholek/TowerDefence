@@ -12,6 +12,7 @@
   padding: 20px 30px;
   border-radius: 10px;
   min-width: 300px;
+  position: relative; /* anchors the "×" close button in the corner */
 }
 
 .settings-content h2 {
