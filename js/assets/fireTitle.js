@@ -4,9 +4,10 @@
 // in css/fire-title.css). Used ONLY for the main menu's #title - it does not
 // touch font-family, so it can't leak into any other element's typography.
 //
-// Plain script (not a module) so it can run before any `type="module"`
-// script needs it - same pattern as PopupController.js, which attaches
-// itself to `window` for the same reason.
+// Loaded as type="module" (like the other js/game/*.js scripts) but still
+// exposes itself on `window` rather than via export/import - same pattern
+// as PopupController.js - so callers like js/game/UI.js can use it without
+// needing an import graph.
 const FIRE_TITLE_CHAR_DELAY_MS = 65;
 const FIRE_TITLE_FALL_IN_MS = 350; // keep in sync with the .char animation duration in css/fire-title.css
 

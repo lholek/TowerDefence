@@ -7,6 +7,7 @@
         {
           "<b>Main Menu</b>": [
             "New background image for the main menu",
+            "New title and subtitle for the main menu",
             "Option to hide the menu to see the background image fully",
             "Popups now have unified behavior - can be closed by clicking the overlay, pressing close or pressing ESC",
             "Popups now have smooth fade in/out animations",
