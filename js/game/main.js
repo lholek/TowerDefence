@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleMenuBtn.addEventListener('click', () => {
             const isHidden = menuContainer.classList.toggle('menu-hidden');
             if (titlesContainer) titlesContainer.classList.toggle('menu-hidden', isHidden);
-            toggleMenuBtn.textContent = isHidden ? 'Hide Image' : 'Show Image';
+            toggleMenuBtn.textContent = isHidden ? 'Show Main Menu' : 'View Full Image';
         });
     }
 

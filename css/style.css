@@ -542,11 +542,24 @@ canvas {
     z-index: 200;
 }
 
-/* When "Hide Image" is toggled off, .menu-container AND .titles (title +
-   subtitle) get this class from JS so the background image shows fully */
+/* Fade transition for showing/hiding the menu (see .menu-hidden below) */
+.menu-container,
+.titles {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+/* When "View Full Image" is toggled on, .menu-container AND .titles (title +
+   subtitle) get this class from JS so the background image shows fully.
+   Fades out over 0.4s instead of disappearing instantly; visibility only
+   flips to hidden once the fade-out finishes (and back to visible instantly
+   on fade-in), so it also stops blocking clicks while hidden. */
 .menu-container.menu-hidden,
 .titles.menu-hidden {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Styled dropdown for start overlay */
