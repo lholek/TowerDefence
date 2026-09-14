@@ -1,0 +1,241 @@
+================================================================
+NewTowerDefence — Performance & Leak Audit
+================================================================
+STAV: Nic z tohoto zatím není opravené v repu (ověřeno přímo v
+kódu, žádný diff proti gitu) - celý seznam je TODO.
+
+Poznámka k procentům: jde o odhad dopadu na základě mechanismu chyby
+(kolik práce/paměti navíc to generuje a jak rychle to roste), ne
+z reálného profilování FPS. U leaků (roste s časem/restarty) nejde
+dát jedno pevné číslo - dopad je ~0 % na startu a roste bez stropu,
+takže je u nich uvedený rozsah pro "typickou hodně dlouhou/opakovanou
+session", ne pro jeden krátký run.
+
+
+================================================================
+🔴 KRITICKÉ
+================================================================
+
+[TODO 1] Únik ctx.save() na canvasu — HLAVNÍ PŘÍČINA PÁDŮ (+50–70 % boost při delším běhu)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:927-1046 (render())
+Chyba:    ctx.save() se volalo KAŽDÝ frame bezpodmínečně, ale
+          ctx.restore() jen když this.shakeDuration > 0 (screen
+          shake). Ve všech ostatních framech (prakticky pořád)
+          se na interní stav-zásobník canvasu přidal další save(),
+          který se nikdy nesundal.
+Dopad:    Zásobník rostl neomezeně celou dobu běhu hry - cca 3600
+          nesplacených save() za minutu při 60 fps, přes 200 000
+          za hodinu. Čím víc se toho v daném frame kreslilo (víc
+          věží/nepřátel/animací), tím dráž byl každý další
+          save/restore pár obalený v tom narůstajícím kontextu.
+Návrh:    ctx.restore() volat vždy, párově s ctx.save() (bez
+          podmínky na shakeDuration).
+Odhad dopadu: (+50–70 % boost) - ROSTOUCÍ V ČASE, na začátku hry
+          ~0 %, ale za 15-30 minut hraní (typická délka run
+          tower-defense hry) jde o efekt, který může vysvětlovat
+          prakticky celé "postupné zpomalení a pád". Pravděpodobně
+          hlavní podíl na hlášeném problému.
+
+[TODO 2] Dva neuvolnitelné window listenery při každém restartu (+20–40 % boost při více restartech)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:96-97 (constructor)
+          window.addEventListener('keydown', e => this.keys[e.code] = true);
+          window.addEventListener('keyup',   e => this.keys[e.code] = false);
+Chyba:    Anonymní inline funkce bez uložené reference - destroy()
+          (Game.js:1253) je nemůže nikdy odebrat (na rozdíl od
+          boundKeyDown o 2 řádky výš, ten se odstraňuje správně).
+          window nikdy nezanikne, takže KAŽDÝ restart hry (Start,
+          Restart po prohře, Restart z pauzy) přidá další 2 trvalé
+          listenery navrch všech předchozích.
+Dopad:    Každý z nich drží closure nad this = konkrétní starou
+          instancí Game. Celý graf staré hry (Map + všechny její
+          pre-renderované canvasy, towers, enemies, AbilityManager)
+          zůstává navždy v paměti - GC ho nemůže uvolnit.
+Bezpečnost opravy: Netýká se žádných uložených dat (map JSON, save
+          sloty, localStorage) ani herní logiky/balance - je to
+          čistě běhový (in-memory) jev vázaný na jednu otevřenou
+          kartu prohlížeče. Zavřením/refreshem karty zmizí i beze
+          opravy. Oprava nemůže rozbít žádnou rozehranou/uloženou
+          hru.
+Návrh:    Uložit obě funkce jako pojmenované bound handlery (stejně
+          jako boundKeyDown) a v destroy() je odebrat:
+            this.boundKeyUp = (e) => this.keys[e.code] = true;
+            this.boundKeyRelease = (e) => this.keys[e.code] = false;
+            window.addEventListener('keydown', this.boundKeyUp);
+            window.addEventListener('keyup', this.boundKeyRelease);
+            // v destroy():
+            window.removeEventListener('keydown', this.boundKeyUp);
+            window.removeEventListener('keyup', this.boundKeyRelease);
+          Ideálně sloučit s boundKeyDown do jednoho handleru.
+Odhad dopadu: (+20–40 % boost) - ROSTOUCÍ S POČTEM RESTARTŮ, u
+          jednoho runu bez restartu ~0 %. Při typickém "zkusím to
+          znova" session (3-10 restartů v jedné kartě) jde o druhou
+          nejpravděpodobnější příčinu postupného zpomalení/pádu
+          vedle TODO 1, hlavně u hráčů co restartují často.
+
+[TODO 3] destroy() neuvolňuje referenci na starou hru (+0–5 % boost, doplněk k TODO 2)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:1245-1278 (destroy())
+Chyba:    Nuluje se jen ctx/canvas, ne this.towers, this.enemies,
+          this.map, this.abilityManager.
+Dopad:    Samo o sobě neškodí (celý objekt by měl zaniknout, jakmile
+          main.js přepíše game = new Game(...)), ale v kombinaci
+          s TODO 2 se drží při životě zbytečně.
+Bezpečnost opravy: Stejně jako TODO 2 - čistě běhová věc, nic
+          uloženého na tom nezávisí.
+Návrh:    V destroy() přidat defenzivně:
+            this.towers = null;
+            this.enemies = null;
+            this.map = null;
+            this.abilityManager = null;
+Odhad dopadu: (+0–5 % boost) - sám o sobě skoro nic (defense in
+          depth), ale nutná doplňková oprava k TODO 2, aby fungovala
+          naplno.
+
+
+================================================================
+🟠 STŘEDNÍ — jednorázové, ale citelné
+================================================================
+
+[TODO 4] Necapované deltaTime po výpadku framu (+5–10 % boost)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:280-289 (loop())
+Chyba:    Po zaškobrtnutí (výpadek framu, GC pauza, moc věcí na
+          obrazovce) se jeden velký časový skok naroubil rovnou
+          do update() - nepřátelé/střely poskočily, mohlo se
+          najednou spawnout víc nepřátel "na dohnání", což ještě
+          víc zatížilo další frame.
+Návrh:    rawDeltaTime capnout na max ~100 ms.
+Odhad dopadu: (+5–10 % boost) - zabraňuje tomu, aby se jedno
+          zaškobrtnutí zřetězilo do dalšího (compounding hitch),
+          spíš prevence extrémů než plošné zrychlení.
+
+[TODO 5] Duplicitní 60×/s aktualizace UI schopností (+2–5 % boost na aktivní schopnost)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:370-374 (update())
+Chyba:    updateAbilityUI() se volá pro každou schopnost na
+          KAŽDÉM update frame (~60×/s) - čtení+zápis DOM
+          (querySelector × 4, style.display, textContent).
+          Existující setInterval na 100 ms (Game.js:816) už dělá
+          totéž a je to ten, co reálně řídí vizuální countdown.
+Návrh:    Odstranit volání z hlavní smyčky, nechat jen interval.
+Odhad dopadu: (+2–5 % boost) za každou aktivní schopnost na
+          obrazovce (škáluje se s počtem schopností) - DOM operace
+          jsou řádově dražší než čistý JS výpočet, takže i malý
+          počet zbytečných volání 60×/s je citelný.
+
+
+================================================================
+🟡 REÁLNÉ BUGY (ne výkon, herní balanc)
+================================================================
+
+[TODO 6] Lávová podlaha tikne poškození dvakrát rychleji (+0 % boost — balanc, ne výkon)
+----------------------------------------------------------------
+Soubor:   js/game/abilities/LavaFloor.js:179-185
+Chyba:    LavaFloor.update() volá super.update() (což už uvnitř
+          svého filtru zavolá inst.onTick(deltaTime), Ability.js:73)
+          a pak volá inst.onTick(deltaTime) ještě jednou navíc.
+Upřesnění (po testu): NEJDE o to, že by jeden tik dal 2× damage
+          najednou - interní časovač (lastDamageTime) se po prvním
+          zásahu vynuluje, takže druhé volání ve stejném frame práh
+          znovu nepřekročí. Skutečný efekt: lastDamageTime se
+          akumuluje 2× rychleji (2×deltaTime za frame místo 1×), tik
+          tedy nastává 2× ČASTĚJI, než damage_every v configu říká
+          (např. konfigovaných 250 ms vychází reálně na ~125 ms).
+          Bez měření časových rozestupů mezi zásahy (ne jejich
+          velikosti) se to eyeballem těžko pozná.
+Návrh:    Odebrat duplicitní volání onTick() v LavaFloor.update(),
+          spolehnout se jen na to, co dělá super.update().
+Odhad dopadu: (+0 % boost na výkon) - jde čistě o herní balanc
+          (efektivně ~2× vyšší DPS lávy, než config deklaruje).
+
+
+================================================================
+🟢 VÝKONNOSTNÍ (ne leak, zpomaluje to s hodně entitami)
+================================================================
+
+[TODO 7] Každý nepřítel si při spawnu sám vykreslí vlastní
+          offscreen canvas místo sdílené cache (+10–20 % boost při spawnu velké vlny)
+----------------------------------------------------------------
+Soubor:   js/game/Enemy.js:37-38 (a např. _drawInfernalGolemHigh,
+          Enemy.js:97-101)
+Chyba:    Canvas se pre-renderuje znovu pro KAŽDOU JEDNOTLIVOU
+          instanci nepřítele, místo jednou na typ+kvalitu a sdílet.
+Dopad:    Správně se uvolní po smrti (není to leak), ale u vln
+          s hodně nepřáteli je to zbytečná synchronní kreslicí
+          práce navíc při každém spawnu - projeví se jako krátké
+          zaškobrtnutí přesně ve chvíli, kdy vlna spawnuje hodně
+          nepřátel najednou.
+Návrh:    Cachovat pre-renderovaný canvas podle (typ, kvalita) na
+          úrovni třídy/modulu, sdílet mezi instancemi místo
+          kreslení pokaždé znovu.
+Odhad dopadu: (+10–20 % boost) rychlejší spawn vlny při vlnách
+          s vysokým počtem stejného typu nepřítele (přímo úměrné
+          počtu spawnů za krátký čas); mimo spawn moment ~0 %,
+          protože renderování samotné je i tak jen drawImage()
+          z cache.
+
+[TODO 8] Prodej věže se střelami "ve vzduchu" nevrátí střely
+          do poolu (< 1 % boost)
+----------------------------------------------------------------
+Soubor:   js/game/Game.js:256-275 (handleSell)
+Chyba:    Při prodeji věže se ta věž (i se svými aktivními
+          střelami) prostě vyfiltruje z pole towers bez zavolání
+          game.returnBullet() na její rozestřílené kulky.
+Dopad:    Není to leak (vše se normálně GC), jen se pool střel
+          nedoplní z té dávky - drobné, ne kritické.
+Návrh:    Před odebráním věže v handleSell() projít tower.bullets
+          a zavolat game.returnBullet() na každou aktivní.
+Odhad dopadu: (< 1 % boost) - týká se jen občasného doplnění
+          poolu, zanedbatelné oproti alokaci nových objektů, kterým
+          to předchází jen zřídka.
+
+
+================================================================
+✅ PROŠLO BEZ NÁLEZU (prověřeno, v pořádku)
+================================================================
+- Event log (#eventsList) správně omezen na 30 položek
+  (Game.js:1046-1055).
+- activeInstances schopností se správně čistí každý frame filtrem.
+- Bullet pooling funguje správně na všech běžných cestách (cíl
+  mrtvý, mimo dosah, blokovaný terén, uplynulá životnost).
+- abilityTimerInterval je správně clearInterval-ovaný jak při
+  znovu-vytvoření (createAbilityBar), tak v destroy() - žádné
+  množení intervalů.
+- Žádné vytváření DOM uzlů uvnitř hlavní herní smyčky
+  (update()/render()).
+- Žádné tooltip prvky v JS (jen čisté CSS :hover).
+- Cache textur mapy/grafiky se při změně kvality přepisuje,
+  ne hromadí (Map.js editorMode-gated cache, jednoslotová).
+- Tower.js preRenderedImage - potvrzeně cachované jednou v
+  konstruktoru, nikdy neregenerované per-frame.
+- Target-scan věží (O(towers × enemies)) je gate-ovaný fire-rate
+  cooldownem, ne volaný každý frame - v pořádku i při desítkách
+  věží.
+- Map.js - pozadí (tráva/voda/silnice/vinětace) je cachované
+  jako offscreen canvasy, viditelné dlaždice jsou ořezané na
+  viewport (O(visible tiles), ne O(celá mapa)).
+
+
+================================================================
+SOUHRNNÝ ODHAD CELKOVÉHO ZLEPŠENÍ (po opravě všeho)
+================================================================
+Krátký run (do ~5 min, bez restartu): TODO 4+5 dají odhadem
+  +15-25 % plynulosti oproti dnešnímu stavu (DOM thrashing +
+  prevence hitch-cascade). TODO 1 na krátkém runu skoro nic
+  nedělá (leak ještě nestihl narůst).
+
+Dlouhý run / více restartů v jedné kartě: hlavní viníci jsou
+  TODO 1 a TODO 2 - společně odhaduji naprostou většinu
+  (60-90 %+) hlášeného "hra postupně padá", protože jde o
+  neomezeně rostoucí jevy, ne pevný O(n) strop. Je potřeba
+  opravit OBA, jinak se problém po pár restartech vrátí i s
+  jen jedním z nich opraveným.
+
+TODO 7 a 8 jsou jemné doladění pro scénáře "hodně entit najednou"
+  (velké vlny, hodně věží) - řádově nižší dopad než TODO 1/2, ale
+  bezpečné a levné na opravu.
+
+TODO 6 je balanc bug (2× DPS lávy), ne výkonnostní - žádný
+  vliv na FPS.
