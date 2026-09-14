@@ -195,7 +195,7 @@ if (gameLogBtn && logPopup && closeLogBtn) {
 document.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("settingsPopup");
   const saveBtn = document.getElementById("saveSettingsBtn");
-  const showFpsCheckbox = document.getElementById("showFpsCheckbox");
+  const fpsToggleControl = document.getElementById("fpsToggleControl");
   const fpsRange = document.getElementById("fpsRange");
   const fpsNumber = document.getElementById("fpsNumber");
 
@@ -208,9 +208,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Clamp FPS to 30–144 range ---
   const clampFps = (val) => Math.min(144, Math.max(30, parseInt(val, 10) || 144));
 
+  // --- Show FPS Off/High segmented control (same widget as the Graphics
+  // Low/High switches below, just reused for a boolean On/Off) ---
+  function updateFpsToggleUI() {
+    if (!fpsToggleControl) return;
+    const isOn = settings.showFps;
+    fpsToggleControl.classList.toggle('is-high', isOn);
+    fpsToggleControl.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.value === (isOn ? 'on' : 'off'));
+    });
+  }
+
+  fpsToggleControl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    e.preventDefault();
+    settings.showFps = btn.dataset.value === 'on';
+    updateFpsToggleUI();
+  });
+
   // --- Apply settings ---
   settings.targetFps = clampFps(settings.targetFps);
-  showFpsCheckbox.checked = settings.showFps;
+  updateFpsToggleUI();
   fpsRange.min = 30;
   fpsRange.max = 144;
   fpsRange.value = settings.targetFps;
@@ -232,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Uložení FPS
     const targetFps = clampFps(fpsRange.value);
     settings = {
-      showFps: showFpsCheckbox.checked,
+      showFps: settings.showFps,
       targetFps: targetFps
     };
     localStorage.setItem("data.fps", JSON.stringify(settings));
@@ -290,8 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 2. Function to refresh the UI buttons to match the state
+  // NOTE: scoped to #graphicsCustomList so it doesn't also pick up the
+  // Show FPS on/off segmented-control, which isn't part of currentGraphics.
   function updateGraphicsUI() {
-    const rows = document.querySelectorAll('.segmented-control');
+    const rows = document.getElementById('graphicsCustomList')?.querySelectorAll('.segmented-control') ?? [];
     rows.forEach(control => {
       const setting = control.dataset.setting;
       const value = currentGraphics[setting];

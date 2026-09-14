@@ -10,7 +10,8 @@
             "Option to hide the menu to see the background image fully",
             "Popups now have unified behavior - can be closed by clicking the overlay, pressing close or pressing ESC",
             "Popups now have smooth fade in/out animations",
-            "Setting now have smooth fade in/out animations when switching between low/high graphics settings"
+            "Setting now have smooth switch animations when switching between low/high graphics settings",
+            "Setting now have smooth switch animations when switching between Show FPS On and Off"
           ]
         },
         {

@@ -106,14 +106,16 @@
           <h2 class="cl-primary">Settings</h2>
         
           <div class="settings-section">
-            <h3 class="cl-primary">Graphics</h3>
 
             <div class="settings-grid-container">
               <div class="settings-grid">
-                <label>
-                  <label for="showFpsCheckbox">Show FPS</label>
-                  <input type="checkbox" id="showFpsCheckbox" class="settings-checkbox">
-                </label>
+                <div class="graphics-row">
+                  <span>Show FPS</span>
+                  <div class="segmented-control" id="fpsToggleControl">
+                    <button type="button" data-value="off">Off</button>
+                    <button type="button" data-value="on">On</button>
+                  </div>
+                </div>
               </div>
             
               <div class="settings-grid">
@@ -126,7 +128,9 @@
                   </select>
                 </div>
               </div>
-            
+
+             <h3 class="cl-primary">Graphics</h3>
+
               <div class="bulk-actions mt-2 mb-2">
                 <button id="btnAllLow" class="btn btn-small">Switch All to Low</button>
                 <button id="btnAllHigh" class="btn btn-small">Switch All to High</button>
