@@ -1,0 +1,62 @@
+/* "Fire title" animation for the main menu heading only.
+   Scoped strictly to #title / #subtitle (index.html's start overlay) via ID
+   selectors - NOT the shared .title/.subtitle classes, which are also used
+   elsewhere (e.g. the "Select map" heading, the Level Editor's own title)
+   and must stay completely untouched by this file.
+   Deliberately does NOT set font-family anywhere - it reuses whatever font
+   #title/#subtitle already render in; only color/animation are added. */
+
+#title .char {
+    display: inline-block;
+    opacity: 0;
+    color: #d44a00;
+    background: linear-gradient(180deg, #ffe99a 0%, #ffde59 25%, #d44a00 72%, #8c2b08 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+    filter: drop-shadow(0 0 2px rgba(255, 222, 89, .22))
+            drop-shadow(0 0 4px rgba(212, 74, 0, .35));
+    animation: fireTitleFallIn .35s forwards;
+}
+
+/* Two segments, each with its own timing-function, instead of one overshoot
+   easing reused across 3 keyframe stops (which reapplied the overshoot on
+   every segment and made the last one - originally just ~66ms - look like
+   it stuttered/got stuck). Segment 1 (0%->65%) is the fall; segment 2
+   (65%->100%) is a single smooth settle back to rest, no re-bounce. */
+@keyframes fireTitleFallIn {
+    0%   {
+        opacity: 0;
+        transform: translateY(-75px) rotate(-5deg) scale(.9);
+        filter: blur(2px);
+        animation-timing-function: cubic-bezier(.33, 0, .15, 1);
+    }
+    65%  {
+        opacity: 1;
+        transform: translateY(5px) rotate(1deg) scale(1.02);
+        animation-timing-function: ease-out;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0) scale(1);
+        filter: drop-shadow(0 0 2px rgba(255, 222, 89, .22))
+                drop-shadow(0 0 4px rgba(212, 74, 0, .35));
+    }
+}
+
+/* #subtitle already shows the game version (see versions.js) and is already
+   styled as a gold pill by style.css - this only adds the reveal: held
+   invisible until JS sets its animation-delay (renderFireTitle()'s return
+   value, so it always lands right as the title finishes), then slides
+   smoothly down from behind the title instead of just popping into view. */
+#subtitle {
+    opacity: 0;
+    z-index: 1; /* below #title's z-index: 101 (style.css), so the title
+                   visually occludes it while it slides out from underneath */
+    animation: fireTitleSubtitleIn .7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes fireTitleSubtitleIn {
+    from { opacity: 0; transform: translateY(-32px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

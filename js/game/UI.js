@@ -377,28 +377,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Titles
-// --- Title Typing Effect ---
+// --- Fire Title Effect (see css/fire-title.css + js/assets/fireTitle.js) ---
+// Scoped to #title/#subtitle only - does not touch fonts anywhere else.
 function typeTitle() {
-  const titleEl = document.querySelector('.title');
-  if (!titleEl) return;
-
-  const fullText = "The CZSrna's Tower Defence";
-  // Temporarily store the full text and clear the display
-  titleEl.dataset.fullText = fullText;
-  titleEl.textContent = "";
-
-  const characters = fullText.split('');
-  let charIndex = 0;
-  const intervalTime = 50; // 50ms delay between characters
-
-  const timer = setInterval(() => {
-    if (charIndex < characters.length) {
-      titleEl.textContent += characters[charIndex];
-      charIndex++;
-    } else {
-      clearInterval(timer);
-    }
-  }, intervalTime);
+  const titleEl = document.getElementById('title');
+  const subtitleEl = document.getElementById('subtitle');
+  const titleDurationMs = window.renderFireTitle?.(titleEl, "The CZSrna's Tower Defence") ?? 0;
+  // Let the subtitle pill slide in ~150ms after the title settles, instead
+  // of appearing at the same time.
+  if (subtitleEl) subtitleEl.style.animationDelay = (titleDurationMs + 150) + 'ms';
 }
 document.addEventListener("DOMContentLoaded", typeTitle);
 
