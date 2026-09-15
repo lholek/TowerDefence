@@ -47,7 +47,7 @@
           "name": "Lava Floor",
           "type": "targeted",
           "selectionCount": 11,
-          "damage": 400,
+          "damage": 800,
           "damage_every": 500,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 45000,

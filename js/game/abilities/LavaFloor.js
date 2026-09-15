@@ -177,11 +177,11 @@ _getCenteredPathTiles(centerTile, count) {
   }
 
   update(deltaTime) {
-      super.update(deltaTime); // Let Ability.js handle the cooldown reduction
-
-      for (const inst of this.activeInstances) {
-        inst.onTick(deltaTime);
-      }
+      // Ability.js's update() already calls inst.onTick(deltaTime) for every
+      // active instance while it filters expired ones - calling it again
+      // here made lastDamageTime accumulate 2x per frame, so lava ticked
+      // ~2x more often than damage_every actually says.
+      super.update(deltaTime);
   }
 
   render(ctx) {

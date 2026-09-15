@@ -2,7 +2,8 @@
 NewTowerDefence — Performance & Leak Audit
 ================================================================
 STAV: Nic z tohoto zatím není opravené v repu (ověřeno přímo v
-kódu, žádný diff proti gitu) - celý seznam je TODO.
+kódu, žádný diff proti gitu) - celý seznam je TODO, KROMĚ TODO 6
+(lávová podlaha), který je od 2026-09-15 opravený.
 
 Poznámka k procentům: jde o odhad dopadu na základě mechanismu chyby
 (kolik práce/paměti navíc to generuje a jak rychle to roste), ne
@@ -130,7 +131,7 @@ Odhad dopadu: (+2–5 % boost) za každou aktivní schopnost na
 🟡 REÁLNÉ BUGY (ne výkon, herní balanc)
 ================================================================
 
-[TODO 6] Lávová podlaha tikne poškození dvakrát rychleji (+0 % boost — balanc, ne výkon)
+[TODO 6] ✅ OPRAVENO (2026-09-15) — Lávová podlaha tikla poškození dvakrát rychleji (+0 % boost — balanc, ne výkon)
 ----------------------------------------------------------------
 Soubor:   js/game/abilities/LavaFloor.js:179-185
 Chyba:    LavaFloor.update() volá super.update() (což už uvnitř

@@ -56,7 +56,7 @@
           "type": "targeted",
           "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
+          "damage": 500,
           "damage_every": 250,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,

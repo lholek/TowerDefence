@@ -65,12 +65,17 @@ export default class Ability {
 
     // 2. Handle Active Instances (Duration/Lava Floor ticks)
     this.activeInstances = this.activeInstances.filter(inst => {
+        // Tick first, THEN check expiry - otherwise the final tick that lands
+        // exactly on the frame the effect expires (e.g. effectDuration set to
+        // an exact multiple of damage_every) never fires, and the instance
+        // ends up dealing one fewer hit than the config math promises.
+        if (typeof inst.onTick === 'function') inst.onTick(deltaTime);
+
         inst.durationLeft -= deltaTime;
         if (inst.durationLeft <= 0) {
             if (typeof inst.onEnd === 'function') inst.onEnd();
             return false;
         }
-        if (typeof inst.onTick === 'function') inst.onTick(deltaTime);
         return true;
     });
   }
