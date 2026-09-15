@@ -1,9 +1,10 @@
 ================================================================
 NewTowerDefence — Performance & Leak Audit
 ================================================================
-STAV: Nic z tohoto zatím není opravené v repu (ověřeno přímo v
-kódu, žádný diff proti gitu) - celý seznam je TODO, KROMĚ TODO 6
-(lávová podlaha), který je od 2026-09-15 opravený.
+STAV (2026-09-15): VŠECHNO opravené - TODO 1-8 implementované a
+zakomponované do js/game/Game.js a js/game/Enemy.js, syntaxe
+ověřená (node --check). TODO 6 (lávová podlaha) byl opraven dřív
+samostatně (balance fix, ne performance).
 
 Poznámka k procentům: jde o odhad dopadu na základě mechanismu chyby
 (kolik práce/paměti navíc to generuje a jak rychle to roste), ne
@@ -17,7 +18,7 @@ session", ne pro jeden krátký run.
 🔴 KRITICKÉ
 ================================================================
 
-[TODO 1] Únik ctx.save() na canvasu — HLAVNÍ PŘÍČINA PÁDŮ (+50–70 % boost při delším běhu)
+[TODO 1] ✅ OPRAVENO — Únik ctx.save() na canvasu — HLAVNÍ PŘÍČINA PÁDŮ (+50–70 % boost při delším běhu)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:927-1046 (render())
 Chyba:    ctx.save() se volalo KAŽDÝ frame bezpodmínečně, ale
@@ -38,7 +39,7 @@ Odhad dopadu: (+50–70 % boost) - ROSTOUCÍ V ČASE, na začátku hry
           prakticky celé "postupné zpomalení a pád". Pravděpodobně
           hlavní podíl na hlášeném problému.
 
-[TODO 2] Dva neuvolnitelné window listenery při každém restartu (+20–40 % boost při více restartech)
+[TODO 2] ✅ OPRAVENO — Dva neuvolnitelné window listenery při každém restartu (+20–40 % boost při více restartech)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:96-97 (constructor)
           window.addEventListener('keydown', e => this.keys[e.code] = true);
@@ -75,7 +76,7 @@ Odhad dopadu: (+20–40 % boost) - ROSTOUCÍ S POČTEM RESTARTŮ, u
           nejpravděpodobnější příčinu postupného zpomalení/pádu
           vedle TODO 1, hlavně u hráčů co restartují často.
 
-[TODO 3] destroy() neuvolňuje referenci na starou hru (+0–5 % boost, doplněk k TODO 2)
+[TODO 3] ✅ OPRAVENO — destroy() neuvolňuje referenci na starou hru (+0–5 % boost, doplněk k TODO 2)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:1245-1278 (destroy())
 Chyba:    Nuluje se jen ctx/canvas, ne this.towers, this.enemies,
@@ -99,7 +100,7 @@ Odhad dopadu: (+0–5 % boost) - sám o sobě skoro nic (defense in
 🟠 STŘEDNÍ — jednorázové, ale citelné
 ================================================================
 
-[TODO 4] Necapované deltaTime po výpadku framu (+5–10 % boost)
+[TODO 4] ✅ OPRAVENO — Necapované deltaTime po výpadku framu (+5–10 % boost)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:280-289 (loop())
 Chyba:    Po zaškobrtnutí (výpadek framu, GC pauza, moc věcí na
@@ -112,7 +113,7 @@ Odhad dopadu: (+5–10 % boost) - zabraňuje tomu, aby se jedno
           zaškobrtnutí zřetězilo do dalšího (compounding hitch),
           spíš prevence extrémů než plošné zrychlení.
 
-[TODO 5] Duplicitní 60×/s aktualizace UI schopností (+2–5 % boost na aktivní schopnost)
+[TODO 5] ✅ OPRAVENO — Duplicitní 60×/s aktualizace UI schopností (+2–5 % boost na aktivní schopnost)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:370-374 (update())
 Chyba:    updateAbilityUI() se volá pro každou schopnost na
@@ -156,7 +157,7 @@ Odhad dopadu: (+0 % boost na výkon) - jde čistě o herní balanc
 🟢 VÝKONNOSTNÍ (ne leak, zpomaluje to s hodně entitami)
 ================================================================
 
-[TODO 7] Každý nepřítel si při spawnu sám vykreslí vlastní
+[TODO 7] ✅ OPRAVENO — Každý nepřítel si při spawnu sám vykreslí vlastní
           offscreen canvas místo sdílené cache (+10–20 % boost při spawnu velké vlny)
 ----------------------------------------------------------------
 Soubor:   js/game/Enemy.js:37-38 (a např. _drawInfernalGolemHigh,
@@ -171,13 +172,20 @@ Dopad:    Správně se uvolní po smrti (není to leak), ale u vln
 Návrh:    Cachovat pre-renderovaný canvas podle (typ, kvalita) na
           úrovni třídy/modulu, sdílet mezi instancemi místo
           kreslení pokaždé znovu.
+Implementace: static Enemy._bodyCache (klíč typ+kvalita - tělo je
+          na damage nezávislé) a static Enemy._indicatorCache
+          (klíč typ+kvalita+damage - ukazatel poškození totiž
+          zobrazuje číslo this.damage, takže ho nelze sdílet napříč
+          různými hodnotami damage, jinak by se nepřátelům
+          s jiným damage zobrazovalo špatné číslo). Oba cache jsou
+          jen pro čtení přes drawImage(), nikdy se nemutují.
 Odhad dopadu: (+10–20 % boost) rychlejší spawn vlny při vlnách
           s vysokým počtem stejného typu nepřítele (přímo úměrné
           počtu spawnů za krátký čas); mimo spawn moment ~0 %,
           protože renderování samotné je i tak jen drawImage()
           z cache.
 
-[TODO 8] Prodej věže se střelami "ve vzduchu" nevrátí střely
+[TODO 8] ✅ OPRAVENO — Prodej věže se střelami "ve vzduchu" nevrátí střely
           do poolu (< 1 % boost)
 ----------------------------------------------------------------
 Soubor:   js/game/Game.js:256-275 (handleSell)

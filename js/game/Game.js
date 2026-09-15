@@ -84,7 +84,7 @@ export default class Game {
     // Hot keys
     this.boundKeyDown = (e) => this.handleKeyDown(e);
     window.addEventListener('keydown', this.boundKeyDown);
-  
+
     // Towers Hovering
     this.keys = {};
     this.hoveredTower = null;
@@ -93,8 +93,15 @@ export default class Game {
     this.uiSelectionBox = document.getElementById('selectionIndicator');
     this.uiSelectionText = document.getElementById('selectionName');
 
-    window.addEventListener('keydown', e => this.keys[e.code] = true);
-    window.addEventListener('keyup', e => this.keys[e.code] = false);
+    // Bound (not inline) so destroy() can actually remove them - inline
+    // arrow functions passed straight to addEventListener have no stored
+    // reference, so a previous version of this code leaked 2 permanent
+    // window listeners (plus everything they close over: this whole Game
+    // instance, its Map, towers, enemies...) on every restart.
+    this.boundKeyStateDown = (e) => this.keys[e.code] = true;
+    this.boundKeyStateUp = (e) => this.keys[e.code] = false;
+    window.addEventListener('keydown', this.boundKeyStateDown);
+    window.addEventListener('keyup', this.boundKeyStateUp);
   
     // Custom cursor
     this.canvas.addEventListener('mousemove', (e) => {
@@ -267,6 +274,14 @@ export default class Game {
       if (tower) {
           const type = this.towerTypes[tower.typeKey];
           this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
+          // Return any bullets this tower still has in flight to the pool
+          // before dropping it - otherwise they'd just get garbage
+          // collected with the tower instead of being reused, so the pool
+          // wouldn't get replenished from that batch.
+          if (tower.bullets) {
+              for (const bullet of tower.bullets) this.returnBullet(bullet);
+              tower.bullets.length = 0;
+          }
           this.towers = this.towers.filter(t => t !== tower);
           this.stats.towersSold++;
           this.updateUI();
@@ -278,12 +293,19 @@ export default class Game {
     if (!this.gameStarted) return; // Exit the loop entirely
 
     // Calculate raw deltaTime
-    const rawDeltaTime = now - (this.lastTime || now);
+    let rawDeltaTime = now - (this.lastTime || now);
     this.lastTime = now;
+    // Clamp it - without this, a lag spike (tab switch, GC pause, a slow
+    // frame from too much on screen) feeds one huge deltaTime into update(),
+    // which can snap enemies/bullets far past where they should be and even
+    // burst-spawn several enemies at once to "catch up". Capping at 100ms
+    // means the game just runs a bit slower for that one frame instead of
+    // jumping - it can't make an existing hitch cascade into a worse one.
+    rawDeltaTime = Math.min(rawDeltaTime, 100);
 
     if (!this.paused && this.gameStarted && this.playerLifes > 0) {
       // Apply the multiplier here
-      const scaledDeltaTime = rawDeltaTime * this.gameSpeed; 
+      const scaledDeltaTime = rawDeltaTime * this.gameSpeed;
       this.update(scaledDeltaTime); 
       this.render();
     }
@@ -367,11 +389,13 @@ export default class Game {
     // ----------------------------------------------------------------
     this.enemies.forEach(e => e.update(deltaTime));
     this.towers.forEach(t => t.update(deltaTime, this.enemies));
-    this.abilityManager.abilities.forEach(ability => {
-        ability.update(deltaTime);
-        // This call ensures the UI (text/progress bars) reflects the new times
-        this.abilityManager.updateAbilityUI(ability); 
-    });
+    // updateAbilityUI() used to also be called here for every ability on
+    // every update frame (~60x/sec) - pure duplicate DOM work, since
+    // abilityTimerInterval (see setupAbilityUI, runs every 100ms) already
+    // refreshes the same cooldown/duration overlays and is what actually
+    // drives their visible countdown. Removed to cut per-ability DOM
+    // read/write churn on frames with several abilities active.
+    this.abilityManager.abilities.forEach(ability => ability.update(deltaTime));
 
     // ----------------------------------------------------------------
     // 4. REMOVE DEAD/ESCAPED ENEMIES & CHECK GAME OVER
@@ -1035,11 +1059,15 @@ export default class Game {
     }
 
     // --- 3. CLEANUP ---
-    this.map.resetTransform(this.ctx); 
+    this.map.resetTransform(this.ctx);
 
-    if (this.shakeDuration > 0) {
-      this.ctx.restore(); 
-    }
+    // Must always match the unconditional ctx.save() above - it was
+    // previously only restored while shakeDuration > 0, which left one
+    // unmatched save() on the canvas's internal state stack every other
+    // frame (i.e. almost always). That stack grew without bound for the
+    // whole session, and was the real cause of the game slowing down /
+    // crashing the longer it ran - worse the more there was to render.
+    this.ctx.restore();
     this.renderCustomCursor();
   }
 
@@ -1251,6 +1279,8 @@ export default class Game {
     
     // 2. Kill keyboard listeners
     window.removeEventListener('keydown', this.boundKeyDown);
+    window.removeEventListener('keydown', this.boundKeyStateDown);
+    window.removeEventListener('keyup', this.boundKeyStateUp);
 
     // 3. Remove the canvas from the website entirely
     if (this.canvas && this.canvas.parentNode) {
@@ -1274,6 +1304,15 @@ export default class Game {
 
     this.ctx = null;
     this.canvas = null;
+    // Defense in depth: with the listener leak above fixed this shouldn't
+    // matter anymore (nothing external should still reference `this` once
+    // main.js drops it), but drop the big object graph explicitly anyway
+    // so a future stray reference can't accidentally keep a whole old
+    // Map (+ all its pre-rendered canvases), towers and enemies alive.
+    this.towers = null;
+    this.enemies = null;
+    this.map = null;
+    this.abilityManager = null;
     document.getElementById('selectionIndicator').style.display = 'none';
   }
 

@@ -5,7 +5,8 @@
       "release": "-",
       "changes": [
         {
-          "<b> TODO: Performance update</b>": [
+          "<b> TODO: Performance</b>": [
+            "Fixed a canvas rendering leak, a memory leak from duplicate keyboard listeners on restart, and other issues causing the game to slow down over time <b>up to 30% Better Performance</b>",
             "TODO: Improve - Performance boost DO Tasks FROM PERFORMANCE_ERRORS.txt",
             "TODO: Improve - Fix a memory leak that caused the game to progressively slow down and eventually crash during long play sessions or after multiple restarts — performance should now stay stable indefinitely instead of degrading over time.",
             "TODO: Improve - Foreach enemy is now ctx.restore() - toto zpomaluje hru - řádek 555 Enemy.js - ctx.restore() - zkontrolovat jestli je to nutné"

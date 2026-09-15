@@ -1,0 +1,214 @@
+{
+  "maps": [
+    {
+      "name": "Test Performance",
+      "startingCoins": 100,
+      "startingLifes": 100000,
+      "extraLife": true,
+      "extraLifePrices": [
+        10,
+        25,
+        50,
+        75,
+        100,
+        150,
+        200
+      ],
+      "description": [
+        {
+          "descriptionText": "Edit description",
+          "level count": 1,
+          "difficulty": "⭐",
+          "map_size": "30x30",
+          "tower types": 1,
+          "abilites": "Lava Floor🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","S1","SNW","SNW","SNW","SNW","S2","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","S3","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","S4","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW"],
+              ["SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["X","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW"],
+              ["X","X","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","E1","E2","E4","E3","SNW","SNW","SNW","SNW","SNW","SNW","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","SNW","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW","SNW","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","SNW","SNW","SNW","SNW","SNW","SNW","O[SNW]","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","SNW","SNW","SNW","SNW","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","X","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","SND","SND","O[SND]","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","S11","O","O","O","O","X","X","X","SNW","SNW","O[SNW]","SNW","SNW","SNW","SND","SND","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","O","X","X","X","X","X","O","X","X","X","SND","SND","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","O","X","X","X","X","X","O","X[Tree]","X","X","SND","SND","SND","SND","O[SND]","SND","SND","SND","SND","O[SND]","O[SND]","S5","SND","SND","SND"],
+              ["X","X","X","X","X","O","X","X","X","X","X","O","X[Tree]","X","SND","SND","SND","SND","SND","O[SND]","SND","SND","O[SND]","O[SND]","O[SND]","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","O","X","X","X","X","O","O","X","X","SND","SND","SND","SND","SND","O[SND]","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","S10","O","O","O","X[Tree]","X","X","O","O","X","X","X","SND","SND","SND","SND","SND","O[SND]","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X[Tree]","O","O","O","O","O","X","X","X","X","SND","SND","SND","SND","SND","O[SND]","SND[BONE-1]","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","O","X[Tree]","X","X","O","X","X","X","X","SND","SND","SND","SND","SND","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","O[SND]","S6","SND","SND","SND","SND"],
+              ["X","X","X","X","X","O","X","X","X","O","X[Tree]","X","X","X","SND","SND","SND","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","S9","O","X","X","X","O","X[Tree]","X","X","X","SND","SND","SND","SND","SND","O[SND]","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","X","X","O","X[Tree]","X","X","X","SND","SND","SND","SND","SND","S7","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","X","X","S8","X","X","X","X","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"],
+              ["X","X","X","X","X","X","X","X","X","X","X","X","X","X","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND","SND"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 200,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 1,
+          "effectDuration": 10000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S2E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S3E2",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S4E2",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S5E2",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S6E3",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S7E3",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S8E4",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S9E4",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S10E4",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 500,
+              "health": 100,
+              "speed": 0.3,
+              "path": "S11E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            }
+          ]
+        }
+      ],
+      "enemyEffects": []
+    }
+  ]
+}

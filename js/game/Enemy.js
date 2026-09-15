@@ -1,4 +1,17 @@
 export default class Enemy {
+  // Shared caches so identical pre-rendered canvases aren't redrawn (with
+  // real cost - shadowBlur, gradients, multiple boulder shapes, see
+  // _drawInfernalGolemHigh) for every single enemy spawn:
+  // - Body art only depends on (type, quality) - `size` is always 30 (see
+  //   constructor), so it's not part of the key. Safe to share since the
+  //   canvas is only ever read via drawImage(), never mutated afterwards.
+  // - The damage indicator additionally bakes in `damage` (the number it
+  //   displays), so it can only be shared between enemies with the exact
+  //   same (type, quality, damage) - still a real win since enemies from
+  //   the same level/wave typically share one damage value.
+  static _bodyCache = new Map();
+  static _indicatorCache = new Map();
+
   constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1, type='basic', damage = 1, skin = null) {
     this.map = map;
     this.path = path;
@@ -33,9 +46,19 @@ export default class Enemy {
     const settings = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
     this.quality = settings.enemies || 'low';
 
-    // Generování grafiky do cache
-    this.cachedBody = this._preRenderEnemy(this.size);
-    this.cachedIndicator = this._preRenderIndicatorCache();
+    // Generování grafiky do cache (sdílené napříč instancemi, viz static
+    // _bodyCache/_indicatorCache výše)
+    const bodyKey = `${this.type}_${this.quality}`;
+    if (!Enemy._bodyCache.has(bodyKey)) {
+        Enemy._bodyCache.set(bodyKey, this._preRenderEnemy(this.size));
+    }
+    this.cachedBody = Enemy._bodyCache.get(bodyKey);
+
+    const indicatorKey = `${this.type}_${this.quality}_${this.damage}`;
+    if (!Enemy._indicatorCache.has(indicatorKey)) {
+        Enemy._indicatorCache.set(indicatorKey, this._preRenderIndicatorCache());
+    }
+    this.cachedIndicator = Enemy._indicatorCache.get(indicatorKey);
   }
 
   update(deltaTime) {
