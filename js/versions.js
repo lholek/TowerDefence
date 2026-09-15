@@ -16,14 +16,18 @@ function formatVersionDate(dateStr) {
 // a <li> with the key as the bullet text and its array rendered as a nested <ul>.
 function renderChangeEntry(entry) {
     if (typeof entry === 'string') {
-        return `<li>${entry}</li>`;
+        // Wrapped in <span> so the text (plus any inline <b> inside it) stays
+        // a single flex item - #versionList ul li is display:flex; flex-direction:column,
+        // so without this wrapper the text before <b> and the <b> itself become
+        // two separate flex items and get stacked on their own lines.
+        return `<li><span>${entry}</span></li>`;
     }
     if (entry && typeof entry === 'object') {
         return Object.entries(entry).map(([category, subItems]) => {
             const subList = (Array.isArray(subItems) ? subItems : [subItems])
                 .map(renderChangeEntry)
                 .join('');
-            return `<li>${category}<ul>${subList}</ul></li>`;
+            return `<li><span>${category}</span><ul>${subList}</ul></li>`;
         }).join('');
     }
     return '';
