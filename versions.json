@@ -7,7 +7,7 @@
         {
           "<b>Performance</b>": [
             "Fixed a canvas rendering leak, a memory leak from duplicate keyboard listeners on restart, and other issues causing the game to slow down over time <b>Up to 40% more FPS in late game</b>",
-            "Significantly higher and more stable FPS, especially in the later stages of the game"
+            "Significantly higher and more stable FPS, especially in the late game"
           ]
         },
         {
