@@ -18,7 +18,8 @@
             "Popups now have unified behavior - can be closed by clicking the overlay, pressing close or pressing ESC",
             "Popups now have smooth fade in/out animations",
             "Settings now have smooth switch animations when switching between low/high graphics settings",
-            "Settings now have smooth switch animations when switching between Show FPS On and Off"
+            "Settings now have smooth switch animations when switching between Show FPS On and Off",
+            "Slightly updated FPS display in the top-right corner of the screen"
           ]
         },
         {
