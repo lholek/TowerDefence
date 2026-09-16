@@ -119,7 +119,8 @@
 }
 
 .menu-music-button{
-  min-width: 55%;
+  min-width: 62%;
+  white-space: nowrap;
 }
 
 .music-button{

@@ -27,6 +27,11 @@
           ]
         },
         {
+          "<b>Music Player</b>": [
+            "Changed the music toggle button text from 'Music: Paused' to 'Music: Off', and widened the button slightly so it fits on one line"
+          ]
+        },
+        {
           "<b>Gameplay</b>": [
             "Fixed bug - Lava Floor was dealing damage twice as fast as its configured 'damage every' value (its update() called the damage tick both directly and through the base Ability update, so the internal timer accumulated 2x per frame)",
             "Fixed bug - Abilities with a damage-over-time effect (e.g. Lava Floor) could lose their final tick when the effect's duration ended on the exact same frame the tick was due, dealing one less hit than the configured numbers promise",

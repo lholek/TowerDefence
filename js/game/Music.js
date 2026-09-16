@@ -69,7 +69,7 @@ export class MusicManager {
     }
 
     syncUI() {
-        const state = this.audio.paused ? 'Paused' : 'On';
+        const state = this.audio.paused ? 'Off' : 'On';
         const name = this.trackNames[this.currentIndex];
         this.toggleBtns.forEach(btn => btn.textContent = `Music: ${state}`);
         this.titleEls.forEach(el => el.textContent = name);
