@@ -6,8 +6,9 @@
       "changes": [
         {
           "<b> TODO: Performance</b>": [
-            "Fixed a canvas rendering leak, a memory leak from duplicate keyboard listeners on restart, and other issues causing the game to slow down over time <b>Up to 30% Better Performance</b>",
-            "TODO: Improve - Performance boost DO Tasks FROM PERFORMANCE_ERRORS.txt",
+            "Fixed a canvas rendering leak, a memory leak from duplicate keyboard listeners on restart, and other issues causing the game to slow down over time <b>Up to 40% more FPS in late game</b>",
+            "Significantly higher and more stable FPS, especially in the later stages of the game",
+            "TODO: Improve - Do the performance boost tasks from PERFORMANCE_ERRORS.txt",
             "TODO: Improve - Fix a memory leak that caused the game to progressively slow down and eventually crash during long play sessions or after multiple restarts — performance should now stay stable indefinitely instead of degrading over time.",
             "TODO: Improve - Foreach enemy is now ctx.restore() - toto zpomaluje hru - řádek 555 Enemy.js - ctx.restore() - zkontrolovat jestli je to nutné"
           ]
@@ -19,13 +20,13 @@
             "Option to hide the menu to see the background image fully",
             "Popups now have unified behavior - can be closed by clicking the overlay, pressing close or pressing ESC",
             "Popups now have smooth fade in/out animations",
-            "Setting now have smooth switch animations when switching between low/high graphics settings",
-            "Setting now have smooth switch animations when switching between Show FPS On and Off"
+            "Settings now have smooth switch animations when switching between low/high graphics settings",
+            "Settings now have smooth switch animations when switching between Show FPS On and Off"
           ]
         },
         {
           "<b>Version History</b>": [
-            "'Version History' have sections now, whit updates under each section"
+            "'Version History' has sections now, with updates under each section"
           ]
         },
         {
@@ -37,7 +38,7 @@
         },
         {
           "<b>How to play</b>": [
-            "'How to play' have arrows to switch between pages or you can use keyboard arrows (← / →) or (A / D) to switch between pages"
+            "'How to play' has arrows to switch between pages or you can use keyboard arrows (← / →) or (A / D) to switch between pages"
           ]
         },
         "TODO: Improve - More Design upgrades ?",
