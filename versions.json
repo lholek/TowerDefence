@@ -19,7 +19,8 @@
             "Popups now have smooth fade in/out animations",
             "Settings now have smooth switch animations when switching between low/high graphics settings",
             "Settings now have smooth switch animations when switching between Show FPS On and Off",
-            "Slightly updated FPS display in the top-right corner of the screen"
+            "Slightly updated FPS display in the top-right corner of the screen",
+            "Removed the close button from the settings popup, as it is now redundant with the overlay and ESC key closing functionality"
           ]
         },
         {

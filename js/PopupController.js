@@ -47,7 +47,7 @@ class PopupController {
         // one close trigger at once (e.g. Settings has both its corner "×"
         // and a text "Close" button at the bottom), and all of them need to
         // work, not just whichever comes first in the DOM.
-        const closeBtns = this.popup.querySelectorAll('.close-btn, #closeVersionPopup, #closeSettingsBtn, #closeLore');
+        const closeBtns = this.popup.querySelectorAll('.close-btn, #closeVersionPopup, #closeLore');
         closeBtns.forEach(closeBtn => closeBtn.addEventListener('click', () => this.close()));
     }
 
