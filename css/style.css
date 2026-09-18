@@ -179,9 +179,9 @@ h3 {
     }
 }
 /* Hover: The button glows slightly */
-.btn:hover {
+.btn:hover:not(:disabled) {
     background-color: #a0522d; /* Slightly lighter brown */
-    box-shadow: 
+    box-shadow:
         inset 0 2px 0 rgba(255, 255, 255, 0.3),
         0 5px 0 #4a250b,
         0 0 15px rgba(243, 229, 171, 0.4); /* Gold outer glow */
@@ -189,11 +189,16 @@ h3 {
 }
 
 /* Active: The button "clicks" down */
-.btn:active {
+.btn:active:not(:disabled) {
     transform: translateY(3px); /* Moves down to cover the depth */
-    box-shadow: 
+    box-shadow:
         inset 0 2px 5px rgba(0, 0, 0, 0.5), /* Inner shadow when pressed */
         0 2px 0 #4a250b;                    /* Depth disappears */
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .btn-menu{
@@ -565,8 +570,10 @@ canvas {
 /* Styled dropdown for start overlay */
 .styled-select {
   padding: 8px 12px;
+  padding-right: 36px;
   border-radius: 8px;
-  background: var(--main-bg-color);;
+  border: 2px solid transparent;
+  background-color: var(--main-bg-color);
   color: #fff;
   font-weight: bold;
   cursor: pointer;
@@ -574,27 +581,117 @@ canvas {
   transition: 0.2s;
   min-width: 400px;
 max-width: 400px;
+
+  /* Custom arrow (instead of the native one) so its position/color is adjustable */
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23fff" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 18px top 50%;
+  background-size: 12px auto;
 }
-.styled-select:hover {
-  border-color: gold;
-}
+.styled-select:hover,
 .styled-select:focus {
   outline: none;
-  border-color: #ffde59;
+  border-color: #f0c674;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23f0c674" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+}
+
+#mapSelectionArea,
+#fileUploadArea {
+  padding-top: 1rem;
+}
+
+/* Custom map file picker (fileUploadArea) */
+.file-upload-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--main-bg-color);
+  cursor: pointer;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.file-upload-btn {
+  color: #fff;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.file-upload-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #f0c674;
+}
+
+.file-upload-name {
+  color: #fff;
+  font-size: 0.85em; /* Matches "Choose File" */
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.file-upload-name.has-file {
+  color: #f0c674;
+}
+
+.file-clear-btn {
+  display: none; /* shown via JS (.is-visible) once a file is actually chosen */
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: #8B4513;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.file-clear-btn.is-visible {
+  display: flex;
+}
+
+.file-clear-btn:hover {
+  background: #a0522d;
 }
 
 /* Description */
 .mapInfo {
     min-width: 700px;
     max-width: 700px;
+    min-height: 370px; /* Matches the filled-state height (350px minimap + padding), so the empty "No map selected" state doesn't collapse the box */
     background: var(--main-bg-color);
     margin: 0px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-direction: row;
     gap: 2px;
     align-items: stretch;
     border-radius: 8px;
+    text-align: center;
+    align-items: center
+}
+
+/* Only the empty "No map selected" state gets vertically centered + enlarged
+   text - the filled preview (table + minimap) keeps its normal top-aligned layout. */
+.mapInfo.is-empty {
+    align-items: center;
+    color: #fff;
+    font-size: 1.25rem;
 }
 
 

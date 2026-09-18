@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Elementy pro startovací obrazovku ---
     const mapSelect = document.getElementById('mapSelect');
     const mapFileInput = document.getElementById('mapFileInput');
+    const mapFileName = document.getElementById('mapFileName');
+    const clearMapFileBtn = document.getElementById('clearMapFileBtn');
     const startBtn = document.getElementById('startButton');
     const loadingOverlay = document.getElementById('loadingOverlay');
     const mapSelectArea = document.getElementById('mapSelectionArea');
@@ -21,6 +23,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let game;
 
+    // Reflects the currently selected custom map file (or lack thereof) in
+    // the #mapFileName label next to the "Choose File" button, turning it
+    // yellow once a valid file is picked.
+    function refreshFileNameDisplay() {
+        const file = mapFileInput.files[0];
+        if (file) {
+            mapFileName.textContent = file.name;
+            mapFileName.classList.add('has-file');
+            clearMapFileBtn.classList.add('is-visible');
+        } else {
+            mapFileName.textContent = 'No file selected';
+            mapFileName.classList.remove('has-file');
+            clearMapFileBtn.classList.remove('is-visible');
+        }
+    }
+
+    // Start Game only makes sense once there's actually a map to load - in
+    // Custom maps mode that means a file has to be chosen first.
+    function updateStartButtonState() {
+        const isFileModeActive = modeFileBtn.classList.contains('active-mode');
+        startBtn.disabled = isFileModeActive && !mapFileInput.files.length;
+    }
+
     function loadMapDataFromFile(file) {
         return new Promise((resolve, reject) => {
             const mapFileInput = document.getElementById('mapFileInput');
@@ -28,6 +53,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 1. Check file extension
             if (!file.name.toLowerCase().endsWith('.json')) {
                 if (mapFileInput) mapFileInput.value = ""; // Delete/Clear the file
+                refreshFileNameDisplay();
+                updateStartButtonState();
                 reject(new Error("File must be a .json file."));
                 return;
             }
@@ -57,13 +84,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                     resolve(mapData);
                 } catch (e) {
                     if (mapFileInput) mapFileInput.value = ""; // Delete/Clear the file
+                    refreshFileNameDisplay();
+                    updateStartButtonState();
                     reject(e);
                 }
             };
 
             reader.onerror = () => {
                 if (mapFileInput) mapFileInput.value = "";
-                    reject(new Error("Read error"));
+                refreshFileNameDisplay();
+                updateStartButtonState();
+                reject(new Error("Read error"));
             };
             reader.readAsText(file);
         });
@@ -71,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function updateMapPreview() {
         const infoDiv = document.getElementById('mapInfo');
+        infoDiv.classList.remove('is-empty');
         infoDiv.innerHTML = 'Loading map info...';
 
         try {
@@ -79,7 +111,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (isFileMode) {
                 if (!mapFileInput.files.length) {
-                    infoDiv.textContent = 'No map file selected.';
+                    infoDiv.classList.add('is-empty');
+                    infoDiv.textContent = 'No map selected';
                     return;
                 }
 
@@ -88,7 +121,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             } else {
                 if (!mapSelect.value) {
-                    infoDiv.textContent = 'No map selected.';
+                    infoDiv.classList.add('is-empty');
+                    infoDiv.textContent = 'No map selected';
                     return;
                 }
 
@@ -158,12 +192,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapSelectArea.style.display = 'block';
     fileUploadArea.style.display = 'none';
     modeSelectBtn.classList.add('active-mode');
+    updateStartButtonState();
 
     modeSelectBtn.addEventListener('click', () => {
         mapSelectArea.style.display = 'block';
         fileUploadArea.style.display = 'none';
         modeSelectBtn.classList.add('active-mode');
         modeFileBtn.classList.remove('active-mode');
+        updateStartButtonState();
+        updateMapPreview(); // refresh preview from the SELECT dropdown
     });
 
     modeFileBtn.addEventListener('click', () => {
@@ -171,6 +208,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         fileUploadArea.style.display = 'block';
         modeFileBtn.classList.add('active-mode');
         modeSelectBtn.classList.remove('active-mode');
+        updateStartButtonState();
+        updateMapPreview(); // refresh preview - shows the already-chosen file again, or "No map selected"
     });
 
     // Handle pause after leave window (již existující funkce)
@@ -481,15 +520,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 }
 
     mapSelect.addEventListener('change', updateMapPreview);
-    mapFileInput.addEventListener('change', updateMapPreview);
+    mapFileInput.addEventListener('change', () => {
+        refreshFileNameDisplay();
+        updateStartButtonState();
+        updateMapPreview();
+    });
 
-    modeSelectBtn.addEventListener('click', () => {
-        mapSelectArea.style.display = 'block';
-        fileUploadArea.style.display = 'none';
-        modeSelectBtn.classList.add('active-mode');
-        modeFileBtn.classList.remove('active-mode');
-
-        updateMapPreview(); // ✅ refresh from SELECT
+    // Clearing lives inside the <label for="mapFileInput">, so its own click
+    // would otherwise also bubble up and re-open the file dialog - stop that.
+    clearMapFileBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        mapFileInput.value = '';
+        refreshFileNameDisplay();
+        updateStartButtonState();
+        updateMapPreview();
     });
 
     /* Setting Game speed */

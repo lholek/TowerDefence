@@ -89,7 +89,13 @@
       </div>
 
       <div id="fileUploadArea" style="display: none;">
-        <input type="file" id="mapFileInput" accept=".json">
+        <label for="mapFileInput" class="file-upload-row">
+          <span class="file-upload-btn">Choose File</span>
+          <span class="file-upload-divider"></span>
+          <span id="mapFileName" class="file-upload-name">No file selected</span>
+          <button type="button" id="clearMapFileBtn" class="file-clear-btn" title="Clear selected file">&times;</button>
+          <input type="file" id="mapFileInput" accept=".json" class="file-upload-input">
+        </label>
       </div>
       
       <div>
