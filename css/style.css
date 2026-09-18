@@ -689,7 +689,8 @@ max-width: 400px;
 /* Only the empty "No map selected" state gets vertically centered + enlarged
    text - the filled preview (table + minimap) keeps its normal top-aligned layout. */
 .mapInfo.is-empty {
-    align-items: center;
+    align-items: center !important;
+    justify-content: center;
     color: #fff;
     font-size: 1.25rem;
 }
