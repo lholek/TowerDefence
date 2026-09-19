@@ -4,6 +4,14 @@ const confirmReturn = document.getElementById('confirmReturn');
 const confirmRestart = document.getElementById('confirmRestart');
 const cancelReturn = document.getElementById('cancelReturn');
 
+// NOTE: the pause/"Return to Main Menu" popup is NOT wired through
+// PopupController like the other popups - Game.js's togglePause() is the
+// single source of truth for showing/hiding it (P/ESC/window-blur all pause
+// the game directly, which must show this same popup), so it plays the same
+// menu-popup-overlay fade/pop animation but drives it itself - see
+// togglePause() in Game.js. Routing it through PopupController as well would
+// have two systems fighting over the same open/close + pause/unpause state.
+
 // Leave/Restart are destructive (they throw away the run in progress), so both
 // require a second click: the first just "arms" the button (turns it red and
 // swaps its label to "Sure?"); the second actually performs the action.
@@ -28,7 +36,6 @@ function armDangerButton(btn) {
 }
 
 returnButton.addEventListener('click', () => {
-    returnPopup.style.display = 'flex';
     disarmDangerButtons();
     // Only pause if the game is NOT already paused
     if (window.game && !window.game.paused) {
@@ -37,7 +44,6 @@ returnButton.addEventListener('click', () => {
 });
 
 cancelReturn.addEventListener('click', () => {
-    returnPopup.style.display = 'none';
     disarmDangerButtons();
     // Only unpause if the game WAS paused (and we are resuming)
     if (window.game && window.game.paused) {
@@ -61,7 +67,11 @@ confirmReturn.addEventListener('click', () => {
   }
 
   // 2. Hide all Game UIs
-  document.getElementById('returnPopup').style.display = 'none';
+  // Instant hide, not the animated close - the game is already destroyed and
+  // we're jumping straight to the main menu, so there's nothing left to
+  // resume back into once the fade would've finished anyway.
+  returnPopup.style.display = 'none';
+  returnPopup.classList.remove('is-open');
   document.getElementById('mainContainer').style.display = 'none'; // The game area
   document.getElementById('selectionIndicator').style.display =  'none';
 
@@ -73,7 +83,10 @@ confirmReturn.addEventListener('click', () => {
 
   // 4. Reset Speed UI to 1x
   const gameSpeedSelect = document.getElementById('gameSpeedSelect');
-  if (gameSpeedSelect) gameSpeedSelect.value = "1";
+  if (gameSpeedSelect) {
+    gameSpeedSelect.value = "1";
+    gameSpeedSelect.classList.remove('is-boosted');
+  }
 
   disarmDangerButtons();
 });
@@ -86,6 +99,7 @@ confirmRestart.addEventListener('click', () => {
 
   // Confirmed: wipe the current run and boot the same map fresh again.
   returnPopup.style.display = 'none';
+  returnPopup.classList.remove('is-open');
   disarmDangerButtons();
   window.restartCurrentGame?.();
 });
@@ -168,29 +182,10 @@ if (musicBtn && musicDropdown) {
   });
 }
 
-// === GAME LOG POPUP LOGIC ===
-const gameLogBtn = document.getElementById('gameLogBtn');
-const logPopup = document.getElementById('logPopup');
-const closeLogBtn = document.getElementById('closeLogBtn');
-
-if (gameLogBtn && logPopup && closeLogBtn) {
-  gameLogBtn.addEventListener('click', () => {
-    logPopup.style.display = 'flex';
-    // Pause game if it is running
-    if (window.game && window.game.gameStarted && !window.game.paused) {
-      window.game.togglePause();
-    }
-  });
-
-  closeLogBtn.addEventListener('click', () => {
-    logPopup.style.display = 'none';
-    // Unpause game if it was paused (optional: keep it paused if you prefer)
-    // Here we toggle it back to running if it was running before
-    if (window.game && window.game.gameStarted && window.game.paused) {
-      window.game.togglePause();
-    }
-  });
-}
+// === LOG POPUP LOGIC ===
+// PopupController's own '.close-btn' auto-wiring handles both the corner
+// "x" and the "Close" button - see index.html's #logPopup markup.
+const logPopupController = new PopupController('gameLogBtn', 'logPopup');
 
 // --- Init settings ---
 document.addEventListener("DOMContentLoaded", () => {

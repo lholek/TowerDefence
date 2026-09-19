@@ -66,9 +66,10 @@ class PopupController {
 
         this.popup.classList.add('is-open');
 
-        // Auto-pause the game
+        // Auto-pause the game (silently - this popup has its own visible
+        // content, it doesn't need Game.js's "Game is Paused" dialog too)
         if (window.game && !window.game.paused) {
-            window.game.togglePause();
+            window.game.togglePause(false);
             this.wasPausedByUs = true;
         }
     }
@@ -84,9 +85,9 @@ class PopupController {
             this.popup.style.display = 'none';
         }, PopupController.CLOSE_DURATION_MS);
 
-        // Auto-unpause ONLY if we were the ones who paused it
+        // Auto-unpause ONLY if we were the ones who paused it (silently, see open())
         if (window.game && window.game.paused && this.wasPausedByUs) {
-            window.game.togglePause();
+            window.game.togglePause(false);
             this.wasPausedByUs = false;
         }
     }

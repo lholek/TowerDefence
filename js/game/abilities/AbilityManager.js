@@ -84,7 +84,10 @@ export default class AbilityManager {
     
    // if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
     if (this.game) {
-      this.game.logEvent(`Player used ability <b>${ability.name}</b>`);
+      // Color-coded per ability so it's identifiable in the log at a glance
+      let color = '#fff'; // default (e.g. Tower's Fury)
+      if (ability.id.includes('lava_floor')) color = '#ffa500';
+      this.game.logEvent(`Player used ability <b style="color:${color};">${ability.name}</b>`);
     }
 }
 

@@ -190,6 +190,11 @@ export default class Game {
     this.createTowerShop();
     this.createAbilityBar();
     this.createLifePurchaseButton();
+
+    // Musí být zalogováno PŘED setLevel() níže - ten už loguje "Wave 1 started".
+    const mapName = this.levelData?.name || 'Unknown Map';
+    this.logEvent(`<hr style="border: none; border-top: 1px solid #f0c674; margin: 4px 0 8px;"><span style="color:#f0c674; font-weight:bold;">New game ${mapName}</span> started`);
+
     this.setLevel(this.currentLevelIndex); // Zde se nastaví data pro aktuální level
     this.updateUI(); // Aktualizuje Lifes, Coins, Level atd.
   }
@@ -207,14 +212,35 @@ export default class Game {
     requestAnimationFrame(this.loop.bind(this));
   }
 
-  togglePause() {
+  /**
+   * @param {boolean} showDialog Set to false for a "silent" pause/unpause that only
+   * flips this.paused (e.g. PopupController auto-pausing while the Log or another
+   * popup is open) without showing the "Game is Paused" dialog - that popup has its
+   * own visible content, and it and the pause dialog stacking on top of each other
+   * showed up as a mismatched box peeking out from behind it.
+   */
+  togglePause(showDialog = true) {
       if (!this.gameStarted) return; // only if game started
       this.paused = !this.paused;
+      if (!showDialog) return;
+
+      // Plays the same fade/pop animation as every other popup (see
+      // css/popups.css's .menu-popup-overlay) - this popup isn't driven by
+      // PopupController itself though, since P/ESC/window-blur all pause the
+      // game directly and need to show it that way too; see the note next to
+      // returnPopup in UI.js for why.
       if (this.paused) {
+          clearTimeout(this._pausePopupCloseTimer);
           returnPopup.style.display = 'flex';
+          void returnPopup.offsetWidth; // force reflow so the animation plays
+          returnPopup.classList.add('is-open');
       } else {
-          returnPopup.style.display = 'none';
-          //this.gameOverlay.style.display = 'none';
+          returnPopup.classList.remove('is-open');
+          clearTimeout(this._pausePopupCloseTimer);
+          // 250ms matches --popup-close-ms's default in css/popups.css
+          this._pausePopupCloseTimer = setTimeout(() => {
+              returnPopup.style.display = 'none';
+          }, 250);
       }
   }
 
@@ -253,7 +279,7 @@ export default class Game {
       this.stats.towersBuilt++;
       this.stats.goldSpent += type.price;
       this.updateUI();
-      this.logEvent(`Player built <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
+      this.logEvent(`Player <span style="color:#4ade80; font-weight:bold;">built</span> <span style="color:#fff; font-weight:500; text-shadow: 0 0 6px ${type.color}, 0 0 6px ${type.color};">${type.name}</span> for ${type.price} 🪙`);
     } else {
       this.logEvent("Not enough coins!");
     }
@@ -273,7 +299,8 @@ export default class Game {
 
       if (tower) {
           const type = this.towerTypes[tower.typeKey];
-          this.playerCoins += tower.sellPrice ?? Math.floor(type.price / 2);
+          const sellPrice = tower.sellPrice ?? Math.floor(type.price / 2);
+          this.playerCoins += sellPrice;
           // Return any bullets this tower still has in flight to the pool
           // before dropping it - otherwise they'd just get garbage
           // collected with the tower instead of being reused, so the pool
@@ -285,7 +312,7 @@ export default class Game {
           this.towers = this.towers.filter(t => t !== tower);
           this.stats.towersSold++;
           this.updateUI();
-          this.logEvent(`Player sold <span style="color:${type.color}; font-weight:500;">${type.name}</span>`);
+          this.logEvent(`Player <span style="color:#f87171; font-weight:bold;">sold</span> <span style="color:#fff; font-weight:500; text-shadow: 0 0 6px ${type.color}, 0 0 6px ${type.color};">${type.name}</span> for ${sellPrice} 🪙`);
       }
   }
 
@@ -519,7 +546,10 @@ export default class Game {
     document.getElementById('btnContinueToMenu').onclick = () => {
         overlay.classList.add('d-none');
         const gameSpeedSelect = document.getElementById('gameSpeedSelect');
-        if (gameSpeedSelect) gameSpeedSelect.value = "1";
+        if (gameSpeedSelect) {
+            gameSpeedSelect.value = "1";
+            gameSpeedSelect.classList.remove('is-boosted');
+        }
         this.resetGameToMenu();
     };
 

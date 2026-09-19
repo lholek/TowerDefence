@@ -258,7 +258,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // New Game instances default to 1x (see Game.js's constructor),
                     // but the <select> keeps whatever the player last picked - sync
                     // it back to 1x so the dropdown matches the actual game speed.
-                    if (gameSpeedSelect) gameSpeedSelect.value = "1";
+                    if (gameSpeedSelect) {
+                        gameSpeedSelect.value = "1";
+                        gameSpeedSelect.classList.remove('is-boosted');
+                    }
 
                     loadingOverlay.style.display = 'none';
                 } catch (error) {
@@ -298,6 +301,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Logika pro klávesové zkratky (P = Pause) ---
     document.addEventListener('keydown', (e) => {
         if ((e.key.toLowerCase() === 'p') || (e.key === 'Escape')) {
+            // The Log popup is driven by PopupController, which already has its
+            // own ESC-close (and auto-unpauses when it does) - skip here so we
+            // don't also toggle pause and end up double-toggling it back.
+            // (Not needed for the Return/Pause popup itself - togglePause() IS
+            // what shows/hides it, so ESC/P must keep reaching it below.)
+            const logPopup = document.getElementById('logPopup');
+            if (logPopup?.classList.contains('is-open')) return;
+
             if (game && game.gameStarted) {
                 game.togglePause();
             }
@@ -541,6 +552,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (gameSpeedSelect) {
         gameSpeedSelect.addEventListener('change', (e) => {
             const speed = parseFloat(e.target.value);
+            // Gentle pulse reminder while running above/below normal speed
+            gameSpeedSelect.classList.toggle('is-boosted', speed !== 1);
             // Změníme rychlost jen pokud instance 'game' už existuje
             if (game) {
                 game.setSpeed(speed);

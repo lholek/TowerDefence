@@ -1,0 +1,161 @@
+================================================================
+NewTowerDefence — Nápady na vyladění (polish, ne core feature)
+================================================================
+Založeno na tom, co ve hře reálně chybí (ověřeno v kódu, ne
+odhadem) - žádná z těchto věcí nemění balanc ani gameplay,
+jde čistě o to, aby se hra "cítila" živěji a reagovala na
+akce hráče.
+
+
+================================================================
+🔊 ZVUKY — největší reálná mezera
+================================================================
+V assets/sounds/ je jen background hudba (12 skladeb). Ve hře
+NEEXISTUJE žádný zvukový efekt - žádný zvuk výstřelu, zásahu,
+smrti nepřítele, postavení věže, nákupu, kliknutí v menu, ani
+varování při ztrátě života. Tohle je pravděpodobně jednotlivě
+nejvíc znatelná věc, která hře chybí - i pár krátkých .mp3/.ogg
+zvuků dodá pocit odezvy, který teď úplně chybí.
+
+[IDEA 1] SFX na výstřel věže a zásah nepřítele
+  Krátký "pew"/"twang" při výstřelu (Tower.js, kde se vytváří
+  bullet) a lehký "thud"/"hit" při zásahu (Bullet.js, kde bullet
+  zasáhne cíl). Ať netrhá uši při desítkách věží najednou -
+  potřeba omezit počet současně hrajících instancí (např. max
+  3-5 překrývajících se hitů najednou) nebo mírně randomizovat
+  pitch, ať to nezní jako kulomet.
+  Náročnost: nízká-střední (potřeba pár zvukových souborů + audio
+  pool podobný bullet poolu, aby se negenerovaly nové Audio()
+  instance pořád dokola).
+
+[IDEA 2] SFX na smrt nepřítele a únik nepřítele (ztráta života)
+  Smrt = krátký "poof"/"splat" podle typu nepřítele (aspoň jeden
+  obecný zvuk na začátek stačí). Únik (enemy dorazí do cíle a
+  ubere život) = výraznější negativní zvuk, aby hráč OKAMŽITĚ
+  věděl, že přišel o život, i když se dívá jinam na obrazovku.
+  Náročnost: nízká.
+
+[IDEA 3] SFX na postavení věže, prodej věže, nákup extra life
+  Tower.js/Game.js handleSell/handleBuild - krátké "cink"/"clunk"
+  potvrzení akce. Malá věc, ale hráč okamžitě cítí, že klik
+  "zabral".
+  Náročnost: nízká.
+
+[IDEA 4] UI klik zvuk v menu
+  Hlavní menu (index.html) má spoustu tlačítek (Start, Editor,
+  Lore, Settings...) a žádné z nich nevydá zvuk. I jeden tichý
+  "click.mp3" na všechna .btn tlačítka v menu udělá menu méně
+  "mrtvé".
+  Náročnost: nízká (jeden globální listener na .btn v menu).
+
+[IDEA 5] Crossfade mezi hudebními skladbami
+  Music.js aktuálně (podle version historie "when one music ends
+  another begins") přepíná skladby natvrdo. Krátký fade-out/fade-in
+  (např. 1-2s) mezi skladbami by odstranil ostré řezy.
+  Náročnost: nízká (Web Audio gain node nebo <audio>.volume tween).
+
+
+================================================================
+✨ VIZUÁLNÍ FEEDBACK ("juice")
+================================================================
+Enemy smrt je dnes okamžité zmizení (Game.js:403-411 - health<=0
+=> return false z filtru, žádná animace/efekt). Nákup mincí za
+kill taky nemá žádnou vizuální odezvu kromě čísla nahoře, které
+se prostě přepíše.
+
+[IDEA 6] Death "poof" efekt při smrti nepřítele
+  Krátká částicová exploze / rychle mizící kruh v místě smrti
+  (podobný systém už existuje pro Tower's Fury v Tower.js:366-380
+  - dá se recyklovat stejný přístup na lehčí verzi). I 5-10
+  částic na 200-300ms udělá obrovský rozdíl oproti současnému
+  "prostě zmizí".
+  Náročnost: střední (nový lightweight particle systém nebo
+  rozšíření toho stávajícího z Tower.js).
+
+[IDEA 7] Létající "+X 🪙" text nad mrtvým nepřítelem
+  Krátce se objeví a odpluje nahoru/zmizí (fade+translateY na
+  canvasu, ne DOM - žádné DOM uzly v herní smyčce, viz interní
+  poznámka v PERFORMANCE_ERRORS že se to záměrně nedělá). Dá
+  hráči okamžitou vizuální vazbu kill -> zisk, hlavně při rychlé
+  hře na vyšší game speed.
+  Náročnost: střední (malý pool "floating text" objektů, podobně
+  jako bullet pool).
+
+[IDEA 8] Červený pulse/vinětace obrazovky při ztrátě života
+  Když enemy unikne a ubere život, krátký červený záblesk po
+  okrajích canvasu (200-400ms fade) - dnes se to pozná jen podle
+  čísla životů nahoře, které hráč nemusí sledovat.
+  Náročnost: nízká (jedna proměnná v Game.js jako "damageFlash"
+  časovač + kreslení gradientu v render(), analogicky k
+  shakeDuration, který už existuje).
+
+[IDEA 9] Vlnová "banner" hláška při startu nové vlny
+  Krátký nápis uprostřed obrazovky typu "Wave 5" (fade in/out,
+  ~1.5s), který zmizí sám. Dnes hráč pozná novou vlnu jen podle
+  UI countru nahoře.
+  Náročnost: nízká-střední.
+
+[IDEA 10] Vizuální odlišení bossů/silných nepřátel
+  Pokud existuje enemy s výrazně vyšším health/damage než
+  ostatní ve vlně, přidat mu tenký zlatý obrys nebo větší health
+  bar - hráč hned pozná prioritní cíl bez čtení configu mapy.
+  Náročnost: střední (potřeba definovat práh "co je boss" -
+  buď per-config flag v editoru, nebo heuristika podle health
+  relativně k průměru vlny).
+
+
+================================================================
+🖱️ UI ODEZVA
+================================================================
+[IDEA 11] Count-up animace čísel na Game Over / Victory obrazovce
+  Statistiky (kills, gold, damage...) se dnes zobrazí staticky
+  najednou. Krátké "počítání nahoru" od 0 k finální hodnotě
+  (~0.6-1s) dá výsledkům větší váhu/dramatičnost.
+  Náročnost: nízká.
+
+[IDEA 12] Jemný pulse na tlačítku Game Speed, když je aktivní >x1
+  Připomene hráči, že hraje zrychleně (snadno se zapomene po
+  pár minutách) - stačí CSS animace na aktivní stav tlačítka.
+  Náročnost: velmi nízká (čisté CSS, žádný JS).
+
+[IDEA 13] "Perfect wave" bonus + hláška, když vlna proběhne bez
+  úniku jediného nepřítele
+  Malý bonus gold + krátká pozitivní hláška (podobně jako IDEA 9)
+  - odměňuje pozorné hráče a dodává vlnám pocit "výzvy", ne jen
+  countdown.
+  Náročnost: střední (potřeba trackovat úniky per-vlna, ne jen
+  celkově).
+
+
+================================================================
+🌍 AMBIENTNÍ ŽIVOT MAPY / MENU
+================================================================
+[IDEA 14] Drobná idle animace na hlavní menu pozadí
+  I jemný parallax mraků nebo pomalu plovoucí částice (jiskry u
+  ohnivého titulku, které už existují v fire-title.css/js, by šlo
+  rozšířit i mimo titulek) - menu dnes je čistě statický obrázek
+  na pozadí.
+  Náročnost: nízká-střední (v závislosti na tom, co přesně
+  fireTitle.js už umí recyklovat).
+
+[IDEA 15] Jemné "dýchání"/idle pohyb věží mezi výstřely
+  Věže dnes stojí úplně staticky, dokud nevystřelí (Tower.js
+  preRenderedImage se nikdy nemění mimo výstřel). I nepatrné
+  pravidelné škálování (např. 1.0 -> 1.02 -> 1.0 přes pár sekund)
+  by dodalo pocit, že věže "žijí", ne že je to statická mapa s
+  objekty navrch.
+  Náročnost: nízká (transformace při kreslení, žádná změna
+  cachovaného obrázku samotného).
+
+
+================================================================
+DOPORUČENÉ POŘADÍ (nejlepší poměr dojem/náročnost)
+================================================================
+1. IDEA 1+2 (SFX výstřel/zásah/smrt/únik) - největší citelný
+   rozdíl za nejmíň práce, hra dnes nemá ŽÁDNÉ herní zvuky.
+2. IDEA 8 (red flash při ztrátě života) - triviální implementačně
+   (kopíruje existující shakeDuration vzor), velký dojem.
+3. IDEA 6+7 (death poof + floating gold text) - největší vizuální
+   "wow" efekt za rozumnou práci.
+4. Zbytek podle chuti - jsou to všechno nezávislé, malé kousky,
+   dají se dělat postupně bez rizika rozbití něčeho stávajícího.

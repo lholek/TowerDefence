@@ -358,7 +358,7 @@
       </div>
 
       <!-- Return popup -->
-      <div id="returnPopup" class="return-popup">
+      <div id="returnPopup" class="menu-popup-overlay">
         <div class="return-content">
           <h3>The Game is Paused</h3>
           <p>Press <b class="cl-primary">P</b> or <b class="cl-primary">ESCAPE</b> to resume</p>
@@ -372,15 +372,13 @@
         </div>
       </div>
 
-      <!-- Game Log popup -->
-      <div id="logPopup" class="return-popup">
+      <!-- Log popup -->
+      <div id="logPopup" class="menu-popup-overlay">
         <div class="return-content log-popup-content">
-          <h3>Game Log</h3>
+          <button class="close-btn popup-close-x" title="Close">&times;</button>
+          <h3>Log</h3>
           <div id="eventsListWrapper">
              <div id="eventsList"></div>
-          </div>
-          <div class="return-buttons">
-            <button id="closeLogBtn" class="btn">Close</button>
           </div>
         </div>
       </div>

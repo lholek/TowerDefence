@@ -47,6 +47,23 @@
             "'How to play' has arrows to switch between pages or you can use keyboard arrows (← / →) or (A / D) to switch between pages"
           ]
         },
+        {
+          "<b>UI</b>": [
+            "The Game Speed selector now gently pulses while set above/below 1x, as a reminder the game isn't running at normal speed",
+            "'Return to Main Menu' and the Log now have smooth fade in/out animations"
+          ]
+        },
+        {
+          "<b>Log</b>": [
+            "Renamed 'Game Log' to 'Log'",
+            "The Log now records when a new game starts, with the map name highlighted in yellow and a yellow divider above it",
+            "'Player used ability' entries are now color-coded per ability (orange for Lava Floor, white for Tower's Fury)",
+            "'Player built' and 'Player sold' entries are now color-coded (green for built, red for sold) and show the price paid/received",
+            "Fixed bug - the tower name in 'Player built'/'Player sold' entries used the tower's own color as text color, which was unreadable for darker tower colors on the Log's dark background - it's now white text with the tower's color as a glow instead",
+            "Removed the gold border around the Log popup",
+            "Added a close (×) button to the Log popup, matching other popups"
+          ]
+        },
         "TODO: Improve - More Design upgrades ?",
         "TODO: Improve - Lore update ?"
       ]
