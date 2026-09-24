@@ -61,7 +61,8 @@
             "'Player built' and 'Player sold' entries are now color-coded (green for built, red for sold) and show the price paid/received",
             "Fixed bug - the tower name in 'Player built'/'Player sold' entries used the tower's own color as text color, which was unreadable for darker tower colors on the Log's dark background - it's now white text with the tower's color as a glow instead",
             "Removed the gold border around the Log popup",
-            "Added a close (×) button to the Log popup, matching other popups"
+            "Added a close (×) button to the Log popup, matching other popups",
+            "Fixed bug - closing the Log with ESC during gameplay instantly re-paused the game and popped up the 'Game is Paused' dialog right after, because the game's own P/ESC pause shortcut reacted to the same key press a split second after the Log's close handler already used it"
           ]
         },
         "TODO: Improve - More Design upgrades ?",

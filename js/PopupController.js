@@ -38,6 +38,12 @@ class PopupController {
         // Close logic: ESC key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.popup.classList.contains('is-open')) {
+                // Stops main.js's global P/ESC pause handler (registered later,
+                // on DOMContentLoaded) from also seeing this same keydown - without
+                // this, closing a popup with ESC during gameplay (e.g. the Log)
+                // instantly re-triggered a pause right after this unpaused it,
+                // popping the "Game is Paused" dialog the player didn't ask for.
+                e.stopImmediatePropagation();
                 this.close();
             }
         });
