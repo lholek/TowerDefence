@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <title></title>
   <link rel="icon" type="image/x-icon" href="assets/images/tower_defence.ico">
+  <!-- Preload the custom cursor images at top priority so they're already
+       decoded/cached by the time the browser processes the first real
+       pointer-move event (see the cursor rules in css/style.css) - the
+       browser only ever paints a custom cursor in response to that first
+       real move, this just removes any decode delay once it happens. -->
+  <link rel="preload" href="assets/images/cursor.png" as="image">
+  <link rel="preload" href="assets/images/cursor-hover.png" as="image">
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/versions.css" />
   <link rel="stylesheet" href="css/music.css" />

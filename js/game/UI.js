@@ -1,3 +1,17 @@
+// The browser only paints a custom `cursor: url()` image once it knows
+// where the real OS pointer currently is, which it normally only learns from
+// the first mouse move - so right after load, the plain system arrow shows
+// instead of the sword until the player nudges the mouse. By ~50ms in, the
+// browser has already picked that position up on its own (from the pointer
+// simply resting somewhere over the page/window) even without a move event
+// we can hook into - toggling the cursor style forces it to redraw using
+// that now-known position instead of waiting for an explicit move.
+setTimeout(() => {
+    document.body.style.cursor = 'none';
+    void document.body.offsetHeight;
+    document.body.style.cursor = '';
+}, 50);
+
 const returnButton = document.getElementById('returnButton');
 const returnPopup = document.getElementById('returnPopup');
 const confirmReturn = document.getElementById('confirmReturn');

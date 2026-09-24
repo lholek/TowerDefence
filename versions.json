@@ -50,7 +50,8 @@
         {
           "<b>UI</b>": [
             "The Game Speed selector now gently pulses while set above/below 1x, as a reminder the game isn't running at normal speed",
-            "'Return to Main Menu' and the Log now have smooth fade in/out animations"
+            "'Return to Main Menu' and the Log now have smooth fade in/out animations",
+            "Added a custom fire sword cursor - TODO: Zkontrolovat zda je to všude"
           ]
         },
         {

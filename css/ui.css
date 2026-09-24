@@ -321,7 +321,7 @@
 
 .ability-card:hover {
   transform: scale(1.05);
-  cursor: pointer;
+  /* cursor swap on hover lives in style.css, alongside .shop-item/button */
   border-color: #aaa;
 }
 

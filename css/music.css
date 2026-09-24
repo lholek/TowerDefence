@@ -30,6 +30,7 @@
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 4px;
+  cursor: pointer; /* clickable to seek (see Music.js's seekMusic) - was missing, unlike its .menu-music-progress-container sibling */
 }
 
 #musicProgressBar {

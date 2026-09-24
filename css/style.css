@@ -24,9 +24,73 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     color: #eee;
+    /* Fire sword cursor (menu, UI, anywhere outside the canvas). Browsers cap
+       cursor images at a small size (~32-128px, UA-dependent) and mostly just
+       ignore anything bigger, falling back to the default arrow - cursor.png
+       here is a pre-downsampled 40x40 version of the original 1254x1254
+       artwork (only the 40px version is kept in assets/images, the source
+       art isn't needed at runtime). "1 1" is the hotspot (the blade's tip).
+       "auto" is the fallback for browsers that still reject the cursor
+       image. See UI.js for a load-time fix so this shows immediately
+       instead of only after the first mouse move. */
+    cursor: url('../assets/images/cursor.png') 1 1, auto;
+}
+
+/* Swap to the more intense "blazing" sword as a hover cue. Targets every
+   native <button> (all .btn/.switch-btn/.close-btn/.tutorial-arrow/... are
+   real <button> elements, so this covers them all without listing classes),
+   plus the other clickable widgets that aren't <button>s: tower/ability
+   cards, dropdowns, sliders and the file-picker row.
+   .version-title.first-version is excluded - it's just a heading, not
+   actually clickable. Note: cursor on <option> is spotty across browsers
+   since the open dropdown list is native OS chrome.
+   IMPORTANT: vendor-prefixed pseudo-elements (::-webkit-*, ::-moz-*) below
+   are deliberately kept OUT of this list and in their own separate rules -
+   a browser that doesn't recognize even one selector in a comma-separated
+   list throws out the ENTIRE rule, not just that one selector, which
+   previously made this whole block silently do nothing everywhere. */
+button:hover:not(:disabled),
+.shop-item:hover,
+.ability-card:hover,
+.version-title:not(.first-version):hover,
+.styled-select:hover,
+.settings-styled-select:hover,
+#gameSpeedSelect:hover,
+select option:hover,
+#fileUploadArea:hover,
+.file-upload-row:hover,
+#musicProgressBarContainer:hover,
+.menu-music-progress-container:hover,
+.musicVolume:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+
+/* Range slider thumbs - each vendor's pseudo-element needs its own rule (see note above) */
+.musicVolume::-webkit-slider-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+.musicVolume::-moz-range-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+
+/* Custom scrollbar thumbs (Chromium/WebKit only - Firefox's scrollbar-width/
+   -color styling has no per-thumb cursor control), each in its own rule */
+#versionList::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+#abilityBar::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+.parchment-body::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+.shop-wrapper::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
 }
 
 canvas {
+    /* Canvas draws its own cursor per-frame (see Game.js's
+       renderCustomCursor()) - the CSS cursor above never applies here. */
     cursor: none !important;
 }
 

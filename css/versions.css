@@ -108,7 +108,7 @@
 }
 
 .version-title {
-  cursor: pointer;
+  /* cursor: default sword at rest, blazing on hover - see css/style.css */
   user-select: none;
   padding: 0.5rem;
   border-radius: 4px;
@@ -117,7 +117,7 @@
 }
 
 .version-title.first-version {
-  cursor: default;
+  /* not clickable - keep the plain cursor, no hover swap (see style.css) */
   color: #ffd700;
   font-size: 1.2em;
   padding-bottom: 1rem;
