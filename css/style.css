@@ -87,6 +87,18 @@ select option:hover,
 .shop-wrapper::-webkit-scrollbar-thumb:hover {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
 }
+#eventsList::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+#eventsBox::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+.map-info-table .description::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
+.map-info-table .ability-list::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto;
+}
 
 canvas {
     /* Canvas draws its own cursor per-frame (see Game.js's
