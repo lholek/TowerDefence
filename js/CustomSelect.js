@@ -57,11 +57,19 @@ function enhanceSelect(selectEl) {
 
     let activeIndex = -1; // keyboard-highlighted option while the list is open
 
-    function commitOption(opt) {
+    // Applies an option to the real select WITHOUT touching open/close
+    // state - used while browsing with the list still open (see the
+    // keydown handler), so switching options previews live like a native
+    // open <select> does, instead of closing after every arrow press.
+    function applyOption(opt) {
         if (selectEl.value !== opt.value) {
             selectEl.value = opt.value; // triggers syncUI via the property override below
             selectEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
+    }
+
+    function commitOption(opt) {
+        applyOption(opt);
         closeList();
         // Stays focused after picking one (mousedown on the <li> - which
         // isn't itself focusable - shouldn't steal focus away, but this
@@ -148,8 +156,12 @@ function enhanceSelect(selectEl) {
     // <select>. The trigger stays focused after a pick (see commitOption),
     // so this keeps working for as many presses in a row as you like,
     // until you click something else. Enter/Space instead opens the full
-    // list to browse; once open, Up/Down cycles the highlighted option
-    // and Enter/Space commits it, Escape closes without changing anything.
+    // list to browse; once open, Up/Down moves the highlight AND applies
+    // that option live (same as a native OPEN <select> previewing each
+    // option as you arrow through it), without closing the list - Enter/
+    // Space/click just confirms and closes, Escape closes without
+    // reverting (matches stepSelection/commitOption already having
+    // applied the value live as you moved through it).
     trigger.addEventListener('keydown', (e) => {
         if (!isOpen()) {
             if (e.key === 'ArrowDown') {
@@ -168,12 +180,15 @@ function enhanceSelect(selectEl) {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             setActiveIndex(activeIndex + 1);
+            if (options[activeIndex]) applyOption(options[activeIndex]);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             setActiveIndex(activeIndex - 1);
+            if (options[activeIndex]) applyOption(options[activeIndex]);
         } else if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             if (options[activeIndex]) commitOption(options[activeIndex]);
+            else closeList();
         } else if (e.key === 'Escape') {
             e.preventDefault();
             closeList();
