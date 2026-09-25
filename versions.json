@@ -51,8 +51,7 @@
           "<b>UI</b>": [
             "The Game Speed selector now gently pulses while set above/below 1x, as a reminder the game isn't running at normal speed",
             "'Return to Main Menu' and the Log now have smooth fade in/out animations",
-            "Added a custom fire sword cursor",
-            "Fixed bug - the Abilities scrollbar had turned dark gray instead of gold after a fix for the cursor not showing over any scrollbar"
+            "Added a custom fire sword cursor to the game"
           ]
         },
         {

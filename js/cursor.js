@@ -34,11 +34,17 @@
         targets.forEach((el) => el.classList.toggle('cursor-on-scrollbar', active));
     }
 
-    function scrollbarStripsAt(el, clientX, clientY) {
-        const rect = el.getBoundingClientRect();
-        const hasVerticalScrollbar = el.scrollHeight > el.clientHeight && el.offsetWidth > el.clientWidth;
-        const hasHorizontalScrollbar = el.scrollWidth > el.clientWidth && el.offsetHeight > el.clientHeight;
-        if (!hasVerticalScrollbar && !hasHorizontalScrollbar) return false;
+    // Used only when a real scrollbar can't be measured (see the overlay-
+    // scrollbar fallback below) - a guessed strip width, picked to match
+    // a typical scrollbar rather than anything measured on the element.
+    const FALLBACK_SCROLLBAR_SIZE = 12;
+
+    function computeScrollbarMetrics(el) {
+        const style = getComputedStyle(el);
+        const overflowY = style.overflowY;
+        const overflowX = style.overflowX;
+        const canScrollY = (overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
+        const canScrollX = (overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth;
 
         // offsetWidth/offsetHeight include the border, clientWidth/Height
         // don't - so "offsetWidth - clientWidth" is border-left + border-
@@ -46,25 +52,53 @@
         // Every scrollable popup/list in this game has a visible border
         // (.custom-select-list, .log-popup-content, ...), so skipping this
         // made the detected strip drift by however wide that border is.
-        const style = getComputedStyle(el);
         const borderLeft = parseFloat(style.borderLeftWidth) || 0;
         const borderRight = parseFloat(style.borderRightWidth) || 0;
         const borderTop = parseFloat(style.borderTopWidth) || 0;
         const borderBottom = parseFloat(style.borderBottomWidth) || 0;
 
-        if (hasVerticalScrollbar) {
-            const scrollbarWidth = el.offsetWidth - el.clientWidth - borderLeft - borderRight;
+        let verticalScrollbarWidth = canScrollY ? el.offsetWidth - el.clientWidth - borderLeft - borderRight : 0;
+        let horizontalScrollbarHeight = canScrollX ? el.offsetHeight - el.clientHeight - borderTop - borderBottom : 0;
+
+        // Overlay-style scrollbars (macOS-style "thin, no reserved space",
+        // or Windows with that same OS setting turned on) don't push
+        // offsetWidth/Height out at all, even though the scrollbar is
+        // genuinely there on screen - offsetWidth === clientWidth in that
+        // case, so the maths above yields 0 despite a real scrollbar being
+        // visible. Fall back to a guessed strip near the edge instead of
+        // detecting nothing, but only when we know there IS something to
+        // scroll (canScrollY/X already confirmed that), so this doesn't
+        // start claiming ordinary content near an edge is a scrollbar.
+        const verticalIsFallback = canScrollY && verticalScrollbarWidth <= 0;
+        const horizontalIsFallback = canScrollX && horizontalScrollbarHeight <= 0;
+        if (verticalIsFallback) verticalScrollbarWidth = FALLBACK_SCROLLBAR_SIZE;
+        if (horizontalIsFallback) horizontalScrollbarHeight = FALLBACK_SCROLLBAR_SIZE;
+
+        return {
+            canScrollY, canScrollX,
+            verticalScrollbarWidth, horizontalScrollbarHeight,
+            verticalIsFallback, horizontalIsFallback,
+            borderLeft, borderRight, borderTop, borderBottom
+        };
+    }
+
+    function scrollbarStripsAt(el, clientX, clientY) {
+        const metrics = computeScrollbarMetrics(el);
+        if (!metrics.canScrollY && !metrics.canScrollX) return false;
+
+        const rect = el.getBoundingClientRect();
+
+        if (metrics.canScrollY) {
             // The scrollbar sits inside the border, flush against it.
-            const stripRight = rect.right - borderRight;
-            const stripLeft = stripRight - scrollbarWidth;
+            const stripRight = rect.right - metrics.borderRight;
+            const stripLeft = stripRight - metrics.verticalScrollbarWidth;
             if (clientX >= stripLeft && clientX <= stripRight && clientY >= rect.top && clientY <= rect.bottom) {
                 return true;
             }
         }
-        if (hasHorizontalScrollbar) {
-            const scrollbarHeight = el.offsetHeight - el.clientHeight - borderTop - borderBottom;
-            const stripBottom = rect.bottom - borderBottom;
-            const stripTop = stripBottom - scrollbarHeight;
+        if (metrics.canScrollX) {
+            const stripBottom = rect.bottom - metrics.borderBottom;
+            const stripTop = stripBottom - metrics.horizontalScrollbarHeight;
             if (clientY >= stripTop && clientY <= stripBottom && clientX >= rect.left && clientX <= rect.right) {
                 return true;
             }
@@ -106,4 +140,41 @@
         dragging = false;
         setActive(false);
     });
+
+    // Diagnostic helper - run debugScrollbarCursor('#versionList') in the
+    // console to see exactly what this file sees for a given element:
+    // whether it thinks it scrolls, the computed strip size (and whether
+    // that came from the overlay-scrollbar fallback above), and a couple
+    // of OS/browser settings that can affect scrollbar rendering (forced-
+    // colors / high-contrast mode is the big one - it can make Windows
+    // and the browser draw scrollbars through an entirely different,
+    // theme-controlled path that ignores page CSS no matter what).
+    window.debugScrollbarCursor = function (selector) {
+        const el = document.querySelector(selector);
+        if (!el) { console.warn('debugScrollbarCursor: no element matches', selector); return; }
+        const style = getComputedStyle(el);
+        const metrics = computeScrollbarMetrics(el);
+        const info = {
+            selector,
+            scrollHeight: el.scrollHeight,
+            clientHeight: el.clientHeight,
+            scrollWidth: el.scrollWidth,
+            clientWidth: el.clientWidth,
+            offsetWidth: el.offsetWidth,
+            offsetHeight: el.offsetHeight,
+            overflowX: style.overflowX,
+            overflowY: style.overflowY,
+            canScrollY: metrics.canScrollY,
+            canScrollX: metrics.canScrollX,
+            calculatedVerticalScrollbarWidth: metrics.verticalScrollbarWidth,
+            calculatedHorizontalScrollbarHeight: metrics.horizontalScrollbarHeight,
+            usedOverlayFallbackY: metrics.verticalIsFallback,
+            usedOverlayFallbackX: metrics.horizontalIsFallback,
+            scrollbarColor: style.scrollbarColor,
+            scrollbarWidth: style.scrollbarWidth,
+            forcedColors: matchMedia('(forced-colors: active)').matches
+        };
+        console.log('debugScrollbarCursor:', info);
+        return info;
+    };
 })();

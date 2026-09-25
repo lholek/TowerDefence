@@ -25,8 +25,14 @@
   width: 8px;
 }
 #versionList::-webkit-scrollbar-track {
-  background: #333;
   border-radius: 4px;
+}
+
+/* Reusable: put class="transparent-scrollbar-track" on any scrollable
+   box to make its scrollbar TRACK see-through (just the thumb visible) -
+   used here on #versionList instead of the dark #333 it had before. */
+.transparent-scrollbar-track::-webkit-scrollbar-track {
+  background: transparent;
 }
 #versionList::-webkit-scrollbar-thumb {
   background: #f0c674;
@@ -147,28 +153,3 @@
   margin-left: 1.5em;
 }
 
-#versionList {
-  scrollbar-color: #f0c674 transparent;
-   cursor: url('../assets/images/cursor.png') 1 1, auto !important;
-}
-/* Chrome / Edge / Opera / Safari */
-#versionList::-webkit-scrollbar {
-    width: 12px;
-}
-
-#versionList::-webkit-scrollbar-thumb {
-    background: #f0c674;
-    border-radius: 10px;
-
-    cursor: url('../assets/images/cursor.png') 1 1, pointer !important;
-}
-
-#versionList::-webkit-scrollbar-thumb:hover {
-    cursor: url('../assets/images/cursor.png') 1 1, pointer !important;
-}
-
-#versionList::-webkit-scrollbar-track {
-    background: transparent;
-
-    cursor: url('../assets/images/cursor.png') 1 1, auto !important;
-}
