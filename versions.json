@@ -39,7 +39,8 @@
           "<b>Gameplay</b>": [
             "Fixed bug - Lava Floor was dealing damage twice as fast as its configured 'damage every' value (its update() called the damage tick both directly and through the base Ability update, so the internal timer accumulated 2x per frame)",
             "Fixed bug - Abilities with a damage-over-time effect (e.g. Lava Floor) could lose their final tick when the effect's duration ended on the exact same frame the tick was due, dealing one less hit than the configured numbers promise",
-            "Doubled the 'damage' value of every existing Lava Floor ability across all maps to compensate for the tick-speed fix above, so its overall damage output stays the same as before"
+            "Doubled the 'damage' value of every existing Lava Floor ability across all maps to compensate for the tick-speed fix above, so its overall damage output stays the same as before",
+            "Fixed bug - the game could freeze completely (no more updates, no more rendering) right at the start of a fresh game if the mouse hadn't moved over the canvas yet while placing an ability, because the ability-placement cursor's glow effect crashed on the not-yet-set mouse position"
           ]
         },
         {
@@ -61,9 +62,9 @@
             "'Player used ability' entries are now color-coded per ability (orange for Lava Floor, white for Tower's Fury)",
             "'Player built' and 'Player sold' entries are now color-coded (green for built, red for sold) and show the price paid/received",
             "Fixed bug - the tower name in 'Player built'/'Player sold' entries used the tower's own color as text color, which was unreadable for darker tower colors on the Log's dark background - it's now white text with the tower's color as a glow instead",
+            "Fixed bug - closing the Log with ESC during gameplay instantly re-paused the game and popped up the 'Game is Paused' dialog right after, because the game's own P/ESC pause shortcut reacted to the same key press a split second after the Log's close handler already used it",
             "Removed the gold border around the Log popup",
-            "Added a close (×) button to the Log popup, matching other popups",
-            "Fixed bug - closing the Log with ESC during gameplay instantly re-paused the game and popped up the 'Game is Paused' dialog right after, because the game's own P/ESC pause shortcut reacted to the same key press a split second after the Log's close handler already used it"
+            "Added a close (×) button to the Log popup, matching other popups"
           ]
         }
       ]

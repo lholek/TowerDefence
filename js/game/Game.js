@@ -103,7 +103,16 @@ export default class Game {
     window.addEventListener('keydown', this.boundKeyStateDown);
     window.addEventListener('keyup', this.boundKeyStateUp);
   
-    // Custom cursor
+    // Custom cursor - defaulted to the canvas center so renderCustomCursor()
+    // always has finite coordinates to draw with, even before the mouse has
+    // moved over this (freshly created, per new game) canvas even once.
+    // createRadialGradient() throws on non-finite input (unlike arc(), which
+    // just silently no-ops), and that throw happens inside the render() call
+    // that loop() makes BEFORE its own requestAnimationFrame(...) re-schedule
+    // - so an uncaught error there doesn't just skip a frame, it kills the
+    // entire game loop for good.
+    this.mouseX = this.canvas.width / 2;
+    this.mouseY = this.canvas.height / 2;
     this.canvas.addEventListener('mousemove', (e) => {
       const rect = this.canvas.getBoundingClientRect();
       this.mouseX = e.clientX - rect.left;
@@ -1383,6 +1392,13 @@ export default class Game {
     const ctx = this.ctx;
     const x = this.mouseX;
     const y = this.mouseY;
+
+    // Guard against non-finite coordinates reaching createRadialGradient()
+    // below - it throws on those (unlike arc(), which just no-ops), and an
+    // uncaught throw here happens inside loop()'s render() call, before
+    // loop() re-schedules its own requestAnimationFrame - so it wouldn't
+    // just skip a frame, it would silently freeze the entire game.
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
 
     ctx.save();
     // Reset transformation to ensure the cursor size doesn't change with map zoom
