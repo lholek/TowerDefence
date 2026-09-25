@@ -15,11 +15,12 @@
   margin-top: 10px;
   max-height: 500px;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #f0c674 transparent;
 }
 
-/* Webkit scrollbar styles */
+/* scrollbar-width/-color removed on purpose (see css/cursor.css) - having
+   both that AND ::-webkit-scrollbar-* below made Chrome render this
+   scrollbar through its newer standard-properties path, which ignores
+   the cursor CSS entirely; ::-webkit-scrollbar-* alone respects it. */
 #versionList::-webkit-scrollbar {
   width: 8px;
 }

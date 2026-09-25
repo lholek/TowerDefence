@@ -93,15 +93,31 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 /* --- Scrollbars ---
-   ::-webkit-scrollbar-thumb:hover only works in Chromium and only ever
-   covers the thumb itself, not the track around it, and Firefox has no
-   equivalent at all (scrollbar-width/-color gives no per-part hover
-   hook). Kept here as an instant Chromium fast-path, but js/cursor.js is
-   the real, cross-browser fix: it works out which elements can scroll
-   and does the hit-testing itself (is the pointer within the native
-   scrollbar's on-screen strip?), then toggles this class on <html> - so
-   it also covers Firefox, the track (not just the thumb), and staying
-   correct while actively dragging the thumb around. */
+   IMPORTANT: for this to actually work in Chrome/Edge, a scrollable
+   element must be styled with ONLY ::-webkit-scrollbar-* (like every
+   scrollable box in this game now is) and never ALSO declare the
+   standard scrollbar-width/scrollbar-color on the same element. Chrome
+   now supports those standard properties too, and when both are present
+   it renders the scrollbar through that newer standard-properties path
+   instead of the legacy ::-webkit-scrollbar-* one - and that newer path
+   hard-codes the OS arrow over the scrollbar, ignoring cursor entirely,
+   the same way it does for a native <select> dropdown. With only
+   ::-webkit-scrollbar-* declared, Chrome uses the older path, which
+   (being a fully custom-painted widget rather than native chrome) does
+   respect cursor. This cost a lot of confused debugging to track down -
+   don't reintroduce scrollbar-width/-color on a scrollable box without
+   re-testing this.
+
+   ::-webkit-scrollbar-thumb:hover still only works in Chromium and only
+   ever covers the thumb itself, not the track around it, and Firefox has
+   no equivalent at all (scrollbar-width/-color gives no per-part hover
+   hook, and using it would undo the fix above anyway). Kept here as an
+   instant Chromium fast-path, but js/cursor.js is the real, cross-browser
+   fix: it works out which elements can scroll and does the hit-testing
+   itself (is the pointer within the native scrollbar's on-screen strip?),
+   then toggles this class on <html> AND <body> - so it also covers
+   Firefox, the track (not just the thumb), and staying correct while
+   actively dragging the thumb around. */
 *::-webkit-scrollbar-thumb:hover,
 *::-webkit-scrollbar-thumb:active {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
