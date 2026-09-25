@@ -6,7 +6,7 @@
   <link rel="icon" type="image/x-icon" href="assets/images/tower_defence.ico">
   <!-- Preload the custom cursor images at top priority so they're already
        decoded/cached by the time the browser processes the first real
-       pointer-move event (see the cursor rules in css/style.css) - the
+       pointer-move event (see the cursor rules in css/cursor.css) - the
        browser only ever paints a custom cursor in response to that first
        real move, this just removes any decode delay once it happens. -->
   <link rel="preload" href="assets/images/cursor.png" as="image">
@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/settings.css" />
   <link rel="stylesheet" href="css/popups.css" />
   <link rel="stylesheet" href="css/fire-title.css" />
+  <link rel="stylesheet" href="css/cursor.css" />
 </head>
 <body id="gameContainer">
 
@@ -135,7 +136,7 @@
               <div class="settings-grid">
                 <div class="input-group">
                   <label for="backgroundSelect" class="settings-label">Background</label>
-                  <select id="backgroundSelect" class="settings-styled-select">
+                  <select id="backgroundSelect" class="styled-select">
                     <option value="sky">Sky (Default)</option>
                     <option value="sea">Midnight Sky</option>
                     <option value="nebula">The Nebula</option>
@@ -511,5 +512,7 @@
   <script type="module" src="js/game/UI.js"></script>
   <script type="module" src="js/game/UI_lore.js"></script>
   <script type="module" src="js/game/Tutorial.js"></script>
+  <script type="module" src="js/cursor.js"></script>
+  <script type="module" src="js/CustomSelect.js"></script>
 </body>
 </html>

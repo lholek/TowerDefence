@@ -1,0 +1,120 @@
+/* ============================================================
+   CUSTOM CURSOR - single source of truth for the whole game page
+   (level editor is untouched - this file is only linked from
+   index.html, never from level_editor.html).
+
+   Loaded LAST in index.html's <head> AND every rule here carries
+   !important, so nothing added later in any other CSS file (a
+   stray "cursor: pointer;" etc.) can silently win the cascade and
+   bring back the plain OS arrow again.
+   ============================================================ */
+
+/* --- Default: fire sword cursor everywhere outside the canvas ---
+   Browsers cap cursor images at a small size (~32-128px, UA-dependent)
+   and mostly just ignore anything bigger, falling back to the default
+   arrow - cursor.png here is a pre-downsampled 40x40 version of the
+   original 1254x1254 artwork (only the 40px version is kept in
+   assets/images, the source art isn't needed at runtime). "1 1" is the
+   hotspot (the blade's tip). "auto" is the fallback for browsers that
+   still reject the cursor image. See UI.js for a load-time fix so this
+   shows immediately instead of only after the first mouse move.
+
+   Set on BOTH html and body, not just body: if the page is shorter than
+   the viewport (or a fixed/absolute element pokes outside body's own
+   box) there's a gap where the pointer is technically over <html>, not
+   <body> - since cursor only ever flows DOWN the DOM via inheritance,
+   body's rule alone never reaches that gap and the plain OS arrow shows
+   there instead. */
+html, body {
+    cursor: url('../assets/images/cursor.png') 1 1, auto !important;
+}
+
+/* Belt-and-braces against "random spots still show the OS arrow": some
+   elements (plain text, disabled-looking widgets, form controls) get a
+   `cursor` value straight from the browser's own UA stylesheet (e.g.
+   text becomes an I-beam), which - being a real declared value on that
+   element rather than something inherited - normally wins over the
+   inherited html/body value above even though ours is !important.
+   Forcing every element back to `inherit` here closes that gap; it's
+   lower-specificity than every selector below (and than the html/body
+   rule above), so any real hover/canvas rule still wins where it needs
+   to - this is just the fallback for everything nothing else touches. */
+*, *::before, *::after {
+    cursor: inherit !important;
+}
+
+/* --- Hover: swap to the more intense "blazing" sword ---
+   Targets every native <button> (all .btn/.switch-btn/.close-btn/
+   .tutorial-arrow/... are real <button> elements, so this covers them
+   all without listing classes), every <a>, both <select>s and their
+   <option>s, range sliders (music volume AND the FPS target slider -
+   any current or future input[type="range"], not just specific ones),
+   and the other clickable widgets that aren't <button>s (tower/ability
+   cards, the file-picker row, the music progress bars).
+   .version-title.first-version is excluded - it's just a heading, not
+   actually clickable. Note: cursor on <option> is spotty across
+   browsers since the open dropdown list is native OS chrome - this
+   works in Firefox but most Chromium builds ignore it (OS-level popup,
+   outside the page's rendering control), no CSS trick fixes that.
+   IMPORTANT: vendor-prefixed pseudo-elements (::-webkit-*, ::-moz-*)
+   below are deliberately kept OUT of this list and in their own
+   separate rules - a browser that doesn't recognize even one selector
+   in a comma-separated list throws out the ENTIRE rule, not just that
+   one selector, which previously made this whole block silently do
+   nothing everywhere. */
+button:hover:not(:disabled),
+a:hover,
+.shop-item:hover,
+.ability-card:hover,
+.version-title:not(.first-version):hover,
+.styled-select:hover,
+.gameSpeedSelect:hover,
+select:hover,
+select option:hover,
+#mapSelect option:hover,
+.custom-select-option:hover,
+#fileUploadArea:hover,
+.file-upload-row:hover,
+#musicProgressBarContainer:hover,
+.menu-music-progress-container:hover,
+input[type="range"]:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+
+/* Range slider thumbs - each vendor's pseudo-element needs its own rule
+   (see note above). Generalized to every input[type="range"] instead of
+   hardcoding .musicVolume, so any slider added later (like #fpsRange in
+   Settings, which was missing this before) is covered automatically. */
+input[type="range"]::-webkit-slider-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+input[type="range"]::-moz-range-thumb:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+
+/* --- Scrollbars ---
+   ::-webkit-scrollbar-thumb:hover only works in Chromium and only ever
+   covers the thumb itself, not the track around it, and Firefox has no
+   equivalent at all (scrollbar-width/-color gives no per-part hover
+   hook). Kept here as an instant Chromium fast-path, but js/cursor.js is
+   the real, cross-browser fix: it works out which elements can scroll
+   and does the hit-testing itself (is the pointer within the native
+   scrollbar's on-screen strip?), then toggles this class on <html> - so
+   it also covers Firefox, the track (not just the thumb), and staying
+   correct while actively dragging the thumb around. */
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+*::-webkit-scrollbar-track:hover {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+html.cursor-on-scrollbar {
+    cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+
+/* Canvas draws its own cursor per-frame (see Game.js's
+   renderCustomCursor()) - the CSS cursor above must never apply here. */
+canvas {
+    cursor: none !important;
+}
