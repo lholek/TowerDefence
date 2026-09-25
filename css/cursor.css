@@ -109,7 +109,14 @@ input[type="range"]::-moz-range-thumb:hover {
 *::-webkit-scrollbar-track:hover {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
 }
-html.cursor-on-scrollbar {
+/* Both html AND body - not just one. `body` has its OWN explicit cursor
+   declaration above (html, body {...}), which is more specific than the
+   universal `* { cursor: inherit }` fallback - so everything INSIDE body
+   (i.e. the entire visible page) inherits from body's fixed value, never
+   from html's. Toggling the class on html alone would only ever affect
+   the empty-gap area outside body's own box, not any real content. */
+html.cursor-on-scrollbar,
+body.cursor-on-scrollbar {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
 }
 

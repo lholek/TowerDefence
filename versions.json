@@ -51,7 +51,8 @@
           "<b>UI</b>": [
             "The Game Speed selector now gently pulses while set above/below 1x, as a reminder the game isn't running at normal speed",
             "'Return to Main Menu' and the Log now have smooth fade in/out animations",
-            "Added a custom fire sword cursor"
+            "Added a custom fire sword cursor",
+            "Custom-styled the map/background/game-speed dropdowns"
           ]
         },
         {
@@ -66,7 +67,6 @@
             "Fixed bug - closing the Log with ESC during gameplay instantly re-paused the game and popped up the 'Game is Paused' dialog right after, because the game's own P/ESC pause shortcut reacted to the same key press a split second after the Log's close handler already used it"
           ]
         },
-        "TODO: Improve - FIX BUG THAT ON SCROLL BARS IS BASIC CURSOR",
         "TODO: Improve - More Design upgrades ?",
         "TODO: Improve - Lore update ?"
       ]

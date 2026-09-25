@@ -14,7 +14,8 @@
 // one along the bottom, each exactly as wide/tall as the gap between
 // clientWidth/clientHeight (content box) and offsetWidth/offsetHeight
 // (content box + scrollbar). If the pointer is in either strip, add
-// .cursor-on-scrollbar to <html>, which css/cursor.css turns into the
+// .cursor-on-scrollbar to both <html> and <body> (see setActive() - both
+// are needed, not just one), which css/cursor.css turns into the
 // blazing-sword hover cursor.
 //
 // Also tracks an active drag: once a scrollbar drag starts (mousedown
@@ -23,8 +24,15 @@
 // until mouseup - matching how the browser's own scrollbar drag behaves.
 
 (function () {
-    const root = document.documentElement;
+    // Toggled on both html and body (see css/cursor.css) - body has its
+    // own explicit cursor value that everything inside it actually
+    // inherits from, so the class has to land there too, not just html.
+    const targets = [document.documentElement, document.body];
     let dragging = false;
+
+    function setActive(active) {
+        targets.forEach((el) => el.classList.toggle('cursor-on-scrollbar', active));
+    }
 
     function scrollbarStripsAt(el, clientX, clientY) {
         const rect = el.getBoundingClientRect();
@@ -83,19 +91,19 @@
 
     document.addEventListener('mousemove', (e) => {
         if (dragging) return; // stays on for the whole drag regardless of exact position
-        root.classList.toggle('cursor-on-scrollbar', isOverAnyScrollbar(e.clientX, e.clientY));
+        setActive(isOverAnyScrollbar(e.clientX, e.clientY));
     });
 
     document.addEventListener('mousedown', (e) => {
         if (isOverAnyScrollbar(e.clientX, e.clientY)) {
             dragging = true;
-            root.classList.add('cursor-on-scrollbar');
+            setActive(true);
         }
     });
 
     window.addEventListener('mouseup', () => {
         if (!dragging) return;
         dragging = false;
-        root.classList.remove('cursor-on-scrollbar');
+        setActive(false);
     });
 })();
