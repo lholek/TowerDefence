@@ -146,3 +146,29 @@
   padding: 0.5rem 1rem;
   margin-left: 1.5em;
 }
+
+#versionList {
+  scrollbar-color: #f0c674 transparent;
+   cursor: url('../assets/images/cursor.png') 1 1, auto !important;
+}
+/* Chrome / Edge / Opera / Safari */
+#versionList::-webkit-scrollbar {
+    width: 12px;
+}
+
+#versionList::-webkit-scrollbar-thumb {
+    background: #f0c674;
+    border-radius: 10px;
+
+    cursor: url('../assets/images/cursor.png') 1 1, pointer !important;
+}
+
+#versionList::-webkit-scrollbar-thumb:hover {
+    cursor: url('../assets/images/cursor.png') 1 1, pointer !important;
+}
+
+#versionList::-webkit-scrollbar-track {
+    background: transparent;
+
+    cursor: url('../assets/images/cursor.png') 1 1, auto !important;
+}

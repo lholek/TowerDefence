@@ -299,12 +299,12 @@
 }
 
 #abilityBar::-webkit-scrollbar-thumb {
-    background: #444; 
+    background: rgb(240, 198, 116);
     border-radius: 10px;
 }
 
 #abilityBar::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-color);
+    background: #f0c674;
 }
 
 .ability-card {
