@@ -1,0 +1,200 @@
+================================================================
+NewTowerDefence — Beta 1.1: nápady na nový obsah
+================================================================
+Na rozdíl od IDEAS.txt (to je čistě "juice"/polish, žádný nový
+obsah) je tohle brainstorm skutečně NOVÝCH věcí do hry - nové
+ability, zvuky, kampaň, nepřátelé, terén... Nic z toho není
+odškrtnuté/rozhodnuté, je to k výběru a diskuzi než se do
+čehokoliv pustíme.
+
+POZNÁMKA: při procházení kódu jsem zjistil, že IDEA 8 (red flash
+při ztrátě života) a IDEA 9 (wave banner) z IDEAS.txt se v kódu
+NENACHÁZEJÍ, i když jsme si o nich dřív povídali jako o hotových -
+vypadá to, že se ta implementace ztratila (pravděpodobně to samé
+externí přepisování souborů, co jsme řešili u versions.json).
+Klidně je zařaď i do Bety 1.1, pokud je chceš.
+
+
+================================================================
+⚔️ NOVÉ ABILITY
+================================================================
+Aktuálně existují jen 2 typy (registrované v AbilityManager.js):
+lava_floor (targeted, damage-over-time na dlaždicích) a
+towers_fury (global, buff věží). Cokoliv nového buď dědí z jednoho
+z těchto vzorů, nebo je úplně nový typ (např. "placed obstacle").
+
+[ABILITY 1] Ice Storm / Zamrznutí
+  Targeted ability jako Lava Floor, ale místo damage zpomalí nebo
+  na X sekund úplně zastaví nepřátele na vybraných dlaždicích cesty.
+  Skvělý crowd-control protipól k Lava Floor (ta zabíjí, tahle
+  zdrží). Vizuálně: modro-bílé dlaždice místo červeno-oranžových.
+  Náročnost: nízká-střední (kopíruje LavaFloor.js, jen namísto
+  damage tiku nastaví enemy.speedMultiplier nebo podobně).
+
+[ABILITY 2] Meteor Strike
+  Jednorázový velký damage burst na jednu dlaždici/malou oblast,
+  na rozdíl od Lava Floor (DOT po více vteřin). Vysoký cooldown,
+  vysoký damage - "panic button" na těžkou vlnu/boss enemy.
+  Náročnost: nízká (žádný nový tick systém, jen okamžitý damage
+  všem enemy na zasažených dlaždicích při activate()).
+
+[ABILITY 3] Barikáda / Wall
+  Targeted ability, která na 1 dlaždici cesty postaví dočasnou
+  překážku - nepřátelé si musí najít jinou cestu (pokud mapa má
+  víc cest) nebo se před ní hromadí a věže je snadno sbírají.
+  Zajímavá nová mechanika, ne jen "další damage ability".
+  Náročnost: střední (potřeba dočasně upravit pathfinding/grid a
+  pak ho po vypršení vrátit zpět - přesně na tohle bych se
+  potřeboval podívat, jak Map.js aktuálně řeší cesty nepřátel).
+
+[ABILITY 4] Přetížení věže / Turret Overcharge
+  Targeted na JEDNU konkrétní věž (ne celou mapu jako Tower's
+  Fury) - masivní ale krátký boost (např. 3x damage na 5s) pro tu
+  jednu věž, co hráč vybere. Dává hráči důvod mít "hlavní" věž,
+  ne jen plošné buffy.
+  Náročnost: nízká-střední (podobné Tower's Fury, jen s jedním
+  tower ID místo globálního efektu).
+
+[ABILITY 5] Gold Rush
+  Global ability (jako Tower's Fury) - po dobu trvání dá enemy
+  kills dvojnásobný/trojnásobný gold. Dává hráči důvod aktivně
+  farmit kills v konkrétní chvíli, ne jen defenzivní nástroj.
+  Náročnost: nízká (jen multiplier na goldEarned při kill, dokud
+  je aktivní).
+
+
+================================================================
+🔊 ZVUKY
+================================================================
+IDEAS.txt už řeší SFX podrobně (IDEA 1-5) - tohle jen doplňuje
+úhel "nový obsah", ne polish:
+
+[SOUND 1] Ability-specific zvuky
+  Každá nová ability z sekce výše by měla svůj vlastní
+  charakteristický zvuk (praskání ledu pro Ice Storm, "BOOM" pro
+  Meteor Strike...) - dá jim to identitu už jen ze zvuku, ne jen
+  z barvy ikony.
+
+[SOUND 2] Základní SFX vrstva (bez prostorového zvuku)
+  Probírali jsme, že plný prostorový (positional) audio je
+  relativně náročný projekt navíc. Doporučuju v Betě 1.1 udělat
+  jen běžné (ne prostorové) SFX podle IDEAS.txt IDEA 1-4 a
+  prostorový zvuk věží nechat jako samostatný, pozdější krok -
+  je to jasně oddělitelná práce navíc, ne blokující.
+
+
+================================================================
+🗺️ KAMPAŇ / PROGRESE
+================================================================
+Aktuálně je výběr mapy jen dropdown bez pořadí/odemykání - hráč
+může hrát cokoliv od začátku.
+
+[CAMPAIGN 1] Lineární kampaň s odemykáním map
+  Mapy (Adventure Map I-VI) se odemykají popořadě - dokončení
+  mapy N odemkne mapu N+1 (uloženo v localStorage, žádný
+  backend potřeba). Dá hrám pocit postupu, ne "švédský stůl" map.
+  Náročnost: střední (potřeba trackovat "completed maps" a
+  upravit #mapSelect, aby nezobrazoval/šedě zobrazoval zamčené).
+
+[CAMPAIGN 2] Lore mezi mapami
+  Už existuje Lore systém (openLoreBtn) - rozšířit ho tak, aby se
+  krátký úryvek příběhu ukázal PŘED nebo PO dokončení konkrétní
+  mapy kampaně, ne jen jako statický text v menu. Propojí to, co
+  už máš (lore), s progresí z CAMPAIGN 1.
+  Náročnost: nízká-střední (znovupoužije existující lore popup UI,
+  jen s obsahem podle aktuální mapy).
+
+[CAMPAIGN 3] Obtížnosti (Normal / Hard / Nightmare)
+  Stejná mapa, ale vyšší HP/damage/rychlost nepřátel a méně
+  startovních životů/mincí na vyšší obtížnost - "⭐ rating
+  difficulty" už v mapách existuje jako koncept, tohle by ho
+  posunulo z popisku na skutečnou volitelnou mechaniku.
+  Náročnost: střední (multiplikátory na enemy stats při loadu,
+  podobně jako Fury multiplikátory na Tower.js).
+
+[CAMPAIGN 4] Boss mapy / boss nepřátelé
+  Navazuje na IDEA 10 z IDEAS.txt (vizuální odlišení silných
+  nepřátel) - jít dál a dát bossům unikátní mechaniku (např. při
+  50% HP se na chvíli zrychlí, nebo periodicky "odrazí" všechny
+  aktivní ability efekty). Dobrý cíl na konec kampaně.
+  Náročnost: vysoká (unikátní kód per-boss, ne jen stat multiplier).
+
+
+================================================================
+👹 NOVÍ NEPŘÁTELÉ / TERÉN
+================================================================
+[ENEMY 1] Štítový nepřítel
+  Ignoruje první zásah/X damage z každého útoku (štít se musí
+  "rozbít" než začne reálně ztrácet HP) - nutí hráče řešit burst
+  damage věže, ne jen DPS.
+  Náročnost: střední (nový stat + vizuální indikátor štítu).
+
+[ENEMY 2] Dělící se nepřítel
+  Při smrti se rozpadne na 2-3 slabší kopie (klasika u TD her) -
+  dobrý test na to, jak hráč rozmisťuje AoE věže/abilities.
+  Náročnost: střední (spawn nových enemy instancí ze
+  spawn/death logiky, ne z vlnové konfigurace).
+
+[ENEMY 3] Létající nepřítel
+  Ignoruje terénní překážky, co blokují ostatní (Mountain, Well,
+  Rock...) - ale možná ho MŮŽOU zasáhnout jen věže s "anti-air"
+  vlastností (nová vlastnost typu věže). Zajímavá nová vrstva
+  strategie (kam postavit anti-air věže).
+  Náročnost: vysoká (nová kategorie věží + úprava LOS/pathing pro
+  let mimo cestu).
+
+[TERRAIN 1] Prokletá / posvátná půda jako aktivní modifikátor
+  "Holy Ground"/"Burned Ground" dlaždice už existují vizuálně -
+  rozšířit je na skutečný efekt: věž postavená na Holy Ground má
+  +X% damage, na Burned Ground -X% fire rate. Dá hráči důvod
+  přemýšlet KDE stavět, ne jen ŽE stavět.
+  Náročnost: střední (check terénu pod věží při update()).
+
+
+================================================================
+🎯 DALŠÍ KREATIVNÍ NÁPADY
+================================================================
+[MISC 1] Endless / Survival mód
+  Po poslední nakonfigurované vlně mapy pokračují nekonečné,
+  postupně těžší vlny (škálování HP/počtu) - skóre = jak dlouho
+  přežiješ. Dobré pro replay value bez nutnosti nových map.
+  Náročnost: střední (generovat vlny proceduálně po vyčerpání
+  configu, ne jen skončit hru).
+
+[MISC 2] Achievementy / výzvy
+  Využívá stats, co už trackuješ (stats.enemiesKilled,
+  towersSold, abilitiesUsed...) - "Zabij 1000 nepřátel", "Dokonči
+  mapu bez ztráty života", uloženo v localStorage, zobrazené
+  třeba v Version History popupu nebo novém tlačítku v menu.
+  Náročnost: nízká-střední (žádná nová herní logika, jen
+  sledování existujících čísel + UI na jejich zobrazení).
+
+[MISC 3] Tower upgrade cesty (ne jen postav/prodej)
+  Aktuálně věž jen stojí nebo se prodá - přidat 2-3 stupně
+  upgradu za gold (věž postavená -> upgrade 1 -> upgrade 2),
+  místo nutnosti stavět novou věž vedle. Zásadnější gameplay
+  změna, ne kosmetika.
+  Náročnost: vysoká (nová ekonomika, UI pro upgrade, vizuální
+  varianty věží per úroveň).
+
+[MISC 4] Denní/týdenní seed výzva
+  Fixní kombinace mapy + vlny (seedované datem) se stejným
+  žebříčkem pro všechny hráče ten den/týden - i bez backendu lze
+  aspoň lokálně ukládat "můj nejlepší výsledek na seed XY".
+  Náročnost: vysoká (potřeba deterministický seed do celého
+  spawn systému, což dnes zjevně používá Math.random přímo).
+
+
+================================================================
+DOPORUČENÉ POŘADÍ (nejlepší poměr nový obsah / náročnost)
+================================================================
+1. ABILITY 1 (Ice Storm) + ABILITY 5 (Gold Rush) - nejnižší
+   náročnost, dvě nové ability rozšíří výběr ze 2 na 4.
+2. SOUND 1+2 - i základní (ne prostorové) SFX dají pocit "nové
+   generace" hry, viz IDEAS.txt.
+3. CAMPAIGN 1 (odemykání map) - relativně nízká náročnost, velký
+   dopad na pocit progrese celé hry.
+4. MISC 2 (achievementy) - levné na implementaci, dobrý "malý
+   bonus" bez rizika rozbití balancu.
+5. Zbytek podle chuti/kapacity - CAMPAIGN 4, MISC 3 a ENEMY 3 jsou
+   nejnáročnější, spíš pro Betu 1.2+ než jako první krok.
