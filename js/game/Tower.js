@@ -283,9 +283,12 @@ export default class Tower {
     this.game.abilityManager.abilities.forEach(ability => {
         // We use .includes so it catches 'towers_fury_1', 'towers_fury_2', etc.
         if (ability.id.includes('towers_fury') && ability.isActive()) {
-            damageMul *= (ability.modifiers.damage_mul || 1);
-            speedMul *= (ability.modifiers.speed_mul || 1);
-            fireRateMul *= (ability.modifiers.fireRate_mul || 1);
+            // ?? not || - a config deliberately setting a multiplier to 0
+            // (e.g. a full stop/debuff effect) must not get silently
+            // replaced with 1 just because 0 is falsy.
+            damageMul *= (ability.modifiers.damage_mul ?? 1);
+            speedMul *= (ability.modifiers.speed_mul ?? 1);
+            fireRateMul *= (ability.modifiers.fireRate_mul ?? 1);
         }
     });
 
@@ -450,10 +453,14 @@ checkLineOfSight(ex, ey) {
 
         if ((type === 'M') || (type === 'SND[CACTUS-1]') || (type === 'SND[CACTUS-2]') || (type === 'SND[CACTUS-3]') || (type === 'SND[CACTUS-4]')
             || (type === 'SND[PALM-1]') || (type === 'SND[PALM-2]') || (type === 'SND[PALM-3]') || (type === 'SND[PALM-4]')
+            || (type === 'SNW[SPIKE-1]') || (type === 'SNW[SPIKE-2]') || (type === 'SNW[SPIKE-3]') || (type === 'SNW[SPIKE-4]')
             || (type === 'W[Rock-1]') || (type === 'W[Rock-2]') || (type === 'W[Rock-3]') || (type === 'W[Rock-4]')
             || (type === 'X[Tree]') || (type === 'SNW[Tree]')
             || (type === 'X[Well]')) {
-            return false; // Vision blocked
+            return false; // Vision blocked - must match every tile Bullet.js's own
+            // update() treats as projectile-blocking (see the list there), or a
+            // tower can "see" and fire at a target its own bullet then dies against
+            // mid-flight, wasting the shot with no visible cause.
         }
     }
     return true; // Clear line of sight

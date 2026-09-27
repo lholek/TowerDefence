@@ -71,6 +71,7 @@
   },
   "fury_speed_mul": {
     "step": 0.1,
+    "min": 0.01,
     "hold": false
   },
   "fury_fire_rate_mul": {

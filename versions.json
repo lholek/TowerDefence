@@ -40,7 +40,14 @@
             "Fixed bug - Lava Floor was dealing damage twice as fast as its configured 'damage every' value (its update() called the damage tick both directly and through the base Ability update, so the internal timer accumulated 2x per frame)",
             "Fixed bug - Abilities with a damage-over-time effect (e.g. Lava Floor) could lose their final tick when the effect's duration ended on the exact same frame the tick was due, dealing one less hit than the configured numbers promise",
             "Doubled the 'damage' value of every existing Lava Floor ability across all maps to compensate for the tick-speed fix above, so its overall damage output stays the same as before",
-            "Fixed bug - the game could freeze completely (no more updates, no more rendering) right at the start of a fresh game if the mouse hadn't moved over the canvas yet while placing an ability, because the ability-placement cursor's glow effect crashed on the not-yet-set mouse position"
+            "Fixed bug - the game could freeze completely (no more updates, no more rendering) right at the start of a fresh game if the mouse hadn't moved over the canvas yet while placing an ability, because the ability-placement cursor's glow effect crashed on the not-yet-set mouse position",
+            "Fixed bug - towers could fire at an enemy behind Spike terrain, only for the bullet to immediately die on that same tile (the tower's line-of-sight check and the bullet's own terrain-blocking check disagreed on which tiles block a shot)",
+            "Fixed bug - a Tower's Fury effect that set one of its stat multipliers to exactly 0 was silently ignored and treated as 1 (no effect) instead of actually applying"
+          ]
+        },
+        {
+          "<b>Editor</b>": [
+            "'Tower's Fury' speed multiplier is now set to minimum 0.01 instead of 0"
           ]
         },
         {

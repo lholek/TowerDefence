@@ -529,13 +529,7 @@ export default class Enemy {
         }
     } else if (this.damage <= 0) {
         // ZÁPORNÝ DAMAGE / HEAL (Srdce)
-        // Používáme tvou logiku: pod -10 (např. -5) mezera 40, jinak 10
-    
-        if (absVal > -10) { 
-            ctx.fillText("❤️", w + 40, 0);
-        } else {
-            ctx.fillText("❤️", w + 10, 0);
-        }
+        ctx.fillText("❤️", w + 40, 0);
     }
     // damge text
 
