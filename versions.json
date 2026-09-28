@@ -6,8 +6,10 @@
       "changes": [
         {
           "<b>Updates</b>": [
-          "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
-
+          "TODO: New ability: EARTH:'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
+          "TODO: New ability: AIR:'Tower's Fury' - FINISHED",
+          "TODO: New ability: FIRE:'Lava Floor' - FINISHED",
+          "TODO: New ability: WATER:'Ice Storm' - Same as Lava Floor but slows enemies instead of damaging them and makes them more vulnerable to damage like (+20% damage taken, -20% speed)"
           ]
         },
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates",

@@ -15,3 +15,20 @@ LONG TODOS:
   "TODO: Improve - Editor - Json - Colored json",
   "TODO: Improve - Editor - Json - Json checks more then format and paths",
   "???TODO: New Ability - 'Freeze'",
+
+Beta 1.1
+oheň - lava floor
+voda - Ledová vychřice zpomalující enemáky, a může je dělat více zranitělnějším (+20% damge) ??
+vzduch - towers Fury
+země - Zlatá důl - Okamžiě zvýší přijmy z nepřátel o 100%
+
+? Zmatení nepřítele
+? Klonvané věže
+? vychřice
+? Bažina 
+? Barriera
+? Puklina v zemi 
+
+Abilities ?
+Freeze floor ? - Ledová vychřice zpomalující enemáky, a může je dělat více zranitělnějším (+20% damge)
+Baricade ? - Pevný blok který má třeba 5000 života, nebo
