@@ -1,0 +1,109 @@
+================================================================
+NewTowerDefence — Beta 1.1: sada 4 živlových ability
+================================================================
+Analýza nápadu "4 základní živly, jedna ability na každý" - zatím
+jen rozbor a zhodnocení, nic z tohohle není implementované.
+
+
+================================================================
+NAVRŽENÁ SADA
+================================================================
+
+🔥 OHEŇ — Lava Floor (existuje)
+  Targeted, damage-over-time na vybraných dlaždicích cesty.
+  - je to doslova láva/oheň (barva #ff5000, "fiery" motiv, který
+    se táhne celou hrou - fire sword cursor, ohnivý titulek...)
+  - dává to sadě čistý 1 živel/1 slot bez kolize
+
+💧 VODA — Ice Storm (nová)
+  Targeted (stejný vzor jako Lava Floor - vybereš N dlaždic
+  cesty). Efekt: nepřátelé na vybraných dlaždicích jsou
+  zpomalení (např. -20% rychlost) A ZÁROVEŇ zranitelnější
+  (např. +20% damage, co od věží dostanou) po dobu trvání
+  efektu.
+
+💨 VZDUCH — Tower's Fury (existuje)
+  Global, dočasný buff všech věží (damage/rychlost
+  střel/rate of fire).
+
+🌍 ZEMĚ — Gold Rush "Mine" (nová)
+  Global, dočasný bonus na zlato ze zabitých nepřátel
+  (např. +50 % na 30 s). Čistě ekonomická, žádný bojový efekt.
+
+
+================================================================
+ZHODNOCENÍ — dává to smysl?
+================================================================
+Krátce: ANO, je to dobrý, dobře vyvážený nápad. Konkrétně:
+
+[+] Typové rozložení 2+2
+  Máš 2 targeted (Lava Floor, Ice Storm) a 2 global (Tower's
+  Fury, Gold Rush) - přesně kopíruje 2 architektury, co už máš
+  hotové a otestované z minulého refaktoru Ability.js. Obě nové
+  ability jsou tak nízkonákladové na implementaci - nejde o nový
+  typ chování, jen o nové hodnoty/efekt v existujícím vzoru.
+
+[+] Žádné 2 ability neřeší to samé
+  Oheň = čisté poškození v čase, Voda = kontrola pohybu +
+  zesílení poškození odjinud, Vzduch = přímý boost výkonu věží,
+  Země = ekonomika/dlouhodobá výhoda. 4 jasně odlišné "role",
+  nic se nepřekrývá - to je přesně to, co dělá sadu ability
+  zajímavou (hráč má reálný důvod mít víc než jednu).
+
+[+] Živlová identita sedí
+  Oheň/láva, Voda/led, Země/těžba - to jsou přímočaré, čitelné
+  asociace. Vzduch/Tower's Fury je nejvíc abstraktní ze čtyř
+  (vítr žene šípy rychleji = fire rate/rychlost střel), ale
+  funguje to už teď a hráči si to nejspíš nijak nerozporují.
+
+[!] Jedna věc k rozmyšlení - Ice Storm dělá DVĚ věci najednou
+  -20 % rychlost A +20 % damage je vlastně silnější než jeden
+  efekt - je to částečně kontrola (jako Kořeny/Zemětřesení co
+  jsme probírali) A částečně debuff/enabler (jako by věže samy
+  dostaly dočasný buff na damage, jen nepřímo přes nepřítele).
+  Není to špatně, ale konkrétní čísla (20 %/20 %) bych
+  odzkoušel v praxi - kdyby to bylo příliš silné, stačí snížit
+  jednu ze dvou hodnot nebo prodloužit cooldown, mechanika sama
+  je v pořádku.
+
+[!] Gold Rush - pozor na timing s vlnami
+  Bonus zlato jen "ze zabitých nepřátel" znamená, že hodnota
+  ability hodně kolísá podle toho, KDY ji použiješ (30s před
+  velkou vlnou = mnohem cennější než 30s během klidu). To je u
+  ekonomických ability běžné a dává to hráči rozhodování "kdy na
+  to sáhnout", takže bych to nepovažoval za bug, jen buď
+  připravený, že zkušení hráči ji budou timovat agresivně.
+
+
+================================================================
+GRAFICKÉ ODLIŠENÍ KARET PODLE ŽIVLU
+================================================================
+Ano, jde to udělat - karty (.ability-card) jsou obyčejné DOM
+divy stylované přes CSS/JS, žádná překážka.
+
+Dvě úrovně, jak moc do toho jít:
+1) Levná varianta - barevný gradient/glow pozadí karty podle
+   ability.color (co už každá ability má), + jiná emoji ikona
+   (🔥/❄️/💨/⛏️) - žádný nový kód navíc, jen CSS.
+2) Plná varianta - opravdová procedurální textura na pozadí
+   karty (popraskaná láva, led, vířící vzduch, kamenná/hlínová
+   textura) přes offscreen canvas, stejný princip, jaký už máš
+   použitý u trávy v tile-selectoru editoru (viz
+   editor_map.js/grass_preview_url). Vypadá to nejlíp, ale je to
+   4x offscreen-canvas kreslicí funkce navíc - řádově hodiny
+   práce, ne minuty.
+
+Nic z tohohle jsem teď nedělal (jak jsi řekl) - jen potvrzuju
+proveditelnost pro obě úrovně, ať víš, do čeho jdeš, až na to
+dojde.
+
+
+================================================================
+DALŠÍ KROK
+================================================================
+Až budeš chtít začít implementovat, navrhuju pořadí:
+1. Ice Storm (kopíruje LavaFloor.js 1:1 strukturou, jen jiný
+   efekt v activate()/onTick)
+2. Gold Rush (kopíruje TowersFury.js 1:1 strukturou)
+3. Grafické odlišení karet (levná varianta nejdřív, plná textura
+   až případně později)
