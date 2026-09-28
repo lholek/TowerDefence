@@ -1,4 +1,9 @@
-// abilities/Ability.js 
+// abilities/Ability.js
+// Base class - only what EVERY ability genuinely shares, regardless of type
+// ('targeted', 'field', 'global', ...). Anything only some abilities need
+// (damage, tile-selection/placement state, custom render/preview logic)
+// belongs directly in that ability's own subclass (see LavaFloor.js for a
+// targeted example, TowersFury.js for a global one), not here.
 export default class Ability {
   constructor(game, config = {}) {
     this.game = game;                 // reference to Game instance
@@ -6,52 +11,26 @@ export default class Ability {
     this.name = config.name || 'Ability';
     this.description = config.description || '';
     this.description_text = config.description_text || '';
-    this.type = config.type || 'targeted'; // 'field', 'targeted', 'global' etc.
-    this.selectionCount = config.selectionCount || 1;
+    this.type = config.type || 'targeted'; // 'field', 'targeted', 'global' etc. - AbilityManager routes on this
     this.cooldown = config.cooldown || 30000;
     this.effectDuration = config.effectDuration || 5000;
     this.color = config.color || '#ff0';
     this.ui = config.ui || {};
-    this.damage = config.damage || 0;
 
-    // runtime
+    // runtime - shared cooldown/active-effect bookkeeping. Every ability
+    // type uses this: LavaFloor's DOT tiles and TowersFury's buff both live
+    // in activeInstances and get ticked/expired by update() below.
     this.lastUsedAt = -Infinity;
     this.remainingCooldown = 0;
-    this.activeInstances = []; // store active placed effects for this ability
-    this.isPlacing = false;    // true while player selects tiles
-    this.pendingSelections = []; // store selected tiles while in placing mode
+    this.activeInstances = [];
   }
 
   available() {
     return this.remainingCooldown <= 0;
   }
 
-  startPlacing() {
-    if (!this.available()) return false;
-    this.isPlacing = true;
-    this.pendingSelections = [];
-    return true;
-  }
-
-  cancelPlacing() {
-    this.isPlacing = false;
-    this.pendingSelections = [];
-  }
-
-  // called when player clicks canvas while placing
-  handleCanvasClick(worldX, worldY) {
-    // default: push a tile and if enough selections -> activate
-    const tile = this.game.map.getTileFromCoords(worldX, worldY);
-    this.pendingSelections.push(tile);
-    if (this.pendingSelections.length >= this.selectionCount) {
-      this.activate(this.pendingSelections.slice());
-      this.pendingSelections = [];
-      this.isPlacing = false;
-    }
-  }
-
   // override in subclass
-  activate(tileList) {
+  activate() {
     console.warn('Ability.activate() not implemented', this.id);
     this.lastUsedAt = performance.now();
   }
@@ -80,25 +59,15 @@ export default class Ability {
     });
   }
 
-  // draw UI overlays (tile highlights, timers...) - override if want
-  render(ctx) {
-    // default: highlight pending selections
-    if (this.isPlacing && this.pendingSelections.length) {
-      this.game.map.applyCameraTransform(ctx);
-      ctx.fillStyle = this.color + '55';
-      for (const t of this.pendingSelections) {
-        const center = this.game.map.tileToWorld(t.col, t.row);
-        ctx.fillRect(center.x - this.game.map.tileSize / 2, center.y - this.game.map.tileSize / 2, this.game.map.tileSize, this.game.map.tileSize);
-      }
-      this.game.map.resetTransform(ctx);
-    }
-  }
+  // AbilityManager.render() calls this unconditionally on every ability
+  // every frame, so it must always exist - no-op by default, override in
+  // any subclass that needs to draw something (see LavaFloor.js).
+  render(ctx) {}
 
-  // Return array of preview tiles for placement preview.
-  // Each item: { col, row }.
-  // Subclasses (e.g. LavaFloor) should override to return affected tiles
-  // when placing at world coordinates (worldX, worldY) using the map.
-  getPreviewTiles(worldX, worldY, map) {
-    return [];
+  // Game.js's ability card reads this for the card's description line.
+  // Safe fallback so an ability that doesn't define its own getter shows
+  // its configured description instead of literally "undefined".
+  get dynamicDescription() {
+    return this.description || '';
   }
 }

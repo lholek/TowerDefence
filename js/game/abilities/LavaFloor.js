@@ -7,6 +7,24 @@ export default class LavaFloor extends Ability {
     this.id = config.configId || this.id;
     this.damageEvery = config.damage_every || 500;
     this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
+    this.damage = config.damage || 0;  // ability-specific, not every ability deals damage
+
+    // Tile-selection/placement state - specific to this (and any other
+    // tile-targeting) ability, not part of the shared Ability base.
+    this.isPlacing = false;    // true while player selects tiles
+    this.pendingSelections = []; // store selected tiles while in placing mode
+  }
+
+  startPlacing() {
+    if (!this.available()) return false;
+    this.isPlacing = true;
+    this.pendingSelections = [];
+    return true;
+  }
+
+  cancelPlacing() {
+    this.isPlacing = false;
+    this.pendingSelections = [];
   }
 
   /* Getter dynamicDescription */

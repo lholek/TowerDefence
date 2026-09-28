@@ -835,8 +835,8 @@ export default class Game {
               <div class="ability-dmg">${a.dynamicDescription}</div>
 
               <div class="ability-desc">
-                ${a.constructor.name === 'LavaFloor' 
-                  ? `Target: ${a.selectionCount} tiles` 
+                ${Number.isFinite(a.selectionCount)
+                  ? `Target: ${a.selectionCount} tiles`
                   : ``}
               </div>
             </div>

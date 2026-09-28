@@ -11,7 +11,12 @@
           ]
         },
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates",
-        "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
+        "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates",
+        {
+          "<b>Abilities</b>": [
+            "Reworked the base ability class for future abilities, so it's consistent"
+          ]
+        }
       ]
     },
     {

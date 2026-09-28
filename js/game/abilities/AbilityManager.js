@@ -84,10 +84,15 @@ export default class AbilityManager {
     
    // if (this.game && typeof this.startAbilityCooldownTimer === 'function') {
     if (this.game) {
-      // Color-coded per ability so it's identifiable in the log at a glance
-      let color = '#fff'; // default (e.g. Tower's Fury)
-      if (ability.id.includes('lava_floor')) color = '#ffa500';
-      this.game.logEvent(`Player used ability <b style="color:${color};">${ability.name}</b>`);
+      // White text with the ability's own configured color as a glow -
+      // reads the color from ability.color (every ability has one, see
+      // Ability.js) instead of hardcoding per-id checks, so any new
+      // ability is color-coded in the log automatically. White base text
+      // (not ability.color directly) avoids the same low-contrast problem
+      // fixed earlier for tower names in built/sold log entries - some
+      // ability colors (e.g. a dark rgba) would be unreadable as straight
+      // text color on the Log's dark background.
+      this.game.logEvent(`Player used ability <b style="color:#fff; text-shadow: 0 0 6px ${ability.color}, 0 0 6px ${ability.color};">${ability.name}</b>`);
     }
 }
 
