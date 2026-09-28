@@ -6,6 +6,7 @@
       "changes": [
         {
           "<b>Abilities</b>": [
+          "TODO: Reworke the ability selector to be more user-friendly",
           "TODO: Reworke the base ability class for future abilities, so it's consistent",
           "TODO: New ability: EARTH:'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
           "TODO: New ability: AIR:'Tower's Fury' - FINISHED",
