@@ -2,28 +2,23 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8" />
-<title>Ability Card Concepts - Final Focused Set</title>
+<title>Custom bars</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<link rel="stylesheet" href="../css/cursor.css" />
 <style>
   :root{
-    --bg:#1E1E1E;
-    --text:#eee;
     --gold:#f0c674;
     --gold-soft:#f3e5ab;
-    --brown:#8B4513;
-    --brown-dark:#5c2e0e;
-    --panel:#2a2017;
-    --panel-2:#19120d;
     --green:#63d06f;
     --green-dark:#1f6e2a;
   }
-
-  * { box-sizing: border-box; }
 
   html, body{
     margin:0;
     padding:0;
     background:#1E1E1E;
-    color:var(--text);
+    color:#eee;
     font-family: Arial, sans-serif;
   }
 
@@ -32,43 +27,37 @@
   }
 
   h1{
-    margin:0 0 6px;
+    margin:0 0 24px;
     color:var(--gold);
     font-family: Georgia, 'Times New Roman', serif;
   }
 
-  .subtitle{
-    margin:0 0 18px;
-    color:#aaa;
-  }
-
-  .note{
-    max-width:980px;
-    background:rgba(255,255,255,0.04);
-    border-left:3px solid var(--gold);
-    padding:12px 15px;
-    color:#d2d2d2;
-    line-height:1.5;
-    margin-bottom:20px;
-  }
-
-  .strip-shell{
-    max-width: 1220px;
-    background:
-      linear-gradient(180deg, #221911, #17110c);
-    border:1px solid #5a3b1c;
-    border-radius:10px;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.05),
-      0 10px 20px rgba(0,0,0,0.35);
-    padding:14px;
-  }
-
-  .strip-title{
+  .section-label{
     margin:0 0 10px;
     color:var(--gold);
     font-size:18px;
     font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  /* Real .build-mode-switcher (css/ui.css) is a fixed 1230px box with no
+     auto margin of its own - in the real game it ends up centered
+     because an ancestor container centers it. This page has no such
+     ancestor, so center it directly here (later rule wins the cascade
+     over the linked stylesheet, same specificity). */
+  .build-mode-switcher{
+    margin: 0px auto;
+  }
+
+  .bar-section{
+    margin-bottom:34px;
+  }
+
+  /* Only the concept cards opt into border-box - the real game's own
+     .ability-card/.shop-item are NOT border-box (see AGENTS/css notes),
+     so a page-wide box-sizing reset would silently shrink them below
+     their real in-game size. Keep the reset scoped to the mockup only. */
+  .concept-card, .concept-card *{
+    box-sizing: border-box;
   }
 
   .abilities-strip{
@@ -86,7 +75,12 @@
   .abilities-strip::-webkit-scrollbar-track{ background:#141414; border-radius:10px; }
   .abilities-strip::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:10px; }
 
-  .ability-card{
+  /* ================================================================
+     CONCEPT DESIGN PROPOSAL (new visual look for ability cards only -
+     namespaced with "concept-" so nothing here can collide with the
+     real game's own CSS classes, also loaded on this page)
+     ================================================================ */
+  .concept-card{
     position:relative;
     flex:0 0 auto;
     width:260px;
@@ -103,7 +97,7 @@
     transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, filter .15s ease;
   }
 
-  .ability-card:hover:not(.is-cooldown){
+  .concept-card:hover:not(.concept-is-cooldown){
     transform: translateY(-2px) scale(1.02);
     box-shadow:
       inset 0 2px 0 rgba(255,255,255,0.12),
@@ -112,14 +106,14 @@
       0 12px 18px rgba(0,0,0,0.48);
   }
 
-  .ability-card:active:not(.is-cooldown){
+  .concept-card:active:not(.concept-is-cooldown){
     transform: translateY(2px);
     box-shadow:
       inset 0 3px 8px rgba(0,0,0,0.55),
       0 2px 0 rgba(19,10,4,0.95);
   }
 
-  .ability-card::before{
+  .concept-card::before{
     content:"";
     position:absolute;
     inset:5px;
@@ -130,7 +124,7 @@
     z-index:1;
   }
 
-  .corner{
+  .concept-corner{
     position:absolute;
     width:7px;
     height:7px;
@@ -140,12 +134,12 @@
     z-index:3;
     opacity:.9;
   }
-  .c1{ top:6px; left:6px; }
-  .c2{ top:6px; right:6px; }
-  .c3{ bottom:6px; left:6px; }
-  .c4{ bottom:6px; right:6px; }
+  .concept-c1{ top:6px; left:6px; }
+  .concept-c2{ top:6px; right:6px; }
+  .concept-c3{ bottom:6px; left:6px; }
+  .concept-c4{ bottom:6px; right:6px; }
 
-  .card-top{
+  .concept-card-top{
     position:relative;
     z-index:4;
     display:grid;
@@ -155,7 +149,7 @@
     padding:9px 10px 0;
   }
 
-  .card-index{
+  .concept-card-index{
     width:26px;
     height:26px;
     display:grid;
@@ -168,7 +162,7 @@
     box-shadow: inset 0 1px 0 #fff2c8, 0 2px 0 rgba(0,0,0,0.45);
   }
 
-  .card-icon{
+  .concept-card-icon{
     width:40px;
     height:40px;
     display:grid;
@@ -180,7 +174,7 @@
     box-shadow: inset 0 0 12px rgba(0,0,0,0.45);
   }
 
-  .card-name{
+  .concept-card-name{
     font:700 16px/1.1 Georgia, 'Times New Roman', serif;
     letter-spacing:.6px;
     text-transform:uppercase;
@@ -188,7 +182,7 @@
     text-shadow:0 2px 3px rgba(0,0,0,0.85);
   }
 
-  .card-times{
+  .concept-card-times{
     text-align:right;
     white-space:nowrap;
     font:700 11px/1.5 Arial, sans-serif;
@@ -196,7 +190,7 @@
     text-shadow:0 1px 2px #000;
   }
 
-  .card-info{
+  .concept-card-info{
     position:absolute;
     left:10px;
     right:10px;
@@ -209,14 +203,14 @@
     box-shadow: inset 0 0 12px rgba(0,0,0,0.35);
   }
 
-  .card-dmg{
+  .concept-card-dmg{
     min-height:28px;
     font:700 12px/1.35 Arial, sans-serif;
     color:#f3e5ab;
     text-shadow:0 1px 2px #000;
   }
 
-  .card-desc{
+  .concept-card-desc{
     margin-top:4px;
     padding-top:4px;
     border-top:1px solid rgba(240,198,116,0.12);
@@ -224,13 +218,13 @@
     color:#d4c1a4;
   }
 
-  .stat-row{ display:flex; flex-wrap:wrap; gap:4px; align-items:baseline; }
-  .stat-pos{ color:#7ee089; font-weight:800; }
-  .stat-label{ color:#f2e1bc; }
+  .concept-stat-row{ display:flex; flex-wrap:wrap; gap:4px; align-items:baseline; }
+  .concept-stat-pos{ color:#7ee089; font-weight:800; }
+  .concept-stat-label{ color:#f2e1bc; }
 
   /* ACTIVE / COOLDOWN */
-  .active-overlay,
-  .cooldown-overlay{
+  .concept-active-overlay,
+  .concept-cooldown-overlay{
     position:absolute;
     inset:0;
     z-index:7;
@@ -240,11 +234,11 @@
     pointer-events:none;
   }
 
-  .active-overlay{
+  .concept-active-overlay{
     background:rgba(6,8,6,0.44);
   }
 
-  .active-overlay::before{
+  .concept-active-overlay::before{
     content:"";
     position:absolute;
     left:0;
@@ -266,7 +260,7 @@
     to{ transform:translateY(210%); }
   }
 
-  .active-badge{
+  .concept-active-badge{
     position:absolute;
     top:8px;
     left:50%;
@@ -287,7 +281,7 @@
     text-shadow:0 1px 1px rgba(0,0,0,0.4);
   }
 
-  .active-bar-wrap{
+  .concept-active-bar-wrap{
     position:absolute;
     left:8px;
     right:8px;
@@ -300,7 +294,7 @@
     box-shadow:inset 0 1px 3px rgba(0,0,0,0.65);
   }
 
-  .active-bar{
+  .concept-active-bar{
     width:100%;
     height:100%;
     transform-origin:left center;
@@ -308,8 +302,8 @@
     box-shadow:0 0 6px rgba(99,208,111,0.32);
   }
 
-  .ability-card.is-active .active-overlay{ display:flex; }
-  .ability-card.is-active{
+  .concept-card.concept-is-active .concept-active-overlay{ display:flex; }
+  .concept-card.concept-is-active{
     border-color:#6bd476;
     box-shadow:
       inset 0 2px 0 rgba(255,255,255,0.12),
@@ -318,26 +312,26 @@
       0 10px 16px rgba(0,0,0,0.48);
   }
 
-  .cooldown-overlay{
+  .concept-cooldown-overlay{
     background:rgba(7,7,7,0.70);
     flex-direction:column;
     gap:3px;
   }
 
-  .cooldown-overlay .cooldown-title{
+  .concept-cooldown-overlay .concept-cooldown-title{
     font:800 12px/1 Arial, sans-serif;
     letter-spacing:1px;
     color:#cbbfa8;
   }
 
-  .cooldown-overlay .cooldown-time{
+  .concept-cooldown-overlay .concept-cooldown-time{
     font:700 22px/1 Georgia, 'Times New Roman', serif;
     color:var(--gold);
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
   }
 
-  .ability-card.is-cooldown .cooldown-overlay{ display:flex; }
-  .ability-card.is-cooldown{
+  .concept-card.concept-is-cooldown .concept-cooldown-overlay{ display:flex; }
+  .concept-card.concept-is-cooldown{
     filter:saturate(.62) brightness(.72);
     cursor:not-allowed;
   }
@@ -345,7 +339,7 @@
   /* CARD-SPECIFIC DISTINCT DESIGNS */
 
   /* Lava Floor - cracked lava + bubbles */
-  .lava-floor{
+  .concept-lava-floor{
     background:
       radial-gradient(circle at 18% 70%, rgba(255,172,78,0.78) 0 7px, rgba(255,110,38,0.55) 7px 10px, transparent 11px),
       radial-gradient(circle at 34% 48%, rgba(255,180,82,0.65) 0 5px, rgba(255,108,34,0.44) 5px 8px, transparent 9px),
@@ -361,7 +355,7 @@
       radial-gradient(ellipse at 50% 94%, rgba(255,120,28,0.55), transparent 45%),
       linear-gradient(145deg,#641f0d,#31120d 58%,#100605);
   }
-  .lava-floor .card-icon{
+  .concept-lava-floor .concept-card-icon{
     background:
       radial-gradient(circle at 35% 28%, rgba(255,225,140,.22), transparent 30%),
       linear-gradient(145deg, rgba(120,36,10,.92), rgba(32,9,5,.96));
@@ -369,7 +363,7 @@
   }
 
   /* Towers Fury - windy currents */
-  .towers-fury{
+  .concept-towers-fury{
     background:
       radial-gradient(circle at 78% 24%, rgba(255,239,174,0.18), transparent 18%),
       linear-gradient(115deg, transparent 0 14%, rgba(255,245,200,0.24) 14% 18%, transparent 18% 100%),
@@ -380,7 +374,7 @@
       radial-gradient(ellipse at 28% 76%, rgba(255,230,146,0.10), transparent 36%),
       linear-gradient(145deg,#5f491f,#392a12 62%,#140f05);
   }
-  .towers-fury .card-icon{
+  .concept-towers-fury .concept-card-icon{
     background:
       radial-gradient(circle at 35% 28%, rgba(255,244,198,.22), transparent 30%),
       linear-gradient(145deg, rgba(97,77,31,.92), rgba(24,18,8,.96));
@@ -388,7 +382,7 @@
   }
 
   /* Ice Storm - winter storm / frost */
-  .ice-storm{
+  .concept-ice-storm{
     background:
       radial-gradient(circle at 0 0, rgba(234,251,255,0.26), transparent 36%),
       radial-gradient(circle at 100% 100%, rgba(146,208,231,0.18), transparent 35%),
@@ -402,7 +396,7 @@
       linear-gradient(-40deg, rgba(229,247,255,0.17) 0 5%, transparent 5% 100%),
       linear-gradient(145deg,#36545f,#223843 60%,#0b161b);
   }
-  .ice-storm .card-icon{
+  .concept-ice-storm .concept-card-icon{
     background:
       radial-gradient(circle at 35% 28%, rgba(234,249,255,.24), transparent 30%),
       linear-gradient(145deg, rgba(48,83,102,.92), rgba(11,21,28,.96));
@@ -410,7 +404,7 @@
   }
 
   /* Gold Rush - coins / money */
-  .gold-rush{
+  .concept-gold-rush{
     background:
       radial-gradient(circle at 18% 26%, rgba(255,217,115,0.85) 0 8px, rgba(194,140,42,0.65) 8px 12px, transparent 13px),
       radial-gradient(circle at 37% 62%, rgba(255,218,118,0.75) 0 7px, rgba(198,141,45,0.58) 7px 11px, transparent 12px),
@@ -421,133 +415,280 @@
         transparent 2px 34px),
       linear-gradient(145deg,#6b4b27,#46321c 60%,#160e06);
   }
-  .gold-rush .card-icon{
+  .concept-gold-rush .concept-card-icon{
     background:
       radial-gradient(circle at 35% 28%, rgba(255,233,160,.22), transparent 30%),
       linear-gradient(145deg, rgba(97,73,27,.92), rgba(24,18,8,.96));
     border-color:#8a6530;
   }
-
-  .footer-tip{
-    margin-top:12px;
-    color:#9f9f9f;
-    font-size:12px;
-  }
 </style>
 </head>
 <body>
-  <h1>Ability Card Concepts NOT FINISHED</h1>
-  <p class="subtitle">Finální sada — 1 návrh pro každou abilitu, každá karta má vlastní vizuální identitu.</p>
+  <h1>Custom bars</h1>
 
-  <div class="note">
-    Cíl této verze: hráč má <b>hned z pozadí poznat</b>, co kliká. Proto je každá karta schválně odlišná:
-    <b>Lava Floor</b> = popraskaná láva + bubliny, <b>Towers Fury</b> = proudící vítr,
-    <b>Ice Storm</b> = zimní bouře a <b>Gold Rush</b> = mince / zlato.
-    Klikni na kartu a uvidíš <b>ACTIVE</b> stav se zeleným označením a tmavým overlayem přes celou kartu.
+  <!-- ================================================================
+       OLD - real build-mode switcher (#buildModeSwitcher/.switch-btn),
+       real .shop/.shop-item + .ability-bar/.ability-card CSS, real
+       Tower.js/LavaFloor.js/TowersFury.js render. Same toggle behavior
+       as index.html/UI.js: only one of the two bars is visible at a
+       time. Data comes from the editable JSON block below (id="barsConfig").
+       ================================================================ -->
+  <div class="bar-section">
+    <h2 class="section-label">Old</h2>
+
+    <div id="buildModeSwitcher" class="build-mode-switcher">
+      <button id="towerModeBtn" class="switch-btn active" type="button">🏰 Towers (T)</button>
+      <button id="abilityModeBtn" class="switch-btn" type="button" style="display:block;">🌋 Abilities (A)</button>
+      <div id="lifeButtonContainer"></div>
+    </div>
+
+    <div id="shopAndAbilitiesWrap" class="shopAndAbilitiesWrap">
+      <div id="shopWrapper" class="shop-wrapper">
+        <div id="towerShop" class="shop"></div>
+      </div>
+      <div id="abilityBar" class="ability-bar" style="display:none;"></div>
+    </div>
   </div>
 
-  <div class="strip-shell">
-    <h2 class="strip-title">Scrollable ability strip</h2>
-    <div class="abilities-strip" id="abilitiesStrip">
+  <!-- ================================================================
+       NEW - exact copy of the Old switcher/towers, only the abilities
+       panel is swapped for the new concept card designs (see BETA_1.1
+       redesign above). Towers are intentionally untouched for now.
+       ================================================================ -->
+  <div class="bar-section">
+    <h2 class="section-label">New</h2>
 
-      <div class="ability-card lava-floor" data-duration="6" data-cooldown="25">
-        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-        <div class="card-top">
-          <div class="card-index">1</div>
-          <div class="card-icon">🔥</div>
-          <div class="card-name">Lava Floor</div>
-          <div class="card-times">🕒 6 s<br>⏳ 25 s</div>
+    <div id="buildModeSwitcherNew" class="build-mode-switcher">
+      <button id="towerModeBtnNew" class="switch-btn active" type="button">🏰 Towers (T)</button>
+      <button id="abilityModeBtnNew" class="switch-btn" type="button" style="display:block;">🌋 Abilities (A)</button>
+      <div id="lifeButtonContainerNew"></div>
+    </div>
+
+    <div id="shopAndAbilitiesWrapNew" class="shopAndAbilitiesWrap">
+      <div id="shopWrapperNew" class="shop-wrapper">
+        <div id="towerShopNew" class="shop"></div>
+      </div>
+      <div class="abilities-strip" id="abilitiesStrip" style="display:none;">
+
+      <div class="concept-card concept-lava-floor" data-duration="6" data-cooldown="25">
+        <span class="concept-corner concept-c1"></span><span class="concept-corner concept-c2"></span><span class="concept-corner concept-c3"></span><span class="concept-corner concept-c4"></span>
+        <div class="concept-card-top">
+          <div class="concept-card-index">1</div>
+          <div class="concept-card-icon">🔥</div>
+          <div class="concept-card-name">Lava Floor</div>
+          <div class="concept-card-times">🕒 6 s<br>⏳ 25 s</div>
         </div>
-        <div class="card-info">
-          <div class="card-dmg">180 Damage / 180 ms</div>
-          <div class="card-desc">Target: 7 tiles</div>
+        <div class="concept-card-info">
+          <div class="concept-card-dmg">180 Damage / 180 ms</div>
+          <div class="concept-card-desc">Target: 7 tiles</div>
         </div>
-        <div class="active-overlay">
-          <div class="active-badge">ACTIVE</div>
-          <div class="active-bar-wrap"><div class="active-bar"></div></div>
+        <div class="concept-active-overlay">
+          <div class="concept-active-badge">ACTIVE</div>
+          <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
-        <div class="cooldown-overlay">
-          <div class="cooldown-title">COOLDOWN</div>
-          <div class="cooldown-time">0s</div>
+        <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-title">COOLDOWN</div>
+          <div class="concept-cooldown-time">0s</div>
         </div>
       </div>
 
-      <div class="ability-card towers-fury" data-duration="30" data-cooldown="60">
-        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-        <div class="card-top">
-          <div class="card-index">2</div>
-          <div class="card-icon">🏹</div>
-          <div class="card-name">Towers Fury</div>
-          <div class="card-times">🕒 30 s<br>⏳ 60 s</div>
+      <div class="concept-card concept-towers-fury" data-duration="30" data-cooldown="60">
+        <span class="concept-corner concept-c1"></span><span class="concept-corner concept-c2"></span><span class="concept-corner concept-c3"></span><span class="concept-corner concept-c4"></span>
+        <div class="concept-card-top">
+          <div class="concept-card-index">2</div>
+          <div class="concept-card-icon">🏹</div>
+          <div class="concept-card-name">Towers Fury</div>
+          <div class="concept-card-times">🕒 30 s<br>⏳ 60 s</div>
         </div>
-        <div class="card-info">
-          <div class="card-dmg">
-            <div class="stat-row"><span class="stat-pos">+100%</span><span class="stat-label">Damage</span></div>
-            <div class="stat-row"><span class="stat-pos">+100%</span><span class="stat-label">Speed</span><span class="stat-pos">-20%</span><span class="stat-label">Fire Rate</span></div>
+        <div class="concept-card-info">
+          <div class="concept-card-dmg">
+            <div class="concept-stat-row"><span class="concept-stat-pos">+100%</span><span class="concept-stat-label">Damage</span></div>
+            <div class="concept-stat-row"><span class="concept-stat-pos">+100%</span><span class="concept-stat-label">Speed</span><span class="concept-stat-pos">-20%</span><span class="concept-stat-label">Fire Rate</span></div>
           </div>
-          <div class="card-desc">Empowers all towers for the duration.</div>
+          <div class="concept-card-desc">Empowers all towers for the duration.</div>
         </div>
-        <div class="active-overlay">
-          <div class="active-badge">ACTIVE</div>
-          <div class="active-bar-wrap"><div class="active-bar"></div></div>
+        <div class="concept-active-overlay">
+          <div class="concept-active-badge">ACTIVE</div>
+          <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
-        <div class="cooldown-overlay">
-          <div class="cooldown-title">COOLDOWN</div>
-          <div class="cooldown-time">0s</div>
-        </div>
-      </div>
-
-      <div class="ability-card ice-storm" data-duration="4" data-cooldown="20">
-        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-        <div class="card-top">
-          <div class="card-index">3</div>
-          <div class="card-icon">❄️</div>
-          <div class="card-name">Ice Storm</div>
-          <div class="card-times">🕒 4 s<br>⏳ 20 s</div>
-        </div>
-        <div class="card-info">
-          <div class="card-dmg">-20% Speed / +20% Damage taken</div>
-          <div class="card-desc">Freezes and exposes affected enemies.</div>
-        </div>
-        <div class="active-overlay">
-          <div class="active-badge">ACTIVE</div>
-          <div class="active-bar-wrap"><div class="active-bar"></div></div>
-        </div>
-        <div class="cooldown-overlay">
-          <div class="cooldown-title">COOLDOWN</div>
-          <div class="cooldown-time">0s</div>
+        <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-title">COOLDOWN</div>
+          <div class="concept-cooldown-time">0s</div>
         </div>
       </div>
 
-      <div class="ability-card gold-rush" data-duration="30" data-cooldown="45">
-        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-        <div class="card-top">
-          <div class="card-index">4</div>
-          <div class="card-icon">⛏️</div>
-          <div class="card-name">Gold Rush</div>
-          <div class="card-times">🕒 30 s<br>⏳ 45 s</div>
+      <div class="concept-card concept-ice-storm" data-duration="4" data-cooldown="20">
+        <span class="concept-corner concept-c1"></span><span class="concept-corner concept-c2"></span><span class="concept-corner concept-c3"></span><span class="concept-corner concept-c4"></span>
+        <div class="concept-card-top">
+          <div class="concept-card-index">3</div>
+          <div class="concept-card-icon">❄️</div>
+          <div class="concept-card-name">Ice Storm</div>
+          <div class="concept-card-times">🕒 4 s<br>⏳ 20 s</div>
         </div>
-        <div class="card-info">
-          <div class="card-dmg">+50% Gold / 30 s</div>
-          <div class="card-desc">Increases gold income during the effect.</div>
+        <div class="concept-card-info">
+          <div class="concept-card-dmg">-20% Speed / +20% Damage taken</div>
+          <div class="concept-card-desc">Freezes and exposes affected enemies.</div>
         </div>
-        <div class="active-overlay">
-          <div class="active-badge">ACTIVE</div>
-          <div class="active-bar-wrap"><div class="active-bar"></div></div>
+        <div class="concept-active-overlay">
+          <div class="concept-active-badge">ACTIVE</div>
+          <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
-        <div class="cooldown-overlay">
-          <div class="cooldown-title">COOLDOWN</div>
-          <div class="cooldown-time">0s</div>
+        <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-title">COOLDOWN</div>
+          <div class="concept-cooldown-time">0s</div>
+        </div>
+      </div>
+
+      <div class="concept-card concept-gold-rush" data-duration="30" data-cooldown="45">
+        <span class="concept-corner concept-c1"></span><span class="concept-corner concept-c2"></span><span class="concept-corner concept-c3"></span><span class="concept-corner concept-c4"></span>
+        <div class="concept-card-top">
+          <div class="concept-card-index">4</div>
+          <div class="concept-card-icon">⛏️</div>
+          <div class="concept-card-name">Gold Rush</div>
+          <div class="concept-card-times">🕒 30 s<br>⏳ 45 s</div>
+        </div>
+        <div class="concept-card-info">
+          <div class="concept-card-dmg">+50% Gold / 30 s</div>
+          <div class="concept-card-desc">Increases gold income during the effect.</div>
+        </div>
+        <div class="concept-active-overlay">
+          <div class="concept-active-badge">ACTIVE</div>
+          <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
+        </div>
+        <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-title">COOLDOWN</div>
+          <div class="concept-cooldown-time">0s</div>
         </div>
       </div>
 
     </div>
-    <div class="footer-tip">Klikni na kartu pro demo stavu ACTIVE → COOLDOWN. Karty jsou v jednom horizontálně scrollovatelném řádku.</div>
+    </div>
   </div>
+
+  <!-- ================================================================
+       EDITABLE CONFIG - same shape as games/*.json, trimmed to just
+       towerTypes + abilities. Copied from games/012_adventureMap6.json,
+       plus 4 extra hand-written "test" abilities appended at the end
+       (long names / extreme numbers) to stress-test the old card layout.
+       Edit this block directly - "Old towers"/"Old abilities" above are
+       rendered straight from it, no randomization.
+       ================================================================ -->
+  <script type="application/json" id="barsConfig">
+  {
+    "towerTypes": {
+      "001": { "name": "Wooden Watchtower", "price": 50, "damage": 25, "fireRate": 900, "range": 360, "color": "#8b6f47", "sellPrice": 25, "speed": 2 },
+      "002": { "name": "Stone Bastion", "price": 100, "damage": 50, "fireRate": 800, "range": 450, "color": "#808080", "sellPrice": 50, "speed": 3 },
+      "003": { "name": "Iron Fortress", "price": 300, "damage": 125, "fireRate": 650, "range": 600, "color": "#36454e", "sellPrice": 150, "speed": 3.5 },
+      "004": { "name": "Mage's Tower", "price": 750, "damage": 250, "fireRate": 500, "range": 700, "color": "#9370db", "sellPrice": 250, "speed": 4.5 },
+      "005": { "name": "Dragon's Sanctum", "price": 1200, "damage": 500, "fireRate": 400, "range": 850, "color": "#ff6346", "sellPrice": 300, "speed": 6 },
+      "006": { "name": "Starlight Tower", "price": 2000, "damage": 1000, "fireRate": 350, "range": 900, "color": "#ffd700", "sellPrice": 400, "speed": 6 },
+      "007": { "name": "Divine Tower", "price": 4000, "damage": 2000, "fireRate": 300, "range": 1200, "color": "#00ced1", "sellPrice": 500, "speed": 8 },
+      "008": { "name": "Redeemer's Tower", "price": 8000, "damage": 4000, "fireRate": 250, "range": 1500, "color": "#ffffff", "sellPrice": 0, "speed": 10 }
+    },
+    "abilities": [
+      {
+        "id": "lava_floor",
+        "configId": "lava_floor",
+        "name": "Mage's flames",
+        "type": "targeted",
+        "selectionCount": 7,
+        "damage": 400,
+        "damage_every": 500,
+        "cooldown": 90000,
+        "effectDuration": 15000,
+        "color": "rgba(44, 131, 186, 0.6)",
+        "ui": { "icon": "🌋" }
+      },
+      {
+        "id": "lava_floor",
+        "configId": "lava_floor_1787685972957",
+        "name": "Redeemer's fire",
+        "type": "targeted",
+        "selectionCount": 11,
+        "damage": 1000,
+        "damage_every": 250,
+        "cooldown": 120000,
+        "effectDuration": 40000,
+        "color": "rgba(148, 41, 119, 0.6)",
+        "ui": { "icon": "🌋" }
+      },
+      {
+        "id": "towers_fury",
+        "configId": "towers_fury_1787685977515",
+        "name": "Mage's Arrows",
+        "type": "global",
+        "cooldown": 45000,
+        "effectDuration": 15000,
+        "color": "rgba(255, 250, 250, 1)",
+        "ui": { "icon": "🏹" },
+        "modifiers": { "damage_mul": 2.5, "speed_mul": 2.5, "fireRate_mul": 0.85 }
+      },
+      {
+        "id": "towers_fury",
+        "configId": "towers_fury_1787685978660",
+        "name": "Redeemer's fury",
+        "type": "global",
+        "cooldown": 120000,
+        "effectDuration": 40000,
+        "color": "rgba(255, 255, 255, 0.75)",
+        "ui": { "icon": "🏹" },
+        "modifiers": { "damage_mul": 4, "speed_mul": 4, "fireRate_mul": 0.7 }
+      },
+      {
+        "id": "lava_floor",
+        "configId": "test_long_name",
+        "name": "Inferno of the Ancient Volcano Gods",
+        "type": "targeted",
+        "selectionCount": 5,
+        "damage": 300,
+        "damage_every": 300,
+        "cooldown": 25000,
+        "effectDuration": 8000,
+        "color": "rgba(255, 100, 0, 0.6)",
+        "ui": { "icon": "🌋" }
+      },
+      {
+        "id": "towers_fury",
+        "configId": "test_long_name_fury",
+        "name": "Thunderous Storm of a Thousand Blades",
+        "type": "global",
+        "cooldown": 20000,
+        "effectDuration": 10000,
+        "color": "rgba(120, 160, 255, 0.8)",
+        "ui": { "icon": "🏹" },
+        "modifiers": { "damage_mul": 1.5, "speed_mul": 1.5, "fireRate_mul": 0.9 }
+      },
+      {
+        "id": "lava_floor",
+        "configId": "test_extreme_numbers",
+        "name": "Test: Extreme Numbers",
+        "type": "targeted",
+        "selectionCount": 999,
+        "damage": 99999,
+        "damage_every": 50,
+        "cooldown": 999000,
+        "effectDuration": 500000,
+        "color": "rgba(255, 0, 0, 0.6)",
+        "ui": { "icon": "🌋" }
+      },
+      {
+        "id": "towers_fury",
+        "configId": "test_extreme_modifiers",
+        "name": "Test: Extreme Modifiers",
+        "type": "global",
+        "cooldown": 5000,
+        "effectDuration": 3000,
+        "color": "rgba(255, 255, 0, 0.8)",
+        "ui": { "icon": "🏹" },
+        "modifiers": { "damage_mul": 10, "speed_mul": 0.1, "fireRate_mul": 5 }
+      }
+    ]
+  }
+  </script>
 
 <script>
 (() => {
-  const cards = [...document.querySelectorAll('.ability-card')];
+  const cards = [...document.querySelectorAll('.concept-card')];
 
   cards.forEach(card => {
     let interval = null;
@@ -561,18 +702,18 @@
     };
 
     card.addEventListener('click', () => {
-      if (card.classList.contains('is-active') || card.classList.contains('is-cooldown')) return;
+      if (card.classList.contains('concept-is-active') || card.classList.contains('concept-is-cooldown')) return;
 
       clearTimers();
 
       const duration = Number(card.dataset.duration || 5);
       const cooldown = Number(card.dataset.cooldown || 10);
 
-      const badge = card.querySelector('.active-badge');
-      const activeBar = card.querySelector('.active-bar');
-      const cooldownTime = card.querySelector('.cooldown-time');
+      const badge = card.querySelector('.concept-active-badge');
+      const activeBar = card.querySelector('.concept-active-bar');
+      const cooldownTime = card.querySelector('.concept-cooldown-time');
 
-      card.classList.add('is-active');
+      card.classList.add('concept-is-active');
       badge.textContent = `ACTIVE · ${duration}s`;
 
       activeBar.style.transition = 'none';
@@ -597,8 +738,8 @@
         clearInterval(interval);
         interval = null;
 
-        card.classList.remove('is-active');
-        card.classList.add('is-cooldown');
+        card.classList.remove('concept-is-active');
+        card.classList.add('concept-is-cooldown');
 
         let cooldownLeft = cooldown;
         cooldownTime.textContent = `${cooldownLeft}s`;
@@ -609,7 +750,7 @@
 
           if (cooldownLeft <= 0) {
             clearTimers();
-            card.classList.remove('is-cooldown');
+            card.classList.remove('concept-is-cooldown');
             cooldownTime.textContent = '0s';
             badge.textContent = 'ACTIVE';
             activeBar.style.transition = 'none';
@@ -621,6 +762,206 @@
     });
   });
 })();
+</script>
+
+<!-- ================================================================
+     OLD TOWERS / OLD ABILITIES - imports the real game classes and
+     renders the editable JSON above with the exact real markup, no
+     re-implemented visuals and no randomization.
+     ================================================================ -->
+<script type="module">
+  import Tower from '../js/game/Tower.js';
+  import LavaFloor from '../js/game/abilities/LavaFloor.js';
+  import TowersFury from '../js/game/abilities/TowersFury.js';
+
+  const config = JSON.parse(document.getElementById('barsConfig').textContent);
+
+  // Minimal stand-ins - Tower's constructor only touches map.tileSize and
+  // map.tileToWorld(), and only stores `game` without using it before the
+  // preRenderedImage is built, so these are enough to render 1:1.
+  const fakeGame = {};
+  const fakeMap = { tileSize: 80, tileToWorld: () => ({ x: 0, y: 0 }) };
+
+  // ---- Towers: exact markup/formulas copied from Game.js createTowerShop() ----
+  function buildTowerItemHTML(type, index) {
+    const dps = (type.damage * 1000 / type.fireRate).toFixed(1);
+    const sellPrice = type.sellPrice;
+
+    const tempTower = new Tower(fakeGame, fakeMap, 0, 0, type);
+    const src = tempTower.preRenderedImage;
+
+    const zoomCanvas = document.createElement('canvas');
+    zoomCanvas.width = 120;
+    zoomCanvas.height = 140;
+    const zCtx = zoomCanvas.getContext('2d');
+
+    const cropSize = src.width * 0.45;
+    const sx = (src.width / 2.5) - (cropSize / 2);
+    const sy = (src.height / 2) - (cropSize / 1.2);
+
+    zCtx.drawImage(src, sx, sy, cropSize, cropSize, 0, 0, 120, 120);
+
+    const nameLength = type.name.length;
+    const fontSize = nameLength > 12 ? '13px' : '16px';
+
+    return `
+        <div class="index">${index}</div>
+        <div class="tower-card-main">
+            <img src="${zoomCanvas.toDataURL()}" class="shop-tower-img" />
+            <div class="tower-info">
+                <div class="name" style="font-size: ${fontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${type.name}">
+                  ${type.name}
+                </div>
+                <div class="price">🪙 ${type.price}</div>
+                <div class="sell-price">💰 Sell:  ${sellPrice}</div>
+                <div class="dps">💥DPS: ${dps}</div>
+            </div>
+        </div>
+        <div class="tower-stats-hover">
+            <div> 🪙 Price: ${type.price}</div>
+            <div>💥DPS: ${dps}</div>
+            <div>⚔️ Damage: ${type.damage}</div>
+            <div>🎯 Range: ${(type.range / fakeMap.tileSize).toFixed(1)} tiles</div>
+            <div>⏱️ F. Rate: ${(type.fireRate)} ms</div>
+            <div>🗲 Speed: ${(type.speed * 144 / fakeMap.tileSize).toFixed(1)} tiles/s</div>
+        </div>
+    `;
+  }
+
+  function renderTowers(targetId) {
+    const shopDiv = document.getElementById(targetId);
+    shopDiv.innerHTML = '';
+    let index = 0;
+    for (const type of Object.values(config.towerTypes)) {
+      index++;
+      const item = document.createElement('div');
+      item.className = 'shop-item';
+      item.style.setProperty('--tower-color', type.color || '#fff');
+      item.innerHTML = buildTowerItemHTML(type, index);
+      shopDiv.appendChild(item);
+    }
+  }
+
+  // ---- Abilities: exact markup copied from Game.js createAbilityBar() ----
+  function buildAbilityCardHTML(a, index) {
+    return `
+        <div class="cooldown-overlay" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); pointer-events:none; z-index:5;"></div>
+
+        <div class="cooldown-timer" style="position:absolute; left:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none; z-index:10; font-size:12px;"></div>
+
+        <div class="duration-timer" style="position:absolute; right:6px; top:6px; color:#4ade80; font-weight:bold; pointer-events:none; z-index:10; font-size:12px; text-shadow: 1px 1px 2px #000;"></div>
+
+        <div class="index">${index}</div>
+        <div class="ability-name"
+             style="font-size: ${a.name.length > 15 ? '12px' : '16px'};">
+          ${a.name}
+        </div>
+        <div class="ability-icon">${a.ui?.icon || ''}</div>
+        <div class="ability-info">
+          <div class="ability-meta">
+            <div class="ability-times">
+              ${a.effectDuration ? `<span class="ability-duration">🕒 ${a.effectDuration / 1000} s</span>` : ''}
+              <span class="ability-cooldown">⏳ ${a.cooldown / 1000} s</span>
+            </div>
+
+            <div class="ability-dmg">${a.dynamicDescription}</div>
+
+            <div class="ability-desc">
+              ${Number.isFinite(a.selectionCount)
+                ? `Target: ${a.selectionCount} tiles`
+                : ``}
+            </div>
+          </div>
+        </div>
+    `;
+  }
+
+  function renderAbilities() {
+    const container = document.getElementById('abilityBar');
+    container.innerHTML = '';
+
+    let index = 0;
+    for (const cfg of config.abilities) {
+      index++;
+      const AbilityClass = cfg.id === 'towers_fury' ? TowersFury : LavaFloor;
+      const a = new AbilityClass(fakeGame, cfg);
+
+      const card = document.createElement('div');
+      card.className = 'ability-card';
+      card.id = a.id;
+      card.style.position = 'relative';
+      card.innerHTML = buildAbilityCardHTML(a, index);
+      container.appendChild(card);
+    }
+  }
+
+  renderTowers('towerShop');
+  renderTowers('towerShopNew'); // "New Towers" is a straight copy of Old for now
+  renderAbilities();
+
+  // Real build-mode switcher logic, copied 1:1 from UI.js - reusable so
+  // both the Old and New bars behave exactly the same way.
+  function setupSwitcher(towerBtnId, abilityBtnId, shopWrapperId, abilityPanelId) {
+    const towerModeBtn = document.getElementById(towerBtnId);
+    const abilityModeBtn = document.getElementById(abilityBtnId);
+    const shopWrapperEl = document.getElementById(shopWrapperId);
+    const abilityPanelEl = document.getElementById(abilityPanelId);
+
+    towerModeBtn.addEventListener('click', () => {
+      towerModeBtn.classList.add('active');
+      abilityModeBtn.classList.remove('active');
+      shopWrapperEl.style.display = 'flex';
+      abilityPanelEl.style.display = 'none';
+    });
+
+    abilityModeBtn.addEventListener('click', () => {
+      abilityModeBtn.classList.add('active');
+      towerModeBtn.classList.remove('active');
+      shopWrapperEl.style.display = 'none';
+      abilityPanelEl.style.display = 'flex';
+    });
+  }
+
+  setupSwitcher('towerModeBtn', 'abilityModeBtn', 'shopWrapper', 'abilityBar');
+  setupSwitcher('towerModeBtnNew', 'abilityModeBtnNew', 'shopWrapperNew', 'abilitiesStrip');
+
+  // Extra life button, copied 1:1 from Game.js createLifePurchaseButton(),
+  // with local fake coin/purchase-count state per switcher instance
+  // (games/012_adventureMap6.json: extraLife: true, these exact prices).
+  const EXTRA_LIFE_PRICES = [50, 75, 100, 0, 150, 200, 250, 0, 300, 400, 500, 1000];
+  const STARTING_COINS = 100;
+
+  function setupLifeButton(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    let coins = STARTING_COINS;
+    let purchaseCount = 0;
+    const getCurrentPrice = () => EXTRA_LIFE_PRICES[Math.min(purchaseCount, EXTRA_LIFE_PRICES.length - 1)];
+
+    const lifeButton = document.createElement('button');
+    lifeButton.className = 'switch-btn life-purchase-btn';
+    lifeButton.type = 'button';
+    let currentPrice = getCurrentPrice();
+    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+    container.appendChild(lifeButton);
+
+    lifeButton.addEventListener('click', () => {
+      currentPrice = getCurrentPrice();
+      if (coins >= currentPrice) {
+        coins -= currentPrice;
+        purchaseCount += 1;
+        currentPrice = getCurrentPrice();
+        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+      } else {
+        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E] - not enough coins`;
+      }
+    });
+  }
+
+  setupLifeButton('lifeButtonContainer');
+  setupLifeButton('lifeButtonContainerNew');
 </script>
 </body>
 </html>
