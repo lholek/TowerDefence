@@ -52,6 +52,16 @@
     margin-bottom:34px;
   }
 
+  /* In the real game the switcher + wrap sit inside #gameArea (flex column,
+     gap: 8px, 1230px wide - see css/style.css), so .shopAndAbilitiesWrap's
+     own margin-top: -10px nets out to -2px below the switcher, and
+     #abilityBar's width: 100% is 1230px, which its space-around spreads
+     the cards evenly around the center. This page has no #gameArea, so
+     reproduce both here: same 1230px width, centered, and -10px + 8px gap. */
+  .bar-section .shopAndAbilitiesWrap{
+    width:1230px;
+    margin:-2px auto 0;
+  }
   /* Only the concept cards opt into border-box - the real game's own
      .ability-card/.shop-item are NOT border-box (see AGENTS/css notes),
      so a page-wide box-sizing reset would silently shrink them below
@@ -67,7 +77,10 @@
     overflow-x:auto;
     overflow-y:hidden;
     white-space:nowrap;
-    padding:8px 5px 12px;
+    /* centered like the real #abilityBar; "safe" falls back to start once
+       the cards overflow, so the first card never gets cut off on the left */
+    justify-content:safe center;
+    padding:8px 15px 15px; /* same as the real #abilityBar */
     scroll-behavior:smooth;
   }
 
@@ -838,6 +851,23 @@
       item.className = 'shop-item';
       item.style.setProperty('--tower-color', type.color || '#fff');
       item.innerHTML = buildTowerItemHTML(type, index);
+      item.dataset.key = String(index);
+
+      // Selection toggle, copied from Game.js createTowerShop() item.onclick
+      // (per shop, so Old and New each keep their own selection).
+      item.onclick = () => {
+        const key = item.dataset.key;
+        const wasActive = item.classList.contains('active');
+        shopDiv.querySelectorAll('.shop-item').forEach(el => {
+          if (el.dataset.key === key && !wasActive) {
+            el.classList.add('active');
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          } else {
+            el.classList.remove('active');
+          }
+        });
+      };
+
       shopDiv.appendChild(item);
     }
   }
@@ -876,6 +906,8 @@
     `;
   }
 
+  const abilityCards = {};
+
   function renderAbilities() {
     const container = document.getElementById('abilityBar');
     container.innerHTML = '';
@@ -891,9 +923,81 @@
       card.id = a.id;
       card.style.position = 'relative';
       card.innerHTML = buildAbilityCardHTML(a, index);
+      abilityCards[a.id] = { card, ability: a };
+
+      // Simulated use - sets the same state LavaFloor.js/TowersFury.js set
+      // on activation (cooldown + one active instance, both counting down
+      // at once). Real a.update() isn't called, since LavaFloor's onTick
+      // needs real enemies/map; the countdown is done by the ticker below.
+      // Skips the lava floor "placing" step - one click = activated.
+      card.addEventListener('click', () => {
+        if (!a.available()) return;
+        a.remainingCooldown = a.cooldown;
+        a.activeInstances = a.effectDuration ? [{ durationLeft: a.effectDuration }] : [];
+      });
+
       container.appendChild(card);
     }
   }
+
+  // Stand-in for AbilityManager.update(deltaTime): counts down cooldown
+  // and active durations in real time.
+  let lastTick = performance.now();
+  function tickAbilities(now) {
+    const deltaTime = now - lastTick;
+    lastTick = now;
+    for (const { ability } of Object.values(abilityCards)) {
+      if (ability.remainingCooldown > 0) ability.remainingCooldown -= deltaTime;
+      ability.activeInstances = ability.activeInstances.filter(inst => {
+        inst.durationLeft -= deltaTime;
+        return inst.durationLeft > 0;
+      });
+    }
+    requestAnimationFrame(tickAbilities);
+  }
+  requestAnimationFrame(tickAbilities);
+
+  // Card UI updater, copied 1:1 from Game.js createAbilityBar()'s
+  // abilityTimerInterval (minus the pause check - nothing pauses here).
+  setInterval(() => {
+    for (const { card, ability } of Object.values(abilityCards)) {
+      const cooldownOverlay = card.querySelector('.cooldown-overlay');
+      const cooldownTimer = card.querySelector('.cooldown-timer');
+      const durationTimer = card.querySelector('.duration-timer');
+
+      // --- 1. RELOAD LOGIC (Left Corner) ---
+      const remaining = ability.remainingCooldown || 0;
+      if (remaining > 0) {
+        if (cooldownOverlay) {
+          cooldownOverlay.style.display = 'block';
+          const pct = (remaining / ability.cooldown) * 100;
+          cooldownOverlay.style.height = pct + '%';
+        }
+        if (cooldownTimer) {
+          cooldownTimer.textContent = (remaining / 1000).toFixed(1) + "s";
+        }
+      } else {
+        if (cooldownOverlay) cooldownOverlay.style.display = 'none';
+        if (cooldownTimer) cooldownTimer.textContent = '';
+      }
+
+      // --- 2. DURATION LOGIC (Right Corner) ---
+      if (ability.activeInstances && ability.activeInstances.length > 0) {
+        const maxDur = Math.max(0, ...ability.activeInstances.map(i => i.durationLeft || 0));
+
+        if (maxDur > 0 && durationTimer) {
+          durationTimer.textContent = (maxDur / 1000).toFixed(1) + "s";
+          card.style.boxShadow = "inset 0 0 10px #4ade80";
+        } else if (durationTimer) {
+          durationTimer.textContent = '';
+          card.style.boxShadow = "";
+        }
+      } else if (durationTimer) {
+        durationTimer.textContent = '';
+        card.style.boxShadow = "";
+      }
+    }
+  }, 100);
 
   renderTowers('towerShop');
   renderTowers('towerShopNew'); // "New Towers" is a straight copy of Old for now
@@ -929,7 +1033,7 @@
   // with local fake coin/purchase-count state per switcher instance
   // (games/012_adventureMap6.json: extraLife: true, these exact prices).
   const EXTRA_LIFE_PRICES = [50, 75, 100, 0, 150, 200, 250, 0, 300, 400, 500, 1000];
-  const STARTING_COINS = 100;
+  const STARTING_COINS = 1000000000; // effectively unlimited - never "not enough coins"
 
   function setupLifeButton(containerId) {
     const container = document.getElementById(containerId);
@@ -954,14 +1058,22 @@
         purchaseCount += 1;
         currentPrice = getCurrentPrice();
         lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
-      } else {
-        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E] - not enough coins`;
       }
     });
   }
 
   setupLifeButton('lifeButtonContainer');
   setupLifeButton('lifeButtonContainerNew');
+
+  // Mouse-wheel horizontal scroll, copied from main.js (shopWrapper/abilityBar).
+  ['shopWrapper', 'abilityBar', 'shopWrapperNew', 'abilitiesStrip'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      el.scrollLeft += e.deltaY * 2.45;
+    }, { passive: false });
+  });
 </script>
 </body>
 </html>
