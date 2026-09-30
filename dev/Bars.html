@@ -392,10 +392,38 @@
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
   }
 
+  /* "ACTIVE · Xs" above the COOLDOWN text - only while the effect runs */
+  .concept-cooldown-overlay .concept-cooldown-active{
+    display:none;
+    margin-bottom:3px;
+    padding:3px 10px 4px;
+    font:800 11px/1 Arial, sans-serif;
+    letter-spacing:1px;
+    color:#e8ffe9;
+    background:linear-gradient(var(--green), var(--green-dark));
+    border:1px solid #9be7a1;
+    border-radius:4px;
+    box-shadow: 0 0 10px rgba(99,208,111,0.30);
+    text-shadow:0 1px 1px rgba(0,0,0,0.4);
+  }
+  .concept-card.concept-is-active .concept-cooldown-active{ display:block; }
+
   .concept-card.concept-is-cooldown .concept-cooldown-overlay{ display:flex; }
-  .concept-card.concept-is-cooldown{
+
+  /* Dim only the card's own content, not the overlays on top of it, so the
+     ACTIVE / COOLDOWN texts stay crisp (a filter on the whole card would
+     dim them too). */
+  .concept-card.concept-is-cooldown .concept-card-top,
+  .concept-card.concept-is-cooldown .concept-card-info,
+  .concept-card.concept-is-cooldown::before{
     filter:saturate(.62) brightness(.72);
   }
+
+  /* Cooldown and active now overlap: the top ACTIVE badge is replaced by
+     the line inside the cooldown overlay, while the green glow + bar sit
+     above the dark cooldown layer. */
+  .concept-active-badge{ display:none; }
+  .concept-active-overlay{ z-index:8; }
 
   /* ================================================================
      PER-ABILITY THEMES - only the three variables change
@@ -511,6 +539,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -534,6 +563,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -557,6 +587,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -580,6 +611,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -603,6 +635,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -626,6 +659,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -649,6 +683,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -672,6 +707,7 @@
           <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
         </div>
         <div class="concept-cooldown-overlay">
+          <div class="concept-cooldown-active"></div>
           <div class="concept-cooldown-title">COOLDOWN</div>
           <div class="concept-cooldown-time">0s</div>
         </div>
@@ -804,77 +840,63 @@
 
 <script>
 (() => {
+  // Same timing as the real game: on use, the effect AND the cooldown both
+  // start at once. The cooldown overlay (dimmed card, COOLDOWN + time) shows
+  // immediately; while the effect is still running, an "ACTIVE · Xs" line
+  // sits above the COOLDOWN text (plus the green glow/bar) and disappears
+  // once the effect ends - the cooldown keeps counting down on its own.
   const cards = [...document.querySelectorAll('.concept-card')];
 
   cards.forEach(card => {
     let interval = null;
-    let timeout = null;
-
-    const clearTimers = () => {
-      if (interval) clearInterval(interval);
-      if (timeout) clearTimeout(timeout);
-      interval = null;
-      timeout = null;
-    };
 
     card.addEventListener('click', () => {
-      if (card.classList.contains('concept-is-active') || card.classList.contains('concept-is-cooldown')) return;
+      if (card.classList.contains('concept-is-cooldown')) return;
 
-      clearTimers();
+      const duration = Number(card.dataset.duration || 5) * 1000;
+      const cooldown = Number(card.dataset.cooldown || 10) * 1000;
+      const start = performance.now();
 
-      const duration = Number(card.dataset.duration || 5);
-      const cooldown = Number(card.dataset.cooldown || 10);
-
-      const badge = card.querySelector('.concept-active-badge');
       const activeBar = card.querySelector('.concept-active-bar');
+      const activeLine = card.querySelector('.concept-cooldown-active');
       const cooldownTime = card.querySelector('.concept-cooldown-time');
 
-      card.classList.add('concept-is-active');
-      badge.textContent = `ACTIVE · ${duration}s`;
+      card.classList.add('concept-is-active', 'concept-is-cooldown');
 
       activeBar.style.transition = 'none';
       activeBar.style.transform = 'scaleX(1)';
-
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          activeBar.style.transition = `transform ${duration}s linear`;
+          activeBar.style.transition = `transform ${duration}ms linear`;
           activeBar.style.transform = 'scaleX(0)';
         });
       });
 
-      let activeLeft = duration;
-      interval = setInterval(() => {
-        activeLeft -= 1;
+      const update = () => {
+        const elapsed = performance.now() - start;
+        const activeLeft = duration - elapsed;
+        const cooldownLeft = cooldown - elapsed;
+
         if (activeLeft > 0) {
-          badge.textContent = `ACTIVE · ${activeLeft}s`;
+          activeLine.textContent = `ACTIVE · ${Math.ceil(activeLeft / 1000)}s`;
+        } else {
+          card.classList.remove('concept-is-active');
         }
-      }, 1000);
 
-      timeout = setTimeout(() => {
-        clearInterval(interval);
-        interval = null;
+        if (cooldownLeft > 0) {
+          cooldownTime.textContent = `${Math.ceil(cooldownLeft / 1000)}s`;
+        } else {
+          clearInterval(interval);
+          interval = null;
+          card.classList.remove('concept-is-active', 'concept-is-cooldown');
+          cooldownTime.textContent = '0s';
+          activeBar.style.transition = 'none';
+          activeBar.style.transform = 'scaleX(1)';
+        }
+      };
 
-        card.classList.remove('concept-is-active');
-        card.classList.add('concept-is-cooldown');
-
-        let cooldownLeft = cooldown;
-        cooldownTime.textContent = `${cooldownLeft}s`;
-
-        interval = setInterval(() => {
-          cooldownLeft -= 1;
-          cooldownTime.textContent = `${Math.max(0, cooldownLeft)}s`;
-
-          if (cooldownLeft <= 0) {
-            clearTimers();
-            card.classList.remove('concept-is-cooldown');
-            cooldownTime.textContent = '0s';
-            badge.textContent = 'ACTIVE';
-            activeBar.style.transition = 'none';
-            activeBar.style.transform = 'scaleX(1)';
-          }
-        }, 1000);
-
-      }, duration * 1000);
+      update();
+      interval = setInterval(update, 100);
     });
   });
 })();
@@ -1033,13 +1055,10 @@
       // at once). Real a.update() isn't called, since LavaFloor's onTick
       // needs real enemies/map; the countdown is done by the ticker below.
       // Skips the lava floor "placing" step - one click = activated.
-      // Unlike the game (cooldown runs alongside the effect), the cooldown
-      // here only starts once the effect has ended - see tickAbilities().
       card.addEventListener('click', () => {
-        if (!a.available() || a.activeInstances.length > 0) return;
+        if (!a.available()) return;
+        a.remainingCooldown = a.cooldown;
         a.activeInstances = a.effectDuration ? [{ durationLeft: a.effectDuration }] : [];
-        if (a.activeInstances.length > 0) a._cooldownPending = true;
-        else a.remainingCooldown = a.cooldown;
       });
 
       container.appendChild(card);
@@ -1057,13 +1076,7 @@
       ability.activeInstances = ability.activeInstances.filter(inst => {
         inst.durationLeft -= deltaTime;
         return inst.durationLeft > 0;
-      });
-      // effect just ended -> now start the cooldown
-      if (ability._cooldownPending && ability.activeInstances.length === 0) {
-        ability._cooldownPending = false;
-        ability.remainingCooldown = ability.cooldown;
-      }
-    }
+      });    }
     requestAnimationFrame(tickAbilities);
   }
   requestAnimationFrame(tickAbilities);
