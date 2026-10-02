@@ -1386,7 +1386,8 @@ hr {
     padding-left: 10px;
 }
 
-.extraLifeCheckbox {
+.extraLifeCheckbox,
+.roundUpCheckbox {
     appearance: none; /* Odstraní výchozí vzhled prohlížeče */
     -webkit-appearance: none;
     width: 20px;      /* Šířka */
@@ -1404,18 +1405,21 @@ hr {
 }
 
 /* Styl při najetí myší */
-#extraLifeCheckbox:hover {
+#extraLifeCheckbox:hover,
+.roundUpCheckbox:hover {
     border-color: #f0c674; /* Zvýraznění okrajem */
 }
 
 /* Styl když je checkbox ZAŠKRTNUTÝ */
-#extraLifeCheckbox:checked {
+#extraLifeCheckbox:checked,
+.roundUpCheckbox:checked {
     background-color: #f0c674; /* Pozadí se změní na tvou hlavní barvu */
     border-color: #f0c674;
 }
 
 /* Vykreslení fajfky (symbolu) pomocí pseudo-elementu */
-#extraLifeCheckbox:checked::after {
+#extraLifeCheckbox:checked::after,
+.roundUpCheckbox:checked::after {
     content: '✔'; /* Symbol fajfky */
     color: #000;  /* Barva fajfky */
     font-size: 14px;
@@ -1423,7 +1427,8 @@ hr {
 }
 
 /* Fokus (když se na něj dostaneš tabulátorem) */
-#extraLifeCheckbox:focus {
+#extraLifeCheckbox:focus,
+.roundUpCheckbox:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
 }

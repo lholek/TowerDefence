@@ -185,7 +185,7 @@ export const abilityEditor = (() => {
 
                         <label class="editor-row">
                             <span class="label-text">Round Up <i class="info-icon" data-tooltip="ability.gold-rush-round-up">i</i></span>
-                            <input type="checkbox" data-key="round_up" ${ability.round_up !== false ? 'checked' : ''}>
+                            <input type="checkbox" class="roundUpCheckbox" data-key="round_up" ${ability.round_up !== false ? 'checked' : ''}>
                         </label>
                     </div>
                 ` : `

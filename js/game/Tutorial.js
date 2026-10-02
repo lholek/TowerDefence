@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openBtn = document.getElementById('openTutorialBtn');
 
     let currentPage = 0;
-    const totalPages = 5;
+    const totalPages = 6;
 
     async function loadAndOpen() {
         // Only fetch if we haven't loaded it yet
