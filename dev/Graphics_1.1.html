@@ -885,7 +885,9 @@
     filter:drop-shadow(0 4px 5px rgba(0,0,0,0.6));
   }
   .concept-tower:hover .concept-tower-img{
-    transform:translate(-25%, -7px) scale(1.04);
+    /* centred between the card edge (0) and the hover panel (left:78px): box
+       centre 8+46=54px -> 39px */
+    transform:translate(-15px, -7px) scale(1.04);
   }
   .concept-tower:hover .concept-tower-img::before{
     opacity:.55;
@@ -1152,7 +1154,7 @@
     color:#a8957a;
   }
   .ntu-value{
-    font:700 19px/1 Arial, sans-serif;
+    font:700 16px/1 Arial, sans-serif;
     color:#f3e5ab;
     text-shadow:0 1px 2px #000;
     font-variant-numeric:tabular-nums;
@@ -1361,7 +1363,7 @@
         <button id="returnButton" class="btn">Return to Main Menu</button>
       </div>
       <div id="progressContainer">
-        <div id="levelText" class="levelText">Level 3</div>
+        <div id="levelText" class="levelText">Level 3 / 20</div>
         <div id="progressBar" style="width: 45%;"></div>
       </div>
     </div>
@@ -1439,7 +1441,7 @@
 
       <div class="ntu-progress" id="ntuProgress">
         <div class="ntu-progress-fill" id="ntuProgressFill"></div>
-        <div class="ntu-progress-text">Level <b id="ntuLevel">3</b></div>
+        <div class="ntu-progress-text">Level <b id="ntuLevel">3</b> / <span id="ntuLevelMax">20</span></div>
       </div>
     </div>
 
@@ -2213,7 +2215,6 @@
       card.className = 'concept-card concept-tower';
       card.style.setProperty('--accent', type.color || '#f0c674');
       card.dataset.key = String(i + 1);
-      card.title = type.name;
       const price = groupNum(type.price);
       card.innerHTML = `
         <div class="concept-fx"></div>
@@ -2408,6 +2409,7 @@
   if (!livesEl) return;
 
   let lives = 10, coins = 1250, seconds = 0, level = 3, prog = 45, speed = 1;
+  const LEVEL_MAX = 20;
 
   const pulse = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
   const float = (box, text, good) => {
@@ -2423,6 +2425,7 @@
     timeEl.textContent = String(Math.floor(seconds / 60)).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0');
     fill.style.width = prog + '%';
     levelEl.textContent = level;
+    $('ntuLevelMax').textContent = LEVEL_MAX;
   };
 
   // one game-second per real second at 1x
@@ -2449,7 +2452,7 @@
       prog += 3 + Math.floor(Math.random() * 7);
       if (prog >= 100) {
         prog = 0;
-        level++;
+        level = level >= LEVEL_MAX ? 1 : level + 1;
         pulse(progress, 'is-levelup');
       }
     }
