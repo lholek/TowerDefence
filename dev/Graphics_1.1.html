@@ -1324,6 +1324,140 @@
   @media (prefers-reduced-motion: reduce){
     .ntu-progress-fill::after, .ntu-speed.is-boosted{ animation:none; }
   }
+
+  /* ================================================================
+     BUTTONS - old (.btn/.btn-menu/.ui-toggle, real classes from
+     style.css/ui.css, already linked) vs. 6 new design proposals, all
+     built from the same tokens as .concept-card/.concept-tab (--gold,
+     the dark leather gradient, color-mix accent glows) so whichever one
+     gets picked already matches the rest of the Beta 1.1 look.
+     ================================================================ -->
+  .btn-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .btn-proposal-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn-proposal-row + .btn-proposal-row{
+    margin-top:14px;
+  }
+
+  /* shared reset every proposal builds on - no icons, no copy: pure
+     shape/material/color so they can be judged on design alone */
+  .nbtn{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    min-width:160px;
+    height:52px;
+    padding:0 22px;
+    box-sizing:border-box;
+    font:700 14px/1 'Cinzel', Georgia, serif;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    cursor:pointer;
+    outline:none;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease, background-color .15s ease;
+  }
+
+  /* All 3 keep the classic .btn colors (#8B4513 brown / #f3e5ab gold
+     text) - only the roundness and the depth of the 3D bevel change. */
+
+  /* 1 - Rounded Classic (AAA polish pass): a curved-metal/leather gradient
+     instead of a flat fill, layered shadows (soft top highlight + inner
+     edge occlusion + stepped shadow + ambient drop + a faint gold rim),
+     a diagonal light sheen that sweeps across on hover, and carved-text
+     emboss instead of flat-color letters - same colors/shape as before,
+     just lit and finished like a shipped AAA button instead of a flat one. */
+  .nbtn-round-classic{
+    position:relative;
+    overflow:hidden;
+    border-radius:10px;
+    background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+    color:#f8e9bf;
+    border:2px solid #5c2e0e;
+    text-shadow:0 -1px 0 rgba(255,255,255,0.18), 0 2px 2px rgba(0,0,0,0.55);
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,0.35),
+      inset 0 -10px 14px rgba(0,0,0,0.28),
+      inset 0 0 0 1px rgba(0,0,0,0.15),
+      0 7px 0 #3f2008,
+      0 14px 22px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(240,198,116,0.12);
+  }
+  .nbtn-round-classic::before{
+    content:"";
+    position:absolute; top:0; left:0; width:40%; height:100%;
+    background:linear-gradient(115deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform:translateX(-250%) skewX(-20deg);
+    transition:transform .5s ease;
+    pointer-events:none;
+  }
+  .nbtn-round-classic:hover::before{ transform:translateX(250%) skewX(-20deg); }
+  .nbtn-round-classic:hover{
+    transform:translateY(-2px);
+    background:linear-gradient(180deg, #bb7a44 0%, #a0522d 45%, #7a3e10 100%);
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,0.4),
+      inset 0 -10px 14px rgba(0,0,0,0.25),
+      inset 0 0 0 1px rgba(0,0,0,0.15),
+      0 7px 0 #3f2008,
+      0 16px 24px rgba(0,0,0,0.5),
+      0 0 20px rgba(243,229,171,0.4);
+  }
+  .nbtn-round-classic:active{
+    transform:translateY(6px);
+    background:linear-gradient(180deg, #7a3e10 0%, #6b350e 100%);
+    box-shadow:
+      inset 0 3px 8px rgba(0,0,0,0.55),
+      0 1px 0 #3f2008;
+  }
+
+  /* Danger variant (Leave) - same gradient/shadow recipe, recolored red. */
+  .nbtn-round-classic.nbtn-danger{
+    background:linear-gradient(180deg, #b5543a 0%, #7a2f1f 45%, #4a1710 100%);
+    border-color:#3a1008;
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,0.3),
+      inset 0 -10px 14px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(0,0,0,0.2),
+      0 7px 0 #2a0c06,
+      0 14px 22px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,120,100,0.15);
+  }
+  .nbtn-round-classic.nbtn-danger:hover{
+    background:linear-gradient(180deg, #cf6a4c 0%, #96402a 45%, #5c2014 100%);
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,0.35),
+      inset 0 -10px 14px rgba(0,0,0,0.28),
+      inset 0 0 0 1px rgba(0,0,0,0.2),
+      0 7px 0 #2a0c06,
+      0 16px 24px rgba(0,0,0,0.5),
+      0 0 20px rgba(255,120,100,0.4);
+  }
+  .nbtn-round-classic.nbtn-danger:active{
+    background:linear-gradient(180deg, #5c2014 0%, #4a1710 100%);
+    box-shadow:inset 0 3px 8px rgba(0,0,0,0.55), 0 1px 0 #2a0c06;
+  }
+
+  /* Small variant (Towers / Abilities switcher tabs) - same material,
+     scaled down, slightly less round to match the smaller size. */
+  .nbtn-round-classic.nbtn-sm{
+    min-width:110px;
+    height:36px;
+    padding:0 16px;
+    font-size:12px;
+    border-radius:7px;
+  }
 </style>
 </head>
 <body>
@@ -1663,6 +1797,39 @@
       </div>
 
     </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       BUTTONS - old design (real .btn/.btn-menu/.ui-toggle classes from
+       style.css/ui.css) vs. new proposals: pure shape/material/3D-effect,
+       no icons, no description text - just the buttons. Proposals 7-10
+       are built directly from the .concept-card recipe itself (same
+       gradient, same color-mix accent border/glow) instead of the
+       switcher-tab recipe, so they sit closer to the cards.
+       ================================================================ -->
+  <div class="bar-section">
+    <h2 class="section-label">Buttons — old design</h2>
+    <div class="btn-row">
+      <button class="btn btn-menu">Start Game</button>
+      <button class="btn btn-menu">Settings</button>
+      <button class="btn">Resume</button>
+      <button class="btn btn-danger-confirm">Leave</button>
+      <button class="ui-toggle">Towers</button>
+    </div>
+  </div>
+
+  <div class="bar-section">
+    <h2 class="section-label">Buttons — new proposal</h2>
+    <div class="btn-proposal-row">
+      <button class="nbtn nbtn-round-classic">Start Game</button>
+      <button class="nbtn nbtn-round-classic">Settings</button>
+      <button class="nbtn nbtn-round-classic">Resume</button>
+      <button class="nbtn nbtn-round-classic nbtn-danger">Leave</button>
+    </div>
+    <div class="btn-proposal-row">
+      <button class="nbtn nbtn-round-classic nbtn-sm">Towers</button>
+      <button class="nbtn nbtn-round-classic nbtn-sm">Abilities</button>
     </div>
   </div>
 
