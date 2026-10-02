@@ -80,7 +80,10 @@
   background-image:var(--motif);
   background-size:260px 132px;
   background-repeat:repeat;
-  animation: var(--motif-anim) var(--motif-speed) linear infinite;
+  /* no animation by default - only themes that actually have a moving
+     layer set one (an idle background-position animation on every card
+     still ran on the main thread each frame) */
+  animation:none;
 }
 
 /* Readability shade - darker towards the bottom where the info panel is */
@@ -620,9 +623,19 @@
   100% { transform:translate(-120px,95px) rotate(-14deg); opacity:0; }
 }
 /* far snow - tiny dots, fast, lots of them */
+/* per-dot brightness (--o) is a static opacity on the span; the moving dot
+   is its ::before with FIXED keyframe values - a var() inside @keyframes
+   keeps the animation off the GPU (re-styled on the main thread every
+   frame, see .tower-mote) */
 .ice-dot{
   width:var(--size);
   height:var(--size);
+  opacity:var(--o);
+}
+.ice-dot::before{
+  content:"";
+  position:absolute;
+  inset:0;
   border-radius:50%;
   background:rgba(240,250,255,0.8);
   transform:translate(60px,-12px);
@@ -630,8 +643,8 @@
 }
 @keyframes dotBlow{
   0%   { transform:translate(60px,-12px);   opacity:0; }
-  10%  { opacity:var(--o); }
-  90%  { opacity:var(--o); }
+  10%  { opacity:1; }
+  90%  { opacity:1; }
   100% { transform:translate(-130px,150px); opacity:0; }
 }
 /* near flakes - real snowflake shapes, swaying as they're blown past;
@@ -970,20 +983,43 @@
   background:linear-gradient(#fff1c4, #e2b25a);
 }
 
+/* PERF: per-mote brightness (--o) is a static opacity on the span, the
+   drift direction a class (.l / .r) - the animated ::before only uses FIXED
+   keyframe values. With var(--o) / var(--dx) inside @keyframes Chrome
+   couldn't hand the animation to the GPU and re-styled all ~56 motes on
+   the main thread every frame (measured: ~1ms/frame -> back to ~0). */
 .tower-mote{
   width:var(--size);
   height:var(--size);
+  opacity:var(--o);
+}
+.tower-mote::before{
+  content:"";
+  position:absolute;
+  inset:0;
   border-radius:50%;
   background:color-mix(in srgb, var(--accent) 60%, #fff);
   box-shadow:0 0 6px color-mix(in srgb, var(--accent) 70%, transparent);
-  transform:translateY(0);
-  animation: moteRise var(--d) ease-in-out var(--delay) infinite;
+  animation: moteRiseR var(--d) ease-in-out var(--delay) infinite;
 }
-@keyframes moteRise{
-  0%   { transform:translate(0,0);      opacity:0; }
-  15%  { opacity:var(--o); }
-  85%  { opacity:var(--o); }
-  100% { transform:translate(var(--dx),-70px); opacity:0; }
+.tower-mote.l::before{ animation-name: moteRiseL; }
+/* PERF: motes only move on the card under the mouse and on the selected
+   tower - elsewhere they stay put as still sparkles (a paused animation
+   costs nothing per frame; 8 cards x 7 always-moving motes did) */
+.tower-mote::before{ animation-play-state:paused; }
+.concept-tower:hover .tower-mote::before,
+.concept-tower.active .tower-mote::before{ animation-play-state:running; }
+@keyframes moteRiseR{
+  0%   { transform:translate(0,0);       opacity:0; }
+  15%  { opacity:1; }
+  85%  { opacity:1; }
+  100% { transform:translate(10px,-70px);  opacity:0; }
+}
+@keyframes moteRiseL{
+  0%   { transform:translate(0,0);       opacity:0; }
+  15%  { opacity:1; }
+  85%  { opacity:1; }
+  100% { transform:translate(-10px,-70px); opacity:0; }
 }
 
 /* ================================================================

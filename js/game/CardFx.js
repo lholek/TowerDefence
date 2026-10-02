@@ -108,11 +108,11 @@ const builders = {
   // tower cards: slow motes of the tower's own color drifting up
   'concept-tower': (fx, rnd) => {
     for (let m = 0; m < 7; m++) {
-      piece(fx, 'tower-mote', {
+      // drift left / right via class (not a var() in the keyframes - see css/bars.css)
+      piece(fx, 'tower-mote ' + (rnd(0, 1) < 0.5 ? 'l' : 'r'), {
         left: rnd(4, 96) + '%', top: rnd(30, 95) + '%',
         '--size': rnd(2, 4).toFixed(1) + 'px',
         '--o': rnd(0.4, 0.85).toFixed(2),
-        '--dx': rnd(-14, 14).toFixed(0) + 'px',
         '--d': rnd(4.5, 7.5).toFixed(2) + 's', '--delay': (-rnd(0, 7.5)).toFixed(2) + 's'
       });
     }

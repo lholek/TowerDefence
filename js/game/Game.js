@@ -374,7 +374,15 @@ export default class Game {
     }
     
     this.elapsedTime += deltaTime;
-    this.timeDisplay.textContent = this.formatTime(this.elapsedTime);
+    // Only touch the DOM when the shown time actually changes (once a
+    // second) - writing textContent every frame forced a style + layout
+    // pass every frame, which also re-processed every running card
+    // animation (css/bars.css) on the main thread.
+    const timeText = this.formatTime(this.elapsedTime);
+    if (timeText !== this._shownTime) {
+      this._shownTime = timeText;
+      this.timeDisplay.textContent = timeText;
+    }
 
     const level = this.levelData.levels[this.currentLevelIndex];
     // We will now calculate allGroupsFinished, then derive allWavesComplete
