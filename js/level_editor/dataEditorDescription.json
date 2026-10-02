@@ -143,6 +143,12 @@
     },
     "towers-fury-fire-rate": {
       "description": "The shot interval modifier. Values below 1.0 increase speed (e.g., 0.85 = +15% faster). Values above 1.0 increase delay (e.g., 1.15 = 15% slower). Warning: Must be greater than 0."
+    },
+    "gold-rush-coin-bonus": {
+      "description": "The percentage bonus applied to gold earned from killing enemies while the ability is active (e.g., 100 = double gold). Does not affect gold from selling towers."
+    },
+    "gold-rush-round-up": {
+      "description": "Whether the bonus gold per kill is rounded up or down when the result isn't a whole number."
     }
   }
 }

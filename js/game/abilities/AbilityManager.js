@@ -2,6 +2,7 @@
 import Ability from './Ability.js';
 import LavaFloor from './LavaFloor.js';
 import TowersFury from './TowersFury.js';
+import GoldRush from './GoldRush.js';
 
 export default class AbilityManager {
   constructor(game) {
@@ -9,7 +10,8 @@ export default class AbilityManager {
     this.abilityRegistry = {
       // id -> class
       'lava_floor': LavaFloor,
-      'towers_fury': TowersFury
+      'towers_fury': TowersFury,
+      'gold_rush': GoldRush
     };
     this.abilities = []; // instantiated ability objects (one per config)
     this.activeAbility = null; // currently selected ability instance for placing
@@ -30,6 +32,21 @@ export default class AbilityManager {
 
   getAvailable() {
     return this.abilities;
+  }
+
+  // Applies any active Gold Rush bonus to an enemy's coin reward. Several
+  // Gold Rush instances active at once stack additively (e.g. two +100%
+  // abilities give +200% total); rounding uses "up" if ANY active instance
+  // asks for it, "down" otherwise - abilities deciding differently at once
+  // is an edge case, but this keeps the result a single, well-defined number.
+  applyGoldRush(baseAmount) {
+    const active = this.abilities.filter(a => a.id.includes('gold_rush') && typeof a.isActive === 'function' && a.isActive());
+    if (active.length === 0) return baseAmount;
+
+    const totalBonusPct = active.reduce((sum, a) => sum + (a.coinBonus || 0), 0);
+    const roundUp = active.some(a => a.roundUp);
+    const raw = baseAmount * (1 + totalBonusPct / 100);
+    return roundUp ? Math.ceil(raw) : Math.floor(raw);
   }
 
   selectAbilityById(id) {

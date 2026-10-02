@@ -462,8 +462,9 @@ export default class Game {
     // ----------------------------------------------------------------
     this.enemies = this.enemies.filter(e => {
         if (e.health <= 0) {
-            this.playerCoins += e.coinReward;
-            this.stats.goldEarned += e.coinReward;
+            const coinReward = this.abilityManager.applyGoldRush(e.coinReward);
+            this.playerCoins += coinReward;
+            this.stats.goldEarned += coinReward;
             this.stats.enemiesKilled++; // Sync with main counter
             this.enemiesKilled++;
             this.updateUI();

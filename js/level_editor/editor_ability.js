@@ -43,6 +43,18 @@ const abilityTemplates = {
             "speed_mul": 3,
             "fireRate_mul": 0.85
         }
+    },
+    gold_rush: {
+        "id": "gold_rush",
+        "configId": "gold_rush_new",
+        "name": "New Gold Rush",
+        "type": "global",
+        "coin_bonus": 100,
+        "round_up": true,
+        "cooldown": 90000,
+        "effectDuration": 15000,
+        "color": "rgba(255, 205, 90, 0.6)",
+        "ui": { "icon": "⛏️" }
     }
 };
 
@@ -86,6 +98,7 @@ export const abilityEditor = (() => {
 
         abilities.forEach((ability, index) => {
     const isFury = ability.id === 'towers_fury';
+    const isGoldRush = ability.id === 'gold_rush';
 
     html += `
         <div class="ability-card box" data-ability-index="${index}">
@@ -157,6 +170,22 @@ export const abilityEditor = (() => {
                         <label class="editor-row">
                             <span class="label-text">Fire Rate <i class="info-icon" data-tooltip="ability.towers-fury-fire-rate">i</i></span>
                             <input type="text" inputmode="decimal" class="input-thousands" data-key="modifiers.fireRate_mul" data-json-stepper="fury_fire_rate_mul" value="${formatNumber(ability.modifiers?.fireRate_mul ?? 1)}">
+                        </label>
+                    </div>
+                ` : isGoldRush ? `
+                    <div class="ability-gold-rush-modifiers">
+                        <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+                            <div class="stat-row">+${ability.coin_bonus ?? 100}% <span class="stat-label">Gold Income (from kills)</span></div>
+                        </div>
+
+                        <label class="editor-row">
+                            <span class="label-text">Coin Bonus (%) <i class="info-icon" data-tooltip="ability.gold-rush-coin-bonus">i</i></span>
+                            <input type="text" inputmode="numeric" class="input-thousands" data-key="coin_bonus" data-json-stepper="gold_rush_coin_bonus" value="${formatNumber(ability.coin_bonus ?? 100)}">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">Round Up <i class="info-icon" data-tooltip="ability.gold-rush-round-up">i</i></span>
+                            <input type="checkbox" data-key="round_up" ${ability.round_up !== false ? 'checked' : ''}>
                         </label>
                     </div>
                 ` : `
@@ -243,7 +272,8 @@ export const abilityEditor = (() => {
                 const parts = fullKey.split('.');
                 let value = e.target.classList.contains('input-thousands')
                     ? parseThousands(e.target.value)
-                    : (e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value);
+                    : (e.target.type === 'checkbox' ? e.target.checked
+                    : (e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value));
 
                 modifyJson((data) => {
                     const ability = data.maps[0].abilities[abilityIndex];

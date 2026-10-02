@@ -79,6 +79,11 @@
     "min": 0.01,
     "hold": false
   },
+  "gold_rush_coin_bonus": {
+    "step": 10,
+    "min": 0,
+    "hold": true
+  },
   "shake_duration": {
     "step": 1000,
     "min": 100,
