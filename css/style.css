@@ -139,28 +139,72 @@ h3 {
 
 /* Version button: make it a full-width block under the info */
 .btn {
-    /* Your original base colors */
-    background-color: #8B4513; 
+    /* Your original base colors - kept as background-color (not the
+       `background` shorthand) on purpose: .btn-danger-confirm.is-armed,
+       .bg-gold and any other color-override class still just set
+       background-color/border-color, and that only keeps working if this
+       rule never sets background-image via the shorthand. The curved/lit
+       look instead comes from the ::before shading overlay below, which
+       sits on top of whatever background-color ends up applied. */
+    background-color: #8B4513;
     color: #f3e5ab;
     padding: 12px 24px; /* Slightly larger for better clickability */
     font-family: 'Cinzel', serif;
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
-    
-    /* The "Game" Look */
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.18), 0 2px 2px rgba(0, 0, 0, 0.55);
+
+    /* The "Game" Look - Beta 1.1 AAA pass: rounder, deeper layered bevel */
     border: 2px solid #5c2e0e;
-    border-radius: 4px;
+    border-radius: 10px;
     position: relative;
-    
-    /* 3D Effect: Top highlight and bottom thick shadow */
-    box-shadow: 
-        inset 0 2px 0 rgba(255, 255, 255, 0.2), /* Top rim light */
-        0 5px 0 #4a250b,                         /* Dark bottom depth */
-        0 8px 15px rgba(0, 0, 0, 0.4);           /* Floor shadow */
-    
-    transition: all 0.1s ease;
+    overflow: hidden; /* clips the ::after sheen sweep to the rounded corners */
+
+    /* 3D Effect: soft top highlight + inner edge occlusion + stepped
+       shadow + ambient drop (was a single highlight + single shadow) */
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.3),
+        inset 0 -10px 14px rgba(0, 0, 0, 0.22),
+        0 5px 0 #4a250b,
+        0 11px 16px rgba(0, 0, 0, 0.4);
+
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
     outline: none;
+}
+
+/* Shading overlay - a translucent light-to-dark gradient simulating a
+   curved/lit surface. Lives on every .btn (including .btn-lore, whose own
+   ::before/::after below in ui.css - loaded after this file - override
+   these by cascade order, so its fire effect is unaffected). */
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.18) 100%);
+    pointer-events: none;
+}
+
+/* Hover sheen - a diagonal light streak that sweeps across on hover,
+   done with transform (not left/background-position) so it's GPU-cheap.
+   Excludes .btn-lore: CSS cascades per-property, not per-rule, and
+   .btn-lore::after (its fire-bottom strip) doesn't redeclare top/width/
+   transform/transition - so without :not(.btn-lore) here, those values
+   would leak into its ::after and break the strip's position/animation. */
+.btn:not(.btn-lore)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-250%) skewX(-20deg);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+.btn:not(.btn-lore):hover:not(:disabled)::after {
+    transform: translateX(250%) skewX(-20deg);
 }
 
 @media screen and (max-height: 1200px) {
@@ -176,19 +220,21 @@ h3 {
 /* Hover: The button glows slightly */
 .btn:hover:not(:disabled) {
     background-color: #a0522d; /* Slightly lighter brown */
-    box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        0 5px 0 #4a250b,
-        0 0 15px rgba(243, 229, 171, 0.4); /* Gold outer glow */
     transform: translateY(-2px); /* Lifts up slightly */
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.35),
+        inset 0 -10px 14px rgba(0, 0, 0, 0.2),
+        0 5px 0 #4a250b,
+        0 0 16px rgba(243, 229, 171, 0.4), /* Gold outer glow */
+        0 13px 18px rgba(0, 0, 0, 0.4);
 }
 
 /* Active: The button "clicks" down */
 .btn:active:not(:disabled) {
-    transform: translateY(3px); /* Moves down to cover the depth */
+    transform: translateY(5px); /* Moves down to cover the depth */
     box-shadow:
-        inset 0 2px 5px rgba(0, 0, 0, 0.5), /* Inner shadow when pressed */
-        0 2px 0 #4a250b;                    /* Depth disappears */
+        inset 0 3px 8px rgba(0, 0, 0, 0.5), /* Inner shadow when pressed */
+        0 1px 0 #4a250b;                    /* Depth disappears */
 }
 
 .btn:disabled {

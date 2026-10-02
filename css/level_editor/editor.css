@@ -222,36 +222,78 @@ hr {
 }
 
 .btn {
+    /* Kept as background-color (not the `background` shorthand) on purpose:
+       .btn-blue/.btn-green/.btn-help/.btn-toggle-map/.cl-green below only
+       override background-color (some with !important), and that only
+       keeps working if this rule never sets background-image via the
+       shorthand. The curved/lit look instead comes from the ::before
+       shading overlay, which sits on top of whatever background-color
+       ends up applied - so those custom-colored buttons get it too. */
     background-color: rgb(139, 69, 19);
     color: rgb(243, 229, 171);
     font-family: Cinzel, serif;
     font-weight: bold;
-    box-shadow: rgb(92, 46, 14) 0px -3px 0px inset;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.18), 0 2px 2px rgba(0, 0, 0, 0.55);
     cursor: pointer;
     text-transform: uppercase;
     padding: 10px 20px;
-    border-width: 3px;
+    border-width: 2px;
     border-style: solid;
     border-color: rgb(92, 46, 14);
-    border-image: initial;
-    border-radius: 5px;
-    transition: 0.1s ease-in-out;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden; /* clips the ::after sheen sweep to the rounded corners */
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.3),
+        inset 0 -10px 14px rgba(0, 0, 0, 0.22),
+        0 5px 0 rgb(92, 46, 14),
+        0 11px 16px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out, background-color 0.1s ease-in-out;
 }
 
-.btn:hover {
-    background-color: #a0522d;
-    box-shadow: inset 0 -2px 0 #5c2e0e;
+/* Shading overlay - see css/style.css's .btn for the same recipe/reasoning
+   (this file has its own separate .btn since the editor doesn't load
+   style.css at all). */
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.18) 100%);
+    pointer-events: none;
+}
+
+/* Hover sheen - diagonal light streak sweeping across on hover. */
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-250%) skewX(-20deg);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+.btn:hover:not(:disabled)::after {
+    transform: translateX(250%) skewX(-20deg);
 }
 
 .btn:hover {
     background-color: #a0522d; /* Slightly lighter brown */
-    box-shadow: 
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        0 5px 0 #4a250b,
-        0 0 15px rgba(243, 229, 171, 0.4); /* Gold outer glow */
     transform: translateY(-2px); /* Lifts up slightly */
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.35),
+        inset 0 -10px 14px rgba(0, 0, 0, 0.2),
+        0 5px 0 #4a250b,
+        0 0 16px rgba(243, 229, 171, 0.4); /* Gold outer glow */
 }
-.btn:active { transform: translateY(0); }
+.btn:active {
+    transform: translateY(5px);
+    box-shadow:
+        inset 0 3px 8px rgba(0, 0, 0, 0.5),
+        0 1px 0 #4a250b;
+}
 
 .btn-link, .btn-link:hover{
     text-decoration: none;

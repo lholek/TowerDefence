@@ -788,7 +788,8 @@
     transform: translateY(-50%);
     width: 44px;
     height: 44px;
-    border-radius: 4px; /* square, like .btn - not circular */
+    overflow: hidden; /* clips the ::after sheen sweep to the rounded corners */
+    border-radius: 10px; /* rounded like .btn now, still square-ish - not circular */
     background: rgb(139, 69, 19);
     border: 2px solid #5c2e0e;
     color: #f3e5ab;
@@ -796,17 +797,54 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, transform 0.15s, opacity 0.15s;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.18), 0 2px 2px rgba(0, 0, 0, 0.55);
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.3),
+        inset 0 -8px 10px rgba(0, 0, 0, 0.25),
+        0 4px 0 #4a250b,
+        0 8px 12px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.15s, transform 0.15s, opacity 0.15s, box-shadow 0.15s;
     z-index: 20; /* above the card content/tip-boxes */
 }
 
+/* Same AAA treatment as .btn (css/style.css) - shading overlay + hover sheen. */
+.tutorial-arrow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.18) 100%);
+    pointer-events: none;
+}
+.tutorial-arrow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-250%) skewX(-20deg);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+.tutorial-arrow:hover::after {
+    transform: translateX(250%) skewX(-20deg);
+}
+
 .tutorial-arrow svg {
+    position: relative; /* stay above the ::before/::after overlays */
     width: 18px;
     height: 18px;
 }
 
 .tutorial-arrow:hover {
     background: #a0522d;
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.35),
+        inset 0 -8px 10px rgba(0, 0, 0, 0.22),
+        0 4px 0 #4a250b,
+        0 0 14px rgba(243, 229, 171, 0.4),
+        0 10px 14px rgba(0, 0, 0, 0.4);
 }
 
 .tutorial-arrow:active {
