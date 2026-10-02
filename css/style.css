@@ -743,7 +743,16 @@ max-width: 400px;
 
 .custom-select-option:hover,
 .custom-select-option.is-selected {
-  background-color: #8B4513;
+  /* Same AAA gradient/bevel recipe as .btn, but inset-only shadows so
+     it stays inside the box (this element has overflow:hidden for its
+     text-overflow:ellipsis, and sits flush against its neighbors in
+     the list - an outer drop-shadow here would get clipped either way
+     and a real border would shift the row height/alignment). */
+  background: linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+  box-shadow:
+      inset 0 0 0 1px #5c2e0e,
+      inset 0 2px 1px rgba(255, 255, 255, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.25);
   color: #f3e5ab;
 }
 

@@ -974,12 +974,20 @@
 .segmented-control::before {
   content: "";
   position: absolute;
+  box-sizing: border-box; /* keep the 1px border inside the top/left/bottom/width bounds instead of growing past them */
   top: 2px;
   left: 2px;
   bottom: 2px;
   width: calc(50% - 2px);
-  background-color: #8B4513;
+  background: linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+  border: 1px solid #5c2e0e;
   border-radius: 4px;
+  /* inset-only shadows - this thumb has to stay inside the track's
+     rounded corners, so no outer drop-shadow here (unlike .btn) */
+  box-shadow:
+      inset 0 2px 1px rgba(255, 255, 255, 0.3),
+      inset 0 -6px 8px rgba(0, 0, 0, 0.25),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.15);
   transition: transform 0.25s ease;
   transform: translateX(0%);
 }
