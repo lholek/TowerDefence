@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8" />
-<title>Custom bars</title>
+<title>Graphics 1.1</title>
 <link rel="stylesheet" href="../css/style.css" />
 <link rel="stylesheet" href="../css/ui.css" />
 <link rel="stylesheet" href="../css/cursor.css" />
@@ -731,10 +731,596 @@
     from{ transform:translate(-5px,0); }
     to{ transform:translate(5px,3px); }
   }
+
+  /* ================================================================
+     NEW SWITCHER - Towers / Abilities / +1 Life as game-styled tabs
+     (dark leather plates, gold frame, own SVG icons, key hint drawn as a
+     little gold keycap - same look as the cards' index badge)
+     ================================================================ */
+  .concept-switcher{
+    gap:18px;
+    align-items:center;
+  }
+  /* breathing room between the tabs and the cards below (New bar only) */
+  .bar-section #shopAndAbilitiesWrapNew{
+    margin-top:12px;
+  }
+  .concept-tab{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    height:36px;
+    padding:0 9px 0 10px;
+    border-radius:8px;
+    border:1px solid rgba(197,152,72,0.55);
+    background:linear-gradient(#47321f, #2a1c10);
+    color:#d9c7a0;
+    font:700 14px/1 Arial, sans-serif;
+    letter-spacing:.3px;
+    text-shadow:0 1px 2px #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.16),
+      0 3px 0 rgba(0,0,0,0.55),
+      0 5px 10px rgba(0,0,0,0.35);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease;
+  }
+  .concept-tab:hover{
+    transform:translateY(-1px);
+    border-color:rgba(240,198,116,0.9);
+    color:#f3e5ab;
+  }
+  .concept-tab:active{
+    transform:translateY(2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.16),
+      0 1px 0 rgba(0,0,0,0.55);
+  }
+  .concept-tab.active{
+    background:linear-gradient(#6e4c22, #3b2711);
+    border-color:#f0c674;
+    color:#fff3d0;
+    box-shadow:
+      inset 0 1px 0 rgba(255,236,190,0.30),
+      0 3px 0 rgba(0,0,0,0.55),
+      0 0 14px rgba(240,198,116,0.35);
+  }
+  .concept-tab-icon{
+    width:22px;
+    height:22px;
+    flex:0 0 auto;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.7));
+  }
+  .concept-key{
+    min-width:18px;
+    height:18px;
+    padding:0 4px;
+    display:inline-grid;
+    place-items:center;
+    box-sizing:border-box;
+    border-radius:4px;
+    font:700 11px/1 Arial, sans-serif;
+    color:#29170a;
+    text-shadow:none;
+    background:linear-gradient(#f8dfa0, #c59848);
+    border:1px solid #68420e;
+    box-shadow: inset 0 1px 0 #fff2c8, 0 2px 0 rgba(0,0,0,0.45);
+  }
+  /* price chip on the +1 Life tab */
+  .concept-tab-price{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:2px 7px 2px 4px;
+    border-radius:10px;
+    background:rgba(0,0,0,0.35);
+    color:#ffd862;
+    font:700 12px/1 Arial, sans-serif;
+  }
+
+  /* little minted gold coin, used for prices (tower cards + life tab) */
+  .concept-coin{
+    display:inline-block;
+    width:13px;
+    height:13px;
+    flex:0 0 auto;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,235,0.9) 0 12%, transparent 26%),
+      radial-gradient(circle, #ffd862 0 50%, #e3a52b 62%, #a96d15 66%, #f0be4a 76%, #8a5610 82%);
+    box-shadow:0 1px 1px rgba(0,0,0,0.6);
+    vertical-align:-2px;
+  }
+
+  /* ================================================================
+     NEW TOWER CARDS - same frame/badge/fonts as the ability cards, laid
+     out like the real shop card: big tower picture on the left, name +
+     values on the right. Base view: Price, Sell, DPS. On hover the values
+     swap for all 6 stats in a 2-column grid and the tower rises a little.
+     Accent = the tower's own color; slow motes of it drift up behind.
+     ================================================================ */
+  .concept-tower{
+    --card-bg:
+      radial-gradient(circle at 22% 58%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 46%),
+      linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, #2c2219), #1b140d 62%, #0f0b07);
+  }
+  .concept-tower .concept-card-index{
+    position:absolute;
+    top:9px;
+    left:9px;
+    z-index:5;
+  }
+
+  /* big tower picture (left) */
+  .concept-tower-img{
+    position:absolute;
+    left:8px;
+    bottom:8px;
+    width:92px;
+    height:104px;
+    z-index:3;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    pointer-events:none;
+    transition: transform .35s cubic-bezier(.22,.8,.3,1);
+  }
+  /* soft pool of the tower's color it stands in */
+  .concept-tower-img::before{
+    content:"";
+    position:absolute;
+    left:6px;
+    right:6px;
+    bottom:2px;
+    height:20px;
+    border-radius:50%;
+    background:radial-gradient(ellipse, color-mix(in srgb, var(--accent) 45%, transparent), transparent 70%);
+    transition: opacity .25s ease;
+  }
+  .concept-tower-img img{
+    position:relative;
+    width:92px;
+    height:92px;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(0 4px 5px rgba(0,0,0,0.6));
+  }
+  .concept-tower:hover .concept-tower-img{
+    transform:translate(-25%, -7px) scale(1.04);
+  }
+  .concept-tower:hover .concept-tower-img::before{
+    opacity:.55;
+  }
+
+  /* right column: name + values */
+  .concept-tower-side{
+    position:absolute;
+    left:104px;
+    right:9px;
+    transition: left .35s cubic-bezier(.22,.8,.3,1);
+    top:10px;
+    bottom:10px;
+    z-index:4;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  /* on hover the right column takes over the space the tower moved out of */
+  .concept-tower:hover .concept-tower-side{
+    left:78px;
+  }
+  /* keep the name on one line while the grid is shown, so the grid always
+     has the same height to fit into */
+  .concept-tower:hover .concept-card-name{
+    -webkit-line-clamp:1;
+    line-clamp:1;
+  }
+  .concept-tower-values{
+    position:relative;
+    overflow:hidden; /* safety net - nothing may spill out of the panel */
+    flex:1 1 auto;
+    border-radius:6px;
+    background:rgba(10,7,5,0.62);
+    border:1px solid rgba(255,255,255,0.07);
+  }
+  .concept-tower-base,
+  .concept-tower-stats{
+    position:absolute;
+    inset:0;
+    padding:6px 8px;
+    transition: opacity .3s ease, transform .35s cubic-bezier(.22,.8,.3,1);
+  }
+
+  /* base view: Price / Sell / DPS */
+  .concept-tower-base{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:3px;
+  }
+  .concept-tower-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    font:700 13px/1.25 Arial, sans-serif;
+    color:#d4c1a4;
+    text-shadow:0 1px 2px #000;
+    white-space:nowrap;
+  }
+  .concept-tower-row b{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    color:#f3e5ab;
+  }
+  .concept-tower-row.price b{ color:#ffd862; }
+
+  /* hover view: all 6 stats, 2 columns */
+  .concept-tower-stats{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    grid-template-rows:repeat(3, 1fr);
+    gap:0 10px;
+    align-items:center;
+    padding:4px 9px;
+    opacity:0;
+    transform:translateX(10px);
+  }
+  .concept-tower-stat{
+    min-width:0;
+    white-space:nowrap;
+  }
+  .concept-tower-stat span{
+    display:block;
+    font:700 9px/1.05 Arial, sans-serif;
+    letter-spacing:.3px;
+    text-transform:uppercase;
+    color:#a8957a;
+  }
+  .concept-tower-stat b{
+    display:block;
+    font:700 12.5px/1.15 Arial, sans-serif;
+    color:color-mix(in srgb, var(--accent) 55%, #fff);
+    text-shadow:0 1px 2px #000;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .concept-tower-stat span i{
+    font-style:normal;
+    font-size:10px;
+    margin-right:3px;
+    text-transform:none;
+  }
+  .concept-tower-stat b small{
+    font-size:10px;
+    font-weight:700;
+    opacity:.8;
+  }
+  .concept-tower-stat.price b{ color:#ffd862; }
+  .concept-tower:hover .concept-tower-base{ opacity:0; transform:translateX(-10px); }
+  .concept-tower:hover .concept-tower-stats{ opacity:1; transform:translateX(0); }
+
+  /* lighter numbers so dark tower colors (Iron Fortress...) stay readable */
+  .concept-tower .concept-num{
+    color:color-mix(in srgb, var(--accent) 55%, #fff);
+  }
+
+  /* hover - full-strength frame in the tower's color (an extra 1px ring via
+     box-shadow, so the card doesn't change size) */
+  .concept-tower:hover{
+    border-color:var(--accent);
+    box-shadow:
+      0 0 0 1px var(--accent),
+      0 0 14px color-mix(in srgb, var(--accent) 45%, transparent),
+      0 6px 12px rgba(0,0,0,0.5);
+  }
+  /* selected tower - lifted, thicker frame and a stronger glow, softly
+     pulsing in its own color */
+  .concept-tower.active,
+  .concept-tower.active:hover{
+    transform:translateY(-3px);
+    border-color:var(--accent);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 22px color-mix(in srgb, var(--accent) 60%, transparent),
+      0 8px 14px rgba(0,0,0,0.5);
+  }
+  .concept-tower.active::before{
+    background-image:none;
+    box-shadow: inset 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent);
+    animation: activePulse 1.8s ease-in-out infinite alternate;
+  }
+  .concept-tower.active .concept-card-index{
+    background:linear-gradient(#fff1c4, #e2b25a);
+  }
+
+  .tower-mote{
+    width:var(--size);
+    height:var(--size);
+    border-radius:50%;
+    background:color-mix(in srgb, var(--accent) 60%, #fff);
+    box-shadow:0 0 6px color-mix(in srgb, var(--accent) 70%, transparent);
+    transform:translateY(0);
+    animation: moteRise var(--d) ease-in-out var(--delay) infinite;
+  }
+  @keyframes moteRise{
+    0%   { transform:translate(0,0);      opacity:0; }
+    15%  { opacity:var(--o); }
+    85%  { opacity:var(--o); }
+    100% { transform:translate(var(--dx),-70px); opacity:0; }
+  }
+
+  /* ================================================================
+     TOP UI - frames for both versions (1230px, centered, like #gameArea)
+     ================================================================ */
+  .topui-frame,
+  .ntu-frame{
+    width:1230px;
+    margin:0 auto 14px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .topui-frame .top-ui{ box-sizing:border-box; width:100%; }
+
+  /* ================================================================
+     NEW TOP UI - same pieces as the game's #topUi, in the card style:
+     a dark leather bar with a gold trim, stat plaques (icon + small label
+     + big value), a segmented game-speed control and game-styled buttons;
+     below it an ornate level progress bar.
+     ================================================================ */
+  .ntu-bar{
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    height:58px;
+    padding:0 12px;
+    border-radius:10px;
+    background:
+      radial-gradient(ellipse at 50% -40%, rgba(255,220,150,0.14), transparent 60%),
+      linear-gradient(#3d2b18, #24180d);
+    border:1px solid rgba(197,152,72,0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255,230,170,0.16),
+      inset 0 -2px 0 rgba(0,0,0,0.4),
+      0 4px 12px rgba(0,0,0,0.45);
+  }
+  /* thin gold trim along the top and bottom edge, fading at the ends */
+  .ntu-bar::before,
+  .ntu-bar::after{
+    content:"";
+    position:absolute;
+    left:40px;
+    right:40px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(240,198,116,0.85), transparent);
+    pointer-events:none;
+  }
+  .ntu-bar::before{ top:3px; }
+  .ntu-bar::after{ bottom:3px; opacity:.5; }
+
+  .ntu-group{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .ntu-stat{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    min-width:96px;
+    height:42px;
+    padding:0 14px 0 9px;
+    box-sizing:border-box;
+    border-radius:8px;
+    background:rgba(10,7,5,0.55);
+    border:1px solid rgba(255,255,255,0.07);
+    box-shadow:inset 0 0 10px rgba(0,0,0,0.35);
+  }
+  .ntu-icon{
+    width:26px;
+    height:26px;
+    flex:0 0 auto;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.7));
+  }
+  .ntu-emoji{
+    display:block;
+    font-size:22px;
+    line-height:26px;
+    text-align:center;
+  }
+  .ntu-coin-icon{
+    display:block;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,235,0.9) 0 12%, transparent 26%),
+      radial-gradient(circle, #ffd862 0 50%, #e3a52b 62%, #a96d15 66%, #f0be4a 76%, #8a5610 82%);
+  }
+  .ntu-text{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .ntu-label{
+    font:700 9.5px/1 Arial, sans-serif;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    color:#a8957a;
+  }
+  .ntu-value{
+    font:700 19px/1 Arial, sans-serif;
+    color:#f3e5ab;
+    text-shadow:0 1px 2px #000;
+    font-variant-numeric:tabular-nums;
+  }
+  .ntu-lives .ntu-value{ color:#ffb4a6; }
+  .ntu-coins .ntu-value{ color:#ffd862; }
+  .ntu-time .ntu-value{ color:#f0c674; }
+
+  /* life lost: shake + red flash */
+  .ntu-stat.is-hit{ animation: ntuHit .5s ease; }
+  @keyframes ntuHit{
+    0%,100% { transform:translateX(0);   box-shadow:inset 0 0 10px rgba(0,0,0,0.35); }
+    20%     { transform:translateX(-4px); box-shadow:inset 0 0 14px rgba(230,60,40,0.75), 0 0 10px rgba(230,60,40,0.5); }
+    40%     { transform:translateX(4px); }
+    60%     { transform:translateX(-3px); }
+    80%     { transform:translateX(2px); }
+  }
+  /* gold gained / life bought: brief glow */
+  .ntu-stat.is-gain{ animation: ntuGain .6s ease; }
+  @keyframes ntuGain{
+    0%,100% { box-shadow:inset 0 0 10px rgba(0,0,0,0.35); }
+    30%     { box-shadow:inset 0 0 12px rgba(255,210,90,0.55), 0 0 12px rgba(255,210,90,0.45); }
+  }
+  /* floating "+25" / "-1" numbers */
+  .ntu-float{
+    position:absolute;
+    right:10px;
+    top:-4px;
+    font:800 13px/1 Arial, sans-serif;
+    text-shadow:0 1px 2px #000;
+    pointer-events:none;
+    animation: ntuFloat 1.1s ease-out forwards;
+  }
+  .ntu-float.good{ color:var(--stat-good); }
+  .ntu-float.bad{ color:var(--stat-bad); }
+  @keyframes ntuFloat{
+    from{ transform:translateY(0);     opacity:1; }
+    to{   transform:translateY(-22px); opacity:0; }
+  }
+
+  /* game speed - segmented control */
+  .ntu-speed{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    height:42px;
+    padding:0 8px 0 12px;
+    box-sizing:border-box;
+    border-radius:8px;
+    background:rgba(10,7,5,0.55);
+    border:1px solid rgba(255,255,255,0.07);
+    transition: box-shadow .3s ease;
+  }
+  .ntu-speed-options{
+    display:flex;
+    gap:3px;
+    padding:3px;
+    border-radius:6px;
+    background:rgba(0,0,0,0.35);
+  }
+  .ntu-speed-options button{
+    min-width:34px;
+    height:24px;
+    padding:0 6px;
+    border:0;
+    border-radius:4px;
+    background:transparent;
+    color:#cbb994;
+    font:700 12px/1 Arial, sans-serif;
+    text-shadow:0 1px 1px #000;
+    transition: background .15s ease, color .15s ease;
+  }
+  .ntu-speed-options button:hover{
+    background:rgba(240,198,116,0.15);
+    color:#f3e5ab;
+  }
+  .ntu-speed-options button.active{
+    color:#29170a;
+    text-shadow:none;
+    background:linear-gradient(#f8dfa0, #c59848);
+    box-shadow: inset 0 1px 0 #fff2c8, 0 1px 0 rgba(0,0,0,0.5);
+  }
+  /* same reminder as the game's .gameSpeedSelect.is-boosted pulse */
+  .ntu-speed.is-boosted{ animation: ntuBoost 1.4s ease-in-out infinite; }
+  @keyframes ntuBoost{
+    0%,100% { box-shadow:0 0 0 rgba(240,198,116,0); }
+    50%     { box-shadow:0 0 14px rgba(240,198,116,0.55); }
+  }
+
+  .ntu-btn{ height:38px; }
+  /* music off: dimmed + red slash over the note */
+  .ntu-mute-slash{ opacity:0; transition: opacity .2s ease; }
+  #ntuMusic:not(.is-on) .ntu-mute-slash{ opacity:1; }
+  #ntuMusic:not(.is-on){ color:#a8957a; }
+
+  /* level progress */
+  .ntu-progress{
+    position:relative;
+    height:24px;
+    border-radius:12px;
+    overflow:hidden;
+    background:linear-gradient(#120c06, #241a0f);
+    border:1px solid #6b4a1e;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.35);
+  }
+  .ntu-progress-fill{
+    position:absolute;
+    inset:0 auto 0 0;
+    width:45%;
+    border-radius:12px;
+    background:linear-gradient(90deg, #7a4c10, #c99332 55%, #f0c674 85%, #ffe7a3);
+    box-shadow: inset 0 1px 0 rgba(255,245,210,0.55), 0 0 10px rgba(240,198,116,0.35);
+    transition: width .3s ease; /* same as the game's #progressBar */
+    overflow:hidden;
+  }
+  /* light sweeping along the filled part */
+  .ntu-progress-fill::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:70px;
+    left:-80px;
+    background:linear-gradient(90deg, transparent, rgba(255,250,225,0.45), transparent);
+    animation: ntuShimmer 2.6s ease-in-out infinite;
+  }
+  @keyframes ntuShimmer{
+    from{ left:-80px; }
+    to{ left:100%; }
+  }
+  .ntu-progress-text{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    font:700 12px/1 Arial, sans-serif;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#fff3d0;
+    text-shadow:0 1px 2px #000, 0 0 6px rgba(0,0,0,0.8);
+  }
+  .ntu-progress-text b{ font-size:14px; color:#ffe7a3; }
+  .ntu-progress-pct{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    font:700 11px/1 Arial, sans-serif;
+    color:#e9d9b4;
+    text-shadow:0 1px 2px #000;
+    font-variant-numeric:tabular-nums;
+  }
+  /* level up flash */
+  .ntu-progress.is-levelup{ animation: ntuLevelUp .9s ease; }
+  @keyframes ntuLevelUp{
+    0%,100% { box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.35); border-color:#6b4a1e; }
+    30%     { box-shadow: inset 0 0 12px rgba(255,231,163,0.8), 0 0 18px rgba(240,198,116,0.7); border-color:#ffe7a3; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ntu-progress-fill::after, .ntu-speed.is-boosted{ animation:none; }
+  }
 </style>
 </head>
 <body>
-  <h1>Custom bars</h1>
+  <h1>Graphics 1.1</h1>
 
   <!-- ================================================================
        OLD - real build-mode switcher (#buildModeSwitcher/.switch-btn),
@@ -745,6 +1331,40 @@
        ================================================================ -->
   <div class="bar-section">
     <h2 class="section-label">Old</h2>
+
+    <!-- OLD top UI - exact copy of index.html #topUi + #progressContainer,
+         styled by the real css/style.css (the speed select is enhanced by
+         the real js/CustomSelect.js, like in the game). Static values. -->
+    <div class="topui-frame">
+      <div id="topUi" class="top-ui">
+        <div id="lifesText">❤️ 10</div>
+        <button id="pauseButton" style="display: none;">Pause (P)</button>
+        <div id="coinsText">🪙 1250</div>
+        <div id="gameTimeContainer" class="game-time">
+          <span id="gameTimeDisplay">03:42</span>
+        </div>
+        <div class="speed-control">
+            <select id="gameSpeedSelect" class="gameSpeedSelect">
+                <option value="1" selected>1x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+                <option value="2.5">2.5x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+            </select>
+        </div>
+        <button id="gameLogBtn" class="btn">Log 📋</button>
+        <div class="dropdown-wrapper">
+            <button id="musicBtn" class="btn">Music 🎵</button>
+        </div>
+        <button id="returnButton" class="btn">Return to Main Menu</button>
+      </div>
+      <div id="progressContainer">
+        <div id="levelText" class="levelText">Level 3</div>
+        <div id="progressBar" style="width: 45%;"></div>
+      </div>
+    </div>
 
     <div id="buildModeSwitcher" class="build-mode-switcher">
       <button id="towerModeBtn" class="switch-btn active" type="button">🏰 Towers (T)</button>
@@ -761,23 +1381,86 @@
   </div>
 
   <!-- ================================================================
-       NEW - exact copy of the Old switcher/towers, only the abilities
-       panel is swapped for the new concept card designs (see BETA_1.1
-       redesign above). Towers are intentionally untouched for now.
+       NEW - concept redesign of the whole bar: game-styled switcher tabs
+       (own SVG icons + keycaps), concept tower cards (rendered by
+       renderConceptTowers() below) and concept ability cards - all on the
+       same card skeleton. Same behaviour as the Old bar.
        ================================================================ -->
   <div class="bar-section">
     <h2 class="section-label">New</h2>
 
-    <div id="buildModeSwitcherNew" class="build-mode-switcher">
-      <button id="towerModeBtnNew" class="switch-btn active" type="button">🏰 Towers (T)</button>
-      <button id="abilityModeBtnNew" class="switch-btn" type="button" style="display:block;">🌋 Abilities (A)</button>
+    <!-- NEW top UI - concept redesign (same pieces as the game's #topUi:
+         lives, gold, time, game speed, Log, Music, Menu + level progress),
+         live-simulated by the "NEW TOP UI" script at the bottom. -->
+    <div class="ntu-frame">
+      <div class="ntu-bar">
+        <div class="ntu-group">
+          <div class="ntu-stat ntu-lives" id="ntuLives">
+            <svg class="ntu-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#ntuHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg>
+            <b class="ntu-value" id="ntuLivesValue">10</b>
+          </div>
+          <div class="ntu-stat ntu-coins" id="ntuCoins">
+            <span class="ntu-icon ntu-emoji" aria-hidden="true">🪙</span>
+            <b class="ntu-value" id="ntuCoinsValue">1 250</b>
+          </div>
+          <div class="ntu-stat ntu-time">
+            <svg class="ntu-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuGlassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#ntuGlassG)" stroke="#4a2c0c" stroke-width=".8" d="M6 2h12v2h-1v2.5c0 2-1.4 3.6-3.3 5.5 1.9 1.9 3.3 3.5 3.3 5.5V20h1v2H6v-2h1v-2.5c0-2 1.4-3.6 3.3-5.5C8.4 10.1 7 8.5 7 6.5V4H6z"/><path fill="#7a4a12" d="M9 6.2h6c0 1-.9 2.2-3 4.1-2.1-1.9-3-3.1-3-4.1zM12 15.4c1.6 1.3 2.6 2.4 2.9 3.6H9.1c.3-1.2 1.3-2.3 2.9-3.6z"/></svg>
+            <b class="ntu-value" id="ntuTimeValue">00:00</b>
+          </div>
+        </div>
+
+        <div class="ntu-group">
+          <div class="ntu-speed" id="ntuSpeed">
+            <span class="ntu-label">Speed</span>
+            <div class="ntu-speed-options">
+              <button type="button" data-speed="1" class="active">1x</button>
+              <button type="button" data-speed="1.5">1.5x</button>
+              <button type="button" data-speed="2">2x</button>
+              <button type="button" data-speed="2.5">2.5x</button>
+              <button type="button" data-speed="3">3x</button>
+              <button type="button" data-speed="4">4x</button>
+              <button type="button" data-speed="5">5x</button>
+            </div>
+          </div>
+          <button type="button" class="concept-tab ntu-btn" id="ntuLog">
+            <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuScrollG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e7c1"/><stop offset="1" stop-color="#c9a76a"/></linearGradient></defs><path fill="url(#ntuScrollG)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#7a5a2a" stroke-width="1.2" d="M8 8h6M8 11h6M8 14h4"/></svg>
+            <span class="concept-tab-label">Log</span>
+          </button>
+          <button type="button" class="concept-tab ntu-btn is-on" id="ntuMusic">
+            <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuNoteG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#ntuNoteG)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/><path class="ntu-mute-slash" stroke="#e05a4a" stroke-width="2.2" stroke-linecap="round" d="M3 3l18 18"/></svg>
+            <span class="concept-tab-label" id="ntuMusicLabel">Music</span>
+          </button>
+          <button type="button" class="concept-tab ntu-btn" id="ntuMenu">
+            <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuDoorG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#7a4520"/></linearGradient></defs><path fill="url(#ntuDoorG)" stroke="#3a1c08" stroke-width=".8" d="M5 21V8a7 7 0 0 1 14 0v13z"/><path stroke="#3a1c08" stroke-width=".9" opacity=".7" d="M9.5 9v12M14.5 9v12"/><circle cx="16" cy="14.5" r="1.1" fill="#ffd862"/></svg>
+            <span class="concept-tab-label">Menu</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ntu-progress" id="ntuProgress">
+        <div class="ntu-progress-fill" id="ntuProgressFill"></div>
+        <div class="ntu-progress-text">Level <b id="ntuLevel">3</b></div>
+      </div>
+    </div>
+
+    <div id="buildModeSwitcherNew" class="build-mode-switcher concept-switcher">
+      <button id="towerModeBtnNew" class="concept-tab active" type="button">
+        <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tabTowerG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#tabTowerG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg>
+        <span class="concept-tab-label">Towers</span>
+        <kbd class="concept-key">T</kbd>
+      </button>
+      <button id="abilityModeBtnNew" class="concept-tab" type="button">
+        <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tabAbilityG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs><path fill="url(#tabAbilityG)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></svg>
+        <span class="concept-tab-label">Abilities</span>
+        <kbd class="concept-key">A</kbd>
+      </button>
       <div id="lifeButtonContainerNew"></div>
     </div>
 
     <div id="shopAndAbilitiesWrapNew" class="shopAndAbilitiesWrap">
-      <div id="shopWrapperNew" class="shop-wrapper">
-        <div id="towerShopNew" class="shop"></div>
-      </div>
+      <!-- New towers: concept cards rendered straight into this strip (same
+           strip/scroll behaviour as the abilities one below) -->
+      <div id="shopWrapperNew" class="abilities-strip"></div>
       <div class="abilities-strip" id="abilitiesStrip" style="display:none;">
 
       <div class="concept-card concept-lava-floor" data-duration="6" data-cooldown="25">
@@ -1234,14 +1917,13 @@
 
       card.classList.add('concept-is-active', 'concept-is-cooldown');
 
-      activeBar.style.transition = 'none';
+      // The bar is driven from the elapsed time on every tick (not a one-off
+      // CSS transition): a transition is dropped by the browser when the
+      // strip is hidden (display:none on the Towers/Abilities switch), so the
+      // bar used to reset after switching back. A 100ms linear transition
+      // between ticks keeps it smooth.
+      activeBar.style.transition = 'transform 100ms linear';
       activeBar.style.transform = 'scaleX(1)';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          activeBar.style.transition = `transform ${duration}ms linear`;
-          activeBar.style.transform = 'scaleX(0)';
-        });
-      });
 
       const update = () => {
         const elapsed = performance.now() - start;
@@ -1250,6 +1932,7 @@
 
         if (activeLeft > 0) {
           activeLine.textContent = `ACTIVE · ${Math.ceil(activeLeft / 1000)}s`;
+          activeBar.style.transform = `scaleX(${activeLeft / duration})`;
         } else {
           card.classList.remove('concept-is-active');
         }
@@ -1494,8 +2177,98 @@
     }
   }, 100);
 
+  // ---- NEW towers: concept cards (same skeleton as the ability cards) ----
+  // Same crop of the real pre-rendered tower as Game.js createTowerShop().
+  function towerThumb(type) {
+    const src = new Tower(fakeGame, fakeMap, 0, 0, type).preRenderedImage;
+    const c = document.createElement('canvas');
+    c.width = 120;
+    c.height = 120;
+    const cropSize = src.width * 0.45;
+    const sx = (src.width / 2.5) - (cropSize / 2);
+    const sy = (src.height / 2) - (cropSize / 1.2);
+    c.getContext('2d').drawImage(src, sx, sy, cropSize, cropSize, 0, 0, 120, 120);
+    return c.toDataURL();
+  }
+
+  // 3 018 / 16 000 - thousands separated by a (non-breaking) space, not a comma
+  const groupNum = n => {
+    const [int, dec] = String(n).split('.');
+    return int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0') + (dec ? '.' + dec : '');
+  };
+  const fmt = n => groupNum(n >= 100 ? Math.round(n) : Number(n.toFixed(1)));
+
+  function renderConceptTowers(targetId) {
+    const strip = document.getElementById(targetId);
+    strip.innerHTML = '';
+    let seed = 11;
+    const rnd = (min, max) => { seed = (seed * 16807) % 2147483647; return min + ((seed - 1) / 2147483646) * (max - min); };
+
+    Object.values(config.towerTypes).forEach((type, i) => {
+      const dps = type.damage * 1000 / type.fireRate;
+      const range = type.range / fakeMap.tileSize;
+      const speed = type.speed * 144 / fakeMap.tileSize;
+
+      const card = document.createElement('div');
+      card.className = 'concept-card concept-tower';
+      card.style.setProperty('--accent', type.color || '#f0c674');
+      card.dataset.key = String(i + 1);
+      card.title = type.name;
+      const price = groupNum(type.price);
+      card.innerHTML = `
+        <div class="concept-fx"></div>
+        <div class="concept-card-index">${i + 1}</div>
+        <div class="concept-tower-img"><img src="${towerThumb(type)}" alt="" /></div>
+        <div class="concept-tower-side">
+          <div class="concept-card-name${type.name.length > 14 ? ' concept-name-long' : ''}">${type.name}</div>
+          <div class="concept-tower-values">
+            <div class="concept-tower-base">
+              <div class="concept-tower-row price"><span>🪙 Price</span><b>${price}</b></div>
+              <div class="concept-tower-row"><span>💰 Sell</span><b>${groupNum(type.sellPrice)}</b></div>
+              <div class="concept-tower-row"><span>💥 DPS</span><b class="concept-num">${fmt(dps)}</b></div>
+            </div>
+            <div class="concept-tower-stats">
+              <div class="concept-tower-stat price"><span><i>🪙</i>Price</span><b>${price}</b></div>
+              <div class="concept-tower-stat"><span><i>💥</i>DPS</span><b>${fmt(dps)}</b></div>
+              <div class="concept-tower-stat"><span><i>⚔️</i>Damage</span><b>${fmt(type.damage)}</b></div>
+              <div class="concept-tower-stat"><span><i>🎯</i>Range</span><b>${range.toFixed(1)} <small>tiles</small></b></div>
+              <div class="concept-tower-stat"><span><i>⏱️</i>Fire rate</span><b>${type.fireRate} <small>ms</small></b></div>
+              <div class="concept-tower-stat"><span><i>🗲</i>Speed</span><b>${speed.toFixed(1)} <small>tiles/s</small></b></div>
+            </div>
+          </div>
+        </div>`;
+
+      // slow motes of the tower's color drifting up behind the picture
+      const fx = card.querySelector('.concept-fx');
+      for (let m = 0; m < 7; m++) {
+        const mote = document.createElement('span');
+        mote.className = 'tower-mote';
+        mote.style.left = rnd(4, 96) + '%';
+        mote.style.top = rnd(30, 95) + '%';
+        mote.style.setProperty('--size', rnd(2, 4).toFixed(1) + 'px');
+        mote.style.setProperty('--o', rnd(0.4, 0.85).toFixed(2));
+        mote.style.setProperty('--dx', rnd(-14, 14).toFixed(0) + 'px');
+        mote.style.setProperty('--d', rnd(4.5, 7.5).toFixed(2) + 's');
+        mote.style.setProperty('--delay', (-rnd(0, 7.5)).toFixed(2) + 's');
+        fx.appendChild(mote);
+      }
+
+      // selection toggle - same behaviour as the real shop (Game.js)
+      card.addEventListener('click', () => {
+        const wasActive = card.classList.contains('active');
+        strip.querySelectorAll('.concept-tower').forEach(el => el.classList.remove('active'));
+        if (!wasActive) {
+          card.classList.add('active');
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      });
+
+      strip.appendChild(card);
+    });
+  }
+
   renderTowers('towerShop');
-  renderTowers('towerShopNew'); // "New Towers" is a straight copy of Old for now
+  renderConceptTowers('shopWrapperNew');
   renderAbilities();
 
   // Real build-mode switcher logic, copied 1:1 from UI.js - reusable so
@@ -1530,7 +2303,7 @@
   const EXTRA_LIFE_PRICES = [50, 75, 100, 0, 150, 200, 250, 0, 300, 400, 500, 1000];
   const STARTING_COINS = 1000000000; // effectively unlimited - never "not enough coins"
 
-  function setupLifeButton(containerId) {
+  function setupLifeButton(containerId, concept = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -1540,25 +2313,72 @@
     const getCurrentPrice = () => EXTRA_LIFE_PRICES[Math.min(purchaseCount, EXTRA_LIFE_PRICES.length - 1)];
 
     const lifeButton = document.createElement('button');
-    lifeButton.className = 'switch-btn life-purchase-btn';
+    lifeButton.className = concept ? 'concept-tab concept-tab-life' : 'switch-btn life-purchase-btn';
     lifeButton.type = 'button';
+    const HEART_SVG = '<svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tabHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#tabHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg>';
+    const renderLife = price => concept
+      ? `${HEART_SVG}<span class="concept-tab-label">+1 Life</span><span class="concept-tab-price"><span class="concept-coin"></span>${groupNum(price)}</span><kbd class="concept-key">E</kbd>`
+      : `❤️ +1 Life (🪙 ${price}) [E]`;
     let currentPrice = getCurrentPrice();
-    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+    lifeButton.innerHTML = renderLife(currentPrice);
     container.appendChild(lifeButton);
 
     lifeButton.addEventListener('click', () => {
       currentPrice = getCurrentPrice();
       if (coins >= currentPrice) {
         coins -= currentPrice;
+        if (concept) window.dispatchEvent(new CustomEvent('concept:lifeBought', { detail: { price: currentPrice } }));
         purchaseCount += 1;
         currentPrice = getCurrentPrice();
-        lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+        lifeButton.innerHTML = renderLife(currentPrice);
       }
     });
   }
 
   setupLifeButton('lifeButtonContainer');
-  setupLifeButton('lifeButtonContainerNew');
+  setupLifeButton('lifeButtonContainerNew', true);
+
+  // Keyboard shortcuts, same logic as Game.js handleKeyDown(): T / A switch
+  // panels, E buys a life, 1-9 click the n-th card of whichever panel is
+  // visible. Applied to both bars at once (Old + New) so each can be tested.
+  const BARS = [
+    { towerBtn: 'towerModeBtn', abilityBtn: 'abilityModeBtn', life: 'lifeButtonContainer',
+      towerPanel: 'towerShop', towerItems: '.shop-item', abilityPanel: 'abilityBar', abilityItems: '.ability-card' },
+    { towerBtn: 'towerModeBtnNew', abilityBtn: 'abilityModeBtnNew', life: 'lifeButtonContainerNew',
+      towerPanel: 'shopWrapperNew', towerItems: '.concept-tower', abilityPanel: 'abilitiesStrip', abilityItems: '.concept-card' }
+  ];
+  const isVisible = el => el && el.offsetParent !== null;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+    const key = e.key.toLowerCase();
+
+    for (const bar of BARS) {
+      if (key === 't') {
+        const btn = document.getElementById(bar.towerBtn);
+        if (isVisible(btn)) btn.click();
+      } else if (key === 'a' && !e.shiftKey) {
+        const btn = document.getElementById(bar.abilityBtn);
+        if (isVisible(btn)) btn.click();
+      } else if (key === 'e') {
+        const btn = document.querySelector('#' + bar.life + ' button');
+        if (isVisible(btn)) btn.click();
+      } else if (e.code.startsWith('Digit')) {
+        // e.code, not e.key - works on the Czech layout too (+ě š č ...)
+        const index = parseInt(e.code.replace('Digit', ''), 10) - 1;
+        if (index < 0 || index > 8) continue;
+        const towerPanel = document.getElementById(bar.towerPanel);
+        const abilityPanel = document.getElementById(bar.abilityPanel);
+        const panel = isVisible(towerPanel) ? towerPanel : isVisible(abilityPanel) ? abilityPanel : null;
+        if (!panel) continue;
+        const item = panel.querySelectorAll(panel === towerPanel ? bar.towerItems : bar.abilityItems)[index];
+        if (item) {
+          item.click();
+          item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    }
+  });
 
   // Mouse-wheel horizontal scroll, copied from main.js (shopWrapper/abilityBar).
   ['shopWrapper', 'abilityBar', 'shopWrapperNew', 'abilitiesStrip'].forEach(id => {
@@ -1570,5 +2390,101 @@
     }, { passive: false });
   });
 </script>
+<!-- ================================================================
+     NEW TOP UI - live simulation so the animations can be judged:
+     time runs, gold trickles in (+N), level progress fills and levels up,
+     a life is lost now and then; all of it follows the chosen game speed.
+     +1 Life (New bar tab / E key) adds a life here and costs its price.
+     ================================================================ -->
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const livesBox = $('ntuLives');
+  const livesEl = $('ntuLivesValue'), coinsEl = $('ntuCoinsValue'), timeEl = $('ntuTimeValue');
+  const fill = $('ntuProgressFill'), levelEl = $('ntuLevel'), progress = $('ntuProgress');
+  // 3 018 / 1 012 - thousands separated by a (non-breaking) space
+  const groupNum = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  const speedBox = $('ntuSpeed');
+  if (!livesEl) return;
+
+  let lives = 10, coins = 1250, seconds = 0, level = 3, prog = 45, speed = 1;
+
+  const pulse = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+  const float = (box, text, good) => {
+    const f = document.createElement('span');
+    f.className = 'ntu-float ' + (good ? 'good' : 'bad');
+    f.textContent = text;
+    box.appendChild(f);
+    f.addEventListener('animationend', () => f.remove());
+  };
+  const render = () => {
+    livesEl.textContent = groupNum(lives);
+    coinsEl.textContent = groupNum(coins);
+    timeEl.textContent = String(Math.floor(seconds / 60)).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0');
+    fill.style.width = prog + '%';
+    levelEl.textContent = level;
+  };
+
+  // one game-second per real second at 1x
+  let acc = 0, coinT = 0, lifeT = 0, progT = 0;
+  setInterval(() => {
+    const dt = 0.1 * speed;
+    acc += dt; coinT += dt; lifeT += dt; progT += dt;
+    if (acc >= 1) { acc -= 1; seconds++; }
+    if (coinT >= 2.4) {
+      coinT = 0;
+      const gain = 10 + Math.floor(Math.random() * 30);
+      coins += gain;
+      // gold just changes - no floating +N, no flash
+    }
+    if (lifeT >= 13) {
+      lifeT = 0;
+      lives = lives > 1 ? lives - 1 : 10;
+      float(livesBox, '-1', false);
+      pulse(livesBox, 'is-hit');
+    }
+    // jumps forward in steps (like the game - an enemy dies / spawns), not smoothly
+    if (progT >= 1.6) {
+      progT = 0;
+      prog += 3 + Math.floor(Math.random() * 7);
+      if (prog >= 100) {
+        prog = 0;
+        level++;
+        pulse(progress, 'is-levelup');
+      }
+    }
+    render();
+  }, 100);
+
+  // game speed
+  speedBox.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+    speedBox.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    speed = Number(btn.dataset.speed);
+    speedBox.classList.toggle('is-boosted', speed !== 1);
+  }));
+
+  // music on/off
+  $('ntuMusic').addEventListener('click', e => {
+    const btn = e.currentTarget;
+    btn.classList.toggle('is-on');
+    $('ntuMusicLabel').textContent = btn.classList.contains('is-on') ? 'Music' : 'Muted';
+  });
+
+  // +1 Life bought from the New bar (see setupLifeButton)
+  window.addEventListener('concept:lifeBought', e => {
+    const price = e.detail.price;
+    lives++;
+    float(livesBox, '+1', true);
+    pulse(livesBox, 'is-gain');
+    if (price > 0) {
+      coins = Math.max(0, coins - price);
+    }
+    render();
+  });
+
+  render();
+})();
+</script>
+<script type="module" src="../js/CustomSelect.js"></script>
 </body>
 </html>
