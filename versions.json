@@ -36,6 +36,11 @@
             "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling"
           ]
         },
+        {
+          "<b>System</b>": [
+            "Minimum supported resolution raised to 1920x1080 (Full HD) - smaller screens now show the unsupported resolution scree"
+          ]
+        },
         "TODO: Lore for abilites, different class of mages etc.",
         "TODO: Rework tower and ability selectors interface",
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
