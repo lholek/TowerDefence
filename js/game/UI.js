@@ -305,7 +305,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* --- Apply saved graphics settings immediately --- */
   // 1. Define the current state (Load from storage or use defaults)
-  let currentGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {
+  // Saved settings are merged over the defaults, so a setting added later
+  // (like ui_effects) still shows up - and is covered by the Switch All
+  // Low/High buttons - for players who saved their settings before it existed.
+  const defaultGraphics = {
     trees: 'low',
     portals: 'low',
     enemies: 'low',
@@ -315,8 +318,16 @@ document.addEventListener("DOMContentLoaded", () => {
     roads: 'low',
     mountains: 'low',
     lava_floor: 'low',
-    objects: 'low'
+    objects: 'low',
+    ui_effects: 'high' // Beta 1.1 card / top bar animations (css/bars.css)
   };
+  let currentGraphics = { ...defaultGraphics, ...(JSON.parse(localStorage.getItem('graphicsSettings')) || {}) };
+
+  // UI Effects: Low -> <body class="ui-fx-low">, css/bars.css stops the
+  // card / top bar animations. Unlike the map settings this needs no new
+  // game, so it applies right away (on load + on Save).
+  const applyUiEffects = () => document.body.classList.toggle('ui-fx-low', currentGraphics.ui_effects === 'low');
+  applyUiEffects();
 
   // 2. Function to refresh the UI buttons to match the state
   // NOTE: scoped to #graphicsCustomList so it doesn't also pick up the
@@ -376,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Save Button
   document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
     localStorage.setItem('graphicsSettings', JSON.stringify(currentGraphics));
+    applyUiEffects();
     // Here you would trigger the actual game engine to update visuals
   });
 

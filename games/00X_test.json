@@ -21,7 +21,7 @@
           "difficulty": "⭐",
           "map_size": "20x18",
           "tower types": 1,
-          "abilites": "Lava Floor🌋, New towers_fury 5 (Copy)🏹"
+          "abilites": "Lava Floor🌋, Lava Floor (Copy)🌋, New towers_fury 5 (Copy)🏹, New towers_fury 5 (Copy) (Copy)🏹"
         }
       ],
       "tileSize": 80,
@@ -67,9 +67,46 @@
           }
         },
         {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor_1790939204280",
+          "name": "Lava Floor (Copy)",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 500,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
           "id": "towers_fury",
           "configId": "towers_fury_1771661164189",
           "name": "New towers_fury 5 (Copy)",
+          "type": "global",
+          "cooldown": 10000,
+          "effectDuration": 25000,
+          "color": "#rgba(255, 255, 255, 0.75)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 1,
+            "speed_mul": 3,
+            "fireRate_mul": 0.85
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1790939205927",
+          "name": "New towers_fury 5 (Copy) (Copy)",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 25000,

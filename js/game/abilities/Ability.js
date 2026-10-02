@@ -70,4 +70,17 @@ export default class Ability {
   get dynamicDescription() {
     return this.description || '';
   }
+
+  // Beta 1.1 ability card (css/bars.css) - override both in a subclass:
+  // cardTheme = the card's theme class (background + accent + animated
+  // pieces, see js/game/CardFx.js), cardStats = the two info lines, as HTML
+  // (numbers in <span class="concept-num">, + concept-good / concept-bad
+  // for buffs that are good / bad for the player).
+  get cardTheme() {
+    return '';
+  }
+
+  get cardStats() {
+    return { stat: this.dynamicDescription, sub: '' };
+  }
 }

@@ -5,6 +5,10 @@ import Bullet from './Bullet.js';
 
 // add near other imports
 import AbilityManager from './abilities/AbilityManager.js';
+import { buildCardFx, groupNum } from './CardFx.js';
+
+// Beta 1.1 "+1 Life" tab icon (same art as the other tabs in index.html)
+const HEART_SVG = '<svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tabHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#tabHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg>';
 
 export default class Game {
   constructor(canvas) {
@@ -186,7 +190,7 @@ export default class Game {
     const abilityModeBtn = document.getElementById('abilityModeBtn');
     if (abilityModeBtn) {
         const hasAbilities = (this.levelData.abilities && this.levelData.abilities.length > 0);
-        abilityModeBtn.style.display = hasAbilities ? 'block' : 'none';
+        abilityModeBtn.style.display = hasAbilities ? 'inline-flex' : 'none';
     }
 
     // 5. NASTAVENÍ ÚROVNÍ A OBCHODŮ
@@ -219,6 +223,18 @@ export default class Game {
     this.lastTime = performance.now();
     this.updateSelectionUI();
     requestAnimationFrame(this.loop.bind(this));
+  }
+
+  // Every write to this.paused (togglePause, PopupController's silent pause,
+  // destroy...) also flags <body>, so css/bars.css freezes the card / top
+  // bar animations together with the game.
+  get paused() {
+    return this._paused;
+  }
+
+  set paused(value) {
+    this._paused = value;
+    document.body.classList.toggle('game-paused', !!value);
   }
 
   /**
@@ -678,10 +694,11 @@ export default class Game {
   updateUI() {
     const totalLevels = this.levelData && this.levelData.levels ? this.levelData.levels.length : 0;
 
-    this.levelText.textContent = `Level ${this.currentLevelIndex + 1} / ${totalLevels}`;
+    this.levelText.innerHTML = `Level <b>${this.currentLevelIndex + 1}</b> / ${totalLevels}`;
     
-    this.lifesText.textContent = `❤️ ${this.playerLifes}`;
-    this.coinsText.textContent = `🪙 ${this.playerCoins}`;
+    // icons are part of the top bar markup now - just the numbers, "3 018" style
+    this.lifesText.textContent = groupNum(this.playerLifes);
+    this.coinsText.textContent = groupNum(this.playerCoins);
     
     const percent = this.totalEnemiesInLevel === 0 ? 100 : (this.enemiesKilled / this.totalEnemiesInLevel) * 100;
     this.progressBar.style.width = `${percent}%`;
@@ -690,65 +707,68 @@ export default class Game {
  createTowerShop() {
     const shopDiv = document.getElementById('towerShop');
     shopDiv.innerHTML = '';
-    
+
+    const tileSize = this.map.tileSize;
     let index = 0;
     for (const [key, type] of Object.entries(this.towerTypes)) {
         index++;
         const item = document.createElement('div');
-        
-        // 1. Sync visual states
-        item.className = 'shop-item' + (this.selectedTowerType === key ? ' active' : '');
-        item.style.setProperty('--tower-color', type.color || '#fff');
 
-        const dps = (type.damage * 1000 / type.fireRate).toFixed(1);
-        const sellPrice = type.sellPrice;
+        // 1. Sync visual states (Beta 1.1 card - css/bars.css; accent = tower color)
+        item.className = 'concept-card concept-tower' + (this.selectedTowerType === key ? ' active' : '');
+        item.style.setProperty('--accent', type.color || '#f0c674');
+
+        const dps = type.damage * 1000 / type.fireRate;
+        const range = type.range / tileSize;
+        const speed = type.speed * 144 / tileSize;
+        const fmt = n => groupNum(n >= 100 ? Math.round(n) : Number(n.toFixed(1)));
+        const price = groupNum(type.price);
 
         // 2. Generate zoomed tower image
         const tempTower = new Tower(this, this.map, 0, 0, type);
         const src = tempTower.preRenderedImage;
         this.towerTypes[key].cachedImage = src; // Uložíme plný obrázek pro náhled při stavbě
-        
+
         const zoomCanvas = document.createElement('canvas');
-        zoomCanvas.width = 120; 
-        zoomCanvas.height = 140;
+        zoomCanvas.width = 120;
+        zoomCanvas.height = 120;
         const zCtx = zoomCanvas.getContext('2d');
-        
+
         // CROP CALCULATION:
         // We take a 45% window of the original image to make the tower appear large
-        const cropSize = src.width * 0.45; 
+        const cropSize = src.width * 0.45;
         const sx = (src.width / 2.5) - (cropSize / 2); // Centers X relative to tower base
         const sy = (src.height / 2) - (cropSize / 1.2); // Centers Y and shifts up for flag
 
-        zCtx.drawImage(src, 
+        zCtx.drawImage(src,
             sx, sy, cropSize, cropSize, // Source window
             0, 0, 120, 120              // Fill shop canvas
         );
 
-        const nameLength = type.name.length;
-        const fontSize = nameLength > 12 ? '13px' : '16px';
-
+        // Base view: Price / Sell / DPS - on hover all 6 stats (css/bars.css)
         item.innerHTML = `
-            <div class="index">${index}</div>
-            <div class="tower-card-main">
-                <img src="${zoomCanvas.toDataURL()}" class="shop-tower-img" />
-                <div class="tower-info">
-                    <div class="name" style="font-size: ${fontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${type.name}">
-                      ${type.name}
-                    </div>
-                    <div class="price">🪙 ${type.price}</div>
-                    <div class="sell-price">💰 Sell:  ${sellPrice}</div>
-                    <div class="dps">💥DPS: ${dps}</div>
+            <div class="concept-card-index">${index}</div>
+            <div class="concept-tower-img"><img src="${zoomCanvas.toDataURL()}" alt="" /></div>
+            <div class="concept-tower-side">
+              <div class="concept-card-name${type.name.length > 14 ? ' concept-name-long' : ''}">${type.name}</div>
+              <div class="concept-tower-values">
+                <div class="concept-tower-base">
+                  <div class="concept-tower-row price"><span>🪙 Price</span><b>${price}</b></div>
+                  <div class="concept-tower-row"><span>💰 Sell</span><b>${groupNum(type.sellPrice)}</b></div>
+                  <div class="concept-tower-row"><span>💥 DPS</span><b class="concept-num">${fmt(dps)}</b></div>
                 </div>
-            </div>
-            <div class="tower-stats-hover">
-                <div> 🪙 Price: ${type.price}</div>
-                <div>💥DPS: ${dps}</div>
-                <div>⚔️ Damage: ${type.damage}</div>
-                <div>🎯 Range: ${(type.range / this.map.tileSize).toFixed(1)} tiles</div>
-                <div>⏱️ F. Rate: ${(type.fireRate)} ms</div>
-                <div>🗲 Speed: ${(type.speed * 144 / this.map.tileSize).toFixed(1)} tiles/s</div>
+                <div class="concept-tower-stats">
+                  <div class="concept-tower-stat price"><span><i>🪙</i>Price</span><b>${price}</b></div>
+                  <div class="concept-tower-stat"><span><i>💥</i>DPS</span><b>${fmt(dps)}</b></div>
+                  <div class="concept-tower-stat"><span><i>⚔️</i>Damage</span><b>${fmt(type.damage)}</b></div>
+                  <div class="concept-tower-stat"><span><i>🎯</i>Range</span><b>${range.toFixed(1)} <small>tiles</small></b></div>
+                  <div class="concept-tower-stat"><span><i>⏱️</i>Fire rate</span><b>${type.fireRate} <small>ms</small></b></div>
+                  <div class="concept-tower-stat"><span><i>🗲</i>Speed</span><b>${speed.toFixed(1)} <small>tiles/s</small></b></div>
+                </div>
+              </div>
             </div>
         `;
+        buildCardFx(item, 'concept-tower', index * 97 + 11);
 
         // 3. Selection logic (Crucial for number keys)
         item.onclick = () => {
@@ -758,7 +778,7 @@ export default class Game {
                 this.abilityManager.activeAbility.isPlacing = false;
 
                 // Fyzicky smažeme třídu 'placing' z HTML karet v DOMu
-                document.querySelectorAll('.ability-card').forEach(card => card.classList.remove('placing'));
+                document.querySelectorAll('.concept-ability').forEach(card => card.classList.remove('placing'));
 
                 // Vynulujeme referenci v manažerovi
                 this.abilityManager.activeAbility = null;
@@ -767,7 +787,7 @@ export default class Game {
             this.selectedTowerType = (this.selectedTowerType === key) ? null : key;
 
             // 2. Instead of rebuilding the whole shop, just toggle the 'active' class
-            const allItems = shopDiv.querySelectorAll('.shop-item');
+            const allItems = shopDiv.querySelectorAll('.concept-tower');
             allItems.forEach(el => {
                 if (el.dataset.key === key && this.selectedTowerType === key) {
                     el.classList.add('active');
@@ -808,45 +828,42 @@ export default class Game {
     for (const a of this.abilityManager.getAvailable()) {
       index++;
       const card = document.createElement('div');
-      card.className = 'ability-card';
+      // Beta 1.1 card (css/bars.css) - theme + stat lines come from the
+      // ability itself (cardTheme / cardStats, see abilities/Ability.js)
+      const theme = a.cardTheme;
+      card.className = 'concept-card concept-ability' + (theme ? ' ' + theme : '');
       card.id = a.configId || a.id;
-      card.style.position = 'relative'; // ensure overlays position correctly
-      // inner structure: icon, name, cooldown, duration, description
+      const { stat, sub } = a.cardStats;
+
       card.innerHTML = `
-          <div class="cooldown-overlay" style="display:none; position:absolute; bottom:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); pointer-events:none; z-index:5;"></div>
-    
-          <div class="cooldown-timer" style="position:absolute; left:6px; top:6px; color:#fff; font-weight:bold; pointer-events:none; z-index:10; font-size:12px;"></div>
-    
-          <div class="duration-timer" style="position:absolute; right:6px; top:6px; color:#4ade80; font-weight:bold; pointer-events:none; z-index:10; font-size:12px; text-shadow: 1px 1px 2px #000;"></div>
-          
-          <div class="index">${index}</div>
-          <div class="ability-name" 
-               style="font-size: ${a.name.length > 15 ? '12px' : '16px'};">
-            ${a.name}
+          <div class="concept-card-top">
+            <div class="concept-card-index">${index}</div>
+            <div class="concept-card-icon">${a.ui?.icon || ''}</div>
+            <div class="concept-card-name${a.name.length > 14 ? ' concept-name-long' : ''}">${a.name}</div>
           </div>
-          <div class="ability-icon">${a.ui?.icon || ''}</div>
-          <div class="ability-info">
-            <div class="ability-meta">
-              <div class="ability-times">
-                ${a.effectDuration ? `<span class="ability-duration">🕒 ${a.effectDuration/1000} s</span>` : ''}
-                <span class="ability-cooldown">⏳ ${a.cooldown/1000} s</span>
-              </div>
-
-              <div class="ability-dmg">${a.dynamicDescription}</div>
-
-              <div class="ability-desc">
-                ${Number.isFinite(a.selectionCount)
-                  ? `Target: ${a.selectionCount} tiles`
-                  : ``}
-              </div>
+          <div class="concept-card-info">
+            <div class="concept-card-stat">${stat}</div>
+            <div class="concept-card-footer">
+              <span class="concept-card-sub">${sub}</span>
+              <span class="concept-card-times">
+                ${a.effectDuration ? `<span>🕒 ${a.effectDuration / 1000}s</span>` : ''}
+                <span>⏳ ${a.cooldown / 1000}s</span>
+              </span>
             </div>
           </div>
+          <div class="concept-active-overlay">
+            <div class="concept-active-bar-wrap"><div class="concept-active-bar"></div></div>
+          </div>
+          <div class="concept-cooldown-overlay">
+            <div class="concept-cooldown-active"></div>
+            <div class="concept-cooldown-title">COOLDOWN</div>
+            <div class="concept-cooldown-time">0s</div>
+          </div>
       `;
+      if (theme) buildCardFx(card, theme, index * 131 + 7);
+
       // save ref
       this.abilityCards[a.id] = { card, ability: a };
-
-      // placing Abilites
-      let placingAbilitesIds = ["lava_floor"];
 
       // click toggles placing mode
       card.addEventListener('click', () => {
@@ -856,8 +873,11 @@ export default class Game {
           this.updateSelectionUI();
         } else {
           if (this.abilityManager.selectAbilityById(a.id)) {
-            document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
-            card.classList.add('placing');
+            document.querySelectorAll('.concept-ability').forEach(c => c.classList.remove('placing'));
+            // only abilities that now wait for tiles to be picked (Lava Floor)
+            // get the 'placing' frame - global ones (Towers Fury) have already
+            // fired and just show their Active / Cooldown state
+            if (a.isPlacing) card.classList.add('placing');
             this.updateSelectionUI();
           } else {
             this.logEvent(`${a.name} not ready`);
@@ -868,50 +888,34 @@ export default class Game {
       container.appendChild(card);
     }
 
-    // start periodic updater to refresh timers (reads ability._lastUsed timestamps)
+    // Periodic card updater - cooldown and effect run at the same time (both
+    // start when the ability is used): the dimmed COOLDOWN overlay counts
+    // down, and while the effect still runs an "Active · Xs" plaque sits
+    // above it with the shrinking bar at the bottom.
     this.abilityTimerInterval = setInterval(() => {
-    // If game is paused, we don't update the UI numbers to avoid jumping
-    if (this.paused) return; 
+      // If game is paused, we don't update the UI numbers to avoid jumping
+      if (this.paused) return;
 
-    for (const { card, ability } of Object.values(this.abilityCards)) {
-        const cooldownOverlay = card.querySelector('.cooldown-overlay');
-        const cooldownTimer = card.querySelector('.cooldown-timer');
-        const durationTimer = card.querySelector('.duration-timer');
-
-        // --- 1. RELOAD LOGIC (Left Corner) ---
+      for (const { card, ability } of Object.values(this.abilityCards)) {
         const remaining = ability.remainingCooldown || 0;
-        if (remaining > 0) {
-            if (cooldownOverlay) {
-                cooldownOverlay.style.display = 'block';
-                // Height shrinks as cooldown finishes
-                const pct = (remaining / ability.cooldown) * 100;
-                cooldownOverlay.style.height = pct + '%';
-            }
-            if (cooldownTimer) {
-                cooldownTimer.textContent = (remaining / 1000).toFixed(1) + "s";
-            }
-        } else {
-            if (cooldownOverlay) cooldownOverlay.style.display = 'none';
-            if (cooldownTimer) cooldownTimer.textContent = '';
+        const onCooldown = remaining > 0;
+        card.classList.toggle('concept-is-cooldown', onCooldown);
+        if (onCooldown) {
+          card.querySelector('.concept-cooldown-time').textContent = `${Math.ceil(remaining / 1000)}s`;
         }
 
-        // --- 2. DURATION LOGIC (Right Corner) ---
-        if (ability.activeInstances && ability.activeInstances.length > 0) {
-            // Find the instance with the most time remaining
-            const maxDur = Math.max(0, ...ability.activeInstances.map(i => i.durationLeft || 0));
-            
-            if (maxDur > 0 && durationTimer) {
-                durationTimer.textContent = (maxDur / 1000).toFixed(1) + "s";
-                card.style.boxShadow = "inset 0 0 10px #4ade80"; // Visual active glow
-            } else if (durationTimer) {
-                durationTimer.textContent = '';
-                card.style.boxShadow = "";
-            }
-        } else if (durationTimer) {
-            durationTimer.textContent = '';
-            card.style.boxShadow = "";
+        const instances = ability.activeInstances || [];
+        const maxDur = instances.length ? Math.max(0, ...instances.map(i => i.durationLeft || 0)) : 0;
+        const active = maxDur > 0;
+        card.classList.toggle('concept-is-active', active);
+        if (active) {
+          card.querySelector('.concept-cooldown-active').textContent = `Active · ${Math.ceil(maxDur / 1000)}s`;
+          // driven every tick (not a one-off CSS transition, which the browser
+          // drops while the bar is hidden behind the Towers tab)
+          const bar = card.querySelector('.concept-active-bar');
+          bar.style.transform = `scaleX(${Math.min(1, maxDur / (ability.effectDuration || maxDur))})`;
         }
-        }
+      }
     }, 100);
   }
 
@@ -948,8 +952,10 @@ export default class Game {
 
     const lifeButton = document.createElement('button');
     lifeButton.id = 'extraLifeBtn';
-    lifeButton.className = 'switch-btn life-purchase-btn';
-    lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+    lifeButton.className = 'concept-tab concept-tab-life';
+    lifeButton.type = 'button';
+    const renderLife = price => `${HEART_SVG}<span class="concept-tab-label">+1 Life</span><span class="concept-tab-price"><span class="concept-tab-coin">🪙</span>${groupNum(price)}</span><kbd class="concept-key">E</kbd>`;
+    lifeButton.innerHTML = renderLife(currentPrice);
 
     container.appendChild(lifeButton);
 
@@ -974,7 +980,7 @@ export default class Game {
             // CALCULATE NEXT PRICE
             // We incremented lifePurchaseCount, so getCurrentPrice() now returns the NEXT tier
             currentPrice = getCurrentPrice();
-            lifeButton.innerHTML = `❤️ +1 Life (🪙 ${currentPrice}) [E]`;
+            lifeButton.innerHTML = renderLife(currentPrice);
 
         } else {
             this.logEvent('Not enough coins to buy Extra life!');
@@ -1261,7 +1267,7 @@ export default class Game {
         // Try to find the life card by ID first, then by text content
         let extraLifeBtn = document.getElementById('extraLifeBtn');
         if (!extraLifeBtn) {
-            extraLifeBtn = Array.from(document.querySelectorAll('.shop-item')).find(el => el.textContent.includes('Life'));
+            extraLifeBtn = Array.from(document.querySelectorAll('.concept-tab-life')).find(el => el.textContent.includes('Life'));
         }
 
         // ONLY trigger if the button exists and is currently visible in the shop
@@ -1282,7 +1288,7 @@ export default class Game {
       
       // Logic for Towers: Only works if the Tower Panel is currently displayed
       if (isVisible(towerPanel)) {
-        const towerItems = towerPanel.querySelectorAll('.shop-item');
+        const towerItems = towerPanel.querySelectorAll('.concept-tower');
         if (towerItems[index]) {
           towerItems[index].click();
           towerItems[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -1290,7 +1296,7 @@ export default class Game {
       } 
       // Logic for Abilities: Only works if the Ability Bar is currently displayed
       else if (isVisible(abilityPanel)) {
-        const abilityCards = abilityPanel.querySelectorAll('.ability-card');
+        const abilityCards = abilityPanel.querySelectorAll('.concept-ability');
         if (abilityCards[index]) {
           abilityCards[index].click();
           abilityCards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -1362,7 +1368,7 @@ export default class Game {
     let displayPrice = 0;
 
     // 1. Zjistíme, jestli fyzicky na stránce existuje karta s 'placing'
-    const activeAbilityCard = document.querySelector('.ability-card.placing');
+    const activeAbilityCard = document.querySelector('.concept-ability.placing');
     
     if (activeAbilityCard && this.abilityManager.activeAbility) {
         // Pokud ano, vezmeme jméno té vybrané ability
@@ -1370,7 +1376,7 @@ export default class Game {
     } 
     // 2. Pokud abilita nesvítí, zkusíme jestli svítí věž v shopu
     else {
-        const activeShopItem = document.querySelector('.shop-item.active');
+        const activeShopItem = document.querySelector('.concept-tower.active');
         if (activeShopItem && this.selectedTowerType) {
             // Pokud svítí věž, vezmeme její jméno z dat
             displayTitle = this.towerTypes[this.selectedTowerType]?.name || this.selectedTowerType;

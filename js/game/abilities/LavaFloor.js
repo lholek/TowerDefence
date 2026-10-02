@@ -1,5 +1,6 @@
 // Replace in abilities/LavaFloor.js (add these methods)
 import Ability from './Ability.js';
+import { groupNum } from '../CardFx.js';
 
 export default class LavaFloor extends Ability {
   constructor(game, config = {}) {
@@ -30,6 +31,18 @@ export default class LavaFloor extends Ability {
   /* Getter dynamicDescription */
   get dynamicDescription() {
     return `${this.damage} Damage / ${this.damageEvery} ms`;
+  }
+
+  // Beta 1.1 card (see Ability.js)
+  get cardTheme() {
+    return 'concept-lava-floor';
+  }
+
+  get cardStats() {
+    return {
+      stat: `<span class="concept-num">${groupNum(this.damage)}</span> Damage / <span class="concept-num">${groupNum(this.damageEvery)}</span> ms`,
+      sub: `Target: ${this.selectionCount} tiles`
+    };
   }
 
 /**

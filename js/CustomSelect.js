@@ -229,7 +229,9 @@ function enhanceSelect(selectEl) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    ['mapSelect', 'backgroundSelect', 'gameSpeedSelect'].forEach((id) => {
+    // gameSpeedSelect is no longer enhanced here - since Beta 1.1 it's a
+    // hidden source of truth driven by the 1x-5x buttons (js/game/SpeedControl.js).
+    ['mapSelect', 'backgroundSelect'].forEach((id) => {
         const el = document.getElementById(id);
         if (el) enhanceSelect(el);
     });

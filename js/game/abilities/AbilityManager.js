@@ -55,7 +55,7 @@ export default class AbilityManager {
 
     if (inst.startPlacing()) {
         this.activeAbility = inst;
-        document.querySelectorAll('.ability-card').forEach(c => c.classList.remove('placing'));
+        document.querySelectorAll('.concept-ability').forEach(c => c.classList.remove('placing'));
         if (card) card.classList.add('placing');
         this.game.updateSelectionUI();
         return true;
@@ -252,7 +252,7 @@ export default class AbilityManager {
     this.previewTiles = [];
     
     // Odstraníme 'selected' třídu ze všech karet v UI
-    document.querySelectorAll('.ability-card').forEach(card => {
+    document.querySelectorAll('.concept-ability').forEach(card => {
         card.classList.remove('selected', 'placing');
     });
   }

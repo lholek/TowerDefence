@@ -23,6 +23,20 @@
           "TODO: Add Ice Storm ability to the editor"
           ]
         },
+        {
+          "<b>UI</b>": [
+            "New top bar - lives, gold and time with new icons, game speed as quick 1x-5x buttons, and redesigned Log, Music and Menu buttons",
+            "New level progress bar showing the current level out of the total (e.g. Level 3 / 20)",
+            "Large numbers now use a space as the thousands separator (e.g. 1 000 instead of 1000)",
+            "Redesigned Towers, Abilities and +1 Life buttons with new icons and keyboard shortcut hints (T, A, E)",
+            "Redesigned tower cards - bigger tower preview, price, sell value and DPS at a glance, all 6 stats on hover, and each card colored to match its tower",
+            "Redesigned ability cards with a unique animated background for each ability",
+            "Ability cards now show the remaining effect time (Active) together with the cooldown",
+            "New graphics setting 'UI Effects' - set it to Low to turn off the card animations for better performance",
+            "Card animations now pause together with the game",
+            "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling"
+          ]
+        },
         "TODO: Lore for abilites, different class of mages etc.",
         "TODO: Rework tower and ability selectors interface",
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"

@@ -77,8 +77,15 @@ select option:hover,
 .file-upload-row:hover,
 #musicProgressBarContainer:hover,
 .menu-music-progress-container:hover,
-input[type="range"]:hover {
+input[type="range"]:hover,
+.concept-card:hover {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+
+/* Beta 1.1 ability card on cooldown (css/bars.css) can't be used - plain
+   sword instead of the blazing one (higher specificity than the rule above) */
+.concept-card.concept-is-cooldown:hover {
+    cursor: url('../assets/images/cursor.png') 1 1, auto !important;
 }
 
 /* Range slider thumbs - each vendor's pseudo-element needs its own rule

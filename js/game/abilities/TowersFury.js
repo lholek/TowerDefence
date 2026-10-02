@@ -43,6 +43,26 @@ export default class TowersFury extends Ability {
       return `${dmg}${speed}${rate}`;
     }
 
+    // Beta 1.1 card (see Ability.js) - green = good for the player, red =
+    // bad; Fire Rate is a delay, so a lower value (negative %) is the good one.
+    get cardTheme() {
+        return 'concept-towers-fury';
+    }
+
+    get cardStats() {
+        const { damage_mul, speed_mul, fireRate_mul } = this.modifiers;
+        const pct = (val, inverted = false) => {
+            const change = Math.round((val - 1) * 100);
+            if (change === 0) return '<span class="concept-num">±0%</span>';
+            const good = (change > 0) !== inverted;
+            return `<span class="concept-num ${good ? 'concept-good' : 'concept-bad'}">${change > 0 ? '+' : ''}${change}%</span>`;
+        };
+        return {
+            stat: `${pct(damage_mul)} Damage · ${pct(speed_mul)} Speed`,
+            sub: `${pct(fireRate_mul, true)} Fire Rate`
+        };
+    }
+
     startPlacing() {
         if (!this.available()) return false;
         // Global abilities don't need tile selection, they activate immediately
