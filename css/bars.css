@@ -1003,12 +1003,11 @@
   animation: moteRiseR var(--d) ease-in-out var(--delay) infinite;
 }
 .tower-mote.l::before{ animation-name: moteRiseL; }
-/* PERF: motes only move on the card under the mouse and on the selected
-   tower - elsewhere they stay put as still sparkles (a paused animation
-   costs nothing per frame; 8 cards x 7 always-moving motes did) */
-.tower-mote::before{ animation-play-state:paused; }
-.concept-tower:hover .tower-mote::before,
-.concept-tower.active .tower-mote::before{ animation-play-state:running; }
+/* Motes run continuously on every tower card now, not just on hover/
+   selection. Safe to leave always-on because the earlier FPS fix above
+   (fixed keyframe values, no var() inside @keyframes) already moved this
+   to the GPU - that was the actual 1ms/frame cost, not the animation
+   itself running. */
 @keyframes moteRiseR{
   0%   { transform:translate(0,0);       opacity:0; }
   15%  { opacity:1; }
