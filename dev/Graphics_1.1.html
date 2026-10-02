@@ -817,6 +817,11 @@
     font:700 12px/1 Arial, sans-serif;
   }
 
+  .concept-tab-coin{
+    font-size:13px;
+    line-height:1;
+  }
+
   /* little minted gold coin, used for prices (tower cards + life tab) */
   .concept-coin{
     display:inline-block;
@@ -2318,7 +2323,7 @@
     lifeButton.type = 'button';
     const HEART_SVG = '<svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="tabHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#tabHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg>';
     const renderLife = price => concept
-      ? `${HEART_SVG}<span class="concept-tab-label">+1 Life</span><span class="concept-tab-price"><span class="concept-coin"></span>${groupNum(price)}</span><kbd class="concept-key">E</kbd>`
+      ? `${HEART_SVG}<span class="concept-tab-label">+1 Life</span><span class="concept-tab-price"><span class="concept-tab-coin">🪙</span>${groupNum(price)}</span><kbd class="concept-key">E</kbd>`
       : `❤️ +1 Life (🪙 ${price}) [E]`;
     let currentPrice = getCurrentPrice();
     lifeButton.innerHTML = renderLife(currentPrice);
