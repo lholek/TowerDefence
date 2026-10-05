@@ -11,6 +11,8 @@ export default class Enemy {
   //   the same level/wave typically share one damage value.
   static _bodyCache = new Map();
   static _indicatorCache = new Map();
+  // Blue-tinted copy of a body, drawn while the enemy stands on Ice Storm
+  static _iceBodyCache = new Map();
 
   constructor(map, path, offsetX = 0, offsetY = 0, speed = 1, health = 10, coinReward = 1, type='basic', damage = 1, skin = null) {
     this.map = map;
@@ -24,6 +26,10 @@ export default class Enemy {
     this.currentIndex = 0;
     this.type = type;
     this.damage = damage;
+
+    // Ice Storm effects in % - set every frame by AbilityManager.updateIceEffects()
+    this.iceSlow = 0;
+    this.iceVulnerability = 0;
 
     const startTile = path[0];
     const pos = this.map.tileToWorld(startTile.col, startTile.row);
@@ -53,6 +59,7 @@ export default class Enemy {
         Enemy._bodyCache.set(bodyKey, this._preRenderEnemy(this.size));
     }
     this.cachedBody = Enemy._bodyCache.get(bodyKey);
+    this.bodyKey = bodyKey;
 
     const indicatorKey = `${this.type}_${this.quality}_${this.damage}`;
     if (!Enemy._indicatorCache.has(indicatorKey)) {
@@ -74,7 +81,7 @@ export default class Enemy {
 
     if (Math.abs(dx) > 0.1) this.movingLeft = dx < 0;
 
-    const moveAmount = this.speed * (deltaTime / (1000 / 144));
+    const moveAmount = this.speed * (1 - this.iceSlow / 100) * (deltaTime / (1000 / 144));
     if (dist < moveAmount) {
       this.x = targetX;
       this.y = targetY;
@@ -83,6 +90,37 @@ export default class Enemy {
       this.x += (dx / dist) * moveAmount;
       this.y += (dy / dist) * moveAmount;
     }
+  }
+
+  // Every source of damage (bullets, Lava Floor) goes through here, so Ice
+  // Storm's vulnerability bonus applies to all of them. Rounded up, so
+  // health stays a whole number. Returns the damage actually dealt (capped
+  // at the remaining health) for the game's damage stats.
+  takeDamage(amount) {
+    const boosted = this.iceVulnerability > 0
+      ? Math.ceil(amount * (1 + this.iceVulnerability / 100))
+      : amount;
+    const dealt = Math.min(Math.max(this.health, 0), boosted);
+    this.health -= boosted;
+    return dealt;
+  }
+
+  _getIceBody() {
+    if (!this.cachedBody) return null;
+    if (!Enemy._iceBodyCache.has(this.bodyKey)) {
+      const src = this.cachedBody;
+      const canvas = document.createElement('canvas');
+      canvas.width = src.width;
+      canvas.height = src.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(src, 0, 0);
+      // tint only the body's own pixels
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = 'rgba(120, 200, 255, 0.45)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      Enemy._iceBodyCache.set(this.bodyKey, canvas);
+    }
+    return Enemy._iceBodyCache.get(this.bodyKey);
   }
 
   // Pomocná funkce pro kreslení zaoblených obdélníků
@@ -565,8 +603,10 @@ export default class Enemy {
     // Zmenšení pro měřítko tvých věží
     ctx.scale(0.65, 0.65); 
 
-    if (this.cachedBody) {
-        ctx.drawImage(this.cachedBody, -this.size * 2, -this.size * 4, this.size * 4, this.size * 5);
+    // frozen look while standing on Ice Storm
+    const body = (this.iceSlow > 0 || this.iceVulnerability > 0) ? this._getIceBody() : this.cachedBody;
+    if (body) {
+        ctx.drawImage(body, -this.size * 2, -this.size * 4, this.size * 4, this.size * 5);
     }
     
     ctx.restore();

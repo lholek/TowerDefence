@@ -55,6 +55,19 @@ const abilityTemplates = {
         "effectDuration": 15000,
         "color": "rgba(255, 205, 90, 0.6)",
         "ui": { "icon": "⛏️" }
+    },
+    ice_storm: {
+        "id": "ice_storm",
+        "configId": "ice_storm_new",
+        "name": "New Ice Storm",
+        "type": "targeted",
+        "selectionCount": 7,
+        "enemy_slow": 80,
+        "enemy_vulnerability": 50,
+        "cooldown": 90000,
+        "effectDuration": 15000,
+        "color": "rgba(44, 131, 186, 0.6)",
+        "ui": { "icon": "❄️" }
     }
 };
 
@@ -99,6 +112,7 @@ export const abilityEditor = (() => {
         abilities.forEach((ability, index) => {
     const isFury = ability.id === 'towers_fury';
     const isGoldRush = ability.id === 'gold_rush';
+    const isIceStorm = ability.id === 'ice_storm';
 
     html += `
         <div class="ability-card box" data-ability-index="${index}">
@@ -186,6 +200,28 @@ export const abilityEditor = (() => {
                         <label class="editor-row">
                             <span class="label-text">Round Up <i class="info-icon" data-tooltip="ability.gold-rush-round-up">i</i></span>
                             <input type="checkbox" class="roundUpCheckbox" data-key="round_up" ${ability.round_up !== false ? 'checked' : ''}>
+                        </label>
+                    </div>
+                ` : isIceStorm ? `
+                    <div class="ability-ice-storm-modifiers">
+                        <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+                            <div class="stat-row">-${ability.enemy_slow ?? 80}% <span class="stat-label">Enemy Speed</span></div>
+                            <div class="stat-row">+${ability.enemy_vulnerability ?? 50}% <span class="stat-label">Damage taken</span></div>
+                        </div>
+
+                        <label class="editor-row">
+                            <span class="label-text">Enemy Slow (%) <i class="info-icon" data-tooltip="ability.ice-storm-enemy-slow">i</i></span>
+                            <input type="text" inputmode="numeric" class="input-thousands" data-key="enemy_slow" data-json-stepper="ice_storm_enemy_slow" value="${formatNumber(ability.enemy_slow ?? 80)}">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">Enemy Vulnerability (%) <i class="info-icon" data-tooltip="ability.ice-storm-enemy-vulnerability">i</i></span>
+                            <input type="text" inputmode="numeric" class="input-thousands" data-key="enemy_vulnerability" data-json-stepper="ice_storm_enemy_vulnerability" value="${formatNumber(ability.enemy_vulnerability ?? 50)}">
+                        </label>
+
+                        <label class="editor-row">
+                            <span class="label-text">Selection Count <i class="info-icon" data-tooltip="ability.ice-storm-selection-count">i</i></span>
+                            <input type="text" inputmode="numeric" class="input-thousands" data-key="selectionCount" data-json-stepper="ice_storm_selection_count" value="${formatNumber(ability.selectionCount || 1)}">
                         </label>
                     </div>
                 ` : `

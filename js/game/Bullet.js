@@ -107,14 +107,12 @@ export default class Bullet {
 
         let realSpeed = this.speed * (deltaTime / (1000/144))
         if (dist < realSpeed) {
+            // takeDamage() adds Ice Storm's vulnerability bonus and returns
+            // the damage actually dealt (capped at the remaining health)
+            const dealt = this.target.takeDamage(this.damage);
             if (this.game && this.game.stats) {
-                if (this.target.health < this.damage){
-                    this.game.stats.damageDealt += this.target.health;
-                } else {
-                    this.game.stats.damageDealt += this.damage;
-                }
+                this.game.stats.damageDealt += dealt;
             }
-            this.target.health -= this.damage;
             this.active = false;
             return;
         }

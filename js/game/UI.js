@@ -317,11 +317,20 @@ document.addEventListener("DOMContentLoaded", () => {
     terrain: 'low',
     roads: 'low',
     mountains: 'low',
-    lava_floor: 'low',
+    abilities: 'low', // Lava Floor + Ice Storm tile effects
     objects: 'low',
     ui_effects: 'high' // Beta 1.1 card / top bar animations (css/bars.css)
   };
-  let currentGraphics = { ...defaultGraphics, ...(JSON.parse(localStorage.getItem('graphicsSettings')) || {}) };
+  const savedGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+  // 'lava_floor' was renamed to 'abilities' (now also covers Ice Storm) -
+  // carry an old saved value over and store it right away, since Map.js
+  // reads graphicsSettings straight from localStorage.
+  if ('lava_floor' in savedGraphics) {
+    if (!('abilities' in savedGraphics)) savedGraphics.abilities = savedGraphics.lava_floor;
+    delete savedGraphics.lava_floor;
+    localStorage.setItem('graphicsSettings', JSON.stringify(savedGraphics));
+  }
+  let currentGraphics = { ...defaultGraphics, ...savedGraphics };
 
   // UI Effects: Low -> <body class="ui-fx-low">, css/bars.css stops the
   // card / top bar animations. Unlike the map settings this needs no new

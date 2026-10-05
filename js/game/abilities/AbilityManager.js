@@ -3,6 +3,7 @@ import Ability from './Ability.js';
 import LavaFloor from './LavaFloor.js';
 import TowersFury from './TowersFury.js';
 import GoldRush from './GoldRush.js';
+import IceStorm from './IceStorm.js';
 
 export default class AbilityManager {
   constructor(game) {
@@ -11,7 +12,8 @@ export default class AbilityManager {
       // id -> class
       'lava_floor': LavaFloor,
       'towers_fury': TowersFury,
-      'gold_rush': GoldRush
+      'gold_rush': GoldRush,
+      'ice_storm': IceStorm
     };
     this.abilities = []; // instantiated ability objects (one per config)
     this.activeAbility = null; // currently selected ability instance for placing
@@ -47,6 +49,30 @@ export default class AbilityManager {
     const roundUp = active.some(a => a.roundUp);
     const raw = baseAmount * (1 + totalBonusPct / 100);
     return roundUp ? Math.ceil(raw) : Math.floor(raw);
+  }
+
+  // Sets enemy.iceSlow / enemy.iceVulnerability (in %) from the Ice Storm
+  // tile each enemy currently stands on - 0 when it isn't on ice. Called
+  // once per frame before enemies move, Enemy.update() / takeDamage() read
+  // the values. Overlapping Ice Storms don't stack - the strongest wins.
+  updateIceEffects(enemies) {
+    const active = this.abilities.filter(a => a instanceof IceStorm && a.activeInstances.length > 0);
+
+    for (const enemy of enemies) {
+      let slow = 0;
+      let vulnerability = 0;
+      if (active.length > 0) {
+        const t = this.game.map.getTileFromCoords(enemy.x, enemy.y);
+        for (const a of active) {
+          if (a.coversTile(t.col, t.row)) {
+            slow = Math.max(slow, a.enemySlow);
+            vulnerability = Math.max(vulnerability, a.enemyVulnerability);
+          }
+        }
+      }
+      enemy.iceSlow = slow;
+      enemy.iceVulnerability = vulnerability;
+    }
   }
 
   selectAbilityById(id) {
@@ -196,8 +222,9 @@ export default class AbilityManager {
      if (typeof map.applyCameraTransform === 'function') map.applyCameraTransform(ctx);
      ctx.save();
      ctx.globalAlpha = 0.35;
-     ctx.fillStyle = 'orange';
-     ctx.strokeStyle = 'rgba(255,100,0,0.9)';
+     // abilities can set their own preview colors (IceStorm), lava keeps orange
+     ctx.fillStyle = this.activeAbility?.previewFill || 'orange';
+     ctx.strokeStyle = this.activeAbility?.previewStroke || 'rgba(255,100,0,0.9)';
      ctx.lineWidth = 2;
      const tileSize = map.tileSize || map.tileWidth || 32;
      

@@ -447,6 +447,9 @@ export default class Game {
     // ----------------------------------------------------------------
     // 3. UPDATE ENTITIES
     // ----------------------------------------------------------------
+    // Ice Storm slow / vulnerability for the tile each enemy stands on -
+    // before enemies move and towers shoot, so both use this frame's value
+    this.abilityManager.updateIceEffects(this.enemies);
     this.enemies.forEach(e => e.update(deltaTime));
     this.towers.forEach(t => t.update(deltaTime, this.enemies));
     // updateAbilityUI() used to also be called here for every ability on
@@ -1420,10 +1423,39 @@ export default class Game {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
     // --- PRIORITY 1: ABILITY (Takes precedence over tower placement) ---
-    if (this.abilityManager && this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
-        
+    if (this.abilityManager && this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing
+        && this.abilityManager.activeAbility.cursorStyle === 'ice') {
+
         const time = Date.now();
-        
+
+        // --- DESIGN: FROST TARGETER (Ice Storm) ---
+        // Dark blue rotating ring
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#0B3D91';
+        ctx.setLineDash([5, 10]);
+        ctx.arc(x, y, 18, time / 200, (time / 200) + Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Pulsating dark blue circle with a white core
+        const pulse = Math.sin(time / 150) * 3;
+        const innerGrad = ctx.createRadialGradient(x, y, 0, x, y, 12 + pulse);
+        innerGrad.addColorStop(0, '#FFFFFF');
+        innerGrad.addColorStop(0.35, '#FFFFFF');
+        innerGrad.addColorStop(0.6, '#1E5AA8');
+        innerGrad.addColorStop(1, 'rgba(11, 61, 145, 0)');
+
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.arc(x, y, 12 + pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+    }
+    else if (this.abilityManager && this.abilityManager.activeAbility && this.abilityManager.activeAbility.isPlacing) {
+
+        const time = Date.now();
+
         // --- DESIGN: MAGMATIC TARGETER ---
         // Outer rotating ring (visualizing a ritual/spell effect)
         ctx.beginPath();

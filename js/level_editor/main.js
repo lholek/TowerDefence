@@ -202,12 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
         terrain: 'low',
         roads: 'low',
         mountains: 'low',
-        lava_floor: 'low'
+        abilities: 'low'
     };
 
     const loadGraphicsSettings = () => {
-        const saved = JSON.parse(localStorage.getItem('graphicsSettings') || 'null');
-        return { ...defaultGraphicsSettings, ...(saved || {}) };
+        const saved = JSON.parse(localStorage.getItem('graphicsSettings') || 'null') || {};
+        // 'lava_floor' was renamed to 'abilities' (see js/game/UI.js)
+        if ('lava_floor' in saved) {
+            if (!('abilities' in saved)) saved.abilities = saved.lava_floor;
+            delete saved.lava_floor;
+        }
+        return { ...defaultGraphicsSettings, ...saved };
     };
 
     const saveEditorBackground = (theme) => {

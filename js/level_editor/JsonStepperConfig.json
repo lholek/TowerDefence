@@ -84,6 +84,23 @@
     "min": 0,
     "hold": true
   },
+  "ice_storm_enemy_slow": {
+    "step": 5,
+    "min": 0,
+    "max": 100,
+    "hold": true
+  },
+  "ice_storm_enemy_vulnerability": {
+    "step": 5,
+    "min": 0,
+    "max": 100,
+    "hold": true
+  },
+  "ice_storm_selection_count": {
+    "step": 1,
+    "min": 1,
+    "hold": true
+  },
   "shake_duration": {
     "step": 1000,
     "min": 100,

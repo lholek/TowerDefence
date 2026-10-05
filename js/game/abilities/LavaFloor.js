@@ -192,8 +192,8 @@ _getCenteredPathTiles(centerTile, count) {
                     for (const enemy of this.game.enemies) {
                         const et = this.game.map.getTileFromCoords(enemy.x, enemy.y);
                         if (et.col === t.col && et.row === t.row && enemy.health > 0) {
-                            const actualDmg = Math.min(enemy.health, this.damage);
-                            enemy.health -= actualDmg;
+                            // takeDamage() adds Ice Storm's vulnerability bonus
+                            const actualDmg = enemy.takeDamage(this.damage);
                             if (this.game.stats) this.game.stats.damageDealt += actualDmg;
                         }
                     }
@@ -228,7 +228,7 @@ _getCenteredPathTiles(centerTile, count) {
     const ts = this.game.map.tileSize;
   
     const drawLavaTile = (col, row, isPending = false) => {
-      const quality = this.game.map.graphicsSettings.lava_floor || 'low';
+      const quality = this.game.map.graphicsSettings.abilities || 'low';
       const center = this.game.map.tileToWorld(col, row);
       const x = center.x - ts / 2;
       const y = center.y - ts / 2;
