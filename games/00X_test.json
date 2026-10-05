@@ -2,8 +2,8 @@
   "maps": [
     {
       "name": "EDIT TITLE",
-      "startingCoins": 10000,
-      "startingLifes": 1000,
+      "startingCoins": 100,
+      "startingLifes": 100,
       "extraLife": true,
       "extraLifePrices": [
         10,
@@ -16,34 +16,19 @@
       ],
       "description": [
         {
-          "descriptionText": "This is map only for testing, its not hard or easy its only for testing ONLY. For example this text is testing long descriptions in the menu... so this is reason why its so long, becouse its important to test that items dont show to many items etc.",
+          "descriptionText": "Edit description",
           "level count": 1,
           "difficulty": "⭐",
-          "map_size": "20x18",
+          "map_size": "11x3",
           "tower types": 1,
-          "abilites": "Lava Floor🌋, Tower's Fury🏹, Gold Rush⛏️"
+          "abilites": "Lava Floor🌋, New towers_fury 2🏹, New gold_rush 3⛏️, New ice_storm 4❄️"
         }
       ],
       "tileSize": 80,
       "layout": [
-              ["W","W","SND","SND","X","O","O","-","O","O","SND","W","W","W","M","M","M","M","M","M"],
-              ["W","SND","SND","X","X","O","M","M","M","O","SND","SND","SND","SND","M","M","M","M","M","M"],
-              ["SND","SND","X","S1","O","O","M","SNW","M","O","X","X","X","M","M","M","X","M","M","M"],
-              ["SND","X","-","-","-","O","SNW","SNW","SNW","O","X","X","M","M","M","X","X","X","X","X"],
-              ["SND","SND","X","S2","O","O","SNW","SNW","SNW","O","X","X","M","M","M","X","E1","X","X","X"],
-              ["W","SND","SND","X","O","O","O","O","O","O","-","O","O","O","O","O","O","X","SND","W"],
-              ["W","W","SND","X","X","X","X","X","O","SNW","SND","O[SND]","SND","X","X","X","SND","SND","SND","W"],
-              ["W","W","W","X","X","X","M","SNW","O[SNW]","SNW","SND","O[SND]","SND","SND","SND","SND","SND","W","W","W"],
-              ["W","W","W","W","X","M","SNW","SNW","O[SNW]","SNW","SND","O[SND]","SND","SNW","W","W","W","W","W","W"],
-              ["W","W","W","W","M","M","SNW","O[SNW]","O[SNW]","SNW","SNW","O[SNW]","O[SNW]","SNW","SNW","W","W","W","W","W"],
-              ["W","W","W","M","M","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","W","W","W","W"],
-              ["W","W","M","M","M","SNW","M","O[SNW]","SNW","SNW","SNW","SNW","O[SNW]","SNW","SNW","SNW","SNW","W","W","W"],
-              ["W","W","M","M","M","SNW","M","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","O[SNW]","SNW","M","M","M","W","W","W"],
-              ["W","W","W","M","M","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","SNW","M","M","W","W","W","W"],
-              ["W","W","W","W","M","M","M","M","SNW","SNW","SNW","SNW","M","M","M","W","W","W","W","W"],
-              ["W","W","W","W","W","M","M","M","W","W","SNW","SNW","M","M","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","M","W","W","W","W","W","M","W","W","W","W","W","W","W"],
-              ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
+              ["-","-","X","X","X","X","X","X","X","-","-"],
+              ["S1","O","O","O","O","O","O","O","O","O","E1"],
+              ["-","-","X","X","X","X","X","X","X","-","-"]
           ],
       "abilities": [
         {
@@ -56,7 +41,7 @@
           "type": "targeted",
           "selectionCount": 7,
           "__comment": "250dmg / 0.25s ",
-          "damage": 500,
+          "damage": 250,
           "damage_every": 250,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 10000,
@@ -68,8 +53,8 @@
         },
         {
           "id": "towers_fury",
-          "configId": "towers_fury_1771661164189",
-          "name": "Tower's Fury",
+          "configId": "towers_fury_1791219786428",
+          "name": "New towers_fury 2",
           "type": "global",
           "cooldown": 10000,
           "effectDuration": 25000,
@@ -85,29 +70,44 @@
         },
         {
           "id": "gold_rush",
-          "configId": "gold_rush_1790976757581",
-          "name": "Gold Rush",
+          "configId": "gold_rush_1791219789152",
+          "name": "New gold_rush 3",
           "type": "global",
           "coin_bonus": 100,
           "round_up": true,
-          "cooldown": 1,
+          "cooldown": 90000,
           "effectDuration": 15000,
           "color": "rgba(255, 205, 90, 0.6)",
           "ui": {
             "icon": "⛏️"
           }
+        },
+        {
+          "id": "ice_storm",
+          "configId": "ice_storm_1791219791779",
+          "name": "New ice_storm 4",
+          "type": "targeted",
+          "selectionCount": 7,
+          "enemy_slow": 80,
+          "enemy_vulnerability": 100,
+          "cooldown": 90000,
+          "effectDuration": 15000,
+          "color": "rgba(44, 131, 186, 0.6)",
+          "ui": {
+            "icon": "❄️"
+          }
         }
       ],
       "towerTypes": {
         "001": {
-          "name": "Sentry Post",
-          "price": 5,
-          "damage": 10,
-          "fireRate": 300,
-          "range": 200,
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
           "color": "#468bb0",
-          "sellPrice": 2,
-          "speed": 3
+          "sellPrice": 1,
+          "speed": 2
         }
       },
       "levels": [
@@ -115,44 +115,19 @@
           "level": 1,
           "enemies": [
             {
-              "type": "damage50",
-              "count": 5000,
+              "type": "basic",
+              "count": 5,
               "health": 100,
               "speed": 1,
               "path": "S1E1",
-              "interval": "1000",
-              "coinReward": 5,
-              "firstDelay": "0"
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
             }
           ]
         }
       ],
-      "enemyEffects": [],
-      "enemyDamage": [
-        {
-          "type": "damage50",
-          "damage": -25
-        },
-        {
-          "type": "damge100",
-          "damage": 105
-        },
-        {
-          "type": "heal50",
-          "damage": -50
-        },
-        {
-          "type": "heal100",
-          "damage": -117
-        }
-      ],
-      "enemyTypes": [
-        "basic",
-        "damage50",
-        "damge100",
-        "heal50",
-        "heal100"
-      ]
+      "enemyEffects": []
     }
   ]
 }
