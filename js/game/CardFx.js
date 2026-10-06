@@ -56,16 +56,14 @@ const builders = {
       const size = rnd(8, 11);
       piece(fx, 'gold-coin far', {
         left: rnd(3, 95) + '%', top: '0', width: size + 'px', height: size + 'px',
-        '--d': rnd(3.4, 4.8).toFixed(2) + 's', '--delay': (-rnd(0, 4.8)).toFixed(2) + 's',
-        '--spin': rnd(1.6, 2.4).toFixed(2) + 's'
+        '--d': rnd(3.4, 4.8).toFixed(2) + 's', '--delay': (-rnd(0, 4.8)).toFixed(2) + 's'
       });
     }
     for (let i = 0; i < 7; i++) { // near coins
       const size = rnd(14, 19);
       piece(fx, 'gold-coin', {
         left: rnd(3, 93) + '%', top: '0', width: size + 'px', height: size + 'px',
-        '--d': rnd(2.4, 3.4).toFixed(2) + 's', '--delay': (-rnd(0, 3.4)).toFixed(2) + 's',
-        '--spin': rnd(1.2, 1.8).toFixed(2) + 's'
+        '--d': rnd(2.4, 3.4).toFixed(2) + 's', '--delay': (-rnd(0, 3.4)).toFixed(2) + 's'
       });
     }
     for (let i = 0; i < 4; i++) { // glints
@@ -83,7 +81,7 @@ const builders = {
         '--d': rnd(5.5, 8).toFixed(2) + 's', '--delay': (-rnd(0, 8)).toFixed(2) + 's'
       });
     }
-    for (let i = 0; i < 18; i++) { // far snow dots
+    for (let i = 0; i < 12; i++) { // far snow dots (was 18 - each one is its own animated layer)
       piece(fx, 'ice-dot', {
         left: rnd(0, 115) + '%', top: '0', '--size': rnd(1.5, 3).toFixed(1) + 'px',
         '--o': rnd(0.45, 0.85).toFixed(2),
@@ -100,8 +98,7 @@ const builders = {
       piece(fx, 'ice-flake' + (i % 3 === 0 ? ' soft' : ''), {
         left: rnd(5, 115) + '%', top: '0',
         '--size': rnd(9, 17).toFixed(1) + 'px',
-        '--d': rnd(2.4, 3.8).toFixed(2) + 's', '--delay': (-rnd(0, 3.8)).toFixed(2) + 's',
-        '--sway': rnd(0.9, 1.6).toFixed(2) + 's'
+        '--d': rnd(2.4, 3.8).toFixed(2) + 's', '--delay': (-rnd(0, 3.8)).toFixed(2) + 's'
       });
     }
   },
