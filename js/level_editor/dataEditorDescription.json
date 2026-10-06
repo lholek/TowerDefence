@@ -154,7 +154,7 @@
       "description": "How much slower enemies move while standing on the ice, in % (0-100). 80 = 80% slower, so enemies move at 20% of their original speed. Only applies on the frozen tiles."
     },
     "ice-storm-enemy-vulnerability": {
-      "description": "Extra damage enemies take from ALL sources while standing on the ice, in % (0-100, e.g. 50 = a 50 damage hit deals 75). Rounded up. Overlapping Ice Storms don't stack - the strongest one applies."
+      "description": "Extra damage enemies take from ALL sources while standing on the ice, in % (0 or more, no upper limit; e.g. 50 = a 50 damage hit deals 75, 200 = it deals 150). Rounded up. Overlapping Ice Storms don't stack - the strongest one applies."
     },
     "ice-storm-selection-count": {
       "description": "The maximum number of connected path tiles the player can freeze with one use."

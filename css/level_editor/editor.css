@@ -1387,7 +1387,7 @@ hr {
 }
 
 .extraLifeCheckbox,
-.roundUpCheckbox {
+.ability-card .roundUpCheckbox { /* .ability-card - beats the generic .ability-card input style */
     appearance: none; /* Odstraní výchozí vzhled prohlížeče */
     -webkit-appearance: none;
     width: 20px;      /* Šířka */
@@ -1402,6 +1402,7 @@ hr {
     vertical-align: middle;
     position: relative;
     transition: all 0.2s ease;
+    padding: 0;
 }
 
 /* Styl při najetí myší */

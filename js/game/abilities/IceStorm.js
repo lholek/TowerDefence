@@ -12,12 +12,12 @@ export default class IceStorm extends Ability {
     this.id = config.configId || this.id;
     this.selectionCount = config.selectionCount || config.selection_count || config.count || 3;
 
-    // Both clamped to 0-100 (same limits as the editor's steppers), so a
-    // hand-edited JSON can't make enemies walk backwards or take silly damage.
+    // Same limits as the editor's steppers: slow 0-100 (so a hand-edited JSON
+    // can't make enemies walk backwards), vulnerability 0 and up (no max).
     // enemy_slow 80 = enemies on the ice move 80% slower (20% of their speed)
     this.enemySlow = this._percent(config.enemy_slow, 80);
     // enemy_vulnerability 50 = enemies on the ice take +50% damage
-    this.enemyVulnerability = this._percent(config.enemy_vulnerability, 50);
+    this.enemyVulnerability = this._percent(config.enemy_vulnerability, 50, Infinity);
 
     this.isPlacing = false;    // true while player selects tiles
     this.pendingSelections = []; // store selected tiles while in placing mode
@@ -352,9 +352,9 @@ export default class IceStorm extends Ability {
   }
 
   // config value as a whole % in 0-100, fallback when missing / not a number
-  _percent(value, fallback) {
+  _percent(value, fallback, max = 100) {
     const n = Number(value ?? fallback);
-    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : fallback;
+    return Number.isFinite(n) ? Math.max(0, Math.min(max, n)) : fallback;
   }
 
   // stable pseudo-random 0..1 for a seed - keeps each storm's layout fixed

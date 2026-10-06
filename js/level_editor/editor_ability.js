@@ -189,7 +189,7 @@ export const abilityEditor = (() => {
                 ` : isGoldRush ? `
                     <div class="ability-gold-rush-modifiers">
                         <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                            <div class="stat-row">+${ability.coin_bonus ?? 100}% <span class="stat-label">Gold Income (from kills)</span></div>
+                            <div class="stat-row">${formatPct(ability.coin_bonus ?? 100, '+')} <span class="stat-label">Gold Income (from kills)</span></div>
                         </div>
 
                         <label class="editor-row">
@@ -205,8 +205,8 @@ export const abilityEditor = (() => {
                 ` : isIceStorm ? `
                     <div class="ability-ice-storm-modifiers">
                         <div class="stats-preview-box" style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; margin-bottom: 10px;">
-                            <div class="stat-row">-${ability.enemy_slow ?? 80}% <span class="stat-label">Enemy Speed</span></div>
-                            <div class="stat-row">+${ability.enemy_vulnerability ?? 50}% <span class="stat-label">Damage taken</span></div>
+                            <div class="stat-row">${formatPct(ability.enemy_slow ?? 80, '-')} <span class="stat-label">Enemy Speed</span></div>
+                            <div class="stat-row">${formatPct(ability.enemy_vulnerability ?? 50, '+')} <span class="stat-label">Damage taken</span></div>
                         </div>
 
                         <label class="editor-row">
@@ -411,6 +411,13 @@ export const abilityEditor = (() => {
             </span>`;
         }
         return `<span>±0%</span>`;
+    };
+
+    // Gold Rush / Ice Storm preview - same green bold look as formatStat
+    // (every value there is a bonus for the player, so never red)
+    const formatPct = (val, sign) => {
+        if (!Number(val)) return `<span>±0%</span>`;
+        return `<span class="stat-pos" style="color: #4caf50; font-weight: bold;">${sign}${formatNumber(val)}%</span>`;
     };
 
     return {

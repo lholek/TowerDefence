@@ -93,7 +93,6 @@
   "ice_storm_enemy_vulnerability": {
     "step": 5,
     "min": 0,
-    "max": 100,
     "hold": true
   },
   "ice_storm_selection_count": {
