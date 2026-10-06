@@ -33,7 +33,8 @@
             "Redesigned ability cards with a unique animated background for each ability",
             "New graphics setting 'UI Effects' - set it to Low to turn off the card animations for better performance",
             "Card animations now pause together with the game",
-            "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling"
+            "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling",
+            "Fixed lore button"
           ]
         },
         {
