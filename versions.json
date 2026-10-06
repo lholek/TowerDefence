@@ -38,7 +38,7 @@
         },
         {
           "<b>System</b>": [
-            "Minimum supported resolution raised to 1920x1080 (Full HD) - smaller screens now show the unsupported resolution scree"
+            "Recommended resolution 1920x1080 (Full HD) - the unsupported resolution screen now checks the real browser window size, smaller screens can zoom out (CTRL -) to play"
           ]
         },
         "TODO: Lore for abilites, different class of mages etc.",

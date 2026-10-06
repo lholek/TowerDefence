@@ -328,7 +328,7 @@
     margin-left: 5px;
 }
 
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 949px) {
     .ability-card {
         padding: 3px;
     }
@@ -387,7 +387,7 @@
 .ability-dmg {
   line-height: 1.5;
 }
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 949px) {
     .ability-dmg {
         padding: 1px;
     }
@@ -473,7 +473,7 @@
   text-align: center;
 }
 
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 949px) {
     .ability-meta {
         font-size: 14px;
     }
@@ -734,7 +734,7 @@
     }
 }
 
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 949px) {
     .menu-container {
         gap: 6px;
     }
@@ -1276,9 +1276,12 @@
   margin-bottom: 15px;
 }
 
-/* Show the blocker if the width is less than 1920px OR height is less than 1080px -
-   minimum supported resolution is now 1920x1080 (Full HD) */
-@media (max-width: 1919px), (max-height: 1079px) {
+/* Show the blocker when the game itself doesn't fit - measured from the
+   layout (the BROWSER window in CSS px, not the monitor resolution): the
+   1230px wide canvas needs ~1280px, the compact layout ~875px of height.
+   A 1920x1080 monitor at 100% gives ~1920x950, so it always fits; at 125%
+   Windows scaling (~1536x730) the player zooms out to 80% (Ctrl -). */
+@media (max-width: 1279px), (max-height: 874px) {
     #resolution-blocker {
         display: flex;
     }

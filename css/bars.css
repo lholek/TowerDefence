@@ -1335,12 +1335,15 @@ body.game-paused #progressBar.ntu-progress-fill::after{
 
 
 /* ================================================================
-   COMPACT - windows up to 900px tall (e.g. a 1920x1080 laptop at 125%
-   Windows scaling = 1536x864), same idea as the old max-height: 900px
+   COMPACT - windows up to 949px tall, same breakpoint as the max-height
    rules in style.css / ui.css: everything a bit lower so the whole game
-   still fits without scrolling.
+   still fits without scrolling. The normal layout needs ~950px of height
+   (measured), so anything shorter must be compact - e.g. a 1920x1080
+   screen with a bookmarks bar (~915px) or Windows 125% scaling zoomed
+   out to 80% (~910px). The compact layout itself needs ~875px, see the
+   #resolution-blocker breakpoint in ui.css.
    ================================================================ */
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 949px) {
   #topUi.ntu-bar{
     height:48px;
     margin-top:-12px; /* like the old .top-ui's -20px here */
