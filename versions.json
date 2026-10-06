@@ -5,22 +5,22 @@
       "release": "-",
       "changes": [
         {
+          "<b>Towers</b>": [ 
+            "Reworked the towers selector to be more user-friendly"
+          ]
+        },
+        {
           "<b>Abilities</b>": [
-          "TODO: Reworke the towers selector to be more user-friendly",
-          "TODO: Reworke the ability selector to be more user-friendly",
-          "TODO: Reworke the base ability class for future abilities, so it's consistent",
-          "New ability: EARTH:'Gold Rush (Mine)' - temporarily increases gold earned from enemies - FINISHED",
-          "TODO: New ability: AIR:'Tower's Fury' - FINISHED",
-          "TODO: New ability: FIRE:'Lava Floor' - FINISHED",
-          "TODO: New ability: WATER:'Ice Storm' - FINISHED",
-          "TODO: Make different looking cards for each ability type (Earth, Air, Fire, Water) so they are visually distinct and easier to identify at a glance"
+          "Reworked the ability selector to be more user-friendly",
+          "New ability: EARTH:'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
+          "New ability: WATER:'Ice Storm' - slow downs enemies and increses their vulnerability",
+          "New different looking cards for each ability type, so they are visually distinct and easier to identify at a glance"
           ]
         },
                 {
           "<b>Editor</b>": [
           "Added Gold Rush ability to the editor",
-          "Added Ice Storm ability to the editor",
-          "TODO: Reworke the ability cards to be more user-friendly"
+          "Added Ice Storm ability to the editor"
           ]
         },
         {
