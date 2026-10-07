@@ -42,7 +42,7 @@ export default class IceStorm extends Ability {
 
   /* Getter dynamicDescription */
   get dynamicDescription() {
-    return `-${this.enemySlow}% Enemy Speed / +${this.enemyVulnerability}% Damage taken`;
+    return `+${this.enemyVulnerability}% Damage taken / -${this.enemySlow}% Enemy Speed`;
   }
 
   // Beta 1.1 card (see Ability.js)
@@ -52,8 +52,8 @@ export default class IceStorm extends Ability {
 
   get cardStats() {
     return {
-      stat: `<span class="concept-num concept-good">-${groupNum(this.enemySlow)}%</span> Enemy Speed`,
-      sub: `<span class="concept-num concept-good">+${groupNum(this.enemyVulnerability)}%</span> Damage taken`
+      stat: `<span class="concept-num concept-good">+${groupNum(this.enemyVulnerability)}%</span> Damage taken`,
+      sub: `<span class="concept-num concept-good">-${groupNum(this.enemySlow)}%</span> Enemy Speed`
     };
   }
 

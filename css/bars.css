@@ -1277,7 +1277,8 @@
   color:#fff3d0;
   text-shadow:0 1px 2px #000, 0 0 6px rgba(0,0,0,0.8);
 }
-.ntu-progress-text b{ font-size:14px; color:#ffe7a3; }
+/* same size as the rest, Arial has no heavier weight than 700 - a thin stroke makes it bolder */
+.ntu-progress-text b{ color:#ffe7a3; -webkit-text-stroke:.4px currentColor; }
 /* level up flash */
 #progressContainer.is-levelup{ animation: ntuLevelUp .9s ease; }
 @keyframes ntuLevelUp{

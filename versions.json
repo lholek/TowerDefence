@@ -12,8 +12,8 @@
         {
           "<b>Abilities</b>": [
           "Reworked the ability selector to be more user-friendly",
-          "New ability: EARTH:'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
-          "New ability: WATER:'Ice Storm' - slow downs enemies and increses their vulnerability",
+          "New ability: 'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
+          "New ability: 'Ice Storm' - slow downs enemies and increses their vulnerability",
           "New different looking cards for each ability type, so they are visually distinct and easier to identify at a glance"
           ]
         },
@@ -43,7 +43,6 @@
           ]
         },
         "TODO: Lore for abilites, different class of mages etc.",
-        "TODO: Rework tower and ability selectors interface",
         "TODO: Since now is minimum resolution 1920x1080, rework the UI and canvas to be bigger",
         "TODO: Since new cards ,needs performance optimization, so the game can run on low-end devices",
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
