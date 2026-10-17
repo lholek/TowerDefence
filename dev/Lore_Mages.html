@@ -27,9 +27,9 @@
   }
 
   /* =====================================================================
-     NEW 1 - Unroll: the rolls move apart while the parchment grows, then
-     the writing fades in. Rolls "turn" (a light band sweeps over them)
-     while it unrolls.
+     NEW 1 - Unroll: the rolls move apart while the parchment grows; the
+     letter is already written on it, so it appears as the sheet opens.
+     Rolls "turn" (a light band sweeps over them) while it unrolls.
      ===================================================================== */
   .scroll-container.unrolling .parchment-body {
     overflow: hidden;
@@ -38,13 +38,6 @@
   @keyframes parchmentUnroll {
     0%   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
     100% { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
-  }
-  .scroll-container.unrolling .parchment-content {
-    animation: inkAppear 700ms ease-out 1100ms both;
-  }
-  @keyframes inkAppear {
-    from { opacity: 0; filter: blur(2px); }
-    to   { opacity: 1; filter: none; }
   }
   .roll-spin {
     position: absolute; inset: 0; border-radius: 6px / 27px;
@@ -100,8 +93,8 @@
       radial-gradient(ellipse 90px 50px at 80% 63%, rgba(70, 36, 10, .14), transparent 70%),
       radial-gradient(ellipse 50px 34px at 15% 86%, rgba(40, 18, 4, .18), transparent 70%),
       /* two small burn holes with a scorched rim */
-      radial-gradient(circle 10px at 92% 46%, #140802 0 4px, rgba(70, 30, 6, .85) 6px, rgba(110, 60, 20, .35) 8px, transparent 10px),
-      radial-gradient(circle 8px at 7% 72%, #140802 0 3px, rgba(70, 30, 6, .85) 5px, rgba(110, 60, 20, .35) 6.5px, transparent 8px);
+      radial-gradient(circle 10px at 96.5% 46%, #140802 0 4px, rgba(70, 30, 6, .85) 6px, rgba(110, 60, 20, .35) 8px, transparent 10px),
+      radial-gradient(circle 8px at 3.5% 72%, #140802 0 3px, rgba(70, 30, 6, .85) 5px, rgba(110, 60, 20, .35) 6.5px, transparent 8px);
     background-size: 100% 900px;
   }
   /* cracks in the old parchment + two fold lines, repeating down the scroll
@@ -291,6 +284,77 @@
   .scroll-roll::before { left: -18px; }
   .scroll-roll::after  { right: -18px; }
 
+  /* =====================================================================
+     NEW 6 - Old-book lettering from fonts already installed with the
+     system (Palatino Linotype / Book Antiqua on Windows, Palatino on Mac)
+     - nothing bundled with the game, so no font files or licenses to ship.
+     Titles in spaced small caps, the drop cap in deep red.
+     ===================================================================== */
+  .parchment-content {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: 17px;
+  }
+  .parchment-content .lore-header {
+    font-variant: small-caps;
+    font-size: 2.2rem; letter-spacing: 3px;
+  }
+  .mage-heading .mage-name { font-variant: small-caps; font-size: 1.9rem; letter-spacing: 3px; }
+  .mage-speech::first-letter { font-size: 3.4rem; font-weight: 700; }
+
+  /* =====================================================================
+     NEW 7 - Wax seal of the High Elven Council, pressed onto the middle of
+     the top roll (its ribbons hang over the parchment's top edge). Stamped
+     down (falls in, presses, settles) right after the scroll unrolls.
+     ===================================================================== */
+  .council-seal {
+    position: absolute;
+    top: -6px;
+    left: calc(50% - 39px);
+    width: 78px; height: 78px;
+    z-index: 6;                       /* above the rolls (z-index 3) */
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .6));
+  }
+  .council-seal svg { display: block; width: 100%; height: 100%; }
+  .council-seal.seen { animation: sealStamp 650ms cubic-bezier(.3, .8, .4, 1.2) both; }
+  @keyframes sealStamp {
+    0%   { opacity: 0; transform: scale(1.8) rotate(-22deg); }
+    55%  { opacity: 1; transform: scale(.9)  rotate(-2deg); }
+    75%  {             transform: scale(1.05) rotate(-5deg); }
+    100% { opacity: 1; transform: scale(1)   rotate(-4deg); }
+  }
+
+  /* =====================================================================
+     NEW 8 - Close = roll the parchment back up into the top roll, then
+     fade out (the reverse of the unroll)
+     ===================================================================== */
+  .lore-close {
+    position: absolute; top: 10px; right: 34px; z-index: 5;
+    background: none; border: none; padding: 0; cursor: pointer;
+    font: 700 30px/1 Georgia, serif; color: #f0c674;
+    text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, .8);
+    transition: color .2s, transform .2s;
+  }
+  .lore-close:hover { color: #fff3c4; transform: scale(1.15); }
+  .scroll-container.rolling-up .parchment-body {
+    overflow: hidden;
+    animation: parchmentRollUp 900ms cubic-bezier(.55, 0, .75, .25) forwards;
+  }
+  @keyframes parchmentRollUp {
+    from { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
+    to   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
+  }
+  .scroll-container.rolling-up .roll-spin::before {
+    opacity: 1;
+    animation: rollTurn 380ms linear infinite reverse;
+  }
+  /* chapter tabs vanish instantly when the scroll starts rolling up */
+  .scroll-container.rolling-up .lore-nav,
+  .scroll-container.closed .lore-nav { visibility: hidden; animation: none; }
+  .scroll-container { transition: opacity 280ms ease-in, transform 280ms ease-in; }
+  .scroll-container.closed { opacity: 0; transform: scale(.94); pointer-events: none; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .reveal { opacity: 1; transform: none; }
@@ -302,7 +366,40 @@
 <button class="replay" id="replay">&#8635; Unroll again</button>
 
 <div class="scroll-container unrolling" id="loreScroll">
+  <button class="lore-close" id="loreClose" title="Close">&times;</button>
   <div class="scroll-roll top-roll"><div class="roll-spin"></div></div>
+  <!-- wax seal of the Council on the top roll: a Tree of Life pressed into red wax -->
+  <div class="council-seal" aria-hidden="true">
+    <svg viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="sealWax" cx="38%" cy="32%" r="75%">
+          <stop offset="0" stop-color="#d4442c"/>
+          <stop offset=".5" stop-color="#9a1f12"/>
+          <stop offset="1" stop-color="#5a0b05"/>
+        </radialGradient>
+      </defs>
+      <!-- ribbon tails under the wax -->
+      <path d="M38 62 30 99 37 93 43 99 47 64Z" fill="#7a1a10"/>
+      <path d="M55 64 59 99 65 93 72 99 64 62Z" fill="#62130b"/>
+      <!-- uneven blob of wax -->
+      <path d="M50 6C62 5 70 12 79 16 88 22 94 33 93 45 95 57 90 68 83 77 75 86 64 93 51 93 38 95 26 89 18 80 10 71 6 60 7 48 6 36 12 25 21 17 29 10 39 6 50 6Z" fill="url(#sealWax)"/>
+      <!-- pressed disc -->
+      <circle cx="50" cy="50" r="31" fill="#8e1c10" stroke="#4e0904" stroke-width="1.6"/>
+      <circle cx="50.8" cy="50.8" r="31" fill="none" stroke="rgba(255,170,140,.35)" stroke-width="1"/>
+      <!-- Tree of Life in relief: dark groove + light edge -->
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#4e0904" stroke-width="2.4">
+          <circle cx="50" cy="47" r="22" stroke-width="1.4"/>
+          <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+          <path d="M50 73Q44 75 39 77M50 73Q56 75 61 77"/>
+        </g>
+        <g stroke="rgba(255,175,145,.45)" stroke-width="1" transform="translate(-.8 -.8)">
+          <circle cx="50" cy="47" r="22"/>
+          <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+        </g>
+      </g>
+    </svg>
+  </div>
 
   <div class="parchment-body" id="loreBody">
     <div class="parchment-content">
@@ -337,6 +434,7 @@
           Let the stone of your bastions stand against their flame. For the world, for the light, for survival.
         </p>
 
+
         <p class="lore-text signature">
           Written in the soot of the falling realm,<br>
           <strong>— The High Elven Council</strong>
@@ -350,7 +448,7 @@
           <div class="mage-name">Pyrrhos</div>
           <div class="mage-title">Keeper of the Ember</div>
         </div>
-        <div class="mage-portrait reveal"><img src="../assets/images/mage_fire.png" alt="Pyrrhos, Keeper of the Ember"></div>
+        <div class="mage-portrait reveal"><img src="../assets/images/mage_fire.webp" alt="Pyrrhos, Keeper of the Ember"></div>
         <p class="lore-text mage-speech reveal">
           Guardian, I was once an elf of the High Temple, as fair as any you know. When the Abyssal Veins tore open, I did what no elf had dared - I <strong>walked into the realm of the very fiends that now march upon us</strong>.
         </p>
@@ -370,7 +468,7 @@
           <div class="mage-name">Sylvaran</div>
           <div class="mage-title">Warden of the Winds</div>
         </div>
-        <div class="mage-portrait right reveal"><img src="../assets/images/mage_fury.png" alt="Sylvaran, Warden of the Winds"></div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_fury.webp" alt="Sylvaran, Warden of the Winds"></div>
         <p class="lore-text mage-speech reveal">
           Guardian, I have studied the winds since before your towers had foundations. It was <strong>I who enchanted your arrows</strong>. Each one now carries the will of the wind and <strong>seeks its foe on its own</strong> - bend as the invader may, the arrow bends with it.
         </p>
@@ -390,7 +488,7 @@
           <div class="mage-name">Aurelius</div>
           <div class="mage-title">The Gilded Alchemist</div>
         </div>
-        <div class="mage-portrait reveal"><img src="../assets/images/mage_gold.png" alt="Aurelius, the Gilded Alchemist"></div>
+        <div class="mage-portrait reveal"><img src="../assets/images/mage_gold.webp" alt="Aurelius, the Gilded Alchemist"></div>
         <p class="lore-text mage-speech reveal">
           Guardian, the fiends of the pit are not made of fire alone. Clawing their way up through the Abyssal Veins, they <strong>swallowed the deep gold of the underworld</strong>, and it still flows molten in their veins.
         </p>
@@ -410,7 +508,7 @@
           <div class="mage-name">Nivaris</div>
           <div class="mage-title">Weaver of Frost</div>
         </div>
-        <div class="mage-portrait right reveal"><img src="../assets/images/mage_ice.png" alt="Nivaris, Weaver of Frost"></div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_ice.webp" alt="Nivaris, Weaver of Frost"></div>
         <p class="lore-text mage-speech reveal">
           Guardian, I come from the frozen peaks of the north, where no fire has ever burned. The pit's legions are made of flame - and <strong>flame fears only one thing</strong>.
         </p>
@@ -480,17 +578,41 @@
   const io = new IntersectionObserver(entries => {
     entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('seen'); io.unobserve(en.target); } });
   }, { root: body, threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  const animated = [...document.querySelectorAll('.reveal')];
+  animated.forEach(el => io.observe(el));
 
-  // unroll on open (+ the replay button for trying it out)
+  // the Council's seal on the top roll - stamped once the scroll is open
+  const seal = document.querySelector('.council-seal');
+  let sealTimer = null;
+
+  // unroll on open (+ the replay button for trying it out). Every open
+  // starts fresh: back at the letter, chapters / seal animate again.
   function unroll() {
+    scroll.classList.remove('rolling-up', 'closed', 'unrolling');
+    animated.forEach(el => { el.classList.remove('seen'); io.observe(el); });
+    seal.classList.remove('seen');
+    clearTimeout(sealTimer);
+    sealTimer = setTimeout(() => seal.classList.add('seen'), 1100);
     body.scrollTop = 0;
+    body.style.setProperty('--tear', '0px');
     updateTabs();
-    scroll.classList.remove('unrolling');
     void scroll.offsetWidth;            // restart the animation
     scroll.classList.add('unrolling');
     setTimeout(() => scroll.classList.remove('unrolling'), 1900);
   }
+
+  // close: roll the parchment back up, then fade the scroll out
+  let closing = false;
+  function rollUp() {
+    if (closing || scroll.classList.contains('closed')) return;
+    closing = true;
+    scroll.classList.remove('unrolling');
+    scroll.classList.add('rolling-up');
+    setTimeout(() => { scroll.classList.add('closed'); closing = false; }, 900);
+  }
+
+  document.getElementById('loreClose').onclick = rollUp;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') rollUp(); });
   document.getElementById('replay').onclick = unroll;
   unroll();
 </script>
