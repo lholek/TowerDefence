@@ -4,8 +4,9 @@
 <meta charset="UTF-8" />
 <title>Lore - Elder Mages (mockup)</title>
 <!-- Mockup of the Lore scroll: the original letter (index.html #lorePopup)
-     followed by the four Elder Mages on ONE long parchment. The wax seals on
-     the bottom roll scroll the parchment to each part. Same stylesheets as
+     followed by the four Elder Mages on ONE long parchment. The tabs on the
+     bottom roll (same look as the game's Towers / Abilities tabs) scroll the
+     parchment to each chapter. Same stylesheets as
      the game (style.css + ui_lore.css, no extra web font), so the text looks
      exactly like in-game; only the parts marked NEW below are added. -->
 <link rel="stylesheet" href="../css/style.css" />
@@ -14,7 +15,7 @@
   /* ---------- page around the scroll (stands in for the popup backdrop) ---------- */
   html, body { height: 100%; }
   body {
-    background: radial-gradient(ellipse at center, #1c140e 0%, #070504 70%);
+    background: #0b0b0b;   /* ~ the game's popup backdrop (rgba(0,0,0,.9) over the menu) */
     display: flex; justify-content: center; align-items: center;
     min-height: 100vh; overflow: hidden;
   }
@@ -26,8 +27,9 @@
   }
 
   /* =====================================================================
-     NEW 1 - Unroll: the bottom roll travels down while the parchment grows
-     out from under the top roll, then the writing fades in.
+     NEW 1 - Unroll: the rolls move apart while the parchment grows, then
+     the writing fades in. Rolls "turn" (a light band sweeps over them)
+     while it unrolls.
      ===================================================================== */
   .scroll-container.unrolling .parchment-body {
     overflow: hidden;
@@ -44,9 +46,8 @@
     from { opacity: 0; filter: blur(2px); }
     to   { opacity: 1; filter: none; }
   }
-  /* light band sweeping over the rolls = they look like they're turning */
   .roll-spin {
-    position: absolute; inset: 0; border-radius: 4px / 25px;
+    position: absolute; inset: 0; border-radius: 6px / 27px;
     pointer-events: none; overflow: hidden; z-index: 1;
   }
   .roll-spin::before {
@@ -55,8 +56,7 @@
     transform: translateY(-120%);
     opacity: 0;
   }
-  .scroll-container.unrolling .roll-spin::before,
-  .scroll-container.rolling .roll-spin::before {
+  .scroll-container.unrolling .roll-spin::before {
     opacity: 1;
     animation: rollTurn 380ms linear infinite;
   }
@@ -66,35 +66,55 @@
   }
 
   /* =====================================================================
-     NEW 2 - Torn, singed parchment edges
+     NEW 2 - Old parchment: torn + singed edges, stains, cracks, fold lines
      ===================================================================== */
   .parchment-body {
     border-left: none; border-right: none;
-    /* jagged left + right edge (SVG strips) + solid middle */
+    /* the parchment texture travels with the writing (local), so it reads
+       as one old sheet being rolled - not text sliding behind a window */
+    background-attachment: local;
+    /* ragged left + right edge (22px SVG strips: small tears + a few deep
+       bites taken out of the edge) + solid middle. --tear = -scrollTop
+       (set by the script), so the tears move with the parchment too. */
     -webkit-mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='140' preserveAspectRatio='none'%3E%3Cpath d='M16 0H7L10 9 4 17 9 26 3 35 8 44 5 51 11 60 2 70 8 79 4 88 10 97 3 107 7 116 2 125 8 133 6 140H16Z'/%3E%3C/svg%3E") left top / 16px 140px repeat-y,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='140' preserveAspectRatio='none'%3E%3Cpath d='M0 0H9L5 8 12 18 7 27 13 36 6 45 11 55 4 63 12 72 7 82 14 91 6 100 11 110 5 119 13 128 8 140H0Z'/%3E%3C/svg%3E") right 0 top 37px / 16px 140px repeat-y,
-      linear-gradient(#000, #000) center / calc(100% - 30px) 100% no-repeat;
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M22 0H9L12 10 5 19 11 30 4 41 9 50 6 58 13 66 3 77 8 88 17 92 20 100 9 104 4 115 10 126 6 137 2 148 9 158 5 170 12 180 7 191 3 203 10 214 16 219 19 228 8 233 5 245 9 252 6 260H22Z'/%3E%3C/svg%3E") left 0 top var(--tear, 0px) / 22px 260px repeat-y,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M0 0H12L8 9 15 20 9 31 17 42 11 52 16 61 6 70 3 79 13 84 18 95 10 107 16 118 9 129 14 140 19 151 12 162 17 174 8 185 2 193 5 205 15 211 11 223 17 235 13 248 16 260H0Z'/%3E%3C/svg%3E") right 0 top calc(var(--tear, 0px) + 71px) / 22px 260px repeat-y,
+      linear-gradient(#000, #000) center / calc(100% - 42px) 100% no-repeat;
             mask:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='140' preserveAspectRatio='none'%3E%3Cpath d='M16 0H7L10 9 4 17 9 26 3 35 8 44 5 51 11 60 2 70 8 79 4 88 10 97 3 107 7 116 2 125 8 133 6 140H16Z'/%3E%3C/svg%3E") left top / 16px 140px repeat-y,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='140' preserveAspectRatio='none'%3E%3Cpath d='M0 0H9L5 8 12 18 7 27 13 36 6 45 11 55 4 63 12 72 7 82 14 91 6 100 11 110 5 119 13 128 8 140H0Z'/%3E%3C/svg%3E") right 0 top 37px / 16px 140px repeat-y,
-      linear-gradient(#000, #000) center / calc(100% - 30px) 100% no-repeat;
-    /* singed edges: extra dark burn just inside the tears */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M22 0H9L12 10 5 19 11 30 4 41 9 50 6 58 13 66 3 77 8 88 17 92 20 100 9 104 4 115 10 126 6 137 2 148 9 158 5 170 12 180 7 191 3 203 10 214 16 219 19 228 8 233 5 245 9 252 6 260H22Z'/%3E%3C/svg%3E") left 0 top var(--tear, 0px) / 22px 260px repeat-y,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M0 0H12L8 9 15 20 9 31 17 42 11 52 16 61 6 70 3 79 13 84 18 95 10 107 16 118 9 129 14 140 19 151 12 162 17 174 8 185 2 193 5 205 15 211 11 223 17 235 13 248 16 260H0Z'/%3E%3C/svg%3E") right 0 top calc(var(--tear, 0px) + 71px) / 22px 260px repeat-y,
+      linear-gradient(#000, #000) center / calc(100% - 42px) 100% no-repeat;
     box-shadow:
-      inset 18px 0 22px -10px rgba(30, 12, 2, .85),
-      inset -18px 0 22px -10px rgba(30, 12, 2, .85),
+      inset 26px 0 24px -10px rgba(30, 12, 2, .9),
+      inset -26px 0 24px -10px rgba(30, 12, 2, .9),
       inset 0 0 100px rgba(0, 0, 0, 0.65),
       inset 0 0 30px rgba(43, 21, 6, 0.5);
   }
-  /* a few age stains / scorch marks on the parchment itself */
-  .parchment-content { position: relative; }
+  .parchment-content { position: relative; z-index: 0; }
+  /* age stains / scorch marks */
   .parchment-content::before {
-    content: ""; position: absolute; inset: -60px -45px; pointer-events: none;
+    content: ""; position: absolute; inset: -60px -45px; pointer-events: none; z-index: -1;
     background:
       radial-gradient(ellipse 70px 46px at 88% 12%, rgba(60, 30, 8, .18), transparent 70%),
       radial-gradient(ellipse 40px 60px at 6% 38%, rgba(40, 18, 4, .2), transparent 70%),
       radial-gradient(ellipse 90px 50px at 80% 63%, rgba(70, 36, 10, .14), transparent 70%),
-      radial-gradient(ellipse 50px 34px at 15% 86%, rgba(40, 18, 4, .18), transparent 70%);
+      radial-gradient(ellipse 50px 34px at 15% 86%, rgba(40, 18, 4, .18), transparent 70%),
+      /* two small burn holes with a scorched rim */
+      radial-gradient(circle 10px at 92% 46%, #140802 0 4px, rgba(70, 30, 6, .85) 6px, rgba(110, 60, 20, .35) 8px, transparent 10px),
+      radial-gradient(circle 8px at 7% 72%, #140802 0 3px, rgba(70, 30, 6, .85) 5px, rgba(110, 60, 20, .35) 6.5px, transparent 8px);
+    background-size: 100% 900px;
+  }
+  /* cracks in the old parchment + two fold lines, repeating down the scroll
+     (dark crack line with a lighter edge next to it = a real split) */
+  .parchment-content::after {
+    content: ""; position: absolute; inset: -60px -45px; pointer-events: none; z-index: -1;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 760' preserveAspectRatio='none'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='rgba(255,236,200,0.28)' stroke-width='1.2' transform='translate(0.8 0.8)'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3Cg stroke='rgba(45,22,6,0.45)' stroke-width='1'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") left top / 100% 760px repeat-y,
+      repeating-linear-gradient(to bottom,
+        transparent 0 252px,
+        rgba(40, 20, 4, .16) 252px 253px,
+        rgba(255, 236, 200, .12) 253px 254px,
+        transparent 254px 380px);
   }
 
   /* =====================================================================
@@ -111,28 +131,40 @@
   .lore-divider span { font-size: 1.3rem; line-height: 1; }
 
   .mage-section { position: relative; }
+  .mage-section::after { content: ""; display: block; clear: both; }
   .mage-heading { text-align: center; margin-bottom: 16px; }
   .mage-heading .mage-name { font-size: 1.6rem; font-weight: 700; color: #2b1506; letter-spacing: 2px; }
   .mage-heading .mage-title { font-style: italic; color: #4a3826; }
 
-  /* portrait: big, bleeds to the parchment's left edge, fades out to the
-     right and bottom so the text below/next to it flows over the parchment */
+  /* portrait: big, bleeds to the parchment's edge and fades out on the
+     three inner sides (top, bottom, towards the text). Alternates sides. */
   .mage-portrait {
     float: left;
     width: calc(58% + 45px);
     margin: 0 14px 6px -45px;          /* -45px = parchment padding -> touches the torn edge */
     aspect-ratio: 1122 / 1402;
     shape-outside: linear-gradient(to right, #000 70%, transparent 90%);
-    shape-image-threshold: .5;
-    shape-margin: 6px;
+    shape-image-threshold: .15;
+    shape-margin: 10px;
     -webkit-mask-image:
       linear-gradient(to right, #000 55%, transparent 98%),
-      linear-gradient(to bottom, #000 60%, transparent 100%);
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
     -webkit-mask-composite: source-in;
             mask-image:
       linear-gradient(to right, #000 55%, transparent 98%),
-      linear-gradient(to bottom, #000 60%, transparent 100%);
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
             mask-composite: intersect;
+  }
+  .mage-portrait.right {
+    float: right;
+    margin: 0 -45px 6px 14px;
+    shape-outside: linear-gradient(to left, #000 70%, transparent 90%);
+    -webkit-mask-image:
+      linear-gradient(to left, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
+            mask-image:
+      linear-gradient(to left, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
   }
   .mage-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .mage-speech { font-style: italic; }
@@ -147,84 +179,117 @@
     border-left: 3px solid #8b7355;
     color: #3d352a; font-size: .92rem;
   }
-  .mage-gift b { color: #2d4c2d; }
+  /* ability name as a small dark plate in the game's gold (#f0c674), like
+     the in-game tabs / cards, so it stands out on the parchment */
+  .mage-gift b {
+    display: inline-block;
+    margin: 0 2px;
+    padding: 1px 8px 2px;
+    border-radius: 5px;
+    border: 1px solid rgba(197, 152, 72, 0.7);
+    background: linear-gradient(#47321f, #2a1c10);
+    color: #f0c674;
+    font-style: normal; white-space: nowrap;
+    text-shadow: 0 1px 2px #000;
+    box-shadow: inset 0 1px 0 rgba(255, 230, 170, 0.16), 0 2px 0 rgba(0, 0, 0, 0.35);
+  }
 
   /* chapters ink in as they scroll into view */
   .reveal { opacity: 0; transform: translateY(14px); transition: opacity .8s ease-out, transform .8s ease-out; }
   .reveal.seen { opacity: 1; transform: none; }
   .mage-portrait.reveal { transform: translateX(-18px); transition-duration: 1.1s; }
+  .mage-portrait.right.reveal { transform: translateX(18px); }
   .mage-portrait.reveal.seen { transform: none; }
 
   /* =====================================================================
-     NEW 4 - Medieval navigation: wax seals with Roman numerals on the
-     bottom roll; each one scrolls the parchment to its chapter.
+     NEW 4 - Chapter tabs on the bottom roll - same look as the game's
+     Towers / Abilities tabs (css/bars.css .concept-tab) with the gold
+     number badge from the cards (.concept-card-index)
      ===================================================================== */
   .lore-nav {
     position: absolute; left: 0; right: 0; bottom: 0; height: 54px; /* = .scroll-roll */
     z-index: 4;
-    display: flex; justify-content: center; align-items: center; gap: 12px;
+    display: flex; justify-content: center; align-items: center; gap: 6px;
   }
-  .wax-seal {
-    position: relative;
-    width: 34px; height: 34px; padding: 0; border: none; cursor: pointer;
-    border-radius: 47% 53% 50% 48% / 52% 46% 54% 48%;   /* slightly uneven blob */
-    background: radial-gradient(circle at 38% 32%, #c8402a 0%, #8e1c10 45%, #5a0d06 100%);
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, .7),
-      inset 0 -2px 3px rgba(0, 0, 0, .45),
-      inset 0 2px 2px rgba(255, 160, 130, .35);
-    color: #f6d9a8;
-    font: 700 13px Georgia, 'Times New Roman', serif;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .7);
-    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-  }
-  /* stamped inner ring */
-  .wax-seal::before {
-    content: ""; position: absolute; inset: 5px; border-radius: 50%;
-    border: 1px solid rgba(255, 200, 160, .35);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4);
-  }
-  .wax-seal:hover { transform: translateY(-2px) rotate(-6deg); filter: brightness(1.15); }
-  .wax-seal.on {
-    transform: scale(1.18);
-    box-shadow:
-      0 0 0 2px #f0c674,
-      0 0 12px rgba(240, 198, 116, .75),
-      0 2px 4px rgba(0, 0, 0, .7),
-      inset 0 -2px 3px rgba(0, 0, 0, .45);
-  }
-  .seal-arrow {
-    background: none; border: none; cursor: pointer; padding: 0 4px;
-    color: #f0c674; font: 700 22px Georgia, serif; line-height: 1;
+  .lore-tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 30px; padding: 0 9px 0 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(197, 152, 72, 0.55);
+    background: linear-gradient(#47321f, #2a1c10);
+    color: #d9c7a0;
+    font: 700 12px/1 Arial, sans-serif; letter-spacing: .3px;
     text-shadow: 0 1px 2px #000;
-    transition: transform .2s, color .2s;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 230, 170, 0.16),
+      0 3px 0 rgba(0, 0, 0, 0.55),
+      0 5px 10px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease;
   }
-  .seal-arrow:hover:not(:disabled) { color: #fff3c4; transform: scale(1.2); }
-  .seal-arrow:disabled { opacity: .25; cursor: default; }
-  /* name of the chapter under the hovered / active seal */
-  .seal-label {
-    position: absolute; left: 0; right: 0; bottom: -24px; text-align: center;
-    font: italic 700 13px Georgia, serif; color: #f0c674; letter-spacing: 1px;
-    text-shadow: 0 1px 3px #000; pointer-events: none;
-    transition: opacity .3s;
+  .lore-tab:hover { transform: translateY(-1px); border-color: rgba(240, 198, 116, 0.9); color: #f3e5ab; }
+  .lore-tab:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255,230,170,0.16), 0 1px 0 rgba(0,0,0,0.55); }
+  .lore-tab.active {
+    background: linear-gradient(#6e4c22, #3b2711);
+    border-color: #f0c674;
+    color: #fff3d0;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 236, 190, 0.30),
+      0 3px 0 rgba(0, 0, 0, 0.55),
+      0 0 14px rgba(240, 198, 116, 0.35);
+  }
+  .lore-tab-num {
+    min-width: 20px; height: 20px; padding: 0 3px; box-sizing: border-box;
+    display: inline-grid; place-items: center;
+    border-radius: 4px;
+    font: 700 11px/1 Georgia, 'Times New Roman', serif;
+    color: #29170a; text-shadow: none;
+    background: linear-gradient(#f8dfa0, #c59848);
+    border: 1px solid #68420e;
+    box-shadow: inset 0 1px 0 #fff2c8, 0 2px 0 rgba(0, 0, 0, 0.45);
   }
 
   /* =====================================================================
-     NEW 5 - Embers drifting up past the scroll (transform/opacity only)
+     NEW 5 - Medieval rolls: oak with a deep grain, a round cylinder shine
+     and turned wooden knobs with carved rings instead of the plain
+     growth-ring ends - all wood, no metal
      ===================================================================== */
-  .embers { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-  .embers i {
-    position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
-    background: #ffb347; box-shadow: 0 0 6px 2px rgba(255, 120, 30, .6);
-    opacity: 0; animation: emberRise linear infinite;
+  .scroll-roll {
+    border-radius: 6px / 27px;
+    background:
+      /* round cylinder: light catches the upper middle */
+      linear-gradient(to bottom,
+        rgba(0,0,0,.55) 0%, rgba(255,215,160,.05) 22%, rgba(255,225,180,.22) 38%,
+        rgba(255,215,160,.06) 52%, rgba(0,0,0,.25) 75%, rgba(0,0,0,.7) 100%),
+      /* oak grain - irregular dark lines along the roll */
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0) 0 9px, rgba(20,8,2,.35) 9px 10px, rgba(0,0,0,0) 10px 23px,
+        rgba(60,28,10,.4) 23px 25px, rgba(0,0,0,0) 25px 31px, rgba(20,8,2,.5) 31px 32px,
+        rgba(0,0,0,0) 32px 47px),
+      linear-gradient(to bottom, #2a1407, #5a2e12 40%, #6b3817 50%, #4a240d 62%, #1e0e05);
+    border: 2px solid #0a0502;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,0.9),
+      inset 0 1px 1px rgba(255,220,170,0.12);
   }
-  @keyframes emberRise {
-    0%   { transform: translate(0, 0);        opacity: 0; }
-    10%  { opacity: .9; }
-    70%  { opacity: .6; }
-    100% { transform: translate(var(--dx), -105vh); opacity: 0; }
+  /* turned wooden knobs with carved rings (replace the growth-ring ends) */
+  .scroll-roll::before, .scroll-roll::after {
+    top: -9px;
+    width: 30px;
+    height: calc(100% + 18px);
+    border: 2px solid #0a0502;
+    border-radius: 45% / 50%;
+    background:
+      radial-gradient(ellipse 30% 20% at 50% 50%, #2a1407 0%, #4a240d 70%, transparent 74%),                  /* end grain center */
+      radial-gradient(ellipse 52% 36% at 50% 50%, transparent 60%, rgba(0,0,0,.6) 62%, transparent 70%),     /* carved ring */
+      radial-gradient(ellipse 72% 46% at 50% 50%, transparent 76%, rgba(0,0,0,.45) 78%, transparent 84%),    /* outer carved ring */
+      linear-gradient(to bottom, #1a0b04 0%, #6b3817 30%, #8a4c22 45%, #5a2c10 65%, #1a0b04 100%);           /* turned wood */
+    box-shadow:
+      inset 0 0 8px rgba(0,0,0,.7),
+      0 4px 8px rgba(0,0,0,.7);
   }
-  .scroll-container { z-index: 1; }
+  .scroll-roll::before { left: -18px; }
+  .scroll-roll::after  { right: -18px; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -235,7 +300,6 @@
 <body>
 
 <button class="replay" id="replay">&#8635; Unroll again</button>
-<div class="embers" id="embers"></div>
 
 <div class="scroll-container unrolling" id="loreScroll">
   <div class="scroll-roll top-roll"><div class="roll-spin"></div></div>
@@ -244,7 +308,7 @@
     <div class="parchment-content">
 
       <!-- ===== I. The letter (same text as the game) ===== -->
-      <section class="lore-chapter" data-label="The Ember Decree">
+      <section class="lore-chapter" data-label="Decree">
         <h2 class="lore-header">The Ember Decree</h2>
 
         <p class="lore-text"><em>Guardian of the Last Light,</em></p>
@@ -279,7 +343,7 @@
         </p>
       </section>
 
-      <!-- ===== II. Pyrrhos ===== -->
+      <!-- ===== II. Pyrrhos - picture LEFT ===== -->
       <section class="lore-chapter mage-section" data-label="Pyrrhos">
         <div class="lore-divider"><span>&#10086;</span></div>
         <div class="mage-heading reveal">
@@ -288,32 +352,38 @@
         </div>
         <div class="mage-portrait reveal"><img src="../assets/images/mage_fire.png" alt="Pyrrhos, Keeper of the Ember"></div>
         <p class="lore-text mage-speech reveal">
-          Guardian, I walked where no elf has walked - down into the <strong>Abyssal Veins</strong>, where the demons are born. There I took their enchanted magma, still screaming with the fury of the pit, and <strong>forged it into a spell of my own</strong>.
+          Guardian, I was once an elf of the High Temple, as fair as any you know. When the Abyssal Veins tore open, I did what no elf had dared - I <strong>walked into the realm of the very fiends that now march upon us</strong>.
         </p>
         <p class="lore-text reveal">
-          Point me to the road they march upon, and I shall <strong>turn it to molten stone beneath their feet</strong>. Let them taste the very fire they brought upon our lands - and let it burn them, again and again, for as long as my flame holds.
+          I lived among their fires for longer than I care to remember. The pit took my youth and burned the elf out of me - but <strong>it taught me its magic</strong>. I took their enchanted magma and forged it into a spell of my own.
+        </p>
+        <p class="lore-text reveal">
+          Point me to the road they march upon, and I shall <strong>turn it to molten stone beneath their feet</strong>. Let them taste the fire they brought upon our lands.
         </p>
         <div class="mage-gift reveal">His gift to the Guardian: <b>&#127755; Lava Floor</b> - the chosen stretch of road becomes lava, scorching every foe that treads upon it.</div>
       </section>
 
-      <!-- ===== III. Sylvaran ===== -->
+      <!-- ===== III. Sylvaran - picture RIGHT ===== -->
       <section class="lore-chapter mage-section" data-label="Sylvaran">
         <div class="lore-divider"><span>&#10086;</span></div>
         <div class="mage-heading reveal">
           <div class="mage-name">Sylvaran</div>
           <div class="mage-title">Warden of the Winds</div>
         </div>
-        <div class="mage-portrait reveal"><img src="../assets/images/mage_fury.png" alt="Sylvaran, Warden of the Winds"></div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_fury.png" alt="Sylvaran, Warden of the Winds"></div>
         <p class="lore-text mage-speech reveal">
-          Guardian, for a hundred winters the winds have been my only company atop the last watchtower. It was <strong>my breath that enchanted your quivers</strong>, so that no arrow of yours would ever lose its mark.
+          Guardian, I have studied the winds since before your towers had foundations. It was <strong>I who enchanted your arrows</strong>. Each one now carries the will of the wind and <strong>seeks its foe on its own</strong> - bend as the invader may, the arrow bends with it.
         </p>
         <p class="lore-text reveal">
-          Call upon me when the horde grows thick, and I will <strong>unleash the gale upon every bastion you hold</strong>. Your arrows shall fly faster and bite deeper than any mortal bow allows. But heed me - the storm is fickle, and it never stays for long.
+          And when the horde grows thick, call upon me again. I will <strong>pour the storm into your bastions themselves</strong>, and for a while every tower you have raised shall shoot faster and strike harder than any mortal hand could make it.
         </p>
-        <div class="mage-gift reveal">His gift to the Guardian: <b>&#127993; Tower's Fury</b> - for a while, every tower on the map shoots faster and harder.</div>
+        <p class="lore-text reveal">
+          But heed me - the storm is fickle, and it never stays for long.
+        </p>
+        <div class="mage-gift reveal">His gifts to the Guardian: <b>&#127993; Homing arrows</b> on every tower, and <b>Tower's Fury</b> - for a while, every tower on the map is empowered.</div>
       </section>
 
-      <!-- ===== IV. Aurelius ===== -->
+      <!-- ===== IV. Aurelius - picture LEFT ===== -->
       <section class="lore-chapter mage-section" data-label="Aurelius">
         <div class="lore-divider"><span>&#10086;</span></div>
         <div class="mage-heading reveal">
@@ -322,27 +392,33 @@
         </div>
         <div class="mage-portrait reveal"><img src="../assets/images/mage_gold.png" alt="Aurelius, the Gilded Alchemist"></div>
         <p class="lore-text mage-speech reveal">
-          Guardian, a war is won with gold as surely as with steel - towers do not raise themselves. I have learned the oldest secret of my craft: <strong>to draw coin from what the fallen leave behind</strong>.
+          Guardian, the fiends of the pit are not made of fire alone. Clawing their way up through the Abyssal Veins, they <strong>swallowed the deep gold of the underworld</strong>, and it still flows molten in their veins.
         </p>
         <p class="lore-text reveal">
-          Speak my charm before the next wave breaks, and <strong>every demon you slay shall pay twice the toll</strong> for its trespass. Spend it wisely, for my alchemy is slow to brew again.
+          For forty years I sought the formula to draw it out. Now I have it. Speak my charm, and when a demon falls, <strong>its dying embers cool into coin</strong> - twice the gold it would have left behind.
         </p>
-        <div class="mage-gift reveal">His gift to the Guardian: <b>&#9935;&#65039; Gold Rush</b> - while it lasts, enemies drop extra gold when they fall.</div>
+        <p class="lore-text reveal">
+          Spend it wisely, Guardian. Towers do not raise themselves, and my alchemy is slow to brew again.
+        </p>
+        <div class="mage-gift reveal">His gift to the Guardian: <b>&#9935;&#65039; Gold Rush</b> - while it lasts, every slain enemy drops extra gold.</div>
       </section>
 
-      <!-- ===== V. Nivaris ===== -->
+      <!-- ===== V. Nivaris - picture RIGHT ===== -->
       <section class="lore-chapter mage-section" data-label="Nivaris">
         <div class="lore-divider"><span>&#10086;</span></div>
         <div class="mage-heading reveal">
           <div class="mage-name">Nivaris</div>
           <div class="mage-title">Weaver of Frost</div>
         </div>
-        <div class="mage-portrait reveal"><img src="../assets/images/mage_ice.png" alt="Nivaris, Weaver of Frost"></div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_ice.png" alt="Nivaris, Weaver of Frost"></div>
         <p class="lore-text mage-speech reveal">
           Guardian, I come from the frozen peaks of the north, where no fire has ever burned. The pit's legions are made of flame - and <strong>flame fears only one thing</strong>.
         </p>
         <p class="lore-text reveal">
-          Mark the road, and I will <strong>bury it beneath a storm of ice</strong>. Their burning march will slow to a crawl, and their molten hides will grow so brittle that <strong>every blow cuts deeper</strong> - be it arrow or lava.
+          Mark the road, and I will <strong>call down a blizzard so fierce that the very ground freezes</strong>. Within my storm their burning march slows to a crawl, and the frost cracks their molten hides like glass.
+        </p>
+        <p class="lore-text reveal">
+          Strike them while they are frozen - <strong>every blow will cut deeper</strong>, be it arrow or lava.
         </p>
         <div class="mage-gift reveal">His gift to the Guardian: <b>&#10052;&#65039; Ice Storm</b> - enemies on the frozen road move slower and take more damage.</div>
 
@@ -356,75 +432,49 @@
 
   <div class="scroll-roll bottom-roll"><div class="roll-spin"></div></div>
 
-  <!-- wax seals - filled in by the script below -->
-  <nav class="lore-nav" id="loreNav">
-    <button class="seal-arrow" id="sealPrev" title="Previous">&lsaquo;</button>
-    <div id="seals" style="display:flex; gap:12px;"></div>
-    <button class="seal-arrow" id="sealNext" title="Next">&rsaquo;</button>
-    <div class="seal-label" id="sealLabel"></div>
-  </nav>
+  <!-- chapter tabs - filled in by the script below -->
+  <nav class="lore-nav" id="loreNav"></nav>
 </div>
 
 <script>
-  // ONE long parchment: the wax seals smooth-scroll it to each chapter, the
-  // seal of the chapter you're reading lights up, chapters ink in as they
-  // come into view and the rolls "turn" while the parchment moves.
+  // ONE long parchment split into chapters - scrolls normally (wheel,
+  // scrollbar, keys). The tabs on the bottom roll smooth-scroll to a
+  // chapter and the tab of the chapter you're reading lights up. The torn
+  // edges move with the parchment, chapters ink in as they appear.
   const scroll = document.getElementById('loreScroll');
   const body = document.getElementById('loreBody');
   const chapters = [...document.querySelectorAll('.lore-chapter')];
-  const sealsBox = document.getElementById('seals');
-  const label = document.getElementById('sealLabel');
-  const prev = document.getElementById('sealPrev');
-  const next = document.getElementById('sealNext');
+  const nav = document.getElementById('loreNav');
   const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
-  let current = 0;
 
-  const seals = chapters.map((ch, i) => {
-    const s = document.createElement('button');
-    s.className = 'wax-seal';
-    s.textContent = NUMERALS[i];
-    s.title = ch.dataset.label;
-    s.onclick = () => goTo(i);
-    s.onmouseenter = () => { label.textContent = ch.dataset.label; };
-    s.onmouseleave = () => { label.textContent = chapters[current].dataset.label; };
-    sealsBox.appendChild(s);
-    return s;
+  const tabs = chapters.map((ch, i) => {
+    const t = document.createElement('button');
+    t.className = 'lore-tab';
+    t.innerHTML = `<span class="lore-tab-num">${NUMERALS[i]}</span>${ch.dataset.label}`;
+    t.onclick = () => body.scrollTo({ top: topOf(i), behavior: 'smooth' });
+    nav.appendChild(t);
+    return t;
   });
 
-  function chapterTop(i) {
-    // the chapter's divider sits a bit above its heading - land just on it
-    return chapters[i].offsetTop - 10;
-  }
-  function goTo(i) {
-    i = Math.max(0, Math.min(chapters.length - 1, i));
-    body.scrollTo({ top: i === 0 ? 0 : chapterTop(i), behavior: 'smooth' });
-  }
-  prev.onclick = () => goTo(current - 1);
-  next.onclick = () => goTo(current + 1);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goTo(current + 1); }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(current - 1); }
-  });
+  // chapter top in the parchment's scroll coordinates
+  const topOf = i => i <= 0 ? 0
+    : Math.round(chapters[i].getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop);
 
-  // which chapter is being read + rolls turning while the parchment moves
-  let rollTimer = null;
-  function onScroll() {
-    const y = body.scrollTop + body.clientHeight * 0.35;
+  // active tab = the chapter at the upper third of the view (the last one
+  // once the bottom of the parchment is reached)
+  function updateTabs() {
+    const y = body.scrollTop + body.clientHeight * 0.33;
     let idx = 0;
-    chapters.forEach((ch, i) => { if (ch.offsetTop <= y) idx = i; });
+    chapters.forEach((_, i) => { if (topOf(i) <= y) idx = i; });
     if (body.scrollTop + body.clientHeight >= body.scrollHeight - 4) idx = chapters.length - 1;
-    if (idx !== current || !seals[idx].classList.contains('on')) {
-      current = idx;
-      seals.forEach((s, i) => s.classList.toggle('on', i === current));
-      label.textContent = chapters[current].dataset.label;
-      prev.disabled = current === 0;
-      next.disabled = current === chapters.length - 1;
-    }
-    scroll.classList.add('rolling');
-    clearTimeout(rollTimer);
-    rollTimer = setTimeout(() => scroll.classList.remove('rolling'), 150);
+    tabs.forEach((t, k) => t.classList.toggle('active', k === idx));
   }
-  body.addEventListener('scroll', onScroll, { passive: true });
+
+  // the torn edges (mask) move with the parchment
+  body.addEventListener('scroll', () => {
+    body.style.setProperty('--tear', -body.scrollTop + 'px');
+    updateTabs();
+  }, { passive: true });
 
   // ink-in of the mage chapters as they come into view
   const io = new IntersectionObserver(entries => {
@@ -435,27 +485,14 @@
   // unroll on open (+ the replay button for trying it out)
   function unroll() {
     body.scrollTop = 0;
+    updateTabs();
     scroll.classList.remove('unrolling');
     void scroll.offsetWidth;            // restart the animation
     scroll.classList.add('unrolling');
     setTimeout(() => scroll.classList.remove('unrolling'), 1900);
-    onScroll();
   }
   document.getElementById('replay').onclick = unroll;
   unroll();
-
-  // a handful of embers drifting up behind the scroll
-  const embers = document.getElementById('embers');
-  for (let i = 0; i < 14; i++) {
-    const e = document.createElement('i');
-    e.style.left = (5 + Math.random() * 90) + '%';
-    e.style.setProperty('--dx', (Math.random() * 120 - 60).toFixed(0) + 'px');
-    e.style.animationDuration = (7 + Math.random() * 7).toFixed(1) + 's';
-    e.style.animationDelay = (-Math.random() * 14).toFixed(1) + 's';
-    const size = (2 + Math.random() * 3).toFixed(1) + 'px';
-    e.style.width = e.style.height = size;
-    embers.appendChild(e);
-  }
 </script>
 </body>
 </html>
