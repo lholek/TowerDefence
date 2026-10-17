@@ -29,8 +29,10 @@
   /* =====================================================================
      NEW 1 - Unroll: the rolls move apart while the parchment grows; the
      letter is already written on it, so it appears as the sheet opens.
-     Rolls "turn" (a light band sweeps over them) while it unrolls.
      ===================================================================== */
+  /* the scrollbar's 5px are always reserved, so the text doesn't reflow
+     when overflow switches hidden -> auto at the end of the unroll */
+  .parchment-body { scrollbar-gutter: stable; }
   .scroll-container.unrolling .parchment-body {
     overflow: hidden;
     animation: parchmentUnroll 1500ms cubic-bezier(.22,.9,.3,1) both;
@@ -38,24 +40,6 @@
   @keyframes parchmentUnroll {
     0%   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
     100% { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
-  }
-  .roll-spin {
-    position: absolute; inset: 0; border-radius: 6px / 27px;
-    pointer-events: none; overflow: hidden; z-index: 1;
-  }
-  .roll-spin::before {
-    content: ""; position: absolute; left: 0; right: 0; height: 40%;
-    background: linear-gradient(to bottom, transparent, rgba(255, 210, 150, .16), transparent);
-    transform: translateY(-120%);
-    opacity: 0;
-  }
-  .scroll-container.unrolling .roll-spin::before {
-    opacity: 1;
-    animation: rollTurn 380ms linear infinite;
-  }
-  @keyframes rollTurn {
-    from { transform: translateY(-120%); }
-    to   { transform: translateY(260%); }
   }
 
   /* =====================================================================
@@ -303,8 +287,8 @@
 
   /* =====================================================================
      NEW 7 - Wax seal of the High Elven Council, pressed onto the middle of
-     the top roll (its ribbons hang over the parchment's top edge). Stamped
-     down (falls in, presses, settles) right after the scroll unrolls.
+     the top roll (its ribbons hang over the parchment's top edge). Already
+     there while the scroll unrolls.
      ===================================================================== */
   .council-seal {
     position: absolute;
@@ -312,18 +296,11 @@
     left: calc(50% - 39px);
     width: 78px; height: 78px;
     z-index: 6;                       /* above the rolls (z-index 3) */
-    opacity: 0;
+    transform: rotate(-4deg);
     pointer-events: none;
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .6));
   }
   .council-seal svg { display: block; width: 100%; height: 100%; }
-  .council-seal.seen { animation: sealStamp 650ms cubic-bezier(.3, .8, .4, 1.2) both; }
-  @keyframes sealStamp {
-    0%   { opacity: 0; transform: scale(1.8) rotate(-22deg); }
-    55%  { opacity: 1; transform: scale(.9)  rotate(-2deg); }
-    75%  {             transform: scale(1.05) rotate(-5deg); }
-    100% { opacity: 1; transform: scale(1)   rotate(-4deg); }
-  }
 
   /* =====================================================================
      NEW 8 - Close = roll the parchment back up into the top roll, then
@@ -345,10 +322,6 @@
     from { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
     to   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
   }
-  .scroll-container.rolling-up .roll-spin::before {
-    opacity: 1;
-    animation: rollTurn 380ms linear infinite reverse;
-  }
   /* chapter tabs vanish instantly when the scroll starts rolling up */
   .scroll-container.rolling-up .lore-nav,
   .scroll-container.closed .lore-nav { visibility: hidden; animation: none; }
@@ -367,7 +340,7 @@
 
 <div class="scroll-container unrolling" id="loreScroll">
   <button class="lore-close" id="loreClose" title="Close">&times;</button>
-  <div class="scroll-roll top-roll"><div class="roll-spin"></div></div>
+  <div class="scroll-roll top-roll"></div>
   <!-- wax seal of the Council on the top roll: a Tree of Life pressed into red wax -->
   <div class="council-seal" aria-hidden="true">
     <svg viewBox="0 0 100 100">
@@ -478,7 +451,7 @@
         <p class="lore-text reveal">
           But heed me - the storm is fickle, and it never stays for long.
         </p>
-        <div class="mage-gift reveal">His gifts to the Guardian: <b>&#127993; Homing arrows</b> on every tower, and <b>Tower's Fury</b> - for a while, every tower on the map is empowered.</div>
+        <div class="mage-gift reveal">His gifts to the Guardian: <b>Homing arrows</b> on every tower, and <b>&#127993; Tower's Fury</b> - for a while, every tower on the map is empowered.</div>
       </section>
 
       <!-- ===== IV. Aurelius - picture LEFT ===== -->
@@ -528,7 +501,7 @@
     </div>
   </div>
 
-  <div class="scroll-roll bottom-roll"><div class="roll-spin"></div></div>
+  <div class="scroll-roll bottom-roll"></div>
 
   <!-- chapter tabs - filled in by the script below -->
   <nav class="lore-nav" id="loreNav"></nav>
@@ -581,18 +554,11 @@
   const animated = [...document.querySelectorAll('.reveal')];
   animated.forEach(el => io.observe(el));
 
-  // the Council's seal on the top roll - stamped once the scroll is open
-  const seal = document.querySelector('.council-seal');
-  let sealTimer = null;
-
   // unroll on open (+ the replay button for trying it out). Every open
-  // starts fresh: back at the letter, chapters / seal animate again.
+  // starts fresh: back at the letter, chapters animate again.
   function unroll() {
     scroll.classList.remove('rolling-up', 'closed', 'unrolling');
     animated.forEach(el => { el.classList.remove('seen'); io.observe(el); });
-    seal.classList.remove('seen');
-    clearTimeout(sealTimer);
-    sealTimer = setTimeout(() => seal.classList.add('seen'), 1100);
     body.scrollTop = 0;
     body.style.setProperty('--tear', '0px');
     updateTabs();
