@@ -39,12 +39,17 @@
           ]
         },
         {
+          "<b>Lore</b>": [
+            "New Lore scroll - the Ember Decree is now followed by the four Elder Mages (Pyrrhos, Sylvaran, Aurelius and Nivaris), each telling their story and the ability they gift to the Guardian",
+            "Chapter tabs on the bottom roll to jump between the Decree and each mage",
+            "Redesigned scroll - oak rolls, the High Elven Council's wax seal, a torn and aged parchment, and the scroll now rolls back up when closed"
+          ]
+        },
+        {
           "<b>System</b>": [
             "Recommended resolution 1920x1080 (Full HD) - the unsupported resolution screen now checks the real browser window size, smaller screens can zoom out (CTRL -) to play"
           ]
         },
-        "TODO: Lore for abilites, different class of mages etc.",
-        "TODO: Lore for abilites added trough mages on dev/Lore_Mages.htmls",
         "TODO: Since new cards ,needs performance optimization, so the game can run on low-end devices",
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
       ]

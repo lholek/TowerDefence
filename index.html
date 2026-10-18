@@ -259,13 +259,46 @@
 
       <!-- 🎨 LorePopup -->
       <div id="lorePopup" class="menu-popup-overlay">
-        <div class="scroll-container">
-          <button class="close-btn popup-close-x" title="Close">&times;</button>
+        <div class="scroll-container" id="loreScroll">
+          <button class="close-btn lore-close" title="Close">&times;</button>
           <div class="scroll-roll top-roll"></div>
-              
-              
-          <div class="parchment-body">
+          <!-- wax seal of the Council on the top roll: a Tree of Life pressed into red wax -->
+          <div class="council-seal" aria-hidden="true">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <radialGradient id="sealWax" cx="38%" cy="32%" r="75%">
+                  <stop offset="0" stop-color="#d4442c"/>
+                  <stop offset=".5" stop-color="#9a1f12"/>
+                  <stop offset="1" stop-color="#5a0b05"/>
+                </radialGradient>
+              </defs>
+              <!-- ribbon tails under the wax -->
+              <path d="M38 62 30 99 37 93 43 99 47 64Z" fill="#7a1a10"/>
+              <path d="M55 64 59 99 65 93 72 99 64 62Z" fill="#62130b"/>
+              <!-- uneven blob of wax -->
+              <path d="M50 6C62 5 70 12 79 16 88 22 94 33 93 45 95 57 90 68 83 77 75 86 64 93 51 93 38 95 26 89 18 80 10 71 6 60 7 48 6 36 12 25 21 17 29 10 39 6 50 6Z" fill="url(#sealWax)"/>
+              <!-- pressed disc -->
+              <circle cx="50" cy="50" r="31" fill="#8e1c10" stroke="#4e0904" stroke-width="1.6"/>
+              <circle cx="50.8" cy="50.8" r="31" fill="none" stroke="rgba(255,170,140,.35)" stroke-width="1"/>
+              <!-- Tree of Life in relief: dark groove + light edge -->
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <g stroke="#4e0904" stroke-width="2.4">
+                  <circle cx="50" cy="47" r="22" stroke-width="1.4"/>
+                  <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+                  <path d="M50 73Q44 75 39 77M50 73Q56 75 61 77"/>
+                </g>
+                <g stroke="rgba(255,175,145,.45)" stroke-width="1" transform="translate(-.8 -.8)">
+                  <circle cx="50" cy="47" r="22"/>
+                  <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+
+          <div class="parchment-body" id="loreBody">
             <div class="parchment-content">
+             <!-- ===== I. The letter ===== -->
+             <section class="lore-chapter" data-label="Decree">
               <h2 class="lore-header">The Ember Decree</h2>
                       
               <p class="lore-text"><em>Guardian of the Last Light,</em></p>
@@ -298,10 +331,98 @@
                   Written in the soot of the falling realm,<br>
                   <strong>— The High Elven Council</strong>
               </p>
+             </section>
+
+             <!-- ===== II. Pyrrhos - picture LEFT ===== -->
+             <section class="lore-chapter mage-section" data-label="Pyrrhos">
+              <div class="lore-divider"><span>&#10086;</span></div>
+              <div class="mage-heading reveal">
+                <div class="mage-name">Pyrrhos</div>
+                <div class="mage-title">Keeper of the Ember</div>
+              </div>
+              <div class="mage-portrait reveal"><img src="assets/images/mage_fire.webp" alt="Pyrrhos, Keeper of the Ember" loading="lazy" decoding="async"></div>
+              <p class="lore-text mage-speech reveal">
+                Guardian, I was once an elf of the High Temple, as fair as any you know. When the Abyssal Veins tore open, I did what no elf had dared - I <strong>walked into the realm of the very fiends that now march upon us</strong>.
+              </p>
+              <p class="lore-text reveal">
+                I lived among their fires for longer than I care to remember. The pit took my youth and burned the elf out of me - but <strong>it taught me its magic</strong>. I took their enchanted magma and forged it into a spell of my own.
+              </p>
+              <p class="lore-text reveal">
+                Point me to the road they march upon, and I shall <strong>turn it to molten stone beneath their feet</strong>. Let them taste the fire they brought upon our lands.
+              </p>
+              <div class="mage-gift reveal">His gift to the Guardian: <b>&#127755; Lava Floor</b> - the chosen stretch of road becomes lava, scorching every foe that treads upon it.</div>
+             </section>
+
+             <!-- ===== III. Sylvaran - picture RIGHT ===== -->
+             <section class="lore-chapter mage-section" data-label="Sylvaran">
+              <div class="lore-divider"><span>&#10086;</span></div>
+              <div class="mage-heading reveal">
+                <div class="mage-name">Sylvaran</div>
+                <div class="mage-title">Warden of the Winds</div>
+              </div>
+              <div class="mage-portrait right reveal"><img src="assets/images/mage_fury.webp" alt="Sylvaran, Warden of the Winds" loading="lazy" decoding="async"></div>
+              <p class="lore-text mage-speech reveal">
+                Guardian, I have studied the winds since before your towers had foundations. It was <strong>I who enchanted your arrows</strong>. Each one now carries the will of the wind and <strong>seeks its foe on its own</strong> - bend as the invader may, the arrow bends with it.
+              </p>
+              <p class="lore-text reveal">
+                And when the horde grows thick, call upon me again. I will <strong>pour the storm into your bastions themselves</strong>, and for a while every tower you have raised shall shoot faster and strike harder than any mortal hand could make it.
+              </p>
+              <p class="lore-text reveal">
+                But heed me - the storm is fickle, and it never stays for long.
+              </p>
+              <div class="mage-gift reveal">His gifts to the Guardian: <b>Homing arrows</b> on every tower, and <b>&#127993; Tower's Fury</b> - for a while, every tower on the map is empowered.</div>
+             </section>
+
+             <!-- ===== IV. Aurelius - picture LEFT ===== -->
+             <section class="lore-chapter mage-section" data-label="Aurelius">
+              <div class="lore-divider"><span>&#10086;</span></div>
+              <div class="mage-heading reveal">
+                <div class="mage-name">Aurelius</div>
+                <div class="mage-title">The Gilded Alchemist</div>
+              </div>
+              <div class="mage-portrait reveal"><img src="assets/images/mage_gold.webp" alt="Aurelius, the Gilded Alchemist" loading="lazy" decoding="async"></div>
+              <p class="lore-text mage-speech reveal">
+                Guardian, the fiends of the pit are not made of fire alone. Clawing their way up through the Abyssal Veins, they <strong>swallowed the deep gold of the underworld</strong>, and it still flows molten in their veins.
+              </p>
+              <p class="lore-text reveal">
+                For forty years I sought the formula to draw it out. Now I have it. Speak my charm, and when a demon falls, <strong>its dying embers cool into coin</strong> - twice the gold it would have left behind.
+              </p>
+              <p class="lore-text reveal">
+                Spend it wisely, Guardian. Towers do not raise themselves, and my alchemy is slow to brew again.
+              </p>
+              <div class="mage-gift reveal">His gift to the Guardian: <b>&#9935;&#65039; Gold Rush</b> - while it lasts, every slain enemy drops extra gold.</div>
+             </section>
+
+             <!-- ===== V. Nivaris - picture RIGHT ===== -->
+             <section class="lore-chapter mage-section" data-label="Nivaris">
+              <div class="lore-divider"><span>&#10086;</span></div>
+              <div class="mage-heading reveal">
+                <div class="mage-name">Nivaris</div>
+                <div class="mage-title">Weaver of Frost</div>
+              </div>
+              <div class="mage-portrait right reveal"><img src="assets/images/mage_ice.webp" alt="Nivaris, Weaver of Frost" loading="lazy" decoding="async"></div>
+              <p class="lore-text mage-speech reveal">
+                Guardian, I come from the frozen peaks of the north, where no fire has ever burned. The pit's legions are made of flame - and <strong>flame fears only one thing</strong>.
+              </p>
+              <p class="lore-text reveal">
+                Mark the road, and I will <strong>call down a blizzard so fierce that the very ground freezes</strong>. Within my storm their burning march slows to a crawl, and the frost cracks their molten hides like glass.
+              </p>
+              <p class="lore-text reveal">
+                Strike them while they are frozen - <strong>every blow will cut deeper</strong>, be it arrow or lava.
+              </p>
+              <div class="mage-gift reveal">His gift to the Guardian: <b>&#10052;&#65039; Ice Storm</b> - enemies on the frozen road move slower and take more damage.</div>
+
+              <p class="lore-text signature lore-outro reveal">
+                <em>Thus speak the Elder Mages.<br>Go now, Guardian - the Trees of Life are waiting.</em>
+              </p>
+             </section>
             </div>
-        </div>
-        
+          </div>
+
           <div class="scroll-roll bottom-roll"></div>
+
+          <!-- chapter tabs - filled in by js/game/UI_lore.js -->
+          <nav class="lore-nav" id="loreNav"></nav>
         </div>
       </div>
 
