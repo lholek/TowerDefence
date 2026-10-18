@@ -6,7 +6,7 @@
 // closing (× / ESC / backdrop) rolls it back up before the popup fades.
 // Styles: css/ui_lore.css, designed in dev/Lore_Mages.html.
 
-const UNROLL_MS = 500;   // = parchmentUnroll in ui_lore.css
+const UNROLL_MS = 400;   // = parchmentUnroll in ui_lore.css
 const ROLL_UP_MS = 650;   // = parchmentRollUp in ui_lore.css
 const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 
