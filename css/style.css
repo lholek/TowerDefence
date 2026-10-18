@@ -880,7 +880,8 @@ max-width: 400px;
     position: relative;
     width: fit-content;
     height: fit-content;
-    overflow: hidden; 
+    overflow: hidden;
+    border-radius: 10px; /* same rounding as the top bar (.ntu-bar) - overflow clips the canvas + clouds to it */
     background-color: #000; /* Deepest base */
 }
 
