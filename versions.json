@@ -12,12 +12,12 @@
         {
           "<b>Abilities</b>": [
           "Reworked the ability selector to be more user-friendly",
-          "New ability: 'Gold Rush (Mine)' - temporarily increases gold earned from enemies",
+          "New ability: 'Gold Rush' - temporarily increases gold earned from enemies",
           "New ability: 'Ice Storm' - slow downs enemies and increses their vulnerability",
           "New different looking cards for each ability type, so they are visually distinct and easier to identify at a glance"
           ]
         },
-                {
+        {
           "<b>Editor</b>": [
           "Added Gold Rush ability to the editor",
           "Added Ice Storm ability to the editor"
@@ -32,10 +32,13 @@
             "Redesigned tower cards - bigger tower preview, price, sell value and DPS at a glance, all 6 stats on hover, and each card colored to match its tower",
             "Redesigned ability cards with a unique animated background for each ability",
             "New graphics setting 'UI Effects' - set it to Low to turn off the card animations for better performance",
-            "Card animations now pause together with the game",
             "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling",
             "Fixed lore button",
-            "The game map now has rounded corners like the rest of the UI",
+            "The game map now has rounded corners like the rest of the UI"
+          ]
+        },
+        {
+          "<b>Map browser</b>": [
             "New map browser - the ☰ button next to the map select opens a table of all maps (description, level count, difficulty, map size, towers, extra life and abilities), click a map to select it",
             "Map browser - sort by name, level count, difficulty, map size or towers (click again to reverse), the last sort is remembered, hovering a map shows its minimap",
             "Map browser - search by name and filters for Extra Life, abilities and difficulty, 'Reset' goes back to the default order without filters",
