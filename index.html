@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/helpers.css" />
   <link rel="stylesheet" href="css/ui.css" />
   <link rel="stylesheet" href="css/ui_lore.css" />
+  <link rel="stylesheet" href="css/map_browser.css" />
   <link rel="stylesheet" href="css/settings.css" />
   <link rel="stylesheet" href="css/popups.css" />
   <link rel="stylesheet" href="css/fire-title.css" />
@@ -95,6 +96,10 @@
           <option value="./games/011_simpleRoads2.json">Simple Roads II</option>
           <option value="./games/00X_alltereins.json">All Tereains Map</option>
         </select>
+        <!-- opens the map browser (table of all maps) - js/game/MapBrowser.js -->
+        <button id="openMapBrowserBtn" class="btn map-browser-btn" type="button" title="Browse all maps">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+        </button>
       </div>
 
       <div id="fileUploadArea" style="display: none;">
@@ -114,6 +119,55 @@
 
       <!-- Map info -->
       <div id="mapInfo" class="mapInfo"></div>
+
+      <!-- 🗺️ Map Browser Popup - all standard maps in one table, click a row to select it -->
+      <div id="mapBrowserPopup" class="menu-popup-overlay">
+        <div class="map-browser-content">
+          <button class="close-btn popup-close-x" title="Close">&times;</button>
+          <h2 class="cl-primary">Select Map</h2>
+          <div class="map-browser-toolbar">
+            <input type="search" id="mapBrowserSearch" class="map-browser-search" placeholder="Search map..." autocomplete="off" spellcheck="false">
+            <div class="map-browser-filters" id="mapBrowserFilters">
+              <button type="button" class="map-filter-chip" data-filter="life" title="Only maps with Extra Life">&#10084; Extra Life</button>
+              <span class="map-filter-sep"></span>
+              <button type="button" class="map-filter-chip" data-filter="ability" data-value="lava_floor" title="Lava Floor">&#127755;</button>
+              <button type="button" class="map-filter-chip" data-filter="ability" data-value="towers_fury" title="Tower's Fury">&#127993;</button>
+              <button type="button" class="map-filter-chip" data-filter="ability" data-value="gold_rush" title="Gold Rush">&#9935;&#65039;</button>
+              <button type="button" class="map-filter-chip" data-filter="ability" data-value="ice_storm" title="Ice Storm">&#10052;&#65039;</button>
+              <span class="map-filter-sep"></span>
+              <button type="button" class="map-filter-chip" data-filter="difficulty" data-value="1" title="Difficulty 1">1&#9733;</button>
+              <button type="button" class="map-filter-chip" data-filter="difficulty" data-value="2" title="Difficulty 2">2&#9733;</button>
+              <button type="button" class="map-filter-chip" data-filter="difficulty" data-value="3" title="Difficulty 3">3&#9733;</button>
+              <button type="button" class="map-filter-chip" data-filter="difficulty" data-value="4" title="Difficulty 4">4&#9733;</button>
+              <button type="button" class="map-filter-chip" data-filter="difficulty" data-value="5" title="Difficulty 5">5&#9733;</button>
+            </div>
+            <button type="button" id="mapBrowserResetSort" class="map-browser-reset" disabled>&#8634; Reset</button>
+          </div>
+          <div class="map-browser-scroll transparent-scrollbar-track">
+            <table class="map-browser-table">
+              <thead>
+                <tr>
+                  <th data-sort="name" class="is-sortable">Name <span class="map-sort-icon"></span></th>
+                  <th data-sort="levels" class="is-sortable">Level Count <span class="map-sort-icon"></span></th>
+                  <th data-sort="difficulty" class="is-sortable">Difficulty <span class="map-sort-icon"></span></th>
+                  <th data-sort="size" class="is-sortable">Map Size <span class="map-sort-icon"></span></th>
+                  <th data-sort="towers" class="is-sortable">Towers <span class="map-sort-icon"></span></th>
+                  <th>Extra Life</th>
+                  <th>Abilities</th>
+                </tr>
+              </thead>
+              <tbody id="mapBrowserBody"></tbody>
+            </table>
+            <div id="mapBrowserEmpty" class="map-browser-empty" hidden>No map matches the search / filters</div>
+          </div>
+          <div class="map-browser-hint">Click a column with <span class="map-sort-icon">&#8645;</span> to sort &nbsp;&middot;&nbsp; <kbd>&uarr;</kbd> <kbd>&darr;</kbd> to browse, <kbd>Enter</kbd> to select</div>
+        </div>
+        <!-- minimap of the hovered map, follows the mouse -->
+        <div id="mapBrowserPreview" class="map-browser-preview" aria-hidden="true">
+          <div class="map-browser-preview-name"></div>
+          <div class="map-browser-preview-grid"></div>
+        </div>
+      </div>
 
       <!-- ⚙️ Settings Popup -->
       <div id="settingsPopup" class="menu-popup-overlay">
@@ -679,6 +733,7 @@
   <script type="module" src="js/PopupController.js"></script>
   <script type="module" src="js/game/UI.js"></script>
   <script type="module" src="js/game/UI_lore.js"></script>
+  <script type="module" src="js/game/MapBrowser.js"></script>
   <script type="module" src="js/game/Tutorial.js"></script>
   <script type="module" src="js/cursor.js"></script>
   <script type="module" src="js/CustomSelect.js"></script>

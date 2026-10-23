@@ -35,7 +35,11 @@
             "Card animations now pause together with the game",
             "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling",
             "Fixed lore button",
-            "The game map now has rounded corners like the rest of the UI"
+            "The game map now has rounded corners like the rest of the UI",
+            "New map browser - the ☰ button next to the map select opens a table of all maps (description, level count, difficulty, map size, towers, extra life and abilities), click a map to select it",
+            "Map browser - sort by name, level count, difficulty, map size or towers (click again to reverse), the last sort is remembered, hovering a map shows its minimap",
+            "Map browser - search by name and filters for Extra Life, abilities and difficulty, 'Reset' goes back to the default order without filters",
+            "Map browser - keyboard control: Up / Down to browse the maps (with their minimap), Enter to select"
           ]
         },
         {
