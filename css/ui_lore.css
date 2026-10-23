@@ -172,17 +172,12 @@
     radial-gradient(circle 8px at 3.5% 72%, #140802 0 3px, rgba(70, 30, 6, .85) 5px, rgba(110, 60, 20, .35) 6.5px, transparent 8px);
   background-size: 100% 900px;
 }
-/* cracks in the old parchment + two fold lines, repeating down the scroll
+/* cracks in the old parchment, repeating down the scroll
    (dark crack line with a lighter edge next to it = a real split) */
 .parchment-content::after {
   content: ""; position: absolute; inset: -60px -45px; pointer-events: none; z-index: -1;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 760' preserveAspectRatio='none'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='rgba(255,236,200,0.28)' stroke-width='1.2' transform='translate(0.8 0.8)'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3Cg stroke='rgba(45,22,6,0.45)' stroke-width='1'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") left top / 100% 760px repeat-y,
-    repeating-linear-gradient(to bottom,
-      transparent 0 252px,
-      rgba(40, 20, 4, .16) 252px 253px,
-      rgba(255, 236, 200, .12) 253px 254px,
-      transparent 254px 380px);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 760' preserveAspectRatio='none'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='rgba(255,236,200,0.28)' stroke-width='1.2' transform='translate(0.8 0.8)'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3Cg stroke='rgba(45,22,6,0.45)' stroke-width='1'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") left top / 100% 760px repeat-y;
 }
 
 .parchment-content .enchanted-boon {
