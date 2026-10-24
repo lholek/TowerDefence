@@ -64,6 +64,11 @@
             "Recommended resolution 1920x1080 (Full HD) - the unsupported resolution screen now checks the real browser window size, smaller screens can zoom out (CTRL -) to play"
           ]
         },
+        {
+          "<b>Bugs</b>": [
+            "Fixed bug - on Low graphics the Trees of Life sometimes had green leaves instead of golden ones"
+          ]
+        },
         "Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates, Updates"
       ]
     },

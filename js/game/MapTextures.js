@@ -1014,10 +1014,11 @@ function _preRenderTreeLow(tileSize) {
 
     // 3. LEAF CLUSTERS — slight random tint and size so each session looks unique.
     //    In editor mode the constructor's LCG makes these calls deterministic.
+    //    Golden tints only, to match the High tree's yellow crown.
     const colorPalettes = [
         ["#eab308", "#ca8a04"],
         ["#f59e0b", "#d97706"],
-        ["#84cc16", "#65a30d"],
+        ["#facc15", "#eab308"],
         ["#f97316", "#ea580c"],
     ];
     const palette = colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
