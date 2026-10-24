@@ -1135,102 +1135,122 @@
   transform: scale(1.1);
 }
 /* *** Game footer info *** */
-/* --- Fiery Lore Button (Perfect Size Match) --- */
-/* --- Fiery Lore Button (Perfect Size, Fiery Bottom) --- */
-.btn-lore {
+/* --- Lore button: a small scroll ---
+   A tiny copy of the Lore popup's scroll (same oak rods + parchment, see
+   css/ui_lore.css). Hover: it lifts, the rods get pulled a bit apart
+   (parchment stretches taut), a light glints across it and fleurons appear
+   by the title. transform / opacity only. */
+.lore-scroll-btn {
     position: relative;
-    overflow: hidden;
-    border: none;
-    padding-bottom: 15px;
-    color: white; /* darkest warm readable text */
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: none;
-    z-index: 1;
-    /* SAME SIZE as other buttons, but WITHOUT the brown bottom */
-    box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.2), /* top rim */
-        0 8px 15px rgba(0, 0, 0, 0.4);          /* floor shadow only */
-    background: #d44a00;
-    transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
+    width: 250px;
+    /* 6px taller than the neighbour button, so it matches it together with
+       its depth strip; the negative margin keeps the row height unchanged */
+    height: 48px;
+    margin-bottom: -6px;
+    vertical-align: top;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: bold 18px/1 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-variant: small-caps;
+    letter-spacing: 3px;
+    color: #ffd24a; /* the game's gold (#f0c674), more saturated so it stands out on parchment */
+    transition: transform .3s ease;
 }
+@media screen and (min-height: 1201px) {
+    .lore-scroll-btn { height: 50px; }
+}
+@media screen and (max-height: 949px) {
+    .lore-scroll-btn { height: 42px; } /* rows sit closer here */
+}
+.lore-scroll-btn > span { position: absolute; pointer-events: none; }
 
-/* --- Layer 1: Lava flow (full button) --- */
-.btn-lore::before {
-    content: "";
-    position: absolute;
-    z-index: 0;
+.lore-scroll-btn .lsb-paper {
+    left: 8px; right: 8px; top: 5px; bottom: 5px;
+    background-color: #b89a6d;
+    background-image:
+        linear-gradient(to right, #5c4a33, rgba(184,154,109,0) 22%, rgba(184,154,109,0) 78%, #5c4a33),
+        radial-gradient(ellipse 40px 14px at 18% 40%, rgba(60,30,8,.2), transparent 70%),
+        radial-gradient(ellipse 50px 12px at 82% 62%, rgba(70,36,10,.16), transparent 70%);
+    box-shadow: 0 4px 8px rgba(0,0,0,.55);
+}
+.lore-scroll-btn .lsb-label {
     inset: 0;
-    background: linear-gradient(
-        120deg,
-        rgba(255, 60, 0, 0.65),
-        rgba(255, 140, 0, 0.55),
-        rgba(255, 210, 0, 0.45),
-        rgba(255, 60, 0, 0.65)
-    );
-    background-size: 300% 300%;
-    mix-blend-mode: screen;
-    animation: lava-flow 6s ease-in-out infinite;
-    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    /* dark outline so the gold reads on the light parchment */
+    text-shadow:
+        1px 0 0 #2b1506, -1px 0 0 #2b1506, 0 1px 0 #2b1506, 0 -1px 0 #2b1506,
+        0 0 4px rgba(43,21,6,.9), 0 2px 3px rgba(0,0,0,.6);
 }
 
-/* --- Layer 2: Fiery bottom strip (replaces brown border) --- */
-.btn-lore::after {
+/* oak rods - same layers as .scroll-roll, turned upright */
+.lore-scroll-btn .lsb-rod {
+    top: 4px; bottom: 4px; width: 12px;
+    z-index: 2;
+    border: 1.5px solid #0a0502;
+    border-radius: 6px / 4px;
+    background:
+        linear-gradient(to right,
+            rgba(0,0,0,.55) 0%, rgba(255,225,180,.22) 38%, rgba(0,0,0,.25) 75%, rgba(0,0,0,.7) 100%),
+        repeating-linear-gradient(0deg,
+            transparent 0 9px, rgba(20,8,2,.4) 9px 10px, transparent 10px 23px, rgba(60,28,10,.45) 23px 25px, transparent 25px 33px),
+        linear-gradient(to right, #2a1407, #5a2e12 40%, #6b3817 50%, #4a240d 62%, #1e0e05);
+    box-shadow: 0 3px 5px rgba(0,0,0,.7), inset 0 1px 1px rgba(255,220,170,.12);
+}
+.lore-scroll-btn .lsb-rod.a { left: 2px; }
+.lore-scroll-btn .lsb-rod.b { right: 2px; }
+/* turned wooden knobs */
+.lore-scroll-btn .lsb-rod::before,
+.lore-scroll-btn .lsb-rod::after {
     content: "";
     position: absolute;
-    z-index: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 5px; /* EXACT same height as your old brown border */
-    background: linear-gradient(
-        90deg,
-        rgba(255, 80, 0, 1),
-        rgba(255, 160, 0, 1),
-        rgba(255, 80, 0, 1)
-    );
-    background-size: 200% 100%;
-    animation: fire-bottom-move 2.5s linear infinite;
-    pointer-events: none;
+    left: -3.5px; width: 16px; height: 7px;
+    border: 1.5px solid #0a0502;
+    border-radius: 45% / 50%;
+    background:
+        radial-gradient(ellipse 30% 22% at 50% 50%, #2a1407, #4a240d 70%, transparent 74%),
+        linear-gradient(to right, #1a0b04, #6b3817 30%, #8a4c22 45%, #5a2c10 65%, #1a0b04);
+    box-shadow: inset 0 0 3px rgba(0,0,0,.7), 0 2px 4px rgba(0,0,0,.6);
+}
+.lore-scroll-btn .lsb-rod::before { top: -6px; }
+.lore-scroll-btn .lsb-rod::after { bottom: -6px; }
+
+/* glint: a soft light streak slid across the parchment */
+.lore-scroll-btn .lsb-glint { left: 8px; right: 8px; top: 5px; bottom: 5px; overflow: hidden; z-index: 1; }
+.lore-scroll-btn .lsb-glint::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 0; width: 35%;
+    background: linear-gradient(105deg, transparent, rgba(255,240,200,.45), transparent);
+    transform: translateX(-120%) skewX(-18deg);
 }
 
-/* --- Lava flow animation --- */
-@keyframes lava-flow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 200% 50%; }
-    100% { background-position: 0% 50%; }
+/* fleurons either side of the title */
+.lore-scroll-btn .lsb-label::before,
+.lore-scroll-btn .lsb-label::after {
+    font: 16px/1 'Segoe UI Symbol', 'Palatino Linotype', serif;
 }
+.lore-scroll-btn .lsb-label::before { content: "\2619"; margin-right: 10px; }
+.lore-scroll-btn .lsb-label::after { content: "\2767"; margin-left: 7px; }
 
-/* --- Bottom fire movement --- */
-@keyframes fire-bottom-move {
-    0% { background-position: 0% 0; }
-    100% { background-position: 200% 0; }
-}
+.lore-scroll-btn .lsb-rod,
+.lore-scroll-btn .lsb-paper,
+.lore-scroll-btn .lsb-glint { transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
 
-/* --- Hover: lift instead of scale ---
-   .btn.btn-lore + :not(:disabled) on purpose: the generic
-   .btn:hover:not(:disabled) / .btn:active:not(:disabled) (style.css) are
-   more specific than a plain .btn-lore:hover, so they used to win and put
-   the brown depth strip (0 5px 0 #4a250b) + brown background under the
-   lore button. Here the depth strip is fiery like the button itself. */
-.btn.btn-lore:hover:not(:disabled) {
-    background-color: #d44a00;
-    transform: translateY(-3px);
-    filter: brightness(1.2);
-    box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.25),
-        0 5px 0 #a33200,                     /* fiery depth strip */
-        0 0 16px rgba(255, 140, 0, 0.45),    /* fire glow */
-        0 12px 18px rgba(0, 0, 0, 0.45);
-}
+.lore-scroll-btn:hover { transform: translateY(-2px); }
+.lore-scroll-btn:hover .lsb-rod.a { transform: translateX(-5px); }
+.lore-scroll-btn:hover .lsb-rod.b { transform: translateX(5px); }
+.lore-scroll-btn:hover .lsb-paper,
+.lore-scroll-btn:hover .lsb-glint { transform: scaleX(1.042); }
+.lore-scroll-btn:hover .lsb-glint::before { transform: translateX(320%) skewX(-18deg); transition: transform .8s ease; }
+.lore-scroll-btn:active { transform: translateY(1px); }
 
-.btn.btn-lore:active:not(:disabled) {
-    background-color: #d44a00;
-    transform: translateY(5px);
-    box-shadow:
-        inset 0 3px 8px rgba(0, 0, 0, 0.5),
-        0 1px 0 #a33200;
+@media (prefers-reduced-motion: reduce) {
+    .lore-scroll-btn, .lore-scroll-btn *, .lore-scroll-btn *::before { transition: none !important; }
 }
 
 @keyframes shake-shiver {
