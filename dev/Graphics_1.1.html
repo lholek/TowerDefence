@@ -1810,12 +1810,68 @@
        ================================================================ -->
   <div class="bar-section">
     <h2 class="section-label">Buttons — old design</h2>
+    <!-- OLD design hardcoded here (copied from css/style.css + css/ui.css as
+         they were before "+ update buttons" 4faedd1 / the new switcher
+         d3e8ad1) - so it stays the old look no matter how the game's
+         current CSS changes. -->
+    <style>
+      .old-btn {
+        background-color: #8B4513;
+        color: #f3e5ab;
+        padding: 12px 24px;
+        font-family: 'Cinzel', serif;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 2px solid #5c2e0e;
+        border-radius: 4px;
+        position: relative;
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.2),
+          0 5px 0 #4a250b,
+          0 8px 15px rgba(0, 0, 0, 0.4);
+        transition: all 0.1s ease;
+        outline: none;
+      }
+      .old-btn:hover {
+        background-color: #a0522d;
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.3),
+          0 5px 0 #4a250b,
+          0 0 15px rgba(243, 229, 171, 0.4);
+        transform: translateY(-2px);
+      }
+      .old-btn:active {
+        transform: translateY(3px);
+        box-shadow:
+          inset 0 2px 5px rgba(0, 0, 0, 0.5),
+          0 2px 0 #4a250b;
+      }
+      .old-btn.old-btn-menu { width: 250px; }
+      /* old Towers / Abilities switcher (.build-mode-switcher .switch-btn) */
+      .old-switcher { display: flex; justify-content: flex-start; gap: 8px; }
+      .old-switch-btn {
+        background-color: #8B4513;
+        color: #ccc;
+        border: 2px solid #8B4513;
+        border-radius: 8px;
+        padding: 6px 14px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s ease;
+      }
+      .old-switch-btn:hover { background: #8B4513; }
+      .old-switch-btn.active { background: #8B4513; color: #fff; border-color: gold; }
+    </style>
     <div class="btn-row">
-      <button class="btn btn-menu">Start Game</button>
-      <button class="btn btn-menu">Settings</button>
-      <button class="btn">Resume</button>
-      <button class="btn btn-danger-confirm">Leave</button>
-      <button class="ui-toggle">Towers</button>
+      <button class="old-btn old-btn-menu">Start Game</button>
+      <button class="old-btn old-btn-menu">Settings</button>
+      <button class="old-btn">Resume</button>
+      <button class="old-btn">Leave</button>
+    </div>
+    <div class="btn-row old-switcher" style="margin-top: 18px;">
+      <button class="old-switch-btn active">🏰 Towers (T)</button>
+      <button class="old-switch-btn">🌋 Abilities (A)</button>
     </div>
   </div>
 
@@ -1830,6 +1886,148 @@
     <div class="btn-proposal-row">
       <button class="nbtn nbtn-round-classic nbtn-sm">Towers</button>
       <button class="nbtn nbtn-round-classic nbtn-sm">Abilities</button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       LORE BUTTON - the original (real css/ui.css .btn-lore, exactly as
+       in the game) next to the scroll button: a tiny copy of the Lore
+       popup's scroll (same oak rods + parchment). transform / opacity only.
+       ================================================================ -->
+  <style>
+    .lv-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 620px)); gap:26px 40px; }
+    .lv-card h3{ margin:0 0 4px; color:#f0c674; font:700 14px/1.3 Arial, sans-serif; }
+    .lv-card p{ margin:0 0 10px; color:#b9a988; font:12px/1.45 Arial, sans-serif; }
+    .lv-menu{
+      padding:34px 36px 30px;
+      border-radius:16px;
+      background:
+        linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
+        url('../assets/images/menu_new_background_21_9.png') 38% 30% / 260% auto;
+    }
+    .lv-menu .menu-row{ display:flex; gap:11px; }
+    .lv-menu .btn-menu{ width:250px; }
+
+    /* Scroll button. Hover: it lifts, the rods get pulled a bit apart
+       (parchment stretches taut), a light glints across it, the ink turns
+       red and fleurons appear by the title. */
+    .lv-scroll{
+      position:relative;
+      width:250px; min-height:46px;
+      /* a bit taller than the row (flex stretch + negative margin), so it
+         matches the neighbour button together with its depth strip */
+      margin-bottom:-6px;
+      padding:0; border:0; background:none;
+      cursor:pointer;
+      font:bold 18px/1 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+      font-variant:small-caps;
+      letter-spacing:3px;
+      color:#6e1d0a;
+      transition:transform .3s ease;
+    }
+    .lv-scroll > span{ position:absolute; pointer-events:none; }
+    .lvs-paper{
+      left:8px; right:8px; top:5px; bottom:5px;
+      background-color:#b89a6d;
+      background-image:
+        linear-gradient(to right, #5c4a33, rgba(184,154,109,0) 22%, rgba(184,154,109,0) 78%, #5c4a33),
+        radial-gradient(ellipse 40px 14px at 18% 40%, rgba(60,30,8,.2), transparent 70%),
+        radial-gradient(ellipse 50px 12px at 82% 62%, rgba(70,36,10,.16), transparent 70%);
+      box-shadow:0 4px 8px rgba(0,0,0,.55);
+    }
+    .lvs-label{
+      inset:0;
+      display:flex; align-items:center; justify-content:center;
+      z-index:3;
+      text-shadow:0 1px 0 rgba(255,235,190,.35);
+    }
+    /* oak rods - same layers as css/ui_lore.css .scroll-roll, turned upright */
+    .lvs-roll{
+      top:4px; bottom:4px; width:12px;
+      z-index:2;
+      border:1.5px solid #0a0502;
+      border-radius:6px / 4px;
+      background:
+        linear-gradient(to right,
+          rgba(0,0,0,.55) 0%, rgba(255,225,180,.22) 38%, rgba(0,0,0,.25) 75%, rgba(0,0,0,.7) 100%),
+        repeating-linear-gradient(0deg,
+          transparent 0 9px, rgba(20,8,2,.4) 9px 10px, transparent 10px 23px, rgba(60,28,10,.45) 23px 25px, transparent 25px 33px),
+        linear-gradient(to right, #2a1407, #5a2e12 40%, #6b3817 50%, #4a240d 62%, #1e0e05);
+      box-shadow:0 3px 5px rgba(0,0,0,.7), inset 0 1px 1px rgba(255,220,170,.12);
+    }
+    .lvs-roll.a{ left:2px; }
+    .lvs-roll.b{ right:2px; }
+    /* turned wooden knobs */
+    .lvs-roll::before, .lvs-roll::after{
+      content:"";
+      position:absolute;
+      left:-3.5px; width:16px; height:7px;
+      border:1.5px solid #0a0502;
+      border-radius:45% / 50%;
+      background:
+        radial-gradient(ellipse 30% 22% at 50% 50%, #2a1407, #4a240d 70%, transparent 74%),
+        linear-gradient(to right, #1a0b04, #6b3817 30%, #8a4c22 45%, #5a2c10 65%, #1a0b04);
+      box-shadow:inset 0 0 3px rgba(0,0,0,.7), 0 2px 4px rgba(0,0,0,.6);
+    }
+    .lvs-roll::before{ top:-6px; }
+    .lvs-roll::after{ bottom:-6px; }
+    /* glint: a soft light streak slid across the parchment */
+    .lvs-glint{ left:8px; right:8px; top:5px; bottom:5px; overflow:hidden; z-index:1; }
+    .lvs-glint::before{
+      content:""; position:absolute; top:0; bottom:0; left:0; width:35%;
+      background:linear-gradient(105deg, transparent, rgba(255,240,200,.45), transparent);
+      transform:translateX(-120%) skewX(-18deg);
+    }
+    /* fleurons either side of the title */
+    .lvs-label::before, .lvs-label::after{
+      font:16px/1 'Segoe UI Symbol', 'Palatino Linotype', serif;
+      color:#6e1d0a;
+      opacity:0;
+      transition:opacity .3s ease, transform .3s ease;
+    }
+    .lvs-label::before{ content:"\2619"; margin-right:10px; transform:translateX(10px); }
+    .lvs-label::after{ content:"\2767"; margin-left:7px; transform:translateX(-10px); }
+    .lvs-roll, .lvs-paper, .lvs-glint{ transition:transform .4s cubic-bezier(.3,1.4,.5,1); }
+
+    .lv-scroll:hover{ transform:translateY(-2px); }
+    .lv-scroll:hover .lvs-label::before,
+    .lv-scroll:hover .lvs-label::after{ opacity:1; transform:none; }
+    .lv-scroll:hover .lvs-roll.a{ transform:translateX(-5px); }
+    .lv-scroll:hover .lvs-roll.b{ transform:translateX(5px); }
+    .lv-scroll:hover .lvs-paper, .lv-scroll:hover .lvs-glint{ transform:scaleX(1.042); }
+    .lv-scroll:hover .lvs-glint::before{ transform:translateX(320%) skewX(-18deg); transition:transform .8s ease; }
+    .lv-scroll:active{ transform:translateY(1px); }
+
+    @media (prefers-reduced-motion: reduce){
+      .lv-scroll, .lv-scroll *, .lv-scroll *::before{ transition:none !important; }
+    }
+  </style>
+
+  <div class="bar-section">
+    <h2 class="section-label">Lore button — original vs variants</h2>
+    <div class="lv-grid">
+
+      <div class="lv-card">
+        <h3>Original (current game)</h3>
+        <p>Exactly as in the menu today (css/ui.css .btn-lore).</p>
+        <div class="lv-menu"><div class="menu-row">
+          <button class="btn btn-menu btn-full btn-lore">Lore</button>
+          <button class="btn btn-menu">Version History</button>
+        </div></div>
+      </div>
+
+      <div class="lv-card">
+        <h3>3C - Scroll</h3>
+        <p>Rods on the sides, unrolled to full width. Hover: it lifts, the rods pull the parchment taut, a light glints across it and fleurons appear. Red ink, Palatino small caps, like the Lore scroll.</p>
+        <div class="lv-menu"><div class="menu-row">
+          <button class="lv-scroll">
+            <span class="lvs-paper"></span><span class="lvs-glint"></span><span class="lvs-roll a"></span><span class="lvs-roll b"></span>
+            <span class="lvs-label">Lore</span>
+          </button>
+          <button class="btn btn-menu">Version History</button>
+        </div></div>
+      </div>
+
     </div>
   </div>
 
