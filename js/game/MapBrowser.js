@@ -17,7 +17,7 @@
 //    dropdown.
 // Styles: css/map_browser.css.
 
-import { fillMinimap } from './minimapTiles.js';
+import { drawMinimap } from './minimapTiles.js';
 
 const mapSelect = document.getElementById('mapSelect');
 const popup = document.getElementById('mapBrowserPopup');
@@ -210,13 +210,9 @@ function showPreview(row) {
     if (!grid) {
         const rowsN = row.map.layout.length, colsN = row.map.layout[0].length;
         const cell = Math.max(1, Math.floor(PREVIEW_MAX / Math.max(rowsN, colsN)));
-        grid = document.createElement('div');
+        // drawn on a canvas (not a div per tile) - no gaps between the tiles
+        grid = drawMinimap(row.map, cell);
         grid.className = 'map-browser-preview-map';
-        grid.style.width = colsN * cell + 'px';
-        grid.style.height = rowsN * cell + 'px';
-        const inner = document.createElement('div');
-        grid.appendChild(inner);
-        fillMinimap(inner, row.map);
         minimapCache.set(row.value, grid);
     }
     previewGrid.replaceChildren(grid);

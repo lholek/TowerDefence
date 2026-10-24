@@ -36,9 +36,11 @@
   text-align: center;
 }
 
-/* only the table scrolls, the heading and "×" stay put */
+/* only the table scrolls, the heading and "×" stay put. Fixed height (not
+   max-height), so the popup keeps the same size however many maps the
+   search / filters leave in the table */
 .map-browser-scroll {
-  max-height: 65vh;
+  height: 65vh;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -256,7 +258,6 @@
   border-radius: 4px;
   overflow: hidden;
 }
-.map-browser-preview-map > div { width: 100%; height: 100%; }
 .map-browser-difficulty { white-space: nowrap; letter-spacing: 1px; }
 .map-browser-loading { color: #aaa; font-style: italic; }
 
