@@ -142,7 +142,10 @@ export default class Game {
     // 1. ROZHODNUTÍ O ZDROJI DAT
     if (typeof mapSource === 'string') {
         // ZDROJ JE URL (pro přednastavené mapy)
-        const res = await fetch(mapSource);
+        // no-cache: always revalidate with the server, otherwise the browser
+        // can keep serving an older copy of an edited map JSON (e.g. old
+        // startingCoins) - an unchanged file just costs a quick 304
+        const res = await fetch(mapSource, { cache: 'no-cache' });
         if (!res.ok) {
             throw new Error(`Failed to load JSON: ${res.status} ${res.statusText}`);
         }

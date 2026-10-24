@@ -52,7 +52,7 @@ const escapeHtml = s => String(s).replace(/[&<>"']/g, c =>
 
 async function loadMap(url) {
     if (!mapCache.has(url)) {
-        mapCache.set(url, fetch(url)
+        mapCache.set(url, fetch(url, { cache: 'no-cache' }) // see Game.js loadGameData
             .then(res => { if (!res.ok) throw new Error('Fetch failed'); return res.json(); })
             .then(data => (data.maps ? data.maps[0] : data)));
     }

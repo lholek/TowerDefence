@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                const res = await fetch(mapSelect.value);
+                const res = await fetch(mapSelect.value, { cache: 'no-cache' }); // see Game.js loadGameData
                 if (!res.ok) throw new Error('Fetch failed');
                 const data = await res.json();
                 map = data.maps ? data.maps[0] : data;
