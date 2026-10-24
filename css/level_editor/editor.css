@@ -312,6 +312,65 @@ hr {
     border: none;
 }
 
+/* Drag & drop reordering (js/level_editor/drag_reorder.js): gold grip
+   button next to Copy (the game's #f0c674), a gold line where the card
+   will land. Waves use the same gold ▲ / ▼ buttons instead. */
+.btn-drag,
+.btn-move {
+    background-color: #f0c674;
+    color: #3b2a14;
+    box-shadow: none;
+    border: none;
+    padding: 5px 10px;
+}
+.btn-drag { cursor: grab; }
+.btn-drag:hover,
+.btn-move:hover:not(:disabled) {
+    background-color: #f7d896;
+    box-shadow: none;
+    border: none;
+}
+.btn-drag:active { cursor: grabbing; }
+.btn-move:disabled { opacity: .35; cursor: default; }
+/* 9 dots, like the grip on the price / enemy type tags */
+.btn-drag .drag-dots {
+    display: inline-block;
+    width: 12px;
+    height: 16px;
+    vertical-align: middle;
+    background-image: radial-gradient(circle, #3b2a14 1.3px, transparent 1.6px);
+    background-size: 4px 5.33px;
+    pointer-events: none;
+}
+.reorder-dragging { opacity: .4; }
+.reorder-before, .reorder-after { position: relative; }
+.reorder-before::after, .reorder-after::after {
+    content: "";
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    background: #f0c674;
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(240, 198, 116, .8);
+}
+/* stacked cards (towers, abilities): line above / below */
+.tower-card.reorder-before::after, .ability-card.reorder-before::after,
+.tower-card.reorder-after::after, .ability-card.reorder-after::after {
+    left: 0; right: 0; height: 4px;
+}
+.tower-card.reorder-before::after, .ability-card.reorder-before::after { top: -10px; }
+.tower-card.reorder-after::after, .ability-card.reorder-after::after { bottom: -10px; }
+/* enemy groups sit side by side: line left / right */
+.enemy-card.reorder-before::after, .enemy-card.reorder-after::after { top: 0; bottom: 0; width: 4px; }
+.enemy-card.reorder-before::after { left: -9px; }
+.enemy-card.reorder-after::after { right: -9px; }
+
+/* Wave path that isn't a Start/End pair of the map (e.g. "S1E") */
+.wave-card input.path-suggest-input.is-invalid {
+    border-color: #ff4444;
+    box-shadow: 0 0 0 2px rgba(255, 68, 68, .55);
+}
+
 .btn-copy-json{
     background-color: #3F7D3C;
     box-shadow: none;

@@ -5,6 +5,7 @@ import { modifyJson as modifyJsonRaw, getAvailablePaths, showCursorWarning } fro
 import { formatNumber, parseThousands } from './number_format.js';
 import { highlightPath, clearHighlight } from './editor_map_preview.js';
 import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
+import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -115,6 +116,16 @@ export const initialize = (refs) => {
         waveEditor.renderEffectsRepeater();
         waveEditor.renderDamageRepeater();
     });
+
+    // Drag the grip button to reorder the enemy groups inside a wave (they
+    // sit side by side, so the drop line is left/right). Waves themselves
+    // move with their ▲ / ▼ buttons.
+    enableDragReorder(contentContainer, {
+        item: '.enemy-card',
+        handle: '.btn-drag-enemy',
+        axis: 'x',
+        onMove: (from, to, card) => waveEditor.moveEnemyGroup(parseInt(card.dataset.waveIndex, 10), from, to)
+    });
 };
 
 // --- Utility Functions ---
@@ -209,6 +220,7 @@ export const waveEditor = (() => {
             <div class="enemy-card box-inner" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">
                 
                 <div class="card-controls">
+                    ${dragHandleHtml('btn-drag-enemy btn-small')}
                     <button class="btn btn-copy btn-small" onclick="window.app.waveEditor.copyEnemyGroup(${waveIndex}, ${enemyIndex})">📋</button>
                     <button class="btn btn-delete btn-small btn-delete-enemy" data-wave-index="${waveIndex}" data-enemy-index="${enemyIndex}">X</button>
                 </div>
@@ -298,6 +310,15 @@ export const waveEditor = (() => {
         inputs.forEach(input => {
             const dropdown = input.nextElementSibling;
             let activeIndex = -1;
+
+            // Red border when the path isn't one of the map's Start/End pairs
+            // (e.g. a half-typed "S1E") - checked when the field is left, and on
+            // every re-render, so maps loaded with a broken path show it too
+            const validatePath = () => {
+                input.classList.toggle('is-invalid', !availablePaths.includes(input.value.trim()));
+            };
+            validatePath();
+            input.addEventListener('blur', validatePath);
         
             const renderSuggestions = (filtered) => {
                 if (filtered.length > 0) {
@@ -362,7 +383,7 @@ export const waveEditor = (() => {
                 }
             };
         
-            input.oninput = () => { activeIndex = -1; showSuggestions(); highlightPath(input.value); };
+            input.oninput = () => { activeIndex = -1; input.classList.remove('is-invalid'); showSuggestions(); highlightPath(input.value); };
 
             // Without this, mousedown on a suggestion blurs the input BEFORE the click
             // fires. If the user had typed filter text, that blur commits it as a native
@@ -453,6 +474,8 @@ export const waveEditor = (() => {
                         </label>
                         <h4>Enemies (Total Coins: 🪙 ${formatNumber(totalCoins)})</h4>
                         <div class="header-actions">
+                            <button type="button" class="btn btn-move" title="Move wave up" ${waveIndex === 0 ? 'disabled' : ''} onclick="window.app.waveEditor.moveWave(${waveIndex}, ${waveIndex - 1})">▲</button>
+                            <button type="button" class="btn btn-move" title="Move wave down" ${waveIndex === levels.length - 1 ? 'disabled' : ''} onclick="window.app.waveEditor.moveWave(${waveIndex}, ${waveIndex + 1})">▼</button>
                             <button class="btn btn-copy" onclick="window.app.waveEditor.copyWave(${waveIndex})">📋</button>
                             <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
                         </div>
@@ -817,6 +840,32 @@ export const waveEditor = (() => {
         }, `Enemy group duplicated.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${newEnemyIndex}"]`);
     };
 
+    /**
+     * Moves a wave to another position; levels are re-numbered 1, 2, 3, ...
+     */
+    const moveWave = (from, to) => {
+        modifyJson((data) => {
+            const levels = data.maps[0].levels;
+            const [moved] = levels.splice(from, 1);
+            levels.splice(to, 0, moved);
+            reIndexWaves(levels);
+            renderWaveRepeater(levels);
+        }, `Wave ${from + 1} moved to position ${to + 1}.`, `.wave-card[data-wave-index="${to}"]`);
+    };
+
+    /**
+     * Moves an enemy group to another position within its wave
+     */
+    const moveEnemyGroup = (waveIndex, from, to) => {
+        modifyJson((data) => {
+            const enemies = data.maps[0].levels[waveIndex]?.enemies;
+            if (!enemies) return;
+            const [moved] = enemies.splice(from, 1);
+            enemies.splice(to, 0, moved);
+            renderWaveRepeater(data.maps[0].levels);
+        }, `Wave ${waveIndex + 1}: enemy group ${from + 1} moved to position ${to + 1}.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${to}"]`);
+    };
+
     const availablePaths = getAvailablePaths();
     const pathDatalist = `
         <datalist id="path-list">
@@ -1035,6 +1084,8 @@ export const waveEditor = (() => {
         deleteWave,
         copyWave,
         copyEnemyGroup,
+        moveWave,
+        moveEnemyGroup,
         addEnemyToWave,
         deleteEnemyFromWave,
         removeEnemyType,

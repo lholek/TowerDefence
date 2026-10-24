@@ -4,6 +4,7 @@ import { getCurrentMap } from './level_data.js'; // To access the abilities data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
 import { initJsonSteppers, RELEASE_EVENT } from './JsonStepper.js';
+import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
 
 // Every modifyJson(...) call in this file edits an ability, so tag it 'ability' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -91,6 +92,13 @@ export const initialize = () => {
     document.addEventListener(RELEASE_EVENT, () => {
         abilityEditor.renderAbilityRepeater(getCurrentMap().abilities);
     });
+
+    // Drag the grip button to change the abilities' order (= order in the game)
+    enableDragReorder(contentContainer, {
+        item: '.ability-card',
+        handle: '.btn-drag-ability',
+        onMove: (from, to) => abilityEditor.moveAbility(from, to)
+    });
 };
 // --- Main Ability Editor Public Interface ---
 
@@ -122,6 +130,7 @@ export const abilityEditor = (() => {
                 <label>Config ID <input type="text" class="input-medium" value="${ability.configId || ''}" disabled></label>
                 <label>Type <input type="text" class="input-medium" value="${ability.type}" disabled></label>
                 <div class="header-actions">
+                    ${dragHandleHtml('btn-drag-ability')}
                     <button class="btn btn-copy btn-copy-ability" data-ability-index="${index}" title="Copy Ability">📋</button>
                     <button class="btn btn-delete btn-delete-ability" data-ability-index="${index}">X</button>
                 </div>
@@ -395,6 +404,15 @@ export const abilityEditor = (() => {
         }, `Copied ability at index ${index}`, `.ability-card[data-ability-index="${index + 1}"]`);
     };
 
+    const moveAbility = (from, to) => {
+        modifyJson((data) => {
+            const abilities = data.maps[0].abilities;
+            const [moved] = abilities.splice(from, 1);
+            abilities.splice(to, 0, moved);
+            renderAbilityRepeater(abilities);
+        }, `Ability ${from + 1} moved to position ${to + 1}.`, `.ability-card[data-ability-index="${to}"]`);
+    };
+
     const formatStat = (val, inverted = false) => {
         const change = Math.round((val - 1) * 100);
         // For Damage/Speed: >1 is positive. For Fire Rate: <1 (inverted) is positive.
@@ -424,7 +442,8 @@ export const abilityEditor = (() => {
         renderAbilityRepeater,
         addAbility,
         deleteAbility,
-        copyAbility
+        copyAbility,
+        moveAbility
     };
 })();
 

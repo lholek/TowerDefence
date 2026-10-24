@@ -4,6 +4,7 @@ import { currentLevelData } from './level_data.js'; // To access the tower data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
 import { formatNumber, parseThousands } from './number_format.js';
 import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
+import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
 
 // Every modifyJson(...) call in this file edits a tower, so tag it 'tower' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -37,6 +38,13 @@ export const initialize = () => {
     // for as long as it's running, so catch back up with one rebuild once it lets go.
     document.addEventListener(RELEASE_EVENT, () => {
         towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes);
+    });
+
+    // Drag the grip button to change the towers' order (= order in the game)
+    enableDragReorder(contentContainer, {
+        item: '.tower-card',
+        handle: '.btn-drag-tower',
+        onMove: (from, to) => towerEditor.moveTower(from, to)
     });
 };
 
@@ -109,6 +117,7 @@ export const towerEditor = (() => {
                         <label>Name <input type="text" data-key="name" value="${tower.name}"></label>
                         <span class="badge-dps">⚡ DPS: ${dps}</span>
                         <div class="header-actions">
+                            ${dragHandleHtml('btn-drag-tower btn-padding-buttons')}
                             <button class="btn btn-copy btn-copy-tower btn-padding-buttons" data-copy-id="${towerId}" title="Copy Tower">📋</button>
                             <button class="btn btn-delete btn-delete-tower btn-padding-buttons" data-delete-id="${towerId}">X</button>
                         </div>
@@ -252,10 +261,29 @@ export const towerEditor = (() => {
         }, `Tower ${towerId} (${towerName}) deleted and IDs re-indexed.`, `.tower-card[data-tower-id="${towerId}"]`);
     };
 
+    // Moves a tower to another position; IDs are re-numbered 001, 002, ...
+    // in the new order (the game lists towers in ID order)
+    const moveTower = (from, to) => {
+        const newId = (to + 1).toString().padStart(3, '0');
+        modifyJson((data) => {
+            const towerTypes = data.maps[0].towerTypes;
+            // same order as the cards are rendered (for...in above)
+            const towers = Object.values(towerTypes);
+            const [moved] = towers.splice(from, 1);
+            towers.splice(to, 0, moved);
+            data.maps[0].towerTypes = {};
+            towers.forEach((tower, index) => {
+                data.maps[0].towerTypes[(index + 1).toString().padStart(3, '0')] = tower;
+            });
+            renderTowerRepeater(data.maps[0].towerTypes);
+        }, `Tower ${from + 1} moved to position ${to + 1}.`, `.tower-card[data-tower-id="${newId}"]`);
+    };
+
     return {
         renderTowerRepeater,
         addTower,
         deleteTower,
-        copyTower
+        copyTower,
+        moveTower
     };
 })();
