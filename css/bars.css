@@ -1277,8 +1277,11 @@
   color:#fff3d0;
   text-shadow:0 1px 2px #000, 0 0 6px rgba(0,0,0,0.8);
 }
-/* same size as the rest, Arial has no heavier weight than 700 - a thin stroke makes it bolder */
-.ntu-progress-text b{ color:#ffe7a3; -webkit-text-stroke:.4px currentColor; }
+/* the current level: same font, size and weight as the rest, only the
+   colour marks it. font-weight:inherit on purpose - <b>'s default "bolder"
+   resolved to 900 here, which Windows draws with the wider, taller Arial
+   Black, so the current level looked bigger. */
+.ntu-progress-text b{ font-weight:inherit; color:#ffe7a3; }
 /* level up flash */
 #progressContainer.is-levelup{ animation: ntuLevelUp .9s ease; }
 @keyframes ntuLevelUp{
