@@ -356,9 +356,17 @@ export default class Game {
     rawDeltaTime = Math.min(rawDeltaTime, 100);
 
     if (!this.paused && this.gameStarted && this.playerLifes > 0) {
-      // Apply the multiplier here
+      // Apply the multiplier here. High speeds (10x) are split into
+      // sub-steps of at most 50ms game time: one update() moves an enemy
+      // at most to its next path tile and lets a tower fire at most once,
+      // so one huge step would make enemies stall at corners and towers
+      // shoot slower. 1x-3x at 60 FPS still run as a single step.
       const scaledDeltaTime = rawDeltaTime * this.gameSpeed;
-      this.update(scaledDeltaTime); 
+      const steps = Math.min(Math.ceil(scaledDeltaTime / 50), 8) || 1;
+      for (let i = 0; i < steps; i++) {
+        this.update(scaledDeltaTime / steps);
+        if (this.paused || !this.gameStarted || this.playerLifes <= 0) break;
+      }
       this.render();
     }
     requestAnimationFrame(this.loop.bind(this));

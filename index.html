@@ -39,13 +39,17 @@
       <button id="startButton" class="btn btn-menu btn-menu-full">Start Game</button>
       <button class="editorButton btn btn-menu-full">Level Editor</button>
 
+      <button id="openLoreBtn" class="lore-scroll-btn lore-scroll-full">
+        <span class="lsb-paper"></span><span class="lsb-glint"></span><span class="lsb-rod a"></span><span class="lsb-rod b"></span>
+        <span class="lsb-label">Lore</span>
+      </button>
+
       <div class="menu-row">
-        <button id="openLoreBtn" class="lore-scroll-btn">
-          <span class="lsb-paper"></span><span class="lsb-glint"></span><span class="lsb-rod a"></span><span class="lsb-rod b"></span>
-          <span class="lsb-label">Lore</span>
-        </button>
         <button class="versionButton btn btn-menu">Version History</button>
+        <!-- How to play ? -->
+        <button id="openTutorialBtn" class="btn btn-menu">How to Play ?</button>
       </div>
+      <div id="tutorialPopup" class="menu-popup-overlay"></div>
 
       <!--  Music menu box -->
       <div class="menu-row">
@@ -75,10 +79,6 @@
         
         <button id="openSettingsBtn" class="btn btn-menu">Settings</button>
       </div>
-
-      <!-- How to play ? -->
-      <button id="openTutorialBtn" class="btn btn-menu-full">How to Play ?</button>
-      <div id="tutorialPopup" class="menu-popup-overlay"></div>
 
       <h2 class="title title-select-map">Select map</h2>
       <!-- Styled select on its own row -->
@@ -127,7 +127,7 @@
       <div id="mapBrowserPopup" class="menu-popup-overlay">
         <div class="map-browser-content">
           <button class="close-btn popup-close-x" title="Close">&times;</button>
-          <h2 class="cl-primary">Custom Map Selector</h2>
+          <h2 class="cl-primary">Map Selector</h2>
           <div class="map-browser-toolbar">
             <input type="search" id="mapBrowserSearch" class="map-browser-search" placeholder="Search map..." autocomplete="off" spellcheck="false">
             <div class="map-browser-filters" id="mapBrowserFilters">
@@ -528,6 +528,7 @@
               <button type="button" data-speed="3">3x</button>
               <button type="button" data-speed="4">4x</button>
               <button type="button" data-speed="5">5x</button>
+              <button type="button" data-speed="10">10x</button>
             </div>
             <select id="gameSpeedSelect" class="gameSpeedSelect" aria-hidden="true" tabindex="-1">
                 <option value="1" selected>1x</option>
@@ -537,6 +538,7 @@
                 <option value="3">3x</option>
                 <option value="4">4x</option>
                 <option value="5">5x</option>
+                <option value="10">10x</option>
             </select>
           </div>
 

@@ -1,6 +1,6 @@
 // SpeedControl.js
 //
-// The game-speed buttons (1x ... 5x) in the top bar. The real
+// The game-speed buttons (1x ... 10x) in the top bar. The real
 // <select id="gameSpeedSelect"> stays the single source of truth - just
 // hidden (css/bars.css): main.js listens to its 'change' event (sets
 // game.setSpeed() + the .is-boosted pulse class) and main.js / UI.js /

@@ -27,6 +27,7 @@
           "<b>UI</b>": [
             "New top bar - lives, gold and time with new icons, game speed as quick 1x-5x buttons, and redesigned Log, Music and Menu buttons",
             "New level progress bar",
+            "New 10x game speed - for quicker games on small maps",
             "Large numbers now use a space as the thousands separator (e.g. 1 000 instead of 1000)",
             "Redesigned Towers, Abilities and +1 Life buttons with new icons",
             "Redesigned tower cards - bigger tower preview, price, sell value and DPS at a glance, all 6 stats on hover, and each card colored to match its tower",
@@ -51,7 +52,8 @@
             "Chapter tabs on the bottom roll to jump between the Decree and each mage",
             "Fixed lore button",
             "Redesigned scroll - oak rolls, the High Elven Council's wax seal, a torn and aged parchment, and the scroll now rolls back up when closed",
-            "New Lore button - a small parchment scroll on oak rods that stretches taut and glints on hover"
+            "New Lore button - a small parchment scroll on oak rods that stretches taut and glints on hover",
+            "The Lore button now has its own full row in the main menu, How to Play moved next to Version History"
           ]
         },
         {

@@ -1249,6 +1249,12 @@
 .lore-scroll-btn:hover .lsb-glint::before { transform: translateX(320%) skewX(-18deg); transition: transform .8s ease; }
 .lore-scroll-btn:active { transform: translateY(1px); }
 
+/* full menu row (like .btn-menu-full); the parchment stretches by the
+   same 5px per side as the rods move, so a smaller scale on the wider sheet */
+.lore-scroll-btn.lore-scroll-full { width: 100%; max-width: 505px; margin-bottom: 0; }
+.lore-scroll-btn.lore-scroll-full:hover .lsb-paper,
+.lore-scroll-btn.lore-scroll-full:hover .lsb-glint { transform: scaleX(1.02); }
+
 @media (prefers-reduced-motion: reduce) {
     .lore-scroll-btn, .lore-scroll-btn *, .lore-scroll-btn *::before { transition: none !important; }
 }
