@@ -23,6 +23,7 @@
           "Added Ice Storm ability to the editor",
           "Towers, abilities and enemy groups can be reordered by drag & drop - grab the gold ⠿ button next to Copy, a gold line shows where it will land",
           "Waves can be moved up / down with the new gold ▲ / ▼ buttons next to Copy",
+          "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill)",
           "The enemy group's Path field now gets a red border when the path doesn't exist on the map (e.g. a half-typed 'S1E')"
           ]
         },

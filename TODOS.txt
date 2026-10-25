@@ -30,5 +30,4 @@ země - Zlatá důl - Okamžiě zvýší přijmy z nepřátel o 100%
 ? Puklina v zemi 
 
 Abilities ?
-Freeze floor ? - Ledová vychřice zpomalující enemáky, a může je dělat více zranitělnějším (+20% damge)
 Baricade ? - Pevný blok který má třeba 5000 života, nebo

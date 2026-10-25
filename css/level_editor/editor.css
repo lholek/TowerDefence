@@ -68,6 +68,33 @@ h3{
     text-shadow: none;
 }
 
+/* Header title + version pill - same look as the main menu's #title /
+   #subtitle (css/fire-title.css + style.css .subtitle): bold Arial with the
+   fire gradient, and the brown pill with light text. No fall-in animation. */
+h1.title.editor-main-title { /* beats the generic .title / .cl-primary further down */
+    font: 700 32px/normal Arial, sans-serif;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto 5px;
+    color: #d44a00;
+    background: linear-gradient(180deg, #ffe99a 0%, #ffde59 25%, #d44a00 72%, #8c2b08 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* same as #title .char - with the transparent fill this faint white
+       shadow is drawn over the gradient and lightens it to the menu's tone */
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+    filter: drop-shadow(0 0 2px rgba(255, 222, 89, .22))
+            drop-shadow(0 0 4px rgba(212, 74, 0, .35));
+}
+.subtitle.editor-main-subtitle {
+    font: 700 16px/1.2 Arial, sans-serif;
+    padding: 8px 32px;
+    border-radius: 8px;
+    color: #f8e9bf;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.18), 0 2px 2px rgba(0, 0, 0, 0.55);
+}
+
 .editor-body {
     background-color: #121212;
     color: #e0e0e0;
