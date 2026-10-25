@@ -87,6 +87,20 @@ h1.title.editor-main-title { /* beats the generic .title / .cl-primary further d
     filter: drop-shadow(0 0 2px rgba(255, 222, 89, .22))
             drop-shadow(0 0 4px rgba(212, 74, 0, .35));
 }
+/* Section headings (Map, Map Settings, Tower / Wave / Ability Editor, Final
+   JSON) - same fiery look as the title above */
+.editor-panel > h2,
+h2.final-json {
+    font: 700 32px/normal Arial, sans-serif;
+    color: #d44a00;
+    background: linear-gradient(180deg, #ffe99a 0%, #ffde59 25%, #d44a00 72%, #8c2b08 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+    filter: drop-shadow(0 0 2px rgba(255, 222, 89, .22))
+            drop-shadow(0 0 4px rgba(212, 74, 0, .35));
+}
 .subtitle.editor-main-subtitle {
     font: 700 16px/1.2 Arial, sans-serif;
     padding: 8px 32px;
@@ -391,6 +405,31 @@ hr {
 .enemy-card.reorder-before::after, .enemy-card.reorder-after::after { top: 0; bottom: 0; width: 4px; }
 .enemy-card.reorder-before::after { left: -9px; }
 .enemy-card.reorder-after::after { right: -9px; }
+
+/* Collapsed wave (− / + button): only the header row stays */
+/* wave totals on their own row under the header (stays visible when collapsed) */
+.wave-card .wave-stats { margin: -4px 0 4px; text-align: center; }
+
+/* 200ms slide: the grid row animates 1fr <-> 0fr, the inner box clips */
+.wave-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows .3s ease, opacity .3s ease;
+}
+.wave-collapse-inner { min-height: 0; overflow: hidden; }
+/* Big maps have ~20 000 elements in the wave list, and every animation frame
+   re-laid out all waves below the one collapsing (frames up to ~28ms =
+   stutter). content-visibility skips layout / paint of waves that are off
+   screen (~7ms frames); the "auto" size keeps their last real height, so the
+   scrollbar doesn't jump. Paint is clipped to the card - fine, the path
+   dropdown (max 120px) stays inside it, tooltips live in <body>. */
+.wave-card { content-visibility: auto; contain-intrinsic-size: auto 700px; }
+/* guess for a collapsed card the editor hasn't measured yet (e.g. after Undo);
+   normally renderWaveRepeater sets the real height inline */
+.wave-card.is-collapsed { contain-intrinsic-size: auto 75px; }
+.wave-card.is-collapsed .wave-collapse { grid-template-rows: 0fr; opacity: 0; }
+/* same size as the ▲ / ▼ buttons next to it (− / + are narrower glyphs) */
+.btn-collapse-wave { width: 33px; padding-left: 0; padding-right: 0; }
 
 /* Wave path that isn't a Start/End pair of the map (e.g. "S1E") */
 .wave-card input.path-suggest-input.is-invalid {

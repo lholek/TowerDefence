@@ -15,8 +15,25 @@ import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
 const modifyJson = (modifyFn, successMessage, selector, fallbackSelector) =>
     modifyJsonRaw(modifyFn, successMessage, { section: 'wave', selector, fallbackSelector });
 
-let contentContainer = null; 
+let contentContainer = null;
 let setStatus = () => {}; // Dependency Injection for status messages
+
+// Indexes of collapsed wave cards (only the header row is shown). Pure view
+// state - not saved in the map JSON; kept in step when waves move / are
+// copied / deleted, and survives the repeater's innerHTML rebuilds.
+const collapsedWaves = new Set();
+
+// Last known content height of each wave card (see renderWaveRepeater), keyed
+// by the wave object; renderedWaves = the wave objects in the order last drawn.
+const waveHeights = new WeakMap();
+let renderedWaves = [];
+
+// Moves every collapsed index >= `from` by `delta` (a wave was inserted / removed)
+function shiftCollapsed(from, delta) {
+    const moved = [...collapsedWaves].map(i => (i >= from ? i + delta : i));
+    collapsedWaves.clear();
+    moved.forEach(i => collapsedWaves.add(i));
+}
 
 // The hard-coded ENEMY_TYPES constant is REMOVED
 
@@ -299,12 +316,16 @@ export const waveEditor = (() => {
         `;
     };
 
+    const renderEnemyCards = (wave, waveIndex) =>
+        (Array.isArray(wave.enemies) ? wave.enemies : [])
+            .map((enemy, enemyIndex) => renderEnemyCard(enemy, waveIndex, enemyIndex)).join('');
+
     /**
      * Attaches custom autocomplete logic to path inputs.
      * Call this every time the wave list is re-rendered.
      */
-    const setupPathAutocomplete = () => {
-        const inputs = document.querySelectorAll('.path-suggest-input');
+    const setupPathAutocomplete = (root = document) => {
+        const inputs = root.querySelectorAll('.path-suggest-input');
         const availablePaths = getAvailablePaths();
         
         inputs.forEach(input => {
@@ -451,47 +472,72 @@ export const waveEditor = (() => {
 
         levels.forEach((wave, waveIndex) => {
             
-            // Calculate total coins for display
+            // Wave totals for the header: enemy count, coins earned and HP to chew through
+            let totalCount = 0;
             let totalCoins = 0;
+            let totalHealth = 0;
             if (wave.enemies && Array.isArray(wave.enemies)) {
+                 totalCount = wave.enemies.reduce((sum, e) => sum + e.count, 0);
                  totalCoins = wave.enemies.reduce((sum, e) => sum + (e.count * e.coinReward), 0);
+                 totalHealth = wave.enemies.reduce((sum, e) => sum + (e.count * e.health), 0);
             }
+            const collapsed = collapsedWaves.has(waveIndex);
             
-            // Build enemies HTML
-            let enemiesHtml = '';
-            if (wave.enemies && Array.isArray(wave.enemies)) {
-                wave.enemies.forEach((enemy, enemyIndex) => {
-                    enemiesHtml += renderEnemyCard(enemy, waveIndex, enemyIndex);
-                });
-            }
+            // Build enemies HTML - left out of collapsed waves (built when the
+            // wave is expanded, see toggleWaveCollapse): the groups' forms are
+            // most of the page, and the whole list is rebuilt on every change
+            const enemiesHtml = collapsed ? '' : renderEnemyCards(wave, waveIndex);
 
             html += `
-                <div class="wave-card box" data-wave-index="${waveIndex}">
+                <div class="wave-card box ${collapsed ? 'is-collapsed' : ''}" data-wave-index="${waveIndex}">
                     <div class="card-header">
                         <div class="level-label item-title">Wave ${wave.level}</div>
-                        <label class="comment-label" for="wave-comment-${waveIndex}">Comment 
+                        <label class="comment-label" for="wave-comment-${waveIndex}">Comment
                             <input type="text" data-key="_comment" id="wave-comment-${waveIndex}" value="${wave._comment || ''}" placeholder="Notes about wave...">
                         </label>
-                        <h4>Enemies (Total Coins: 🪙 ${formatNumber(totalCoins)})</h4>
                         <div class="header-actions">
+                            <button type="button" class="btn btn-move btn-collapse-wave" title="${collapsed ? 'Expand wave' : 'Collapse wave'}" onclick="window.app.waveEditor.toggleWaveCollapse(${waveIndex})">${collapsed ? '+' : '−'}</button>
                             <button type="button" class="btn btn-move" title="Move wave up" ${waveIndex === 0 ? 'disabled' : ''} onclick="window.app.waveEditor.moveWave(${waveIndex}, ${waveIndex - 1})">▲</button>
                             <button type="button" class="btn btn-move" title="Move wave down" ${waveIndex === levels.length - 1 ? 'disabled' : ''} onclick="window.app.waveEditor.moveWave(${waveIndex}, ${waveIndex + 1})">▼</button>
                             <button class="btn btn-copy" onclick="window.app.waveEditor.copyWave(${waveIndex})">📋</button>
                             <button class="btn btn-delete btn-delete-wave" data-wave-index="${waveIndex}">X</button>
                         </div>
                     </div>
-                    
-                    <div class="card-body waves-body">
-                        <div class="enemies-container">
-                            ${enemiesHtml}
+                    <h4 class="wave-stats">Enemies (⭐ Count: ${formatNumber(totalCount)} | Coins: 🪙 ${formatNumber(totalCoins)} | ❤️ Health: ${formatNumber(totalHealth)})</h4>
+
+                    <div class="wave-collapse"><div class="wave-collapse-inner">
+                        <div class="card-body waves-body">
+                            <div class="enemies-container">
+                                ${enemiesHtml}
+                            </div>
                         </div>
-                        </div>
-                    <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add btn-green">+ Add Enemy Group</button>
+                        <button onclick="window.app.waveEditor.addEnemyToWave(${waveIndex})" class="btn btn-add btn-green">+ Add Enemy Group</button>
+                    </div></div>
                 </div>
             `;
         });
         
+        // Every change rebuilds all wave cards. Fresh cards that are off screen
+        // aren't laid out (content-visibility, see editor.css) and would fall
+        // back to a guessed height, so the page jumped by thousands of px
+        // (e.g. after moving a collapsed wave). Carry each wave's real content
+        // height over to its new card - keyed by the wave object itself, so
+        // it follows the wave when it moves.
+        const oldCards = contentContainer.querySelectorAll(':scope > .wave-card');
+        if (oldCards.length) {
+            const cs = getComputedStyle(oldCards[0]);
+            const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+            oldCards.forEach((card, i) => {
+                if (renderedWaves[i]) waveHeights.set(renderedWaves[i], card.clientHeight - padY);
+            });
+        }
+
         contentContainer.innerHTML = html;
+        contentContainer.querySelectorAll(':scope > .wave-card').forEach((card, i) => {
+            const h = waveHeights.get(levels[i]);
+            if (h) card.style.containIntrinsicSize = `auto ${Math.round(h)}px`;
+        });
+        renderedWaves = levels.slice();
         attachChangeListeners();
         attachDeleteListeners();
         setupPathAutocomplete();
@@ -502,12 +548,13 @@ export const waveEditor = (() => {
 
     // --- Interaction Functions ---
 
-    // NEW: Function to attach delete listeners
-    const attachDeleteListeners = () => {
-        if (!contentContainer) return;
-        
+    // NEW: Function to attach delete listeners. `root` = only that part of the
+    // list (an expanded wave's body, see toggleWaveCollapse), default = all.
+    const attachDeleteListeners = (root = contentContainer) => {
+        if (!root) return;
+
         // 1. Delete Wave Listeners
-        contentContainer.querySelectorAll('.btn-delete-wave').forEach(button => {
+        root.querySelectorAll('.btn-delete-wave').forEach(button => {
             button.addEventListener('click', async (e) => { // ADD async
                 // Get index from the button's data attribute
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
@@ -516,7 +563,7 @@ export const waveEditor = (() => {
         });
 
         // 2. Delete Enemy Group Listeners
-        contentContainer.querySelectorAll('.btn-delete-enemy').forEach(button => {
+        root.querySelectorAll('.btn-delete-enemy').forEach(button => {
             button.addEventListener('click', async (e) => { // ADD async
                 // Get indices from the button's data attributes
                 const waveIndex = parseInt(e.target.getAttribute('data-wave-index'), 10);
@@ -528,10 +575,10 @@ export const waveEditor = (() => {
     /**
      * Attaches change listeners to all input fields and selects within the wave editor.
      */
-    const attachChangeListeners = () => {
-        if (!contentContainer) return; 
+    const attachChangeListeners = (root = contentContainer) => {
+        if (!root) return;
 
-        contentContainer.querySelectorAll('input, select').forEach(input => {
+        root.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('change', (e) => {
                 const enemyCard = e.target.closest('.enemy-card');
                 const waveCard = e.target.closest('.wave-card');
@@ -630,6 +677,8 @@ export const waveEditor = (() => {
             
             // 1. Delete the wave by array index
             levels.splice(waveIndex, 1);
+            collapsedWaves.delete(waveIndex);
+            shiftCollapsed(waveIndex + 1, -1);
 
             // 2. Re-index levels from 1 up
             levels.forEach((wave, index) => {
@@ -807,20 +856,17 @@ export const waveEditor = (() => {
      * Copies an entire wave (level) and all its enemy groups
      */
     const copyWave = (waveIndex) => {
-        const newIndex = getCurrentMap().levels.length;
+        const newIndex = waveIndex + 1;
         modifyJson((data) => {
             const levels = data.maps[0].levels;
-            const waveToCopy = levels[waveIndex];
+            const newWave = JSON.parse(JSON.stringify(levels[waveIndex]));
 
-            const newWave = JSON.parse(JSON.stringify(waveToCopy));
-
-            // Auto-increment level number correctly
-            const maxLevel = levels.length > 0 ? Math.max(...levels.map(w => w.level)) : 0;
-            newWave.level = maxLevel + 1;
-
-            levels.push(newWave);
-            renderWaveRepeater(levels);
-        }, `Wave copied as Level ${getCurrentMap().levels.length + 1}.`, `.wave-card[data-wave-index="${newIndex}"]`);
+            // The copy goes right below the original; later waves move down one
+            levels.splice(newIndex, 0, newWave);
+            shiftCollapsed(newIndex, 1);
+            if (collapsedWaves.has(waveIndex)) collapsedWaves.add(newIndex);
+            reIndexWaves(levels);
+        }, `Wave ${waveIndex + 1} copied as Wave ${newIndex + 1}.`, `.wave-card[data-wave-index="${newIndex}"]`);
     };
 
     /**
@@ -848,9 +894,44 @@ export const waveEditor = (() => {
             const levels = data.maps[0].levels;
             const [moved] = levels.splice(from, 1);
             levels.splice(to, 0, moved);
+            // collapsed state travels with the wave
+            const wasCollapsed = collapsedWaves.delete(from);
+            shiftCollapsed(from + 1, -1);
+            shiftCollapsed(to, 1);
+            if (wasCollapsed) collapsedWaves.add(to);
             reIndexWaves(levels);
-            renderWaveRepeater(levels);
+            // no renderWaveRepeater() here - modifyJson re-renders all repeaters
+            // anyway, a second full rebuild just doubled the wait on big maps
         }, `Wave ${from + 1} moved to position ${to + 1}.`, `.wave-card[data-wave-index="${to}"]`);
+    };
+
+    /**
+     * Collapses a wave to just its header row (or expands it back). View
+     * only - no JSON change, so no Undo entry and no re-render needed.
+     */
+    const toggleWaveCollapse = (waveIndex) => {
+        const card = contentContainer?.querySelector(`.wave-card[data-wave-index="${waveIndex}"]`);
+        if (!card) return;
+        const collapsed = !collapsedWaves.has(waveIndex);
+        if (collapsed) collapsedWaves.add(waveIndex); else collapsedWaves.delete(waveIndex);
+
+        // A wave rendered collapsed has no enemy groups in its HTML yet - build
+        // them now (only this wave's body, with its own listeners / steppers)
+        const container = card.querySelector('.enemies-container');
+        const wave = getCurrentMap().levels[waveIndex];
+        if (!collapsed && container && !container.children.length && wave?.enemies?.length) {
+            container.innerHTML = renderEnemyCards(wave, waveIndex);
+            const body = card.querySelector('.wave-collapse-inner');
+            attachChangeListeners(body);
+            attachDeleteListeners(body);
+            setupPathAutocomplete(body);
+            initJsonSteppers(body);
+        }
+
+        card.classList.toggle('is-collapsed', collapsed);
+        const btn = card.querySelector('.btn-collapse-wave');
+        btn.textContent = collapsed ? '+' : '−';
+        btn.title = collapsed ? 'Expand wave' : 'Collapse wave';
     };
 
     /**
@@ -862,7 +943,6 @@ export const waveEditor = (() => {
             if (!enemies) return;
             const [moved] = enemies.splice(from, 1);
             enemies.splice(to, 0, moved);
-            renderWaveRepeater(data.maps[0].levels);
         }, `Wave ${waveIndex + 1}: enemy group ${from + 1} moved to position ${to + 1}.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${to}"]`);
     };
 
@@ -1086,6 +1166,7 @@ export const waveEditor = (() => {
         copyEnemyGroup,
         moveWave,
         moveEnemyGroup,
+        toggleWaveCollapse,
         addEnemyToWave,
         deleteEnemyFromWave,
         removeEnemyType,

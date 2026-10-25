@@ -23,7 +23,10 @@
           "Added Ice Storm ability to the editor",
           "Towers, abilities and enemy groups can be reordered by drag & drop - grab the gold ⠿ button next to Copy, a gold line shows where it will land",
           "Waves can be moved up / down with the new gold ▲ / ▼ buttons next to Copy",
-          "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill)",
+          "Waves can be collapsed to just their header row with the new − / + button - easier to browse and reorder long wave lists",
+          "Copying a wave now puts the copy right below the original instead of at the end",
+          "The wave header now shows the wave's total enemy count, coins and enemy health - Enemies (⭐ Count: … | Coins: 🪙 … | ❤️ Health: …)",
+          "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill), the section headings (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON) got the same fiery style",
           "The enemy group's Path field now gets a red border when the path doesn't exist on the map (e.g. a half-typed 'S1E')"
           ]
         },
