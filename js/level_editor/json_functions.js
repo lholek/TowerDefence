@@ -147,7 +147,10 @@ export function formatCompactLayout(jsonObject) {
  * Executes a modification function on the currentLevelData object 
  * and updates the editor with the new, compactly formatted JSON.
  */
-export function modifyJson(modifyFn, successMessage, historySection = null) {
+// options.renderRepeaters = false skips rebuilding the tower / wave / ability lists
+// (e.g. after painting the map - see editor_map.js handleMapDrawStop), which on a
+// big map is a large part of the wait and isn't needed when only tiles changed.
+export function modifyJson(modifyFn, successMessage, historySection = null, { renderRepeaters = true } = {}) {
 
     // 0. Snapshot the state as it was BEFORE this change, for Undo. Skipped when
     // historySection is null (e.g. internal syncs that aren't real user edits).
@@ -187,7 +190,7 @@ export function modifyJson(modifyFn, successMessage, historySection = null) {
     // after just one step. Skip them for the gesture's duration; JsonStepper fires its
     // RELEASE_EVENT on release, which each editor listens for to catch up with one
     // rebuild once it's safe to.
-    if (!isStepperHoldActive()) {
+    if (renderRepeaters && !isStepperHoldActive()) {
         if (modules.towerEditor && typeof modules.towerEditor.renderTowerRepeater === 'function') {
             modules.towerEditor.renderTowerRepeater(currentLevelData.maps[0].towerTypes || {});
         }

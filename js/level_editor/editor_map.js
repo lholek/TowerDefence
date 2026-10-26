@@ -91,6 +91,24 @@ let isDrawingRight = false; // Tracks if right button (2) is held for erasing
 let hasDrawn = false; // Tracks if any tile was modified during a draw session
 let activeDrawTileType = null; // Locks the tile type for the current drag session
 let pendingTiles = []; // Tiles changed during current draw stroke, before full prerender rebuild
+let strokeChangedMarkers = false; // Current stroke placed / removed a Start or End (S*, E*)
+let strokeNeedsRebuild = false; // Some tile of the current stroke couldn't be drawn live (see patchEditorMapLayers)
+const isWaterTile = (t) => t === 'W' || t.startsWith('W[Rock-');
+// How far (px at tile size 60) a tile's road-layer drawing reaches past its own tile
+// (measured; everything not listed stays inside its tile).
+const tileReachPx = (t) => /^(X|SNW)\[Tree\]$/.test(t) ? 46
+    : t === 'X[Hay]' ? 24
+    : t.startsWith('SND[PALM-') ? 10
+    : /^O(\[SNW\]|\[SND\])?$/.test(t) ? 6
+    : t.startsWith('W[Rock-') ? 3
+    : 0; // HLG clips itself to its tile
+// Editor only: expensive tile drawings (fn name -> px they reach past the tile) that are
+// drawn once and then just copied (see installEditorTileCache)
+const CACHED_TILE_DRAWS = { _drawTree: 48, _drawSnowTree: 48, _drawHayField: 26 };
+let tileCacheStore = null; // see installEditorTileCache
+const TILE_CACHE_MAX_PIXELS = 24e6; // ~96 MB - fits holy ground for a whole big map + plenty of trees
+// Tiles whose look depends on their 4 neighbours of the same type (hasLeft / hasRight / ...)
+const isNeighbourDependent = (t) => t === 'X[Hay]' || /^(X|SNW)\[(Cut)?Tree\]$/.test(t);
 let lastPointerClientX = 0; // Last known mouse position, so the custom "loading cursor" (see
 let lastPointerClientY = 0; // below) can replace the real cursor at the exact spot it was.
 
@@ -110,7 +128,7 @@ let lastPointerClientY = 0; // below) can replace the real cursor at the exact s
 // plays out as genuine, unblocked, smoothly animating frames before the dots disappear.
 let spinnerEl = null;
 let spinnerShownAt = 0;
-const MIN_SPINNER_VISIBLE_MS = 500;
+const MIN_SPINNER_VISIBLE_MS = 150; // was 500 - that alone made every stroke feel ~0.5s long
 function ensureSpinnerEl() {
     if (!spinnerEl) {
         spinnerEl = document.createElement('div');
@@ -347,6 +365,7 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
     const tilesToPaint = getBrushAffectedTiles(row, col);
 
     let changed = false;
+    const changes = []; // { r, c, old } of every tile changed by this call
 
     tilesToPaint.forEach(tile => {
         if (tile.r >= 0 && tile.r < layout.length && tile.c >= 0 && tile.c < layout[0].length) {
@@ -366,20 +385,236 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
                             
                 if (overwritingSameCategory) return;
 
+                // a Start / End placed or painted over changes the wave paths
+                if (isMarkerS(oldTile) || isMarkerE(oldTile) || isMarkerS(tileToPlace) || isMarkerE(tileToPlace)) {
+                    strokeChangedMarkers = true;
+                }
+
                 layout[tile.r][tile.c] = tileToPlace;
-                pendingTiles.push({ r: tile.r, c: tile.c });
+                changes.push({ r: tile.r, c: tile.c, old: oldTile });
                 changed = true;
             }
         }
     });
 
     if (changed) {
+        // Draw the new tiles for real right away; only when that isn't possible (huge
+        // brush) mark them yellow and rebuild the whole map once the stroke ends.
+        if (strokeNeedsRebuild || !patchEditorMapLayers(layout, changes)) {
+            strokeNeedsRebuild = true;
+            changes.forEach(ch => pendingTiles.push({ r: ch.r, c: ch.c }));
+        }
         hasDrawn = true; // This prevents the next "move" event from placing another marker
         renderMap(layout);
         return true;
     }
     return false;
 }
+/**
+ * Editor only (the game never gets here): wraps the expensive tile drawings of this
+ * GameMap instance so each tile is drawn once into a small canvas and then only copied.
+ * While painting, patchEditorMapLayers() redraws the same neighbouring holy ground /
+ * trees on every mouse move - holy ground alone is 260 leaves per tile. The editor
+ * draws them deterministically from the tile position (+ neighbour flags, part of the
+ * key), so the copy is identical to drawing it again.
+ */
+function installEditorTileCache(m) {
+    const ts = m.tileSize;
+    // The drawings depend only on the position (+ neighbour flags / settings in the key),
+    // so the cache is kept across map rebuilds (undo, load, ...) while size + graphics stay.
+    const storeKey = `${ts}|${m.rows}x${m.cols}|${JSON.stringify(m.graphicsSettings)}`;
+    if (!tileCacheStore || tileCacheStore.key !== storeKey) {
+        tileCacheStore = { key: storeKey, cache: new Map(), pixels: 0, holy: null, holyDrawn: null, warmed: false };
+    }
+    const store = tileCacheStore;
+    const cache = store.cache;
+    for (const [fn, pad] of Object.entries(CACHED_TILE_DRAWS)) {
+        const draw = m[fn];
+        if (typeof draw !== 'function') continue;
+        m[fn] = function (ctx, x, y, ...rest) {
+            const key = `${fn}|${x}|${y}|${rest.join('|')}`;
+            let img = cache.get(key);
+            if (!img) {
+                img = document.createElement('canvas');
+                img.width = img.height = ts + pad * 2;
+                const ictx = img.getContext('2d');
+                ictx.translate(pad - x, pad - y);
+                draw.call(this, ictx, x, y, ...rest);
+                store.pixels += img.width * img.height;
+                for (const [oldKey, old] of cache) {
+                    if (store.pixels <= TILE_CACHE_MAX_PIXELS) break;
+                    store.pixels -= old.width * old.height;
+                    cache.delete(oldKey);
+                }
+                cache.set(key, img);
+            }
+            ctx.drawImage(img, x - pad, y - pad);
+        };
+    }
+
+    // Holy ground clips itself to its tile, so all of it fits one map-sized canvas,
+    // each tile drawn at its own place (hundreds of small canvases were slow in the browser).
+    const drawHoly = m._drawHolyGround;
+    if (typeof drawHoly === 'function') {
+        if (!store.holy) {
+            store.holy = document.createElement('canvas');
+            store.holy.width = m.cols * ts;
+            store.holy.height = m.rows * ts;
+            store.holyDrawn = new Uint8Array(m.rows * m.cols);
+        }
+        const holy = store.holy;
+        const hctx = holy.getContext('2d');
+        const drawn = store.holyDrawn;
+        m._drawHolyGround = function (ctx, x, y) {
+            const r = y / ts, c = x / ts;
+            if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || r >= m.rows || c < 0 || c >= m.cols) {
+                return drawHoly.call(this, ctx, x, y);
+            }
+            if (!drawn[r * m.cols + c]) {
+                drawHoly.call(this, hctx, x, y);
+                drawn[r * m.cols + c] = 1;
+            }
+            if (ctx !== hctx) ctx.drawImage(holy, x, y, ts, ts, x, y, ts, ts);
+        };
+    }
+}
+
+/**
+ * Editor only: holy ground is by far the most expensive tile (260 leaves, every tile
+ * different), so its first drawing is what made painting it lag. Right after the map
+ * is built, pre-draw it for every map position in idle time (from the map centre out) -
+ * painting then only copies ready tiles. Runs once per cache (see installEditorTileCache).
+ */
+function warmHolyGroundCache() {
+    const store = tileCacheStore;
+    const m = editorMapInstance;
+    if (!store || !store.holyDrawn || store.warmed || !m || m.graphicsSettings.terrain === 'low') return;
+    store.warmed = true;
+    const ts = m.tileSize;
+    const rows = m.rows, cols = m.cols;
+    const midR = rows >> 1, midC = cols >> 1;
+    const order = [];
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) order.push([r, c]);
+    }
+    order.sort((a, b) => (Math.abs(a[0] - midR) + Math.abs(a[1] - midC)) - (Math.abs(b[0] - midR) + Math.abs(b[1] - midC)));
+    const sink = document.createElement('canvas').getContext('2d'); // the copy gets drawn here, unused
+    sink.canvas.width = sink.canvas.height = 1;
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(() => fn({ timeRemaining: () => 8 }), 50));
+    let i = 0;
+    const step = (deadline) => {
+        if (tileCacheStore !== store || !editorMapInstance) return; // size / graphics changed
+        while (i < order.length && deadline.timeRemaining() > 2) {
+            const [r, c] = order[i++];
+            if (!store.holyDrawn[r * cols + c]) editorMapInstance._drawHolyGround(sink, c * ts, r * ts);
+        }
+        if (i < order.length) idle(step);
+    };
+    idle(step);
+}
+
+/**
+ * Editor-only fast path while painting: instead of rebuilding the whole GameMap
+ * (every road / tree / holy ground texture on the map), redraw the grass and road
+ * layers only where the changed tiles (and neighbours whose look depends on them)
+ * can actually draw. Map.js / MapTextures.js are not changed - _prerenderRoad just
+ * runs on a copy of the grid with every unneeded tile set to '-', clipped to that area.
+ * The editor draws these tiles deterministically, so the result matches a full rebuild.
+ * Returns false when the full rebuild is still needed (huge brush, map not built yet).
+ */
+function patchEditorMapLayers(layout, changes) {
+    const m = editorMapInstance;
+    if (!m || !m.editorLayerGrass || changes.length === 0) return false;
+    const rows = layout.length;
+    const cols = layout[0].length;
+    if (m.rows !== rows || m.cols !== cols) return false;
+
+    const ts = m.tileSize;
+    const reach = (t) => Math.ceil(tileReachPx(t) * ts / 60);
+
+    // Pixel area that changes: the changed tiles + how far their old / new drawing
+    // reaches (+ one more tile when the neighbours' look depends on them).
+    let r0 = rows, r1 = -1, c0 = cols, c1 = -1, pad = 0;
+    for (const ch of changes) {
+        const now = String(layout[ch.r][ch.c]);
+        for (const t of [ch.old, now]) {
+            pad = Math.max(pad, isNeighbourDependent(t) ? ts + reach(t) : reach(t));
+        }
+        r0 = Math.min(r0, ch.r); r1 = Math.max(r1, ch.r);
+        c0 = Math.min(c0, ch.c); c1 = Math.max(c1, ch.c);
+    }
+    if ((r1 - r0 + 1) * (c1 - c0 + 1) > rows * cols / 2) return false;
+
+    const x0 = Math.max(0, c0 * ts - pad), y0 = Math.max(0, r0 * ts - pad);
+    const x1 = Math.min(cols * ts, (c1 + 1) * ts + pad), y1 = Math.min(rows * ts, (r1 + 1) * ts + pad);
+    // Tiles touching that area (+1 around - no drawing reaches further than one tile)
+    const tr0 = Math.max(0, Math.floor(y0 / ts) - 1), tr1 = Math.min(rows - 1, Math.ceil(y1 / ts));
+    const tc0 = Math.max(0, Math.floor(x0 / ts) - 1), tc1 = Math.min(cols - 1, Math.ceil(x1 / ts));
+    const grid = m.normalizeLayout(layout);
+
+    // Grass layer (same as _prerenderGrass in the editor: one grass tile, nothing on '-')
+    const gctx = m.grassLayer.getContext('2d');
+    gctx.save();
+    gctx.beginPath();
+    gctx.rect(x0, y0, x1 - x0, y1 - y0);
+    gctx.clip();
+    gctx.clearRect(x0, y0, x1 - x0, y1 - y0);
+    for (let r = tr0; r <= tr1; r++) {
+        for (let c = tc0; c <= tc1; c++) {
+            if (grid[r][c] !== '-') gctx.drawImage(m.editorLayerGrass, c * ts, r * ts);
+        }
+    }
+    gctx.restore();
+
+    // Water layer - the editor shows the simple LOW water (_prerenderWater: one colour per tile)
+    const wctx = m.waterLayer.getContext('2d');
+    wctx.save();
+    wctx.beginPath();
+    wctx.rect(x0, y0, x1 - x0, y1 - y0);
+    wctx.clip();
+    wctx.clearRect(x0, y0, x1 - x0, y1 - y0);
+    wctx.fillStyle = '#0b3a5e';
+    for (let r = tr0; r <= tr1; r++) {
+        for (let c = tc0; c <= tc1; c++) {
+            if (isWaterTile(String(grid[r][c]))) wctx.fillRect(c * ts, r * ts, ts, ts);
+        }
+    }
+    wctx.restore();
+
+    // Road / object layer: keep only tiles whose drawing reaches into the area,
+    // plus the same-type neighbours that neighbour-dependent tiles look at.
+    const keep = new Set();
+    for (let r = tr0; r <= tr1; r++) {
+        for (let c = tc0; c <= tc1; c++) {
+            const t = String(grid[r][c] ?? '');
+            const e = reach(t);
+            if (c * ts - e < x1 && (c + 1) * ts + e > x0 && r * ts - e < y1 && (r + 1) * ts + e > y0) keep.add(r * cols + c);
+        }
+    }
+    for (const key of [...keep]) {
+        const r = Math.floor(key / cols), c = key % cols;
+        const t = String(grid[r][c] ?? '');
+        if (!isNeighbourDependent(t)) continue;
+        for (const [nr, nc] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]]) {
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && String(grid[nr][nc] ?? '') === t) keep.add(nr * cols + nc);
+        }
+    }
+    m.grid = grid.map((row, r) => row.map((t, c) => keep.has(r * cols + c) ? t : '-'));
+    const rctx = m.roadLayer.getContext('2d');
+    rctx.save();
+    try {
+        rctx.beginPath();
+        rctx.rect(x0, y0, x1 - x0, y1 - y0);
+        rctx.clip();
+        rctx.clearRect(x0, y0, x1 - x0, y1 - y0);
+        m._prerenderRoad();
+    } finally {
+        rctx.restore();
+        m.grid = grid;
+    }
+    return true;
+}
+
 // --- Interaction Handlers (Drawing/Erasing) ---
 
 function handleMapDrawStart(e) {
@@ -396,6 +631,8 @@ function handleMapDrawStart(e) {
     // painted tiles. handleMapDrawStop() commits or cancels this pending snapshot once it
     // knows whether the stroke actually changed anything.
     beginManualRecord('map');
+    strokeChangedMarkers = false;
+    strokeNeedsRebuild = false;
 
     // Left click (button 0)
     if (e.button === 0) {
@@ -430,29 +667,40 @@ function handleMapDrawStop() {
         // Clear pending highlight before full rebuild so the final render shows clean tiles.
         pendingTiles = [];
 
-        // The rebuild below is synchronous and can take a noticeable moment on larger maps,
-        // so replace the mouse cursor with the custom loading dots right where it currently
-        // is, and defer the actual work by two animation frames — that gives the browser an
-        // actual paint cycle to draw it before the main thread gets blocked by the rebuild.
-        showSpinnerAt(lastPointerClientX, lastPointerClientY);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            // Reset the GameMap instance so that ALL prerender layers (road, grass,
-            // water, mountains, trees, portals, holy/burned ground, shores) are
-            // rebuilt exactly once — generating stable random variants for the
-            // final tile configuration rather than re-rolling on every mouse move.
-            resetEditorMap();
+        const finishStroke = () => {
             // Sync the already-changed currentLevelData back to the JSON editor and trigger any
             // required updates. History is NOT recorded here — call it directly (not through the
             // local modifyJson wrapper) so it does not also snapshot state, since that would
             // capture the state AFTER painting (the mutation already happened above) instead of
             // before. The real "before this stroke" snapshot was captured in handleMapDrawStart.
-            modifyJsonRaw(() => {}, `Map updated by drag-drawing.`);
+            // Tower / wave / ability lists only need rebuilding when a Start or End
+            // changed (the waves' path suggestions + red "unknown path" borders);
+            // plain terrain painting skips them - on big maps that halves the wait.
+            modifyJsonRaw(() => {}, `Map updated by drag-drawing.`, null, { renderRepeaters: strokeChangedMarkers });
             // Now that the sync succeeded, commit the pre-stroke snapshot onto the undo stack.
             commitManualRecord();
-            // Force a fresh render so the rebuilt instance is displayed immediately.
-            renderMap();
-            hideSpinner();
-        }));
+            // (no extra renderMap() here - modifyJsonRaw above already rebuilt and drew the map)
+        };
+
+        // Usual case: every tile was already drawn live (patchEditorMapLayers) - no rebuild, no spinner.
+        if (!strokeNeedsRebuild) {
+            finishStroke();
+        } else {
+            // The rebuild below is synchronous and can take a noticeable moment on larger maps,
+            // so replace the mouse cursor with the custom loading dots right where it currently
+            // is, and defer the actual work by two animation frames — that gives the browser an
+            // actual paint cycle to draw it before the main thread gets blocked by the rebuild.
+            showSpinnerAt(lastPointerClientX, lastPointerClientY);
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                // Reset the GameMap instance so that ALL prerender layers (road, grass,
+                // water, mountains, trees, portals, holy/burned ground, shores) are
+                // rebuilt exactly once — generating stable random variants for the
+                // final tile configuration rather than re-rolling on every mouse move.
+                resetEditorMap();
+                finishStroke();
+                hideSpinner();
+            }));
+        }
     } else {
         // Nothing actually changed during this stroke (e.g. a click that re-placed the same
         // tile type) — discard the pending snapshot so Undo doesn't get a no-op entry.
@@ -585,9 +833,14 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     // ----------------------------------------------------
 
     // 1. Resize Canvas to match its CSS/display size (avoid drawing-buffer scaling)
+    //    Only when the size really changed - assigning width/height (even the same
+    //    value) reallocates and clears the canvas, and renderMap() runs on every
+    //    mousemove while painting.
     const rect = canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.floor(rect.width));
-    canvas.height = Math.max(1, Math.floor(rect.height));
+    const w = Math.max(1, Math.floor(rect.width));
+    const h = Math.max(1, Math.floor(rect.height));
+    if (canvas.width !== w) canvas.width = w;
+    if (canvas.height !== h) canvas.height = h;
 
     // 2. Build or rebuild the GameMap instance when the layout shape changes.
     //    We use TILE_SIZE from the editor so the scale matches 1:1.
@@ -595,6 +848,11 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     const isNewInstance = !editorMapInstance || editorMapLayoutKey !== layoutKey;
     if (isNewInstance) {
         editorMapInstance = new GameMap(canvas, layout, TILE_SIZE, { editor: true });
+        // The grass tile the grass layer was just drawn with (the block below swaps
+        // grassVariants) - patchEditorMapLayers() redraws grass with it.
+        editorMapInstance.editorLayerGrass = editorMapInstance.grassVariants && editorMapInstance.grassVariants[0];
+        installEditorTileCache(editorMapInstance);
+        warmHolyGroundCache();
 
         // GameMap registers its own drag/zoom listeners on the canvas in its constructor.
         // The editor has its own handlers for these, so we must neutralise the Map ones
@@ -652,17 +910,8 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
         // Helpers to capture a drawing into a small canvas
         const makeCanvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 
-        // 1) Trees
-        try {
-            if (typeof editorMapInstance._preRenderTreeLow === 'function') {
-                editorMapInstance.tree_low = editorMapInstance._preRenderTreeLow(ts);
-            }
-        } catch (e) {}
-        try {
-            if (typeof editorMapInstance._preRenderTreeHigh === 'function') {
-                editorMapInstance.tree_high = editorMapInstance._preRenderTreeHigh(ts);
-            }
-        } catch (e) {}
+        // (Trees, mountains, grass and water captured here before were never used - Map.js
+        // keeps its own cached editor copies - and cost several full-map canvases per rebuild.)
 
         // 2) Portals (render into larger canvas because portals have large effects)
         try {
@@ -686,52 +935,10 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
             }
         } catch (e) {}
 
-        // 3) Mountains (use existing preRender helpers returning canvases)
-        try { editorMapInstance.mountain_low = editorMapInstance._preRenderMountainLow(ts); } catch (e) {}
-        try { editorMapInstance.mountain_high = editorMapInstance._preRenderMountainHigh(ts); } catch (e) {}
-
-        // 4) Grass variants: generate both variants temporarily and capture first
-        const savedGrass = editorMapInstance.grassVariants ? editorMapInstance.grassVariants.slice() : null;
-        try {
-            if (typeof editorMapInstance._generateGrassTiles === 'function') {
-                editorMapInstance._generateGrassTiles();
-                if (editorMapInstance.grassVariants && editorMapInstance.grassVariants[0]) {
-                    const g = makeCanvas(ts, ts);
-                    g.getContext('2d').drawImage(editorMapInstance.grassVariants[0], 0, 0);
-                    editorMapInstance.grass_high = g;
-                }
-            }
-        } catch (e) {}
-        try {
-            if (typeof editorMapInstance._generateGrassTilesLow === 'function') {
-                editorMapInstance._generateGrassTilesLow();
-                if (editorMapInstance.grassVariants && editorMapInstance.grassVariants[0]) {
-                    const g = makeCanvas(ts, ts);
-                    g.getContext('2d').drawImage(editorMapInstance.grassVariants[0], 0, 0);
-                    editorMapInstance.grass_low = g;
-                }
-            }
-        } catch (e) {}
-        // restore grassVariants if present
-        if (savedGrass) editorMapInstance.grassVariants = savedGrass;
-
-        // 5) Water: use waterLayer if available — capture a single tile
-        try {
-            const savedWater = editorMapInstance.waterLayer;
-            if (typeof editorMapInstance._prerenderWaterHigh === 'function') {
-                editorMapInstance._prerenderWaterHigh();
-                const w = makeCanvas(ts, ts);
-                w.getContext('2d').drawImage(editorMapInstance.waterLayer, 0, 0, ts, ts, 0, 0, ts, ts);
-                editorMapInstance.water_high = w;
-            }
-            if (typeof editorMapInstance._prerenderWater === 'function') {
-                editorMapInstance._prerenderWater();
-                const w = makeCanvas(ts, ts);
-                w.getContext('2d').drawImage(editorMapInstance.waterLayer, 0, 0, ts, ts, 0, 0, ts, ts);
-                editorMapInstance.water_low = w;
-            }
-            if (savedWater) editorMapInstance.waterLayer = savedWater;
-        } catch (e) {}
+        // The editor always shows the simple LOW water (the old high + low water captures
+        // here left the layer like that) - keep it, without the two extra full-map renders.
+        // patchEditorMapLayers() redraws water the same way while painting.
+        try { editorMapInstance._prerenderWater(); } catch (e) {}
 
         // 6) Ensure editor uses single deterministic variants and override portal draw
         try {
@@ -965,8 +1172,11 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
         ctx.restore();
     }
 
-    // Re-render the key/palette every time
-    createTileKey();
+    // Build the tile key/palette only once - renderMap() runs on every mousemove while
+    // painting or hovering, and rebuilding ~100 buttons (+ the forced page re-layout)
+    // each time made painting slow. It doesn't depend on the map; toggleTileFilter()
+    // rebuilds it itself when the filters change.
+    if (!document.getElementById('tileSlider')) createTileKey();
 
     // Call the update function to ensure the "map_size" metadata is correct
     updateMapInfo();
