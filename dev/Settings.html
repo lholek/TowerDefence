@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<title>Settings Layouts</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<link rel="stylesheet" href="../css/settings.css" />
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  :root{
+    --gold:#f0c674;
+    --gold-soft:#f3e5ab;
+    --frame:#5c2e0e;
+  }
+
+  html, body{
+    margin:0;
+    padding:0;
+    background:#1E1E1E;
+    color:#eee;
+    font-family: Arial, sans-serif;
+  }
+
+  body{
+    padding:30px 34px 50px;
+  }
+
+  h1{
+    margin:0 0 6px;
+    color:var(--gold);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .page-note{
+    margin:0 0 26px;
+    color:#bbb;
+  }
+
+  .variants{
+    display:flex;
+    flex-wrap:wrap;
+    gap:34px;
+    align-items:flex-start;
+  }
+
+  .variant{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .section-label{
+    margin:0;
+    color:var(--gold);
+    font-size:18px;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .section-desc{
+    margin:0 0 4px;
+    max-width:560px;
+    color:#aaa;
+    font-size:14px;
+    line-height:1.4;
+  }
+
+  /* The real popup sits in a dark full-screen overlay - give each mockup
+     box the same dark surround so colours read the same as in the game. */
+  .overlay-mock{
+    background:rgba(0,0,0,.9);
+    padding:26px;
+    border-radius:12px;
+  }
+
+  /* ================================================================
+     Shared bits for the new variants (namespaced "st-")
+     ================================================================ */
+  .st-box{
+    box-sizing:border-box;
+    background:var(--main-bg-color);
+    color:#fff;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.55);
+    padding:20px 26px 22px;
+    position:relative;
+  }
+  .st-box *{ box-sizing:border-box; }
+
+  .st-box h2{
+    margin:0 0 14px;
+    text-align:center;
+  }
+
+  .st-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:18px 0 10px;
+  }
+  .st-heading h3{
+    margin:0;
+    font-size:20px;
+  }
+
+  .st-footer{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-top:18px;
+  }
+
+  .st-presets{
+    display:flex;
+    gap:8px;
+  }
+
+  /* ================================================================
+     VARIANT B - grouped panels
+     ================================================================ */
+  .st-b{ width:940px; }
+  .st-b .graphics-row > span{ white-space:nowrap; }
+
+  .st-b .st-general{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 28px;
+    padding:10px 16px;
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+  }
+  .st-b .st-general .graphics-row{ border-bottom:0; }
+
+  .st-groups{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+  }
+
+  .st-group{
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+    padding:8px 14px 6px;
+  }
+
+  .st-group-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:2px 0 4px;
+    padding-bottom:6px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+    color:var(--gold);
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .st-group .graphics-row{ gap:10px; }
+
+  .st-icon{
+    display:inline-block;
+    width:24px;
+    margin-right:8px;
+    font-style:normal;
+    text-align:center;
+  }
+
+  /* Background picker in the same tan colour + shape as the Low / High switch
+     (in the game it's the custom select - same colour, see [data-for="backgroundSelect"]) */
+  .st-b .styled-select{
+    min-width:200px;
+    max-width:200px;
+    padding:5px 32px 5px 12px;
+    border-radius:6px;
+    background-color:#967456;
+    background-position:right 12px top 50%;
+    font-size:.9rem;
+  }
+  .st-group .graphics-row:last-child{ border-bottom:0; }
+
+</style>
+</head>
+<body>
+
+<h1>Settings - layout variants</h1>
+<p class="page-note">Both boxes use the game's real styles. The buttons are clickable (Low / High, Switch All) but nothing is saved.</p>
+
+<div class="variants">
+
+  <!-- ============================================================
+       A) CURRENT - copy of #settingsPopup from index.html
+       ============================================================ -->
+  <section class="variant">
+    <h2 class="section-label">A) Current</h2>
+    <p class="section-desc">Today's popup: one long list, Show FPS and Background on top, the graphics switches in two columns.</p>
+    <div class="overlay-mock">
+      <div class="settings-content" data-variant="a">
+        <h2 class="cl-primary">Settings</h2>
+        <div class="settings-section">
+          <div class="settings-grid-container">
+            <div class="settings-grid">
+              <div class="graphics-row">
+                <span>Show FPS</span>
+                <div class="segmented-control" data-setting="fps" data-low="off" data-high="on">
+                  <button type="button" data-value="off">Off</button>
+                  <button type="button" data-value="on">On</button>
+                </div>
+              </div>
+            </div>
+            <div class="settings-grid">
+              <div class="input-group">
+                <label class="settings-label">Background</label>
+                <select class="styled-select">
+                  <option>Sky (Default)</option>
+                  <option>Midnight Sky</option>
+                  <option>The Nebula</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="cl-primary">Graphics</h3>
+
+            <div class="bulk-actions mt-2 mb-2">
+              <button class="btn btn-small" data-all="low">Switch All to Low</button>
+              <button class="btn btn-small" data-all="high">Switch All to High</button>
+            </div>
+
+            <div class="graphics-custom-list" id="graphicsCustomList"></div>
+          </div>
+        </div>
+        <div class="settings-buttons mt-4">
+          <button class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       B) GROUPED PANELS
+       ============================================================ -->
+  <section class="variant">
+    <h2 class="section-label">B) Grouped panels</h2>
+    <p class="section-desc">General settings in one row on top. The graphics switches have icons and are split into 3 groups (World / Entities / Abilities &amp; UI), Switch All sits next to the Graphics heading.</p>
+    <div class="overlay-mock">
+      <div class="st-box st-b" data-variant="b">
+        <h2 class="cl-primary">Settings</h2>
+
+        <div class="st-general">
+          <div class="graphics-row">
+            <span>Show FPS</span>
+            <div class="segmented-control" data-setting="fps" data-low="off" data-high="on">
+              <button type="button" data-value="off">Off</button>
+              <button type="button" data-value="on">On</button>
+            </div>
+          </div>
+          <div class="graphics-row">
+            <span>Background</span>
+            <select class="styled-select">
+              <option>Sky (Default)</option>
+              <option>Midnight Sky</option>
+              <option>The Nebula</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="st-heading">
+          <h3 class="cl-primary">Graphics</h3>
+          <div class="st-presets">
+            <button class="btn btn-small" data-all="low">All Low</button>
+            <button class="btn btn-small" data-all="high">All High</button>
+          </div>
+        </div>
+
+        <div class="st-groups">
+          <div class="st-group" data-group="world"><div class="st-group-title">World</div></div>
+          <div class="st-group" data-group="entities"><div class="st-group-title">Entities</div></div>
+          <div class="st-group" data-group="abilities"><div class="st-group-title">Abilities &amp; UI</div></div>
+        </div>
+
+        <div class="st-footer">
+          <button class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Same 11 graphics settings as #graphicsCustomList in index.html
+  const SETTINGS = [
+    { key: 'trees',      name: 'Trees of Life', icon: '🌳', group: 'entities' },
+    { key: 'portals',    name: 'Portals',       icon: '🌀', group: 'entities' },
+    { key: 'enemies',    name: 'Enemies',       icon: '💀', group: 'entities' },
+    { key: 'towers',     name: 'Towers',        icon: '🏰', group: 'entities' },
+    { key: 'water',      name: 'Fog (Water)',   icon: '🌊', group: 'world' },
+    { key: 'terrain',    name: 'Terrain',       icon: '⛰️', group: 'world' },
+    { key: 'roads',      name: 'Roads',         icon: '🧱', group: 'world' },
+    { key: 'mountains',  name: 'Mountains',     icon: '🏔️', group: 'world' },
+    { key: 'abilities',  name: 'Abilities',     icon: '🔥', group: 'abilities' },
+    { key: 'objects',    name: 'Objects',       icon: '🪵', group: 'world' },
+    { key: 'ui_effects', name: 'UI Effects',    icon: '✨', group: 'abilities' },
+  ];
+  // Mixed start values so both states are visible right away
+  const START = { trees: 'high', portals: 'high', enemies: 'high', towers: 'high', water: 'low', terrain: 'high', roads: 'high', mountains: 'low', abilities: 'high', objects: 'high', ui_effects: 'low' };
+
+  const segmented = (s, withIcon = false) => `
+    <div class="graphics-row">
+      <span>${withIcon ? `<i class="st-icon">${s.icon}</i>` : ''}${s.name}</span>
+      <div class="segmented-control" data-setting="${s.key}" data-low="low" data-high="high">
+        <button type="button" data-value="low">Low</button>
+        <button type="button" data-value="high">High</button>
+      </div>
+    </div>`;
+
+  // A) two-column list
+  document.querySelector('[data-variant="a"] .graphics-custom-list').innerHTML = SETTINGS.map(s => segmented(s)).join('');
+
+  // B) grouped panels
+  document.querySelectorAll('[data-variant="b"] .st-group').forEach(group => {
+    group.insertAdjacentHTML('beforeend', SETTINGS.filter(s => s.group === group.dataset.group).map(s => segmented(s, true)).join(''));
+  });
+
+  // --- state per variant box (each box is independent) ---
+  const setControl = (ctrl, high) => {
+    ctrl.classList.toggle('is-high', high);
+    const value = high ? ctrl.dataset.high : ctrl.dataset.low;
+    ctrl.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.value === value));
+  };
+
+  document.querySelectorAll('[data-variant]').forEach(box => {
+    box.querySelectorAll('.segmented-control').forEach(ctrl => {
+      setControl(ctrl, ctrl.dataset.setting === 'fps' ? false : START[ctrl.dataset.setting] === 'high');
+      ctrl.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (btn) setControl(ctrl, btn.dataset.value === ctrl.dataset.high);
+      });
+    });
+    box.querySelectorAll('[data-all]').forEach(btn => btn.addEventListener('click', () => {
+      const high = btn.dataset.all === 'high';
+      box.querySelectorAll('.segmented-control:not([data-setting="fps"])').forEach(c => setControl(c, high));
+    }));
+  });
+</script>
+</body>
+</html>
