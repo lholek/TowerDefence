@@ -1,23 +1,171 @@
-.settings-section {
-  margin-top: 2rem;
-}
-
-.settings-section h3{
-  font-size: 22px;
-}
-
+/* *** Settings popup (Beta 1.1 layout - mockup: dev/Settings_1.1.html) ***
+   General row on top, Graphics title + All Low / All High below it, then the
+   graphics switches in 3 groups (World / Entities / Abilities & UI). */
 .settings-content {
+  box-sizing: border-box;
+  width: 940px;
+  max-width: calc(100vw - 40px);
   background: var(--main-bg-color);
   color: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  min-width: 300px;
+  padding: 20px 26px 22px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
   position: relative; /* anchors the "×" close button in the corner */
+}
+.settings-content * {
+  box-sizing: border-box;
 }
 
 .settings-content h2 {
-  margin-top: 0;
+  margin: 0 0 14px;
   text-align: center;
+}
+
+.settings-general {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 28px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(240, 198, 116, 0.15);
+  border-radius: 8px;
+}
+.settings-general .graphics-row {
+  border-bottom: 0;
+}
+
+.settings-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+.settings-heading h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* All Low / All High - same .btn as Save */
+.settings-presets {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-groups {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.settings-group {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(240, 198, 116, 0.15);
+  border-radius: 8px;
+  padding: 8px 14px 6px;
+}
+
+/* group titles - small gold diamond instead of an icon */
+.settings-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(240, 198, 116, 0.25);
+  color: #f0c674;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+.settings-group-title::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ffe7a3, #c58a2e);
+  box-shadow: 0 0 0 1px #4a2c0c;
+}
+
+.settings-content .graphics-row {
+  gap: 10px;
+}
+.settings-group .graphics-row:last-child {
+  border-bottom: 0;
+}
+.settings-content .graphics-row > span,
+.settings-content .graphics-row > label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+/* Gold icons - same look as the Towers / Abilities tab icons: one-colour
+   silhouette with the gold gradient, dark brown outline, small dark socket */
+.settings-icon-sprite {
+  position: absolute;
+}
+.settings-ico {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.22));
+  border: 1px solid rgba(240, 198, 116, 0.35);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 231, 163, 0.08);
+}
+.settings-ico svg {
+  width: 20px;
+  height: 20px;
+  /* inherited into the <use> copy - paths with their own fill (snow, hoops) keep it */
+  fill: url(#settingsIcoGold);
+  stroke: #4a2c0c;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* switched to Low / Off -> the icon goes dull, so the state reads at a glance */
+.settings-content .graphics-row:has(.segmented-control:not(.is-high)) .settings-ico svg {
+  filter: grayscale(0.85) brightness(0.7) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+  opacity: 0.75;
+}
+.settings-content .graphics-row:has(.segmented-control:not(.is-high)) .settings-ico {
+  border-color: rgba(240, 198, 116, 0.15);
+}
+
+/* the whole row is the switch (UI.js) - soft highlight + fire (hover) cursor like the buttons */
+.settings-content .graphics-row:has(.segmented-control) {
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+.settings-content .graphics-row:has(.segmented-control):hover {
+  background-color: rgba(240, 198, 116, 0.07);
+}
+.settings-content .graphics-row:has(.segmented-control):hover,
+.settings-content .graphics-row:has(.segmented-control):hover * {
+  cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;
+}
+
+/* Background picker - same tan colour + shape as the Low / High switch next to it.
+   The custom select's trigger copies these classes (see js/CustomSelect.js). */
+.settings-content .styled-select {
+  min-width: 200px;
+  max-width: 200px;
+  padding: 5px 32px 5px 12px;
+  border-radius: 6px;
+  background-color: #967456;
+  background-position: right 12px top 50%;
+  font-size: 0.9rem;
 }
 
 .fps-setting {
@@ -30,7 +178,7 @@
 .settings-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 18px;
 }
 
 .settings-btn {
@@ -54,21 +202,6 @@
   gap: 12px;
   margin: 20px 0;
   align-items: center;
-}
-
-/* --- graphics settings list in two columns ------------------------------------------------ */
-#graphicsCustomList {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem 1.5rem; /* vertical/horizontal spacing */
-}
-
-/* ensure individual rows stretch to fill their column */
-#graphicsCustomList .graphics-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
 }
 
 /* Individual Row */

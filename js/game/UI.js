@@ -229,11 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  fpsToggleControl?.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
+  // A click anywhere on the Show FPS row (Off / On included) flips it.
+  fpsToggleControl?.closest('.graphics-row')?.addEventListener('click', (e) => {
     e.preventDefault();
-    settings.showFps = btn.dataset.value === 'on';
+    settings.showFps = !settings.showFps;
     updateFpsToggleUI();
   });
 
@@ -308,17 +307,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Saved settings are merged over the defaults, so a setting added later
   // (like ui_effects) still shows up - and is covered by the Switch All
   // Low/High buttons - for players who saved their settings before it existed.
+  // Beta 1.1: everything defaults to High
   const defaultGraphics = {
-    trees: 'low',
-    portals: 'low',
-    enemies: 'low',
-    towers: 'low',
-    water: 'low',
-    terrain: 'low',
-    roads: 'low',
-    mountains: 'low',
-    abilities: 'low', // Lava Floor + Ice Storm tile effects
-    objects: 'low',
+    trees: 'high',
+    portals: 'high',
+    enemies: 'high',
+    towers: 'high',
+    water: 'high',
+    terrain: 'high',
+    roads: 'high',
+    mountains: 'high',
+    abilities: 'high', // Lava Floor + Ice Storm tile effects
+    objects: 'high',
     ui_effects: 'high' // Beta 1.1 card / top bar animations (css/bars.css)
   };
   const savedGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
@@ -331,6 +331,12 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem('graphicsSettings', JSON.stringify(savedGraphics));
   }
   let currentGraphics = { ...defaultGraphics, ...savedGraphics };
+  // Map.js / Enemy.js / the abilities read graphicsSettings straight from localStorage
+  // (with 'low' as their fallback), so store the defaults for anything not saved yet -
+  // otherwise the popup would show High while the game still draws Low.
+  if (Object.keys(defaultGraphics).some(k => !(k in savedGraphics))) {
+    localStorage.setItem('graphicsSettings', JSON.stringify(currentGraphics));
+  }
 
   // UI Effects: Low -> <body class="ui-fx-low">, css/bars.css stops the
   // card / top bar animations. Unlike the map settings this needs no new
@@ -365,17 +371,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const list = document.getElementById('graphicsCustomList');
   if (!list) return;
 
-  // Handle individual clicks
+  // Handle individual clicks - a click anywhere on the row (Low / High included) flips it
   list.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
+    const row = e.target.closest('.graphics-row');
+    const control = row?.querySelector('.segmented-control');
+    if (!control) return;
 
     // Zabráníme tomu, aby tlačítko dělalo něco jiného (např. submit formy)
-    e.preventDefault(); 
+    e.preventDefault();
 
-    const control = btn.closest('.segmented-control');
     const setting = control.dataset.setting;
-    const value = btn.dataset.value;
+    const value = currentGraphics[setting] === 'high' ? 'low' : 'high';
 
     // OKAMŽITÁ vizuální změna v UI
     currentGraphics[setting] = value;

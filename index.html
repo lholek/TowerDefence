@@ -177,140 +177,214 @@
         <div class="settings-content">
           <button class="close-btn popup-close-x" title="Close">&times;</button>
           <h2 class="cl-primary">Settings</h2>
-        
-          <div class="settings-section">
 
-            <div class="settings-grid-container">
-              <div class="settings-grid">
-                <div class="graphics-row">
-                  <span>Show FPS</span>
-                  <div class="segmented-control" id="fpsToggleControl">
-                    <button type="button" data-value="off">Off</button>
-                    <button type="button" data-value="on">On</button>
-                  </div>
+          <!-- a click anywhere on a row with a switch flips it (see UI.js) -->
+          <div class="settings-general">
+            <div class="graphics-row">
+              <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-fps"/></svg></i>Show FPS</span>
+              <div class="segmented-control" id="fpsToggleControl">
+                <button type="button" data-value="off">Off</button>
+                <button type="button" data-value="on">On</button>
+              </div>
+            </div>
+            <div class="graphics-row">
+              <label for="backgroundSelect"><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-background"/></svg></i>Background</label>
+              <select id="backgroundSelect" class="styled-select">
+                <option value="sky">Sky (Default)</option>
+                <option value="sea">Midnight Sky</option>
+                <option value="nebula">The Nebula</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-heading">
+            <h3 class="cl-primary">Graphics</h3>
+            <div class="settings-presets">
+              <button id="btnAllLow" class="btn">All Low</button>
+              <button id="btnAllHigh" class="btn">All High</button>
+            </div>
+          </div>
+
+          <!-- all 3 groups sit inside #graphicsCustomList, so UI.js handles every switch in one place -->
+          <div id="graphicsCustomList" class="settings-groups">
+            <div class="settings-group">
+              <div class="settings-group-title">World</div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-water"/></svg></i>Fog (Water)</span>
+                <div class="segmented-control" data-setting="water">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
               </div>
-            
-              <div class="settings-grid">
-                <div class="input-group">
-                  <label for="backgroundSelect" class="settings-label">Background</label>
-                  <select id="backgroundSelect" class="styled-select">
-                    <option value="sky">Sky (Default)</option>
-                    <option value="sea">Midnight Sky</option>
-                    <option value="nebula">The Nebula</option>
-                  </select>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-terrain"/></svg></i>Terrain</span>
+                <div class="segmented-control" data-setting="terrain">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
               </div>
-
-             <h3 class="cl-primary">Graphics</h3>
-
-              <div class="bulk-actions mt-2 mb-2">
-                <button id="btnAllLow" class="btn btn-small">Switch All to Low</button>
-                <button id="btnAllHigh" class="btn btn-small">Switch All to High</button>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-roads"/></svg></i>Roads</span>
+                <div class="segmented-control" data-setting="roads">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
+                </div>
               </div>
-            
-              <div id="graphicsCustomList" class="graphics-custom-list">
-
-                <div class="graphics-row">
-                  <span>Trees of Life</span>
-                  <div class="segmented-control" data-setting="trees">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-mountains"/></svg></i>Mountains</span>
+                <div class="segmented-control" data-setting="mountains">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Portals</span>
-                  <div class="segmented-control" data-setting="portals">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-objects"/></svg></i>Objects</span>
+                <div class="segmented-control" data-setting="objects">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Enemies</span>
-                  <div class="segmented-control" data-setting="enemies">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-title">Entities</div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-trees"/></svg></i>Trees of Life</span>
+                <div class="segmented-control" data-setting="trees">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Towers</span>
-                  <div class="segmented-control" data-setting="towers">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-portals"/></svg></i>Portals</span>
+                <div class="segmented-control" data-setting="portals">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Fog (Water)</span>
-                  <div class="segmented-control" data-setting="water">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-enemies"/></svg></i>Enemies</span>
+                <div class="segmented-control" data-setting="enemies">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Terrain</span>
-                  <div class="segmented-control" data-setting="terrain">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-towers"/></svg></i>Towers</span>
+                <div class="segmented-control" data-setting="towers">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Roads</span>
-                  <div class="segmented-control" data-setting="roads">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-title">Abilities &amp; UI</div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-abilities"/></svg></i>Abilities</span>
+                <div class="segmented-control" data-setting="abilities">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
-              
-                <div class="graphics-row">
-                  <span>Mountains</span>
-                  <div class="segmented-control" data-setting="mountains">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
-                </div>
-              
-                <div class="graphics-row">
-                  <span>Abilities</span>
-                  <div class="segmented-control" data-setting="abilities">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
-                </div>
-
-                <div class="graphics-row">
-                  <span>Objects</span>
-                  <div class="segmented-control" data-setting="objects">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
-                </div>
-
-                <div class="graphics-row">
-                  <span>UI Effects</span>
-                  <div class="segmented-control" data-setting="ui_effects">
-                    <button data-value="low">Low</button>
-                    <button data-value="high">High</button>
-                  </div>
+              </div>
+              <div class="graphics-row">
+                <span><i class="settings-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#set-ico-ui_effects"/></svg></i>UI Effects</span>
+                <div class="segmented-control" data-setting="ui_effects">
+                  <button data-value="low">Low</button>
+                  <button data-value="high">High</button>
                 </div>
               </div>
             </div>
           </div>
-        
+
           <div class="fps-setting d-none">
             <label for="fpsRange">Target FPS:</label>
             <input type="range" id="fpsRange" min="30" max="144" step="1">
             <input type="number" id="fpsNumber" min="30" max="300" step="1">
           </div>
-        
-          <div class="settings-buttons mt-4">
-              <button id="saveSettingsBtn" class="btn">Save</button>
+
+          <div class="settings-buttons">
+            <button id="saveSettingsBtn" class="btn">Save</button>
           </div>
+
+          <!-- Settings icons: one gold gradient + one <symbol> per setting, same look as the
+               Towers / Abilities tab icons. (Not display:none - that breaks the gradient.) -->
+          <svg class="settings-icon-sprite" width="0" height="0" aria-hidden="true">
+            <defs>
+              <linearGradient id="settingsIcoGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffe7a3"/>
+                <stop offset="1" stop-color="#c58a2e"/>
+              </linearGradient>
+            </defs>
+            <!-- Fog (Water): three wave bands -->
+            <symbol id="set-ico-water" viewBox="0 0 24 24">
+              <path d="M2 5.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+              <path d="M2 11q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+              <path d="M2 16.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+            </symbol>
+            <!-- Terrain: hill with grass blades -->
+            <symbol id="set-ico-terrain" viewBox="0 0 24 24">
+              <path d="M1.5 21c2.5-6 6.5-9.5 10.5-9.5s8 3.5 10.5 9.5z"/>
+              <path d="M7 13.2 8.6 6.5l1.6 5.6zM11.4 11.6 13 4l1.7 7.6zM15.6 12.4l2.2-5 .6 6.4z"/>
+            </symbol>
+            <!-- Roads: cobblestones in perspective -->
+            <symbol id="set-ico-roads" viewBox="0 0 24 24">
+              <rect x="2.5" y="16" width="8.5" height="5.5" rx="1.4"/>
+              <rect x="12.5" y="16" width="9" height="5.5" rx="1.4"/>
+              <rect x="4.6" y="10.4" width="6.4" height="4.6" rx="1.2"/>
+              <rect x="12.4" y="10.4" width="7" height="4.6" rx="1.2"/>
+              <rect x="6.8" y="5.4" width="5" height="4" rx="1"/>
+              <rect x="12.8" y="5.4" width="4.6" height="4" rx="1"/>
+            </symbol>
+            <!-- Mountains: two peaks + snow cap -->
+            <symbol id="set-ico-mountains" viewBox="0 0 24 24">
+              <path d="M1 20.5 8.5 5.5l4.3 7.6 2.7-4.4 7.5 11.8z"/>
+              <path fill="#fff7dc" d="M8.5 5.5 6.2 10.1l1.6-.7 1 1.3 1.1-1.4 1.4.7z"/>
+            </symbol>
+            <!-- Objects: barrel -->
+            <symbol id="set-ico-objects" viewBox="0 0 24 24">
+              <path d="M7 2.5h10c1.5 2.6 2.1 5.8 2.1 9.5s-.6 6.9-2.1 9.5H7c-1.5-2.6-2.1-5.8-2.1-9.5S5.5 5.1 7 2.5z"/>
+              <path fill="none" stroke-width="1.3" d="M5.5 7.3h13M5.5 16.7h13M12 2.5v19"/>
+            </symbol>
+            <!-- Trees of Life: tree -->
+            <symbol id="set-ico-trees" viewBox="0 0 24 24">
+              <path d="M12 1.8c3 0 5.5 2.3 5.5 5 1.8.8 3 2.6 3 4.6 0 2.9-2.4 5.2-5.3 5.2H13.4v3.9H16V22H8v-1.5h2.6v-3.9H8.8c-2.9 0-5.3-2.3-5.3-5.2 0-2 1.2-3.8 3-4.6 0-2.7 2.5-5 5.5-5z"/>
+            </symbol>
+            <!-- Portals: ring with a star in the middle -->
+            <symbol id="set-ico-portals" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12 1.5c4.9 0 8 4.7 8 10.5s-3.1 10.5-8 10.5-8-4.7-8-10.5 3.1-10.5 8-10.5zm0 4c-2.4 0-4 2.9-4 6.5s1.6 6.5 4 6.5 4-2.9 4-6.5-1.6-6.5-4-6.5z"/>
+              <path d="M12 9l.8 2.2 2.2.8-2.2.8L12 15l-.8-2.2-2.2-.8 2.2-.8z"/>
+            </symbol>
+            <!-- Enemies: skull -->
+            <symbol id="set-ico-enemies" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/>
+              <path fill="none" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/>
+            </symbol>
+            <!-- Towers: same silhouette as the Towers tab -->
+            <symbol id="set-ico-towers" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/>
+            </symbol>
+            <!-- Abilities: same flame as the Abilities tab -->
+            <symbol id="set-ico-abilities" viewBox="0 0 24 24">
+              <path d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/>
+              <path d="M7 19.5h10l-1 2.5H8z"/>
+            </symbol>
+            <!-- UI Effects: sparkles -->
+            <symbol id="set-ico-ui_effects" viewBox="0 0 24 24">
+              <path d="M10 2l1.9 5.6 5.6 1.9-5.6 1.9L10 17l-1.9-5.6-5.6-1.9 5.6-1.9z"/>
+              <path d="M18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/>
+              <path d="M18.5 2.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/>
+            </symbol>
+            <!-- Show FPS: gauge -->
+            <symbol id="set-ico-fps" viewBox="0 0 24 24">
+              <path d="M12 4.5A10 10 0 0 0 2 14.5c0 2 .6 3.9 1.6 5.5h16.8a10 10 0 0 0 1.6-5.5 10 10 0 0 0-10-10z"/>
+              <path fill="none" stroke-width="1.6" stroke-linecap="round" d="M12 15.5l4.2-5"/>
+              <circle cx="12" cy="15.5" r="1.6" fill="#4a2c0c" stroke="none"/>
+            </symbol>
+            <!-- Background: sun behind a cloud -->
+            <symbol id="set-ico-background" viewBox="0 0 24 24">
+              <circle cx="15.5" cy="8" r="4.5"/>
+              <path d="M6.8 20a4.3 4.3 0 0 1-.6-8.6 5.8 5.8 0 0 1 11 1.4 3.6 3.6 0 0 1 .3 7.2z"/>
+            </symbol>
+          </svg>
         </div>
       </div>
 

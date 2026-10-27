@@ -35,6 +35,8 @@
           "<b>UI</b>": [
             "New top bar - lives, gold and time with new icons, game speed as quick 1x-5x buttons, and redesigned Log, Music and Menu buttons",
             "New level progress bar",
+            "Redesigned Settings - graphics options are now grouped into World, Entities and Abilities & UI with icons, and a click anywhere on a row switches it",
+            "All graphics settings are now set to High by default",
             "New 10x game speed - for quicker games on small maps",
             "Large numbers now use a space as the thousands separator (e.g. 1 000 instead of 1000)",
             "Redesigned Towers, Abilities and +1 Life buttons with new icons",
