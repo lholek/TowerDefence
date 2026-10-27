@@ -1449,15 +1449,6 @@
     box-shadow:inset 0 3px 8px rgba(0,0,0,0.55), 0 1px 0 #2a0c06;
   }
 
-  /* Small variant (Towers / Abilities switcher tabs) - same material,
-     scaled down, slightly less round to match the smaller size. */
-  .nbtn-round-classic.nbtn-sm{
-    min-width:110px;
-    height:36px;
-    padding:0 16px;
-    font-size:12px;
-    border-radius:7px;
-  }
 </style>
 </head>
 <body>
@@ -1471,7 +1462,7 @@
        time. Data comes from the editable JSON block below (id="barsConfig").
        ================================================================ -->
   <div class="bar-section">
-    <h2 class="section-label">Old</h2>
+    <h2 class="section-label">Towers and Abilities Selector — old</h2>
 
     <!-- OLD top UI - exact copy of index.html #topUi + #progressContainer,
          styled by the real css/style.css (the speed select is enhanced by
@@ -1528,7 +1519,7 @@
        same card skeleton. Same behaviour as the Old bar.
        ================================================================ -->
   <div class="bar-section">
-    <h2 class="section-label">New</h2>
+    <h2 class="section-label">Towers and Abilities Selector — new</h2>
 
     <!-- NEW top UI - concept redesign (same pieces as the game's #topUi:
          lives, gold, time, game speed, Log, Music, Menu + level progress),
@@ -1848,30 +1839,12 @@
           0 2px 0 #4a250b;
       }
       .old-btn.old-btn-menu { width: 250px; }
-      /* old Towers / Abilities switcher (.build-mode-switcher .switch-btn) */
-      .old-switcher { display: flex; justify-content: flex-start; gap: 8px; }
-      .old-switch-btn {
-        background-color: #8B4513;
-        color: #ccc;
-        border: 2px solid #8B4513;
-        border-radius: 8px;
-        padding: 6px 14px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: 0.2s ease;
-      }
-      .old-switch-btn:hover { background: #8B4513; }
-      .old-switch-btn.active { background: #8B4513; color: #fff; border-color: gold; }
     </style>
     <div class="btn-row">
       <button class="old-btn old-btn-menu">Start Game</button>
       <button class="old-btn old-btn-menu">Settings</button>
       <button class="old-btn">Resume</button>
       <button class="old-btn">Leave</button>
-    </div>
-    <div class="btn-row old-switcher" style="margin-top: 18px;">
-      <button class="old-switch-btn active">🏰 Towers (T)</button>
-      <button class="old-switch-btn">🌋 Abilities (A)</button>
     </div>
   </div>
 
@@ -1882,10 +1855,6 @@
       <button class="nbtn nbtn-round-classic">Settings</button>
       <button class="nbtn nbtn-round-classic">Resume</button>
       <button class="nbtn nbtn-round-classic nbtn-danger">Leave</button>
-    </div>
-    <div class="btn-proposal-row">
-      <button class="nbtn nbtn-round-classic nbtn-sm">Towers</button>
-      <button class="nbtn nbtn-round-classic nbtn-sm">Abilities</button>
     </div>
   </div>
 
@@ -2021,6 +1990,1169 @@
 
     </div>
   </div>
+
+
+  <!-- ================================================================
+       MERGED MOCKUPS - formerly dev/Lore_Mages.html and dev/Settings_1.1.html.
+       Each one keeps its own page (styles + script) in a <template> below and
+       runs in its own iframe (see the script right after), so its page-wide
+       styles can't clash with this page. Edit the markup inside the templates.
+       ================================================================ -->
+  <div class="bar-section">
+    <h2 class="section-label">Lore scroll — Ember Decree + Elder Mages (now in the game: index.html #lorePopup)</h2>
+    <iframe class="mock-frame" data-template="tplLoreMages" style="height:900px" title="Lore scroll mockup"></iframe>
+  </div>
+
+  <div class="bar-section">
+    <h2 class="section-label">Settings — layout variants (B is now in the game: index.html #settingsPopup)</h2>
+    <iframe class="mock-frame" data-template="tplSettings" data-autoheight title="Settings mockup"></iframe>
+  </div>
+
+  <style>
+    .mock-frame{
+      display:block;
+      width:100%;
+      border:1px solid rgba(240,198,116,.25);
+      border-radius:10px;
+      background:#1E1E1E;
+    }
+  </style>
+
+  <template id="tplLoreMages">
+<meta charset="UTF-8" />
+<title>Lore - Elder Mages (mockup)</title>
+<!-- Mockup of the Lore scroll: the original letter (index.html #lorePopup)
+     followed by the four Elder Mages on ONE long parchment. The tabs on the
+     bottom roll (same look as the game's Towers / Abilities tabs) scroll the
+     parchment to each chapter. Same stylesheets as
+     the game (style.css + ui_lore.css, no extra web font), so the text looks
+     exactly like in-game; only the parts marked NEW below are added. -->
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/ui_lore.css" />
+<style>
+  /* ---------- page around the scroll (stands in for the popup backdrop) ---------- */
+  html, body { height: 100%; }
+  body {
+    background: #0b0b0b;   /* ~ the game's popup backdrop (rgba(0,0,0,.9) over the menu) */
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; overflow: hidden;
+  }
+  .replay {
+    position: fixed; top: 16px; left: 16px; z-index: 20;
+    font: 600 13px Arial, sans-serif; color: #f0c674;
+    background: rgba(0,0,0,.5); border: 1px solid rgba(240,198,116,.4);
+    border-radius: 6px; padding: 6px 12px; cursor: pointer;
+  }
+
+  /* =====================================================================
+     NEW 1 - Unroll: the rolls move apart while the parchment grows; the
+     letter is already written on it, so it appears as the sheet opens.
+     ===================================================================== */
+  /* the scrollbar's 5px are always reserved, so the text doesn't reflow
+     when overflow switches hidden -> auto at the end of the unroll */
+  .parchment-body { scrollbar-gutter: stable; }
+  .scroll-container.unrolling .parchment-body {
+    overflow: hidden;
+    animation: parchmentUnroll 1500ms cubic-bezier(.22,.9,.3,1) both;
+  }
+  @keyframes parchmentUnroll {
+    0%   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
+    100% { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
+  }
+
+  /* =====================================================================
+     NEW 2 - Old parchment: torn + singed edges, stains, cracks, fold lines
+     ===================================================================== */
+  .parchment-body {
+    border-left: none; border-right: none;
+    /* the parchment texture travels with the writing (local), so it reads
+       as one old sheet being rolled - not text sliding behind a window */
+    background-attachment: local;
+    /* ragged left + right edge (22px SVG strips: small tears + a few deep
+       bites taken out of the edge) + solid middle. --tear = -scrollTop
+       (set by the script), so the tears move with the parchment too. */
+    -webkit-mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M22 0H9L12 10 5 19 11 30 4 41 9 50 6 58 13 66 3 77 8 88 17 92 20 100 9 104 4 115 10 126 6 137 2 148 9 158 5 170 12 180 7 191 3 203 10 214 16 219 19 228 8 233 5 245 9 252 6 260H22Z'/%3E%3C/svg%3E") left 0 top var(--tear, 0px) / 22px 260px repeat-y,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M0 0H12L8 9 15 20 9 31 17 42 11 52 16 61 6 70 3 79 13 84 18 95 10 107 16 118 9 129 14 140 19 151 12 162 17 174 8 185 2 193 5 205 15 211 11 223 17 235 13 248 16 260H0Z'/%3E%3C/svg%3E") right 0 top calc(var(--tear, 0px) + 71px) / 22px 260px repeat-y,
+      linear-gradient(#000, #000) center / calc(100% - 42px) 100% no-repeat;
+            mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M22 0H9L12 10 5 19 11 30 4 41 9 50 6 58 13 66 3 77 8 88 17 92 20 100 9 104 4 115 10 126 6 137 2 148 9 158 5 170 12 180 7 191 3 203 10 214 16 219 19 228 8 233 5 245 9 252 6 260H22Z'/%3E%3C/svg%3E") left 0 top var(--tear, 0px) / 22px 260px repeat-y,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='260' preserveAspectRatio='none'%3E%3Cpath d='M0 0H12L8 9 15 20 9 31 17 42 11 52 16 61 6 70 3 79 13 84 18 95 10 107 16 118 9 129 14 140 19 151 12 162 17 174 8 185 2 193 5 205 15 211 11 223 17 235 13 248 16 260H0Z'/%3E%3C/svg%3E") right 0 top calc(var(--tear, 0px) + 71px) / 22px 260px repeat-y,
+      linear-gradient(#000, #000) center / calc(100% - 42px) 100% no-repeat;
+    box-shadow:
+      inset 26px 0 24px -10px rgba(30, 12, 2, .9),
+      inset -26px 0 24px -10px rgba(30, 12, 2, .9),
+      inset 0 0 100px rgba(0, 0, 0, 0.65),
+      inset 0 0 30px rgba(43, 21, 6, 0.5);
+  }
+  .parchment-content { position: relative; z-index: 0; }
+  /* age stains / scorch marks */
+  .parchment-content::before {
+    content: ""; position: absolute; inset: -60px -45px; pointer-events: none; z-index: -1;
+    background:
+      radial-gradient(ellipse 70px 46px at 88% 12%, rgba(60, 30, 8, .18), transparent 70%),
+      radial-gradient(ellipse 40px 60px at 6% 38%, rgba(40, 18, 4, .2), transparent 70%),
+      radial-gradient(ellipse 90px 50px at 80% 63%, rgba(70, 36, 10, .14), transparent 70%),
+      radial-gradient(ellipse 50px 34px at 15% 86%, rgba(40, 18, 4, .18), transparent 70%),
+      /* two small burn holes with a scorched rim */
+      radial-gradient(circle 10px at 96.5% 46%, #140802 0 4px, rgba(70, 30, 6, .85) 6px, rgba(110, 60, 20, .35) 8px, transparent 10px),
+      radial-gradient(circle 8px at 3.5% 72%, #140802 0 3px, rgba(70, 30, 6, .85) 5px, rgba(110, 60, 20, .35) 6.5px, transparent 8px);
+    background-size: 100% 900px;
+  }
+  /* cracks in the old parchment + two fold lines, repeating down the scroll
+     (dark crack line with a lighter edge next to it = a real split) */
+  .parchment-content::after {
+    content: ""; position: absolute; inset: -60px -45px; pointer-events: none; z-index: -1;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 760' preserveAspectRatio='none'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='rgba(255,236,200,0.28)' stroke-width='1.2' transform='translate(0.8 0.8)'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3Cg stroke='rgba(45,22,6,0.45)' stroke-width='1'%3E%3Cpath d='M0 120 22 126 35 118 58 131 71 127 90 140 104 137M35 118 41 104 52 98M71 127 74 146'/%3E%3Cpath d='M460 330 438 336 425 328 404 345 392 340 376 356 361 352M425 328 418 312 409 306M392 340 395 362'/%3E%3Cpath d='M0 610 16 602 30 615 47 607 60 622 79 618M30 615 34 631 44 640'/%3E%3Cpath d='M205 470 214 476 226 471 238 480 249 477'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") left top / 100% 760px repeat-y,
+      repeating-linear-gradient(to bottom,
+        transparent 0 252px,
+        rgba(40, 20, 4, .16) 252px 253px,
+        rgba(255, 236, 200, .12) 253px 254px,
+        transparent 254px 380px);
+  }
+
+  /* =====================================================================
+     NEW 3 - Chapter dividers + the Elder Mages
+     ===================================================================== */
+  .lore-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 38px 0 22px; color: #5c3a1a;
+  }
+  .lore-divider::before, .lore-divider::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(43, 21, 6, .55), transparent);
+  }
+  .lore-divider span { font-size: 1.3rem; line-height: 1; }
+
+  .mage-section { position: relative; }
+  .mage-section::after { content: ""; display: block; clear: both; }
+  .mage-heading { text-align: center; margin-bottom: 16px; }
+  .mage-heading .mage-name { font-size: 1.6rem; font-weight: 700; color: #2b1506; letter-spacing: 2px; }
+  .mage-heading .mage-title { font-style: italic; color: #4a3826; }
+
+  /* portrait: big, bleeds to the parchment's edge and fades out on the
+     three inner sides (top, bottom, towards the text). Alternates sides. */
+  .mage-portrait {
+    float: left;
+    width: calc(58% + 45px);
+    margin: 0 14px 6px -45px;          /* -45px = parchment padding -> touches the torn edge */
+    aspect-ratio: 1122 / 1402;
+    shape-outside: linear-gradient(to right, #000 70%, transparent 90%);
+    shape-image-threshold: .15;
+    shape-margin: 10px;
+    -webkit-mask-image:
+      linear-gradient(to right, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
+    -webkit-mask-composite: source-in;
+            mask-image:
+      linear-gradient(to right, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
+            mask-composite: intersect;
+  }
+  .mage-portrait.right {
+    float: right;
+    margin: 0 -45px 6px 14px;
+    shape-outside: linear-gradient(to left, #000 70%, transparent 90%);
+    -webkit-mask-image:
+      linear-gradient(to left, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
+            mask-image:
+      linear-gradient(to left, #000 55%, transparent 98%),
+      linear-gradient(to bottom, transparent 0%, #000 16%, #000 62%, transparent 100%);
+  }
+  .mage-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .mage-speech { font-style: italic; }
+  .mage-speech::first-letter {
+    float: left; font-size: 3.1rem; line-height: .9; font-style: normal; font-weight: 700;
+    color: #6e1d0a; margin: 4px 6px 0 0;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .15);
+  }
+  .mage-gift {
+    clear: both;
+    margin-top: 10px; padding: 8px 12px;
+    border-left: 3px solid #8b7355;
+    color: #3d352a; font-size: .92rem;
+  }
+  /* ability name as a small dark plate in the game's gold (#f0c674), like
+     the in-game tabs / cards, so it stands out on the parchment */
+  .mage-gift b {
+    display: inline-block;
+    margin: 0 2px;
+    padding: 1px 8px 2px;
+    border-radius: 5px;
+    border: 1px solid rgba(197, 152, 72, 0.7);
+    background: linear-gradient(#47321f, #2a1c10);
+    color: #f0c674;
+    font-style: normal; white-space: nowrap;
+    text-shadow: 0 1px 2px #000;
+    box-shadow: inset 0 1px 0 rgba(255, 230, 170, 0.16), 0 2px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  /* chapters ink in as they scroll into view */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .8s ease-out, transform .8s ease-out; }
+  .reveal.seen { opacity: 1; transform: none; }
+  .mage-portrait.reveal { transform: translateX(-18px); transition-duration: 1.1s; }
+  .mage-portrait.right.reveal { transform: translateX(18px); }
+  .mage-portrait.reveal.seen { transform: none; }
+
+  /* =====================================================================
+     NEW 4 - Chapter tabs on the bottom roll - same look as the game's
+     Towers / Abilities tabs (css/bars.css .concept-tab) with the gold
+     number badge from the cards (.concept-card-index)
+     ===================================================================== */
+  .lore-nav {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 54px; /* = .scroll-roll */
+    z-index: 4;
+    display: flex; justify-content: center; align-items: center; gap: 6px;
+  }
+  .lore-tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 30px; padding: 0 9px 0 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(197, 152, 72, 0.55);
+    background: linear-gradient(#47321f, #2a1c10);
+    color: #d9c7a0;
+    font: 700 12px/1 Arial, sans-serif; letter-spacing: .3px;
+    text-shadow: 0 1px 2px #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 230, 170, 0.16),
+      0 3px 0 rgba(0, 0, 0, 0.55),
+      0 5px 10px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease;
+  }
+  .lore-tab:hover { transform: translateY(-1px); border-color: rgba(240, 198, 116, 0.9); color: #f3e5ab; }
+  .lore-tab:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255,230,170,0.16), 0 1px 0 rgba(0,0,0,0.55); }
+  .lore-tab.active {
+    background: linear-gradient(#6e4c22, #3b2711);
+    border-color: #f0c674;
+    color: #fff3d0;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 236, 190, 0.30),
+      0 3px 0 rgba(0, 0, 0, 0.55),
+      0 0 14px rgba(240, 198, 116, 0.35);
+  }
+  .lore-tab-num {
+    min-width: 20px; height: 20px; padding: 0 3px; box-sizing: border-box;
+    display: inline-grid; place-items: center;
+    border-radius: 4px;
+    font: 700 11px/1 Georgia, 'Times New Roman', serif;
+    color: #29170a; text-shadow: none;
+    background: linear-gradient(#f8dfa0, #c59848);
+    border: 1px solid #68420e;
+    box-shadow: inset 0 1px 0 #fff2c8, 0 2px 0 rgba(0, 0, 0, 0.45);
+  }
+
+  /* =====================================================================
+     NEW 5 - Medieval rolls: oak with a deep grain, a round cylinder shine
+     and turned wooden knobs with carved rings instead of the plain
+     growth-ring ends - all wood, no metal
+     ===================================================================== */
+  .scroll-roll {
+    border-radius: 6px / 27px;
+    background:
+      /* round cylinder: light catches the upper middle */
+      linear-gradient(to bottom,
+        rgba(0,0,0,.55) 0%, rgba(255,215,160,.05) 22%, rgba(255,225,180,.22) 38%,
+        rgba(255,215,160,.06) 52%, rgba(0,0,0,.25) 75%, rgba(0,0,0,.7) 100%),
+      /* oak grain - irregular dark lines along the roll */
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0) 0 9px, rgba(20,8,2,.35) 9px 10px, rgba(0,0,0,0) 10px 23px,
+        rgba(60,28,10,.4) 23px 25px, rgba(0,0,0,0) 25px 31px, rgba(20,8,2,.5) 31px 32px,
+        rgba(0,0,0,0) 32px 47px),
+      linear-gradient(to bottom, #2a1407, #5a2e12 40%, #6b3817 50%, #4a240d 62%, #1e0e05);
+    border: 2px solid #0a0502;
+    box-shadow:
+      0 10px 25px rgba(0,0,0,0.9),
+      inset 0 1px 1px rgba(255,220,170,0.12);
+  }
+  /* turned wooden knobs with carved rings (replace the growth-ring ends) */
+  .scroll-roll::before, .scroll-roll::after {
+    top: -9px;
+    width: 30px;
+    height: calc(100% + 18px);
+    border: 2px solid #0a0502;
+    border-radius: 45% / 50%;
+    background:
+      radial-gradient(ellipse 30% 20% at 50% 50%, #2a1407 0%, #4a240d 70%, transparent 74%),                  /* end grain center */
+      radial-gradient(ellipse 52% 36% at 50% 50%, transparent 60%, rgba(0,0,0,.6) 62%, transparent 70%),     /* carved ring */
+      radial-gradient(ellipse 72% 46% at 50% 50%, transparent 76%, rgba(0,0,0,.45) 78%, transparent 84%),    /* outer carved ring */
+      linear-gradient(to bottom, #1a0b04 0%, #6b3817 30%, #8a4c22 45%, #5a2c10 65%, #1a0b04 100%);           /* turned wood */
+    box-shadow:
+      inset 0 0 8px rgba(0,0,0,.7),
+      0 4px 8px rgba(0,0,0,.7);
+  }
+  .scroll-roll::before { left: -18px; }
+  .scroll-roll::after  { right: -18px; }
+
+  /* =====================================================================
+     NEW 6 - Old-book lettering from fonts already installed with the
+     system (Palatino Linotype / Book Antiqua on Windows, Palatino on Mac)
+     - nothing bundled with the game, so no font files or licenses to ship.
+     Titles in spaced small caps, the drop cap in deep red.
+     ===================================================================== */
+  .parchment-content {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: 17px;
+  }
+  .parchment-content .lore-header {
+    font-variant: small-caps;
+    font-size: 2.2rem; letter-spacing: 3px;
+  }
+  .mage-heading .mage-name { font-variant: small-caps; font-size: 1.9rem; letter-spacing: 3px; }
+  .mage-speech::first-letter { font-size: 3.4rem; font-weight: 700; }
+
+  /* =====================================================================
+     NEW 7 - Wax seal of the High Elven Council, pressed onto the middle of
+     the top roll (its ribbons hang over the parchment's top edge). Already
+     there while the scroll unrolls.
+     ===================================================================== */
+  .council-seal {
+    position: absolute;
+    top: -6px;
+    left: calc(50% - 39px);
+    width: 78px; height: 78px;
+    z-index: 6;                       /* above the rolls (z-index 3) */
+    transform: rotate(-4deg);
+    pointer-events: none;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .6));
+  }
+  .council-seal svg { display: block; width: 100%; height: 100%; }
+
+  /* =====================================================================
+     NEW 8 - Close = roll the parchment back up into the top roll, then
+     fade out (the reverse of the unroll)
+     ===================================================================== */
+  .lore-close {
+    position: absolute; top: 10px; right: 34px; z-index: 5;
+    background: none; border: none; padding: 0; cursor: pointer;
+    font: 700 30px/1 Georgia, serif; color: #f0c674;
+    text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, .8);
+    transition: color .2s, transform .2s;
+  }
+  .lore-close:hover { color: #fff3c4; transform: scale(1.15); }
+  .scroll-container.rolling-up .parchment-body {
+    overflow: hidden;
+    animation: parchmentRollUp 900ms cubic-bezier(.55, 0, .75, .25) forwards;
+  }
+  @keyframes parchmentRollUp {
+    from { max-height: 55vh; padding-top: 60px; padding-bottom: 60px; }
+    to   { max-height: 0;    padding-top: 0;    padding-bottom: 0; }
+  }
+  /* chapter tabs vanish instantly when the scroll starts rolling up */
+  .scroll-container.rolling-up .lore-nav,
+  .scroll-container.closed .lore-nav { visibility: hidden; animation: none; }
+  .scroll-container { transition: opacity 280ms ease-in, transform 280ms ease-in; }
+  .scroll-container.closed { opacity: 0; transform: scale(.94); pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+
+
+
+<button class="replay" id="replay">&#8635; Unroll again</button>
+
+<div class="scroll-container unrolling" id="loreScroll">
+  <button class="lore-close" id="loreClose" title="Close">&times;</button>
+  <div class="scroll-roll top-roll"></div>
+  <!-- wax seal of the Council on the top roll: a Tree of Life pressed into red wax -->
+  <div class="council-seal" aria-hidden="true">
+    <svg viewBox="0 0 100 100">
+      <defs>
+        <radialGradient id="sealWax" cx="38%" cy="32%" r="75%">
+          <stop offset="0" stop-color="#d4442c"/>
+          <stop offset=".5" stop-color="#9a1f12"/>
+          <stop offset="1" stop-color="#5a0b05"/>
+        </radialGradient>
+      </defs>
+      <!-- ribbon tails under the wax -->
+      <path d="M38 62 30 99 37 93 43 99 47 64Z" fill="#7a1a10"/>
+      <path d="M55 64 59 99 65 93 72 99 64 62Z" fill="#62130b"/>
+      <!-- uneven blob of wax -->
+      <path d="M50 6C62 5 70 12 79 16 88 22 94 33 93 45 95 57 90 68 83 77 75 86 64 93 51 93 38 95 26 89 18 80 10 71 6 60 7 48 6 36 12 25 21 17 29 10 39 6 50 6Z" fill="url(#sealWax)"/>
+      <!-- pressed disc -->
+      <circle cx="50" cy="50" r="31" fill="#8e1c10" stroke="#4e0904" stroke-width="1.6"/>
+      <circle cx="50.8" cy="50.8" r="31" fill="none" stroke="rgba(255,170,140,.35)" stroke-width="1"/>
+      <!-- Tree of Life in relief: dark groove + light edge -->
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#4e0904" stroke-width="2.4">
+          <circle cx="50" cy="47" r="22" stroke-width="1.4"/>
+          <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+          <path d="M50 73Q44 75 39 77M50 73Q56 75 61 77"/>
+        </g>
+        <g stroke="rgba(255,175,145,.45)" stroke-width="1" transform="translate(-.8 -.8)">
+          <circle cx="50" cy="47" r="22"/>
+          <path d="M50 73V40M50 56Q42 52 37 44M50 56Q58 52 63 44M50 49Q45 43 43 35M50 49Q55 43 57 35M50 44V29"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="parchment-body" id="loreBody">
+    <div class="parchment-content">
+
+      <!-- ===== I. The letter (same text as the game) ===== -->
+      <section class="lore-chapter" data-label="Decree">
+        <h2 class="lore-header">The Ember Decree</h2>
+
+        <p class="lore-text"><em>Guardian of the Last Light,</em></p>
+
+        <p class="lore-text">
+          Hearken to this final plea, for <strong>fate has cast its die upon these sacred lands</strong>. I speak to you from the shadows of the High Temple, for <strong>we are in dire need of assistance</strong>.
+        </p>
+
+        <p class="lore-text">
+          The earth has hemorrhaged open, and from the <strong>Fiery Depths of the Abyssal Veins</strong>, an unholy heat rises. These molten gateways have sundered our soil, and now <strong>the roots of existence tremble beneath the demon march</strong>.
+        </p>
+
+        <p class="lore-text">
+          The sky turns to soot, and the sap of our Trees of Life boils in the veins of the earth. <strong>The realm stands upon the precipice of ruin</strong>; if the heartwood burns, all memory of our kin will be reduced to ash.
+        </p>
+
+        <p class="lore-text enchanted-boon">
+          To ensure your defense holds firm, our <strong>Elder Mages have infused every quiver with ancient enchantments</strong>. These arrows are now bound to the very breath of the foe—<strong>curving their flight to relentlessly stalk every invader</strong> until their mark is found. Let the winds themselves guide your hand.
+        </p>
+
+        <p class="lore-text">
+          You must <strong>take up the mantle of Guardian</strong>. There is no time for hesitation. <strong>Fortify the paths lest we be overrun</strong> by the scorched legions of the pit.
+        </p>
+
+        <p class="lore-text">
+          Let the stone of your bastions stand against their flame. For the world, for the light, for survival.
+        </p>
+
+
+        <p class="lore-text signature">
+          Written in the soot of the falling realm,<br>
+          <strong>— The High Elven Council</strong>
+        </p>
+      </section>
+
+      <!-- ===== II. Pyrrhos - picture LEFT ===== -->
+      <section class="lore-chapter mage-section" data-label="Pyrrhos">
+        <div class="lore-divider"><span>&#10086;</span></div>
+        <div class="mage-heading reveal">
+          <div class="mage-name">Pyrrhos</div>
+          <div class="mage-title">Keeper of the Ember</div>
+        </div>
+        <div class="mage-portrait reveal"><img src="../assets/images/mage_fire.webp" alt="Pyrrhos, Keeper of the Ember"></div>
+        <p class="lore-text mage-speech reveal">
+          Guardian, I was once an elf of the High Temple, as fair as any you know. When the Abyssal Veins tore open, I did what no elf had dared - I <strong>walked into the realm of the very fiends that now march upon us</strong>.
+        </p>
+        <p class="lore-text reveal">
+          I lived among their fires for longer than I care to remember. The pit took my youth and burned the elf out of me - but <strong>it taught me its magic</strong>. I took their enchanted magma and forged it into a spell of my own.
+        </p>
+        <p class="lore-text reveal">
+          Point me to the road they march upon, and I shall <strong>turn it to molten stone beneath their feet</strong>. Let them taste the fire they brought upon our lands.
+        </p>
+        <div class="mage-gift reveal">His gift to the Guardian: <b>&#127755; Lava Floor</b> - the chosen stretch of road becomes lava, scorching every foe that treads upon it.</div>
+      </section>
+
+      <!-- ===== III. Sylvaran - picture RIGHT ===== -->
+      <section class="lore-chapter mage-section" data-label="Sylvaran">
+        <div class="lore-divider"><span>&#10086;</span></div>
+        <div class="mage-heading reveal">
+          <div class="mage-name">Sylvaran</div>
+          <div class="mage-title">Warden of the Winds</div>
+        </div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_fury.webp" alt="Sylvaran, Warden of the Winds"></div>
+        <p class="lore-text mage-speech reveal">
+          Guardian, I have studied the winds since before your towers had foundations. It was <strong>I who enchanted your arrows</strong>. Each one now carries the will of the wind and <strong>seeks its foe on its own</strong> - bend as the invader may, the arrow bends with it.
+        </p>
+        <p class="lore-text reveal">
+          And when the horde grows thick, call upon me again. I will <strong>pour the storm into your bastions themselves</strong>, and for a while every tower you have raised shall shoot faster and strike harder than any mortal hand could make it.
+        </p>
+        <p class="lore-text reveal">
+          But heed me - the storm is fickle, and it never stays for long.
+        </p>
+        <div class="mage-gift reveal">His gifts to the Guardian: <b>Homing arrows</b> on every tower, and <b>&#127993; Tower's Fury</b> - for a while, every tower on the map is empowered.</div>
+      </section>
+
+      <!-- ===== IV. Aurelius - picture LEFT ===== -->
+      <section class="lore-chapter mage-section" data-label="Aurelius">
+        <div class="lore-divider"><span>&#10086;</span></div>
+        <div class="mage-heading reveal">
+          <div class="mage-name">Aurelius</div>
+          <div class="mage-title">The Gilded Alchemist</div>
+        </div>
+        <div class="mage-portrait reveal"><img src="../assets/images/mage_gold.webp" alt="Aurelius, the Gilded Alchemist"></div>
+        <p class="lore-text mage-speech reveal">
+          Guardian, the fiends of the pit are not made of fire alone. Clawing their way up through the Abyssal Veins, they <strong>swallowed the deep gold of the underworld</strong>, and it still flows molten in their veins.
+        </p>
+        <p class="lore-text reveal">
+          For forty years I sought the formula to draw it out. Now I have it. Speak my charm, and when a demon falls, <strong>its dying embers cool into coin</strong> - twice the gold it would have left behind.
+        </p>
+        <p class="lore-text reveal">
+          Spend it wisely, Guardian. Towers do not raise themselves, and my alchemy is slow to brew again.
+        </p>
+        <div class="mage-gift reveal">His gift to the Guardian: <b>&#9935;&#65039; Gold Rush</b> - while it lasts, every slain enemy drops extra gold.</div>
+      </section>
+
+      <!-- ===== V. Nivaris - picture RIGHT ===== -->
+      <section class="lore-chapter mage-section" data-label="Nivaris">
+        <div class="lore-divider"><span>&#10086;</span></div>
+        <div class="mage-heading reveal">
+          <div class="mage-name">Nivaris</div>
+          <div class="mage-title">Weaver of Frost</div>
+        </div>
+        <div class="mage-portrait right reveal"><img src="../assets/images/mage_ice.webp" alt="Nivaris, Weaver of Frost"></div>
+        <p class="lore-text mage-speech reveal">
+          Guardian, I come from the frozen peaks of the north, where no fire has ever burned. The pit's legions are made of flame - and <strong>flame fears only one thing</strong>.
+        </p>
+        <p class="lore-text reveal">
+          Mark the road, and I will <strong>call down a blizzard so fierce that the very ground freezes</strong>. Within my storm their burning march slows to a crawl, and the frost cracks their molten hides like glass.
+        </p>
+        <p class="lore-text reveal">
+          Strike them while they are frozen - <strong>every blow will cut deeper</strong>, be it arrow or lava.
+        </p>
+        <div class="mage-gift reveal">His gift to the Guardian: <b>&#10052;&#65039; Ice Storm</b> - enemies on the frozen road move slower and take more damage.</div>
+
+        <p class="lore-text signature reveal" style="clear: both; margin-top: 34px; text-align: center;">
+          <em>Thus speak the Elder Mages.<br>Go now, Guardian - the Trees of Life are waiting.</em>
+        </p>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="scroll-roll bottom-roll"></div>
+
+  <!-- chapter tabs - filled in by the script below -->
+  <nav class="lore-nav" id="loreNav"></nav>
+</div>
+
+<script>
+  // ONE long parchment split into chapters - scrolls normally (wheel,
+  // scrollbar, keys). The tabs on the bottom roll smooth-scroll to a
+  // chapter and the tab of the chapter you're reading lights up. The torn
+  // edges move with the parchment, chapters ink in as they appear.
+  const scroll = document.getElementById('loreScroll');
+  const body = document.getElementById('loreBody');
+  const chapters = [...document.querySelectorAll('.lore-chapter')];
+  const nav = document.getElementById('loreNav');
+  const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
+  const tabs = chapters.map((ch, i) => {
+    const t = document.createElement('button');
+    t.className = 'lore-tab';
+    t.innerHTML = `<span class="lore-tab-num">${NUMERALS[i]}</span>${ch.dataset.label}`;
+    t.onclick = () => body.scrollTo({ top: topOf(i), behavior: 'smooth' });
+    nav.appendChild(t);
+    return t;
+  });
+
+  // chapter top in the parchment's scroll coordinates
+  const topOf = i => i <= 0 ? 0
+    : Math.round(chapters[i].getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop);
+
+  // active tab = the chapter at the upper third of the view (the last one
+  // once the bottom of the parchment is reached)
+  function updateTabs() {
+    const y = body.scrollTop + body.clientHeight * 0.33;
+    let idx = 0;
+    chapters.forEach((_, i) => { if (topOf(i) <= y) idx = i; });
+    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 4) idx = chapters.length - 1;
+    tabs.forEach((t, k) => t.classList.toggle('active', k === idx));
+  }
+
+  // the torn edges (mask) move with the parchment
+  body.addEventListener('scroll', () => {
+    body.style.setProperty('--tear', -body.scrollTop + 'px');
+    updateTabs();
+  }, { passive: true });
+
+  // ink-in of the mage chapters as they come into view
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('seen'); io.unobserve(en.target); } });
+  }, { root: body, threshold: 0.15 });
+  const animated = [...document.querySelectorAll('.reveal')];
+  animated.forEach(el => io.observe(el));
+
+  // unroll on open (+ the replay button for trying it out). Every open
+  // starts fresh: back at the letter, chapters animate again.
+  function unroll() {
+    scroll.classList.remove('rolling-up', 'closed', 'unrolling');
+    animated.forEach(el => { el.classList.remove('seen'); io.observe(el); });
+    body.scrollTop = 0;
+    body.style.setProperty('--tear', '0px');
+    updateTabs();
+    void scroll.offsetWidth;            // restart the animation
+    scroll.classList.add('unrolling');
+    setTimeout(() => scroll.classList.remove('unrolling'), 1900);
+  }
+
+  // close: roll the parchment back up, then fade the scroll out
+  let closing = false;
+  function rollUp() {
+    if (closing || scroll.classList.contains('closed')) return;
+    closing = true;
+    scroll.classList.remove('unrolling');
+    scroll.classList.add('rolling-up');
+    setTimeout(() => { scroll.classList.add('closed'); closing = false; }, 900);
+  }
+
+  document.getElementById('loreClose').onclick = rollUp;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') rollUp(); });
+  document.getElementById('replay').onclick = unroll;
+  unroll();
+</script>
+  </template>
+
+  <template id="tplSettings">
+<meta charset="UTF-8" />
+<title>Settings Layouts</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<!-- css/settings.css now holds the NEW popup (variant B), so variant A gets the
+     old popup's rules from before Beta 1.1 here instead -->
+<style>
+  .settings-section { margin-top: 2rem; }
+  .settings-section h3 { font-size: 22px; }
+  .settings-content {
+    background: var(--main-bg-color);
+    color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    min-width: 300px;
+    position: relative;
+  }
+  .settings-content h2 { margin-top: 0; text-align: center; }
+  .settings-buttons { display: flex; justify-content: center; margin-top: 10px; }
+  #graphicsCustomList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem 1.5rem;
+  }
+  #graphicsCustomList .graphics-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+</style>
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  :root{
+    --gold:#f0c674;
+    --gold-soft:#f3e5ab;
+    --frame:#5c2e0e;
+  }
+
+  html, body{
+    margin:0;
+    padding:0;
+    background:#1E1E1E;
+    color:#eee;
+    font-family: Arial, sans-serif;
+  }
+
+  body{
+    padding:30px 34px 50px;
+  }
+
+  h1{
+    margin:0 0 6px;
+    color:var(--gold);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .page-note{
+    margin:0 0 26px;
+    color:#bbb;
+  }
+
+  /* all variants in one row - scroll sideways when they do not fit */
+  .variants{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:14px;
+    gap:34px;
+    align-items:flex-start;
+  }
+
+  .variant{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .section-label{
+    margin:0;
+    color:var(--gold);
+    font-size:18px;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .section-desc{
+    margin:0 0 4px;
+    max-width:560px;
+    color:#aaa;
+    font-size:14px;
+    line-height:1.4;
+  }
+
+  /* The real popup sits in a dark full-screen overlay - give each mockup
+     box the same dark surround so colours read the same as in the game. */
+  .overlay-mock{
+    background:rgba(0,0,0,.9);
+    padding:26px;
+    border-radius:12px;
+  }
+
+  /* ================================================================
+     Shared bits for the new variants (namespaced "st-")
+     ================================================================ */
+  .st-box{
+    box-sizing:border-box;
+    background:var(--main-bg-color);
+    color:#fff;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.55);
+    padding:20px 26px 22px;
+    position:relative;
+  }
+  .st-box *{ box-sizing:border-box; }
+
+  .st-box h2{
+    margin:0 0 14px;
+    text-align:center;
+  }
+
+  /* Graphics title centred, All Low / All High on their own row below it */
+  .st-heading{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin:18px 0 12px;
+  }
+  .st-heading h3{
+    margin:0;
+    font-size:20px;
+  }
+
+  .st-footer{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-top:18px;
+  }
+
+  .st-presets{
+    display:flex;
+    gap:10px;
+  }
+
+  /* ================================================================
+     VARIANT B - grouped panels (base layout)
+     ================================================================ */
+  .st-b{ width:940px; }
+  .st-b .graphics-row > span{ white-space:nowrap; }
+
+  .st-b .st-general{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 28px;
+    padding:10px 16px;
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+  }
+  .st-b .st-general .graphics-row{ border-bottom:0; }
+
+  .st-groups{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+  }
+
+  .st-group{
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+    padding:8px 14px 6px;
+  }
+
+  .st-group-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:2px 0 4px;
+    padding-bottom:6px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+    color:var(--gold);
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .st-group .graphics-row{ gap:10px; }
+
+  /* Background picker in the same tan colour + shape as the Low / High switch
+     (in the game it's the custom select - same colour, see [data-for="backgroundSelect"]) */
+  .st-b .styled-select{
+    min-width:200px;
+    max-width:200px;
+    padding:5px 32px 5px 12px;
+    border-radius:6px;
+    background-color:#967456;
+    background-position:right 12px top 50%;
+    font-size:.9rem;
+  }
+  .st-group .graphics-row:last-child{ border-bottom:0; }
+
+  /* ================================================================
+     VARIANT B - gold SVG icons + whole-row click (.st-c)
+     Same look as the Towers / Abilities tab icons in the game:
+     one-colour silhouettes with the gold gradient (#ffe7a3 -> #c58a2e)
+     and a dark brown outline, set in a small dark socket.
+     ================================================================ */
+  .st-c .graphics-row > span{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .st-ico{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:30px;
+    height:30px;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+  }
+  .st-ico svg{
+    width:20px;
+    height:20px;
+    /* inherited into the <use> copy - paths with their own fill (snow, hoops) keep it */
+    fill:url(#stGold);
+    stroke:#4a2c0c;
+    stroke-width:.8;
+    stroke-linejoin:round;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+    transition:filter .2s ease, opacity .2s ease;
+  }
+
+  /* switched to Low / Off -> the icon goes dull, so the state reads at a glance */
+  .st-c .graphics-row:has(.segmented-control:not(.is-high)) .st-ico svg{
+    filter:grayscale(.85) brightness(.7) drop-shadow(0 1px 1px rgba(0,0,0,.6));
+    opacity:.75;
+  }
+  .st-c .graphics-row:has(.segmented-control:not(.is-high)) .st-ico{
+    border-color:rgba(240,198,116,.15);
+  }
+
+  /* group titles - small gold diamond instead of an icon */
+  .st-c .st-group-title::before{
+    content:'';
+    width:7px;
+    height:7px;
+    transform:rotate(45deg);
+    background:linear-gradient(135deg, #ffe7a3, #c58a2e);
+    box-shadow:0 0 0 1px #4a2c0c;
+  }
+
+  .st-c .st-general .graphics-row > span{ white-space:nowrap; }
+
+  /* whole row is the switch - fire (hover) cursor like the buttons, see css/cursor.css */
+  .st-c .graphics-row:has(.segmented-control){
+    margin:0 -8px;
+    padding-left:8px;
+    padding-right:8px;
+    border-radius:6px;
+    transition:background-color .15s ease;
+  }
+  .st-c .graphics-row:has(.segmented-control):hover{
+    background-color:rgba(240,198,116,.07);
+  }
+  .st-c .graphics-row:has(.segmented-control):hover,
+  .st-c .graphics-row:has(.segmented-control):hover *{
+    cursor:url('../assets/images/cursor-hover.png') 1 1, auto !important;
+  }
+
+</style>
+
+
+
+<h1>Settings - layout variants</h1>
+<p class="page-note">Both boxes use the game's real styles. The buttons are clickable (Low / High, Switch All) but nothing is saved.</p>
+
+<div class="variants">
+
+  <!-- ============================================================
+       A) CURRENT - copy of #settingsPopup from index.html
+       ============================================================ -->
+  <section class="variant">
+    <h2 class="section-label">A) Old (before Beta 1.1)</h2>
+    <p class="section-desc">The old popup: one long list, Show FPS and Background on top, the graphics switches in two columns.</p>
+    <div class="overlay-mock">
+      <div class="settings-content" data-variant="a">
+        <h2 class="cl-primary">Settings</h2>
+        <div class="settings-section">
+          <div class="settings-grid-container">
+            <div class="settings-grid">
+              <div class="graphics-row">
+                <span>Show FPS</span>
+                <div class="segmented-control" data-setting="fps" data-low="off" data-high="on">
+                  <button type="button" data-value="off">Off</button>
+                  <button type="button" data-value="on">On</button>
+                </div>
+              </div>
+            </div>
+            <div class="settings-grid">
+              <div class="input-group">
+                <label class="settings-label">Background</label>
+                <select class="styled-select">
+                  <option>Sky (Default)</option>
+                  <option>Midnight Sky</option>
+                  <option>The Nebula</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="cl-primary">Graphics</h3>
+
+            <div class="bulk-actions mt-2 mb-2">
+              <button class="btn btn-small" data-all="low">Switch All to Low</button>
+              <button class="btn btn-small" data-all="high">Switch All to High</button>
+            </div>
+
+            <div class="graphics-custom-list" id="graphicsCustomList"></div>
+          </div>
+        </div>
+        <div class="settings-buttons mt-4">
+          <button class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       B) GROUPED PANELS + GOLD ICONS
+       ============================================================ -->
+  <section class="variant">
+    <h2 class="section-label">B) Grouped panels + gold icons (now in the game)</h2>
+    <p class="section-desc">General settings on top, the graphics switches split into 3 groups (World / Entities / Abilities &amp; UI) with one-colour gold icons in the style of the Towers / Abilities tabs. A click anywhere on a row flips it; the icon goes dull on Low / Off.</p>
+    <div class="overlay-mock">
+      <div class="st-box st-b st-c" data-variant="b">
+        <h2 class="cl-primary">Settings</h2>
+
+        <div class="st-general">
+          <div class="graphics-row">
+            <span><i class="st-ico" data-ico="fps"></i>Show FPS</span>
+            <div class="segmented-control" data-setting="fps" data-low="off" data-high="on">
+              <button type="button" data-value="off">Off</button>
+              <button type="button" data-value="on">On</button>
+            </div>
+          </div>
+          <div class="graphics-row">
+            <span><i class="st-ico" data-ico="background"></i>Background</span>
+            <select class="styled-select">
+              <option>Sky (Default)</option>
+              <option>Midnight Sky</option>
+              <option>The Nebula</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="st-heading">
+          <h3 class="cl-primary">Graphics</h3>
+          <div class="st-presets">
+            <button class="btn btn-small" data-all="low">All Low</button>
+            <button class="btn btn-small" data-all="high">All High</button>
+          </div>
+        </div>
+
+        <div class="st-groups">
+          <div class="st-group" data-group="world"><div class="st-group-title">World</div></div>
+          <div class="st-group" data-group="entities"><div class="st-group-title">Entities</div></div>
+          <div class="st-group" data-group="abilities"><div class="st-group-title">Abilities &amp; UI</div></div>
+        </div>
+
+        <div class="st-footer">
+          <button class="btn">Save</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Variant C icons: shared gold gradient + one <symbol> per setting.
+     (Not display:none - that would break the gradient in some browsers.) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="stGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe7a3"/>
+      <stop offset="1" stop-color="#c58a2e"/>
+    </linearGradient>
+  </defs>
+    <!-- Fog (Water): three wave bands -->
+    <symbol id="ico-water" viewBox="0 0 24 24">
+      <path d="M2 5.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+      <path d="M2 11q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+      <path d="M2 16.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+    </symbol>
+    <!-- Terrain: hill with grass blades -->
+    <symbol id="ico-terrain" viewBox="0 0 24 24">
+      <path d="M1.5 21c2.5-6 6.5-9.5 10.5-9.5s8 3.5 10.5 9.5z"/>
+      <path d="M7 13.2 8.6 6.5l1.6 5.6zM11.4 11.6 13 4l1.7 7.6zM15.6 12.4l2.2-5 .6 6.4z"/>
+    </symbol>
+    <!-- Roads: cobblestones in perspective -->
+    <symbol id="ico-roads" viewBox="0 0 24 24">
+      <rect x="2.5" y="16" width="8.5" height="5.5" rx="1.4"/>
+      <rect x="12.5" y="16" width="9" height="5.5" rx="1.4"/>
+      <rect x="4.6" y="10.4" width="6.4" height="4.6" rx="1.2"/>
+      <rect x="12.4" y="10.4" width="7" height="4.6" rx="1.2"/>
+      <rect x="6.8" y="5.4" width="5" height="4" rx="1"/>
+      <rect x="12.8" y="5.4" width="4.6" height="4" rx="1"/>
+    </symbol>
+    <!-- Mountains: two peaks + snow cap -->
+    <symbol id="ico-mountains" viewBox="0 0 24 24">
+      <path d="M1 20.5 8.5 5.5l4.3 7.6 2.7-4.4 7.5 11.8z"/>
+      <path fill="#fff7dc" d="M8.5 5.5 6.2 10.1l1.6-.7 1 1.3 1.1-1.4 1.4.7z"/>
+    </symbol>
+    <!-- Objects: barrel -->
+    <symbol id="ico-objects" viewBox="0 0 24 24">
+      <path d="M7 2.5h10c1.5 2.6 2.1 5.8 2.1 9.5s-.6 6.9-2.1 9.5H7c-1.5-2.6-2.1-5.8-2.1-9.5S5.5 5.1 7 2.5z"/>
+      <path fill="none" stroke-width="1.3" d="M5.5 7.3h13M5.5 16.7h13M12 2.5v19"/>
+    </symbol>
+    <!-- Trees of Life: tree -->
+    <symbol id="ico-trees" viewBox="0 0 24 24">
+      <path d="M12 1.8c3 0 5.5 2.3 5.5 5 1.8.8 3 2.6 3 4.6 0 2.9-2.4 5.2-5.3 5.2H13.4v3.9H16V22H8v-1.5h2.6v-3.9H8.8c-2.9 0-5.3-2.3-5.3-5.2 0-2 1.2-3.8 3-4.6 0-2.7 2.5-5 5.5-5z"/>
+    </symbol>
+    <!-- Portals: ring with a star in the middle -->
+    <symbol id="ico-portals" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M12 1.5c4.9 0 8 4.7 8 10.5s-3.1 10.5-8 10.5-8-4.7-8-10.5 3.1-10.5 8-10.5zm0 4c-2.4 0-4 2.9-4 6.5s1.6 6.5 4 6.5 4-2.9 4-6.5-1.6-6.5-4-6.5z"/>
+      <path d="M12 9l.8 2.2 2.2.8-2.2.8L12 15l-.8-2.2-2.2-.8 2.2-.8z"/>
+    </symbol>
+    <!-- Enemies: skull -->
+    <symbol id="ico-enemies" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/>
+      <path fill="none" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/>
+    </symbol>
+    <!-- Towers: same silhouette as the Towers tab -->
+    <symbol id="ico-towers" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/>
+    </symbol>
+    <!-- Abilities: same flame as the Abilities tab -->
+    <symbol id="ico-abilities" viewBox="0 0 24 24">
+      <path d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/>
+      <path d="M7 19.5h10l-1 2.5H8z"/>
+    </symbol>
+    <!-- UI Effects: sparkles -->
+    <symbol id="ico-ui_effects" viewBox="0 0 24 24">
+      <path d="M10 2l1.9 5.6 5.6 1.9-5.6 1.9L10 17l-1.9-5.6-5.6-1.9 5.6-1.9z"/>
+      <path d="M18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/>
+      <path d="M18.5 2.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/>
+    </symbol>
+    <!-- Show FPS: gauge -->
+    <symbol id="ico-fps" viewBox="0 0 24 24">
+      <path d="M12 4.5A10 10 0 0 0 2 14.5c0 2 .6 3.9 1.6 5.5h16.8a10 10 0 0 0 1.6-5.5 10 10 0 0 0-10-10z"/>
+      <path fill="none" stroke-width="1.6" stroke-linecap="round" d="M12 15.5l4.2-5"/>
+      <circle cx="12" cy="15.5" r="1.6" fill="#4a2c0c" stroke="none"/>
+    </symbol>
+    <!-- Background: sun behind a cloud -->
+    <symbol id="ico-background" viewBox="0 0 24 24">
+      <circle cx="15.5" cy="8" r="4.5"/>
+      <path d="M6.8 20a4.3 4.3 0 0 1-.6-8.6 5.8 5.8 0 0 1 11 1.4 3.6 3.6 0 0 1 .3 7.2z"/>
+    </symbol>
+</svg>
+
+<script>
+  // Same 11 graphics settings as #graphicsCustomList in index.html
+  const SETTINGS = [
+    { key: 'trees',      name: 'Trees of Life', group: 'entities' },
+    { key: 'portals',    name: 'Portals', group: 'entities' },
+    { key: 'enemies',    name: 'Enemies', group: 'entities' },
+    { key: 'towers',     name: 'Towers', group: 'entities' },
+    { key: 'water',      name: 'Fog (Water)', group: 'world' },
+    { key: 'terrain',    name: 'Terrain', group: 'world' },
+    { key: 'roads',      name: 'Roads', group: 'world' },
+    { key: 'mountains',  name: 'Mountains', group: 'world' },
+    { key: 'abilities',  name: 'Abilities', group: 'abilities' },
+    { key: 'objects',    name: 'Objects', group: 'world' },
+    { key: 'ui_effects', name: 'UI Effects', group: 'abilities' },
+  ];
+  // Mixed start values so both states are visible right away
+  const START = { trees: 'high', portals: 'high', enemies: 'high', towers: 'high', water: 'low', terrain: 'high', roads: 'high', mountains: 'low', abilities: 'high', objects: 'high', ui_effects: 'low' };
+
+  const segmented = s => `
+    <div class="graphics-row">
+      <span>${s.name}</span>
+      <div class="segmented-control" data-setting="${s.key}" data-low="low" data-high="high">
+        <button type="button" data-value="low">Low</button>
+        <button type="button" data-value="high">High</button>
+      </div>
+    </div>`;
+
+  // A) two-column list
+  document.querySelector('[data-variant="a"] .graphics-custom-list').innerHTML = SETTINGS.map(s => segmented(s)).join('');
+
+
+  // B) grouped panels + gold SVG icons
+  const ico = key => `<i class="st-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-${key}"/></svg></i>`;
+  const segmentedC = s => segmented(s).replace(`<span>${s.name}`, `<span>${ico(s.key)}${s.name}`);
+  document.querySelectorAll('[data-variant="b"] .st-group').forEach(group => {
+    group.insertAdjacentHTML('beforeend', SETTINGS.filter(s => s.group === group.dataset.group).map(segmentedC).join(''));
+  });
+  document.querySelectorAll('[data-variant="b"] [data-ico]').forEach(el => { el.outerHTML = ico(el.dataset.ico); });
+
+  // --- state per variant box (each box is independent) ---
+  const setControl = (ctrl, high) => {
+    ctrl.classList.toggle('is-high', high);
+    const value = high ? ctrl.dataset.high : ctrl.dataset.low;
+    ctrl.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.value === value));
+  };
+
+  document.querySelectorAll('[data-variant]').forEach(box => {
+    box.querySelectorAll('.segmented-control').forEach(ctrl => {
+      setControl(ctrl, ctrl.dataset.setting === 'fps' ? false : START[ctrl.dataset.setting] === 'high');
+      // B: a click anywhere on the row flips the switch (Low <-> High)
+      if (box.dataset.variant === 'b') {
+        ctrl.closest('.graphics-row').addEventListener('click', () => setControl(ctrl, !ctrl.classList.contains('is-high')));
+        return;
+      }
+      ctrl.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (btn) setControl(ctrl, btn.dataset.value === ctrl.dataset.high);
+      });
+    });
+    box.querySelectorAll('[data-all]').forEach(btn => btn.addEventListener('click', () => {
+      const high = btn.dataset.all === 'high';
+      box.querySelectorAll('.segmented-control:not([data-setting="fps"])').forEach(c => setControl(c, high));
+    }));
+  });
+</script>
+  </template>
+
+  <script>
+    // Fills each .mock-frame from its <template>. srcdoc pages resolve relative
+    // URLs (../css/...) against this page, so the stylesheets load the same.
+    document.querySelectorAll('.mock-frame').forEach(frame => {
+      const tpl = document.getElementById(frame.dataset.template);
+      if (frame.hasAttribute('data-autoheight')) {
+        frame.addEventListener('load', () => {
+          const fit = () => { frame.style.height = frame.contentDocument.documentElement.scrollHeight + 'px'; };
+          fit();
+          setTimeout(fit, 300); // after fonts / the page's own script
+        });
+      }
+      frame.srcdoc = '<!DOCTYPE html>\n<meta charset="UTF-8">\n' + tpl.innerHTML;
+    });
+  </script>
 
   <!-- ================================================================
        EDITABLE CONFIG - same shape as games/*.json, trimmed to just
