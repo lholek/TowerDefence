@@ -45,7 +45,12 @@
             "New graphics setting 'UI Effects' - set it to Low to turn off the card animations for better performance",
             "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling",
             "The game map now has rounded corners like the rest of the UI",
-            "Victory / Defeat stats - clearer labels (Final Coins, Final Lives, Total Damage, Coins Earned, Coins Spent, Towers Built, Towers Sold, Abilities Used) and new icons"
+            "Victory / Defeat stats - clearer labels (Final Coins, Final Lives, Total Damage, Coins Earned, Coins Spent, Towers Built, Towers Sold, Abilities Used) and new icons",
+            "TODO: Upgraded visuals of 'Day Sky(Default)' background",
+            "TODO: Add new 'Stormy Sky' background",
+            "TODO: Changed name of new background 'The Nebula' to 'Galactic Sky'",
+            "TODO: Changed name of new background 'Sky (Default)' to 'Day Sky(Default)'"
+          ]
           ]
         },
         {
