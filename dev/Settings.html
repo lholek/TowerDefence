@@ -38,14 +38,18 @@
     color:#bbb;
   }
 
+  /* all variants in one row - scroll sideways when they do not fit */
   .variants{
     display:flex;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:14px;
     gap:34px;
     align-items:flex-start;
   }
 
   .variant{
+    flex:0 0 auto;
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -93,14 +97,16 @@
     text-align:center;
   }
 
+  /* Graphics title centred, All Low / All High on the right */
   .st-heading{
-    display:flex;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
     align-items:center;
-    justify-content:space-between;
     gap:12px;
     margin:18px 0 10px;
   }
   .st-heading h3{
+    grid-column:2;
     margin:0;
     font-size:20px;
   }
@@ -114,12 +120,14 @@
   }
 
   .st-presets{
+    grid-column:3;
+    justify-self:end;
     display:flex;
     gap:8px;
   }
 
   /* ================================================================
-     VARIANT B - grouped panels
+     VARIANT B - grouped panels (base layout)
      ================================================================ */
   .st-b{ width:940px; }
   .st-b .graphics-row > span{ white-space:nowrap; }
@@ -163,14 +171,6 @@
 
   .st-group .graphics-row{ gap:10px; }
 
-  .st-icon{
-    display:inline-block;
-    width:24px;
-    margin-right:8px;
-    font-style:normal;
-    text-align:center;
-  }
-
   /* Background picker in the same tan colour + shape as the Low / High switch
      (in the game it's the custom select - same colour, see [data-for="backgroundSelect"]) */
   .st-b .styled-select{
@@ -183,6 +183,79 @@
     font-size:.9rem;
   }
   .st-group .graphics-row:last-child{ border-bottom:0; }
+
+  /* ================================================================
+     VARIANT B - gold SVG icons + whole-row click (.st-c)
+     Same look as the Towers / Abilities tab icons in the game:
+     one-colour silhouettes with the gold gradient (#ffe7a3 -> #c58a2e)
+     and a dark brown outline, set in a small dark socket.
+     ================================================================ */
+  .st-c .graphics-row > span{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .st-ico{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:30px;
+    height:30px;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+  }
+  .st-ico svg{
+    width:20px;
+    height:20px;
+    /* inherited into the <use> copy - paths with their own fill (snow, hoops) keep it */
+    fill:url(#stGold);
+    stroke:#4a2c0c;
+    stroke-width:.8;
+    stroke-linejoin:round;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+    transition:filter .2s ease, opacity .2s ease;
+  }
+
+  /* switched to Low / Off -> the icon goes dull, so the state reads at a glance */
+  .st-c .graphics-row:has(.segmented-control:not(.is-high)) .st-ico svg{
+    filter:grayscale(.85) brightness(.7) drop-shadow(0 1px 1px rgba(0,0,0,.6));
+    opacity:.75;
+  }
+  .st-c .graphics-row:has(.segmented-control:not(.is-high)) .st-ico{
+    border-color:rgba(240,198,116,.15);
+  }
+
+  /* group titles - small gold diamond instead of an icon */
+  .st-c .st-group-title::before{
+    content:'';
+    width:7px;
+    height:7px;
+    transform:rotate(45deg);
+    background:linear-gradient(135deg, #ffe7a3, #c58a2e);
+    box-shadow:0 0 0 1px #4a2c0c;
+  }
+
+  .st-c .st-general .graphics-row > span{ white-space:nowrap; }
+
+  /* whole row is the switch - fire (hover) cursor like the buttons, see css/cursor.css */
+  .st-c .graphics-row:has(.segmented-control){
+    margin:0 -8px;
+    padding-left:8px;
+    padding-right:8px;
+    border-radius:6px;
+    transition:background-color .15s ease;
+  }
+  .st-c .graphics-row:has(.segmented-control):hover{
+    background-color:rgba(240,198,116,.07);
+  }
+  .st-c .graphics-row:has(.segmented-control):hover,
+  .st-c .graphics-row:has(.segmented-control):hover *{
+    cursor:url('../assets/images/cursor-hover.png') 1 1, auto !important;
+  }
 
 </style>
 </head>
@@ -242,25 +315,25 @@
   </section>
 
   <!-- ============================================================
-       B) GROUPED PANELS
+       B) GROUPED PANELS + GOLD ICONS
        ============================================================ -->
   <section class="variant">
-    <h2 class="section-label">B) Grouped panels</h2>
-    <p class="section-desc">General settings in one row on top. The graphics switches have icons and are split into 3 groups (World / Entities / Abilities &amp; UI), Switch All sits next to the Graphics heading.</p>
+    <h2 class="section-label">B) Grouped panels + gold icons</h2>
+    <p class="section-desc">General settings on top, the graphics switches split into 3 groups (World / Entities / Abilities &amp; UI) with one-colour gold icons in the style of the Towers / Abilities tabs. A click anywhere on a row flips it; the icon goes dull on Low / Off.</p>
     <div class="overlay-mock">
-      <div class="st-box st-b" data-variant="b">
+      <div class="st-box st-b st-c" data-variant="b">
         <h2 class="cl-primary">Settings</h2>
 
         <div class="st-general">
           <div class="graphics-row">
-            <span>Show FPS</span>
+            <span><i class="st-ico" data-ico="fps"></i>Show FPS</span>
             <div class="segmented-control" data-setting="fps" data-low="off" data-high="on">
               <button type="button" data-value="off">Off</button>
               <button type="button" data-value="on">On</button>
             </div>
           </div>
           <div class="graphics-row">
-            <span>Background</span>
+            <span><i class="st-ico" data-ico="background"></i>Background</span>
             <select class="styled-select">
               <option>Sky (Default)</option>
               <option>Midnight Sky</option>
@@ -292,27 +365,108 @@
 
 </div>
 
+<!-- Variant C icons: shared gold gradient + one <symbol> per setting.
+     (Not display:none - that would break the gradient in some browsers.) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="stGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe7a3"/>
+      <stop offset="1" stop-color="#c58a2e"/>
+    </linearGradient>
+  </defs>
+    <!-- Fog (Water): three wave bands -->
+    <symbol id="ico-water" viewBox="0 0 24 24">
+      <path d="M2 5.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+      <path d="M2 11q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+      <path d="M2 16.5q2.5-2.5 5 0t5 0 5 0 5 0v3q-2.5 2.5-5 0t-5 0-5 0-5 0z"/>
+    </symbol>
+    <!-- Terrain: hill with grass blades -->
+    <symbol id="ico-terrain" viewBox="0 0 24 24">
+      <path d="M1.5 21c2.5-6 6.5-9.5 10.5-9.5s8 3.5 10.5 9.5z"/>
+      <path d="M7 13.2 8.6 6.5l1.6 5.6zM11.4 11.6 13 4l1.7 7.6zM15.6 12.4l2.2-5 .6 6.4z"/>
+    </symbol>
+    <!-- Roads: cobblestones in perspective -->
+    <symbol id="ico-roads" viewBox="0 0 24 24">
+      <rect x="2.5" y="16" width="8.5" height="5.5" rx="1.4"/>
+      <rect x="12.5" y="16" width="9" height="5.5" rx="1.4"/>
+      <rect x="4.6" y="10.4" width="6.4" height="4.6" rx="1.2"/>
+      <rect x="12.4" y="10.4" width="7" height="4.6" rx="1.2"/>
+      <rect x="6.8" y="5.4" width="5" height="4" rx="1"/>
+      <rect x="12.8" y="5.4" width="4.6" height="4" rx="1"/>
+    </symbol>
+    <!-- Mountains: two peaks + snow cap -->
+    <symbol id="ico-mountains" viewBox="0 0 24 24">
+      <path d="M1 20.5 8.5 5.5l4.3 7.6 2.7-4.4 7.5 11.8z"/>
+      <path fill="#fff7dc" d="M8.5 5.5 6.2 10.1l1.6-.7 1 1.3 1.1-1.4 1.4.7z"/>
+    </symbol>
+    <!-- Objects: barrel -->
+    <symbol id="ico-objects" viewBox="0 0 24 24">
+      <path d="M7 2.5h10c1.5 2.6 2.1 5.8 2.1 9.5s-.6 6.9-2.1 9.5H7c-1.5-2.6-2.1-5.8-2.1-9.5S5.5 5.1 7 2.5z"/>
+      <path fill="none" stroke-width="1.3" d="M5.5 7.3h13M5.5 16.7h13M12 2.5v19"/>
+    </symbol>
+    <!-- Trees of Life: tree -->
+    <symbol id="ico-trees" viewBox="0 0 24 24">
+      <path d="M12 1.8c3 0 5.5 2.3 5.5 5 1.8.8 3 2.6 3 4.6 0 2.9-2.4 5.2-5.3 5.2H13.4v3.9H16V22H8v-1.5h2.6v-3.9H8.8c-2.9 0-5.3-2.3-5.3-5.2 0-2 1.2-3.8 3-4.6 0-2.7 2.5-5 5.5-5z"/>
+    </symbol>
+    <!-- Portals: ring with a star in the middle -->
+    <symbol id="ico-portals" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M12 1.5c4.9 0 8 4.7 8 10.5s-3.1 10.5-8 10.5-8-4.7-8-10.5 3.1-10.5 8-10.5zm0 4c-2.4 0-4 2.9-4 6.5s1.6 6.5 4 6.5 4-2.9 4-6.5-1.6-6.5-4-6.5z"/>
+      <path d="M12 9l.8 2.2 2.2.8-2.2.8L12 15l-.8-2.2-2.2-.8 2.2-.8z"/>
+    </symbol>
+    <!-- Enemies: skull -->
+    <symbol id="ico-enemies" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/>
+      <path fill="none" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/>
+    </symbol>
+    <!-- Towers: same silhouette as the Towers tab -->
+    <symbol id="ico-towers" viewBox="0 0 24 24">
+      <path fill-rule="evenodd" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/>
+    </symbol>
+    <!-- Abilities: same flame as the Abilities tab -->
+    <symbol id="ico-abilities" viewBox="0 0 24 24">
+      <path d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/>
+      <path d="M7 19.5h10l-1 2.5H8z"/>
+    </symbol>
+    <!-- UI Effects: sparkles -->
+    <symbol id="ico-ui_effects" viewBox="0 0 24 24">
+      <path d="M10 2l1.9 5.6 5.6 1.9-5.6 1.9L10 17l-1.9-5.6-5.6-1.9 5.6-1.9z"/>
+      <path d="M18 13l.9 2.6 2.6.9-2.6.9L18 20l-.9-2.6-2.6-.9 2.6-.9z"/>
+      <path d="M18.5 2.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/>
+    </symbol>
+    <!-- Show FPS: gauge -->
+    <symbol id="ico-fps" viewBox="0 0 24 24">
+      <path d="M12 4.5A10 10 0 0 0 2 14.5c0 2 .6 3.9 1.6 5.5h16.8a10 10 0 0 0 1.6-5.5 10 10 0 0 0-10-10z"/>
+      <path fill="none" stroke-width="1.6" stroke-linecap="round" d="M12 15.5l4.2-5"/>
+      <circle cx="12" cy="15.5" r="1.6" fill="#4a2c0c" stroke="none"/>
+    </symbol>
+    <!-- Background: sun behind a cloud -->
+    <symbol id="ico-background" viewBox="0 0 24 24">
+      <circle cx="15.5" cy="8" r="4.5"/>
+      <path d="M6.8 20a4.3 4.3 0 0 1-.6-8.6 5.8 5.8 0 0 1 11 1.4 3.6 3.6 0 0 1 .3 7.2z"/>
+    </symbol>
+</svg>
+
 <script>
   // Same 11 graphics settings as #graphicsCustomList in index.html
   const SETTINGS = [
-    { key: 'trees',      name: 'Trees of Life', icon: '🌳', group: 'entities' },
-    { key: 'portals',    name: 'Portals',       icon: '🌀', group: 'entities' },
-    { key: 'enemies',    name: 'Enemies',       icon: '💀', group: 'entities' },
-    { key: 'towers',     name: 'Towers',        icon: '🏰', group: 'entities' },
-    { key: 'water',      name: 'Fog (Water)',   icon: '🌊', group: 'world' },
-    { key: 'terrain',    name: 'Terrain',       icon: '⛰️', group: 'world' },
-    { key: 'roads',      name: 'Roads',         icon: '🧱', group: 'world' },
-    { key: 'mountains',  name: 'Mountains',     icon: '🏔️', group: 'world' },
-    { key: 'abilities',  name: 'Abilities',     icon: '🔥', group: 'abilities' },
-    { key: 'objects',    name: 'Objects',       icon: '🪵', group: 'world' },
-    { key: 'ui_effects', name: 'UI Effects',    icon: '✨', group: 'abilities' },
+    { key: 'trees',      name: 'Trees of Life', group: 'entities' },
+    { key: 'portals',    name: 'Portals', group: 'entities' },
+    { key: 'enemies',    name: 'Enemies', group: 'entities' },
+    { key: 'towers',     name: 'Towers', group: 'entities' },
+    { key: 'water',      name: 'Fog (Water)', group: 'world' },
+    { key: 'terrain',    name: 'Terrain', group: 'world' },
+    { key: 'roads',      name: 'Roads', group: 'world' },
+    { key: 'mountains',  name: 'Mountains', group: 'world' },
+    { key: 'abilities',  name: 'Abilities', group: 'abilities' },
+    { key: 'objects',    name: 'Objects', group: 'world' },
+    { key: 'ui_effects', name: 'UI Effects', group: 'abilities' },
   ];
   // Mixed start values so both states are visible right away
   const START = { trees: 'high', portals: 'high', enemies: 'high', towers: 'high', water: 'low', terrain: 'high', roads: 'high', mountains: 'low', abilities: 'high', objects: 'high', ui_effects: 'low' };
 
-  const segmented = (s, withIcon = false) => `
+  const segmented = s => `
     <div class="graphics-row">
-      <span>${withIcon ? `<i class="st-icon">${s.icon}</i>` : ''}${s.name}</span>
+      <span>${s.name}</span>
       <div class="segmented-control" data-setting="${s.key}" data-low="low" data-high="high">
         <button type="button" data-value="low">Low</button>
         <button type="button" data-value="high">High</button>
@@ -322,10 +476,14 @@
   // A) two-column list
   document.querySelector('[data-variant="a"] .graphics-custom-list').innerHTML = SETTINGS.map(s => segmented(s)).join('');
 
-  // B) grouped panels
+
+  // B) grouped panels + gold SVG icons
+  const ico = key => `<i class="st-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-${key}"/></svg></i>`;
+  const segmentedC = s => segmented(s).replace(`<span>${s.name}`, `<span>${ico(s.key)}${s.name}`);
   document.querySelectorAll('[data-variant="b"] .st-group').forEach(group => {
-    group.insertAdjacentHTML('beforeend', SETTINGS.filter(s => s.group === group.dataset.group).map(s => segmented(s, true)).join(''));
+    group.insertAdjacentHTML('beforeend', SETTINGS.filter(s => s.group === group.dataset.group).map(segmentedC).join(''));
   });
+  document.querySelectorAll('[data-variant="b"] [data-ico]').forEach(el => { el.outerHTML = ico(el.dataset.ico); });
 
   // --- state per variant box (each box is independent) ---
   const setControl = (ctrl, high) => {
@@ -337,6 +495,11 @@
   document.querySelectorAll('[data-variant]').forEach(box => {
     box.querySelectorAll('.segmented-control').forEach(ctrl => {
       setControl(ctrl, ctrl.dataset.setting === 'fps' ? false : START[ctrl.dataset.setting] === 'high');
+      // B: a click anywhere on the row flips the switch (Low <-> High)
+      if (box.dataset.variant === 'b') {
+        ctrl.closest('.graphics-row').addEventListener('click', () => setControl(ctrl, !ctrl.classList.contains('is-high')));
+        return;
+      }
       ctrl.addEventListener('click', e => {
         const btn = e.target.closest('button');
         if (btn) setControl(ctrl, btn.dataset.value === ctrl.dataset.high);
