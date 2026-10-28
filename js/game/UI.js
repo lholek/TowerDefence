@@ -234,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     settings.showFps = !settings.showFps;
     updateFpsToggleUI();
+    updateUnsavedHint();
   });
 
   // --- Apply settings ---
@@ -351,6 +352,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const applyUiEffects = () => document.body.classList.toggle('ui-fx-low', currentGraphics.ui_effects === 'low');
   applyUiEffects();
 
+  // "You have unsaved changes" hint above Save: shown while anything in the popup differs
+  // from what is saved, hidden again on Save or when the player switches it all back.
+  const unsavedHint = document.getElementById('settingsUnsavedHint');
+  function updateUnsavedHint() {
+    if (!unsavedHint) return;
+    const savedFps = JSON.parse(localStorage.getItem('data.fps')) || {};
+    const savedGraphics = JSON.parse(localStorage.getItem('graphicsSettings')) || {};
+    const changed =
+      !!settings.showFps !== !!savedFps.showFps ||
+      (bgSelect && bgSelect.value !== (localStorage.getItem('game_background') || 'day')) ||
+      Object.keys(currentGraphics).some(k => currentGraphics[k] !== savedGraphics[k]);
+    unsavedHint.hidden = !changed;
+  }
+  bgSelect?.addEventListener('change', updateUnsavedHint);
+
   // 2. Function to refresh the UI buttons to match the state
   // NOTE: scoped to #graphicsCustomList so it doesn't also pick up the
   // Show FPS on/off segmented-control, which isn't part of currentGraphics.
@@ -393,23 +409,27 @@ document.addEventListener("DOMContentLoaded", () => {
     // OKAMŽITÁ vizuální změna v UI
     currentGraphics[setting] = value;
     updateGraphicsUI();
+    updateUnsavedHint();
   });
 
   // Bulk Buttons
   document.getElementById('btnAllLow')?.addEventListener('click', () => {
     Object.keys(currentGraphics).forEach(k => currentGraphics[k] = 'low');
     updateGraphicsUI();
+    updateUnsavedHint();
   });
 
   document.getElementById('btnAllHigh')?.addEventListener('click', () => {
     Object.keys(currentGraphics).forEach(k => currentGraphics[k] = 'high');
     updateGraphicsUI();
+    updateUnsavedHint();
   });
 
   // Save Button
   document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
     localStorage.setItem('graphicsSettings', JSON.stringify(currentGraphics));
     applyUiEffects();
+    updateUnsavedHint(); // everything is saved by now (FPS + background in the Save handler above)
     // Here you would trigger the actual game engine to update visuals
   });
 

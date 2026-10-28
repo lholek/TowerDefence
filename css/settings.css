@@ -181,6 +181,22 @@
   margin-top: 18px;
 }
 
+/* "You have unsaved changes" - above Save, only while something differs from the saved settings */
+.settings-unsaved {
+  margin: 16px 0 0;
+  text-align: center;
+  color: #f0c674;
+  font-size: 0.95rem;
+  animation: settingsUnsavedIn 0.25s ease-out;
+}
+.settings-unsaved[hidden] {
+  display: none;
+}
+@keyframes settingsUnsavedIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
 .settings-btn {
   position: fixed;
   top: 15px;

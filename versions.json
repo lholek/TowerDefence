@@ -38,6 +38,7 @@
             "New level progress bar",
             "Redesigned Settings - graphics options are now grouped into World, Entities and Abilities & UI with icons, and a click anywhere on a row switches it",
             "All graphics settings are now set to High by default",
+            "Settings now show 'You have unsaved changes' above the Save button whenever something was changed and not saved yet - it disappears again after saving or switching it back",
             "New 10x game speed - for quicker games on small maps",
             "Large numbers now use a space as the thousands separator (e.g. 1 000 instead of 1000)",
             "Redesigned Towers, Abilities and +1 Life buttons with new icons",
