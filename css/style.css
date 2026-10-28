@@ -896,7 +896,8 @@ max-width: 400px;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 1;
     pointer-events: none;
-    transition: background 0.8s ease;
+    /* no background transition: the layered backgrounds can't fade anyway, it only made the
+       browser repaint them for 0.8 s after every switch (a visible hitch) */
 }
 
 /* The backgrounds themselves (#cloudsLayer.bg-*) are in css/backgrounds.css */
