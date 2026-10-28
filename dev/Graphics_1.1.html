@@ -2013,6 +2013,11 @@
     <iframe class="mock-frame" data-template="tplBackgrounds" data-autoheight title="Backgrounds preview"></iframe>
   </div>
 
+  <div class="bar-section">
+    <h2 class="section-label">Manual — Guardian's Manual, current vs new <span style="color:#e05252">- NOT IMPLEMENTED YET</span></h2>
+    <iframe class="mock-frame" data-template="tplManual" data-autoheight title="Guardian's Manual mockup"></iframe>
+  </div>
+
   <style>
     .mock-frame{
       display:block;
@@ -3686,6 +3691,452 @@
   loadMap(mapSelect.value);
 </script>
 <script type="module" src="../js/CustomSelect.js"></script>
+  </template>
+
+  <template id="tplManual">
+<meta charset="UTF-8" />
+<title>Guardian's Manual</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<link rel="stylesheet" href="../css/settings.css" />
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  :root{ --gold:#f0c674; }
+  html, body{ margin:0; padding:0; background:#1E1E1E; color:#eee; font-family: Arial, sans-serif; }
+  body{ padding:30px 34px 50px; }
+  h1{ margin:0 0 6px; color:var(--gold); font-family: Georgia, 'Times New Roman', serif; }
+  .page-note{ margin:0 0 26px; color:#bbb; }
+  .section-label{ margin:0; color:var(--gold); font-size:18px; font-family: Georgia, 'Times New Roman', serif; }
+  .section-desc{ margin:4px 0 0; max-width:620px; color:#aaa; font-size:14px; line-height:1.4; }
+
+  /* one row per manual page: A (current) | B (new) */
+  .mn-grid{
+    display:grid;
+    grid-template-columns:650px 750px;
+    gap:28px 46px;
+    align-items:stretch;
+    overflow-x:auto;
+  }
+  .mn-grid .tutorial-card{ box-sizing:border-box; max-width:none; }
+  /* B) a bit wider than the old one */
+  .mn-grid .tutorial-card.mn-new{ width:750px; }
+  .mn-source{ display:none; }
+  /* empty slot in the A column next to a page that only the new manual has */
+  .mn-gap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px dashed rgba(240,198,116,.25);
+    border-radius:12px;
+    color:rgba(240,198,116,.55);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size:15px;
+  }
+
+  /* ================================================================
+     B) NEW - namespaced "mn-"
+     ================================================================ */
+  /* "Price -" style labels in our gold */
+  .mn-label{ color:#f0c674; font-weight:bold; }
+
+  /* Tower Mechanics: the stat icons from the tower card (Game.js) instead of bullets */
+  .guide-list.mn-icon-list{ list-style:none; padding-left:6px; }
+  .mn-icon-list li{ display:flex; gap:10px; margin:7px 0; line-height:1.4; }
+  .mn-icon-list .mn-ico{ flex:0 0 1.5em; text-align:center; }
+
+  /* the tower icon from the Towers / Abilities switcher, in place of the bow */
+  .mn-h3-ico{ width:20px; height:20px; vertical-align:-4px; margin-right:4px; }
+
+  /* Controls: mouse icons inside the key badges (left / right / wheel highlighted) */
+  .key-cap .mn-mouse{
+    width:26px;
+    height:26px;
+    flex:0 0 26px;
+    margin:0 6px 0 -6px;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+  }
+
+  /* Abilities: the labels already mark each line - no bullets */
+  .guide-list.mn-plain-list{ list-style:none; padding-left:6px; }
+  .mn-plain-list li{ margin:7px 0; line-height:1.4; }
+
+  /* "Effect - Temporarily ..." - a wrapped line starts under "Temporarily", not under "Effect" */
+  .mn-plain-list li,
+  .mn-icon-list .mn-row{
+    display:grid;
+    grid-template-columns:max-content 1fr;
+    column-gap:.35em;
+  }
+
+  /* Global / Targeted tag next to the ability name */
+  .mn-type{
+    display:inline-block;
+    margin-left:6px;
+    padding:1px 8px;
+    border-radius:999px;
+    border:1px solid rgba(240,198,116,.55);
+    background:rgba(240,198,116,.12);
+    color:#f3e5ab;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    vertical-align:2px;
+  }
+
+  /* Key combos (SHIFT + A, P / ESC, T / A): the same single badge as every other key,
+     the sign between the keys plain and a little dimmer */
+  .mn-combo-cap{ gap:8px; }
+  .mn-combo-cap kbd{ position:relative; font:inherit; }
+  .mn-combo-cap i{ position:relative; font-style:normal; opacity:.7; }
+</style>
+
+<!-- Mouse icons for the Controls page: one shared body, the used part glows orange -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="mn-mouse-body">
+      <rect x="3.75" y="2.75" width="12.5" height="18.5" rx="6.25" fill="rgba(30,12,2,.6)"/>
+      <path d="M3.75 9.6h12.5M10 2.75v6.85" stroke="#f3e5ab" stroke-width="1.2" fill="none"/>
+      <rect x="3.75" y="2.75" width="12.5" height="18.5" rx="6.25" fill="none" stroke="#f3e5ab" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <symbol id="mn-mouse-left" viewBox="0 0 24 24">
+    <use href="#mn-mouse-body"/>
+    <path d="M10 3.35A5.65 5.65 0 0 0 4.35 9V9.6H10z" fill="#ffb347"/>
+    <rect x="8.9" y="4.6" width="2.2" height="3.6" rx="1.1" fill="#f3e5ab"/>
+  </symbol>
+  <symbol id="mn-mouse-right" viewBox="0 0 24 24">
+    <use href="#mn-mouse-body"/>
+    <path d="M10 3.35A5.65 5.65 0 0 1 15.65 9V9.6H10z" fill="#ffb347"/>
+    <rect x="8.9" y="4.6" width="2.2" height="3.6" rx="1.1" fill="#f3e5ab"/>
+  </symbol>
+  <symbol id="mn-mouse-wheel" viewBox="0 0 24 24">
+    <use href="#mn-mouse-body"/>
+    <rect x="8.6" y="4.2" width="2.8" height="4.4" rx="1.4" fill="#ffb347"/>
+    <path d="M10 1.2v1.4M10 22.8v-1.4" stroke="#ffb347" stroke-width="1.4" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="mn-mouse-scroll" viewBox="0 0 24 24">
+    <use href="#mn-mouse-body"/>
+    <rect x="8.4" y="4" width="3.2" height="4.8" rx="1.6" fill="#ffb347"/>
+  </symbol>
+</svg>
+
+<h1>Guardian's Manual - current vs new</h1>
+<p class="page-note">Both columns use the game's real styles (css/ui.css + css/settings.css). One row per page of the manual - in the game only one page is shown at a time.</p>
+
+<div class="mn-grid">
+  <div>
+    <h2 class="section-label">A) Current (html/tutorial.html)</h2>
+    <p class="section-desc">The manual as it is in the game now - unchanged.</p>
+  </div>
+  <div>
+    <h2 class="section-label">B) New proposal</h2>
+    <p class="section-desc">Tower icon from the Towers / Abilities switcher, the stat icons from the tower cards, "Price -" style labels in gold on every page, every ability in the same order (Usage, Effect, Limits, Timing) with its Global / Targeted tag and the Hint in a blue box, the first page summed up into one list + one tip, 2 new pages: Game Flow and Abilities, mouse icons in the Controls. Typos fixed.</p>
+  </div>
+</div>
+<div class="mn-grid" id="mnGrid" style="margin-top:14px"></div>
+
+<!-- ============================================================
+     A) CURRENT - pages copied 1:1 from html/tutorial.html
+     ============================================================ -->
+<div class="mn-source" id="mnOld">
+        <div class="tutorial-page" id="page-0">
+            <h3>🌳 The Core Mission</h3>
+            <p>Protect the <strong>Tree of Life</strong>. Enemies emerge from Portals and march toward the Tress.</p>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Every enemy that escapes reduces your ❤️ Lives. If it deals more that 1 damage its identified by damage indicator (⚔️).  If you reach 0, the game is over.
+            </div>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> If the damage indicator (⚔️) displays "+99", it doesn't show the real value. The actual damage could be 1,000 or more, as the indicator caps at 100. But its displayed in the Logs. The Log Button whit shake a little if this happens.
+            </div>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Some enemies carry a ❤️ heal indicator. When these enemies escape, instead of losing lives, you actually <strong>gain</strong> ❤️ Lives!
+            </div>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> If the heal indicator (❤️)  displays "+99", it doesn't show the real value. The actual damage could be 1,000 or more, as the indicator caps at 100. But its displayed in the Logs. The Log Button whit shake a little if this happens.
+            </div>
+            <ul class="guide-list">
+                <li>🪙 <strong>Gold:</strong> Earned by destroying enemies.</li>
+                <li>🏰 <strong>Strategy:</strong> Place towers to defend the trees.</li>
+                <li>🌋 <strong>Strategy:</strong> Use abilites to defend the trees.</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-1">
+            <h3>🏹 Tower Mechanics</h3>
+            <p>Understanding your defenses is key to survival:</p>
+            <ul class="guide-list">
+                <li><strong>Price:</strong> The cost to build the tower.</li>
+                <li><strong>DPS:</strong> Damage Per Second. This represents the average total damage dealt every second.</li>
+                <li><strong>Damage:</strong> The amount of health removed from an enemy with a single hit.</li>
+                <li><strong>Range:</strong> The circular area within which the tower can detect and attack enemies.</li>
+                <li><strong>Fire Rate:</strong> The delay between shots, measured in milliseconds (ms).
+                    <br><small><em>(Note: 400ms is <strong>faster</strong> than 800ms because the tower waits less time between attacks!)</em></small>
+                </li>
+                <li><strong>Speed:</strong> The projectile speed (how fast the arrows or bullets travel to reach the target).</li>
+                <li><strong>Sell Price:</strong> The amount of gold you get back for removing the tower.</li>
+
+            </ul>
+            <div class="tip-box">
+                Left-click to <strong>Build</strong> selected a tower on grass.
+            </div>
+            <div class="tip-box">
+                Right-click a tower to <strong>Dismantle</strong> it and recover some gold.
+            </div>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-2">
+            <h3>🌋 Ability: Lava Floor</h3>
+            <p>A powerful area-of-effect (AoE) attack that scorches the earth.</p>
+            <ul class="guide-list">
+                <li><strong>Usage:</strong> Select the ability and click a path tile.</li>
+                <li><strong>Effect:</strong> Sets the selected tile (and nearby tiles) on fire.</li>
+                <li><strong>Damage:</strong> Deals rapid damage to every enemy standing on the burning tiles.</li>
+            </ul>
+            <p><small>Best used on "choke points" where enemies group together!</small></p>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-3">
+            <h3>🏹 Ability: Tower's Fury</h3>
+            <p>A global buff that pushes your towers beyond their limits.</p>
+            <ul class="guide-list">
+                <li><strong>Effect:</strong> Temporarily increses the <strong>Demage and Speed</strong> and reduces the <strong>Fire Rate</strong> of ALL towers on the map.</li>
+                <li><strong>Power:</strong> Your towers will shoot significantly faster and stronger for the duration of the ability.</li>
+                <li><strong>Timing:</strong> Save this for massive waves or Boss enemies!</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-4">
+            <h3>🪙 Ability: Gold Rush</h3>
+            <p>A global economy boost that makes every kill worth more.</p>
+            <ul class="guide-list">
+                <li><strong>Usage:</strong> Select the ability - it activates instantly, no tile needs to be chosen.</li>
+                <li><strong>Effect:</strong> While active, gold earned from <strong>killing enemies</strong> is increased by a percentage bonus (e.g. +100% = double gold).</li>
+                <li><strong>Limits:</strong> The bonus does not apply to gold from selling towers.</li>
+                <li><strong>Timing:</strong> Activate it right before a big wave to fund new towers!</li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-5">
+            <h3>❄️ Ability: Ice Storm</h3>
+            <p>A freezing storm that turns a stretch of the road into ice.</p>
+            <ul class="guide-list">
+                <li><strong>Usage:</strong> Select the ability and click a path tile - the tile and the connected road around it freeze.</li>
+                <li><strong>Slow:</strong> Enemies on the ice move much slower (e.g. -80% speed).</li>
+                <li><strong>Vulnerability:</strong> Frozen enemies take extra damage from <strong>all sources</strong> - towers and Lava Floor alike (e.g. +50%: a 50 damage hit deals 75).</li>
+                <li><strong>Zone only:</strong> The effect lasts only while an enemy stands on the ice. Frozen enemies glow blue.</li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Freeze the road inside the range of your strongest towers, or combine it with Lava Floor - enemies stay in the fire longer and burn harder!
+            </div>
+        </div>
+
+        <div class="tutorial-page d-none" id="page-6">
+            <h3>⌨️ Controls</h3>
+            <div class="hotkey-grid-compact">
+                <span class="key-cap">M-Wheel Press</span> <span>Move Camera</span>
+                <span class="key-cap">SHIFT</span> <span>Show Tower's Range</span>
+
+                <span class="key-cap">M-Wheel Scroll</span> <span>Zoom In / Out</span>
+                <span class="key-cap">SHIFT+A</span> <span>All Tower Ranges</span>
+
+                <span class="key-cap">Left Click</span> <span>Construct Tower</span>
+                <span class="key-cap">P / ESC</span> <span>Pause Game</span>
+
+                <span class="key-cap">Right Click</span> <span>Dismantle Tower</span>
+                <span class="key-cap">E</span> <span>Buy Extra Life</span>
+
+
+                <span class="key-cap">T / A</span> <span>Switch Towers / Abilies</span>
+                <span class="key-cap">1-9</span> <span>Quick select Towers / Abilies</span>
+            </div>
+            <div class="tip-box text-center" style="margin-top: 20px; border: none; background: rgba(76, 175, 80, 0.2);">
+                <strong>Enjoy the Game! <br>Good luck, Guardian!</strong>
+            </div>
+        </div>
+</div>
+
+<!-- ============================================================
+     B) NEW PROPOSAL
+     ============================================================ -->
+<div class="mn-source" id="mnNew">
+        <div class="tutorial-page">
+            <h3>🌳 The Core Mission</h3>
+            <p>Protect the <strong>Tree of Life</strong>. Enemies emerge from Portals and march toward the Trees.</p>
+            <ul class="guide-list mn-icon-list">
+                <li><span class="mn-ico">❤️</span><span class="mn-row"><span class="mn-label">Lives -</span><span>Every enemy that escapes takes your Lives - at 0 the game is over. Enemies that deal more than 1 show a damage indicator (⚔️).</span></span></li>
+                <li><span class="mn-ico">💖</span><span class="mn-row"><span class="mn-label">Healers -</span><span>Some enemies carry a heal indicator (❤️) - when they escape, you <strong>gain</strong> Lives instead.</span></span></li>
+                <li><span class="mn-ico">🪙</span><span class="mn-row"><span class="mn-label">Gold -</span><span>Earned by destroying enemies.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG2)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span><span class="mn-row"><span class="mn-label">Strategy -</span><span>Place towers to defend the trees.</span></span></li>
+                <li><span class="mn-ico">🌋</span><span class="mn-row"><span class="mn-label">Strategy -</span><span>Use abilities to defend the trees.</span></span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> An indicator showing "+99" is capped - the real value (it can be 1,000 or more) is written to the Logs as soon as such an enemy appears, and the Log button shakes a little.
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>🧭 Game Flow</h3>
+            <p>How a map is played from the first enemy to the last:</p>
+            <ul class="guide-list mn-icon-list">
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnBannerG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnBannerG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2.5h2V22H5zM7 3.5h12.5l-3.2 4.2 3.2 4.3H7z"/><path fill="#7a4a12" d="M10 6.2h4.5L13 7.7l1.5 1.6H10z"/></svg></span><span class="mn-row"><span class="mn-label">Waves -</span><span>Every map is a series of waves. The next wave starts on its own as soon as every enemy of the current one is gone - the progress bar at the top shows how far the wave is.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnCrownG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnCrownG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 7.5l4.6 4L12 4l4.4 7.5L21 7.5 19.2 18H4.8zM4.8 19.2h14.4V21H4.8z"/><circle cx="12" cy="13.6" r="1.4" fill="#b3261e" stroke="#4a0d08" stroke-width=".5"/><circle cx="7.6" cy="14.6" r=".9" fill="#7a4a12"/><circle cx="16.4" cy="14.6" r=".9" fill="#7a4a12"/></svg></span><span class="mn-row"><span class="mn-label">Victory -</span><span>Survive every wave with at least one ❤️ Life left. If your Lives drop to 0, it's a Defeat.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#mnHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg></span><span class="mn-row"><span class="mn-label">Extra Life -</span><span>The <strong>+1 Life</strong> button next to Towers / Abilities (or the <strong>E</strong> key) buys a life for gold. Every purchase costs more - and some maps don't offer it at all.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnSpeedG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnSpeedG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M2.5 5.5l9 6.5-9 6.5zM12 5.5l9 6.5-9 6.5z"/></svg></span><span class="mn-row"><span class="mn-label">Game Speed -</span><span>The Speed buttons in the top bar run the game from 1x up to 10x.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG3)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span><span class="mn-row"><span class="mn-label">Tower Cards -</span><span>Every card shows its Price, Sell value and DPS - hover it to see all six stats. The number in its corner is its 1 - 9 hotkey.</span></span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Hold <strong>SHIFT</strong> while placing a tower to see its range before you build it.
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg> Tower Mechanics</h3>
+            <p>Understanding your defenses is key to survival:</p>
+            <ul class="guide-list mn-icon-list">
+                <li><span class="mn-ico">🪙</span><span class="mn-row"><span class="mn-label">Price -</span><span>The cost to build the tower.</span></span></li>
+                <li><span class="mn-ico">💥</span><span class="mn-row"><span class="mn-label">DPS -</span><span>Damage Per Second. This represents the average total damage dealt every second.</span></span></li>
+                <li><span class="mn-ico">⚔️</span><span class="mn-row"><span class="mn-label">Damage -</span><span>The amount of health removed from an enemy with a single hit.</span></span></li>
+                <li><span class="mn-ico">🎯</span><span class="mn-row"><span class="mn-label">Range -</span><span>The circular area within which the tower can detect and attack enemies.</span></span></li>
+                <li><span class="mn-ico">⏱️</span><span class="mn-row"><span class="mn-label">Fire Rate -</span><span>The delay between shots, measured in milliseconds (ms).
+                    <br><small><em>(Note: 400ms is <strong>faster</strong> than 800ms because the tower waits less time between attacks!)</em></small></span></span>
+                </li>
+                <li><span class="mn-ico">🗲</span><span class="mn-row"><span class="mn-label">Speed -</span><span>The projectile speed (how fast the arrows or bullets travel to reach the target).</span></span></li>
+                <li><span class="mn-ico">💰</span><span class="mn-row"><span class="mn-label">Sell Price -</span><span>The amount of gold you get back for removing the tower.</span></span></li>
+            </ul>
+            <div class="tip-box">
+                Left-click to <strong>Build</strong> the selected tower on free ground - grass, snow, sand or dirt (not on the road, water, mountains, lava or objects).
+            </div>
+            <div class="tip-box">
+                Right-click a tower to <strong>Dismantle</strong> it and recover some gold.
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnAbilityG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs><path fill="url(#mnAbilityG)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></svg> Abilities</h3>
+            <p>Special powers granted by the Elder Mages - every map gives you its own set.</p>
+            <ul class="guide-list mn-icon-list">
+                <li><span class="mn-ico">🎯</span><span class="mn-row"><span class="mn-label">Targeted -</span><span>Select the card, then click a road tile - the effect covers a stretch of road around it (the card shows how many tiles). Click the card again to cancel.</span></span></li>
+                <li><span class="mn-ico">🌍</span><span class="mn-row"><span class="mn-label">Global -</span><span>Starts the moment you click the card and affects the whole map.</span></span></li>
+                <li><span class="mn-ico">🕒</span><span class="mn-row"><span class="mn-label">Duration -</span><span>How long the effect lasts. While it runs, the card shows <strong>Active</strong> with a shrinking bar.</span></span></li>
+                <li><span class="mn-ico">⏳</span><span class="mn-row"><span class="mn-label">Cooldown -</span><span>How long until you can use it again. It starts the moment you use the ability - the duration counts into it - and the dimmed card counts down.</span></span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Both times are on every ability card (🕒 duration, ⏳ cooldown). Every ability page below shows whether it is <span class="mn-type">Targeted</span> or <span class="mn-type">Global</span>.
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>🌋 Ability: Lava Floor <span class="mn-type">Targeted</span></h3>
+            <p>A powerful area-of-effect (AoE) attack that scorches the earth.</p>
+            <ul class="guide-list mn-plain-list">
+                <li><span class="mn-label">Usage -</span><span>Select the ability and click a path tile.</span></li>
+                <li><span class="mn-label">Effect -</span><span>Sets a stretch of road around the chosen tile on fire and deals rapid damage to every enemy standing on the burning tiles.</span></li>
+                <li><span class="mn-label">Timing -</span><span>Fire it when a big group of enemies is about to walk over the chosen tiles.</span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Hint:</strong> Best used on "choke points" where enemies group together!
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>🏹 Ability: Tower's Fury <span class="mn-type">Global</span></h3>
+            <p>A global buff that pushes your towers beyond their limits.</p>
+            <ul class="guide-list mn-plain-list">
+                <li><span class="mn-label">Usage -</span><span>Select the ability - it activates instantly, no tile needs to be chosen.</span></li>
+                <li><span class="mn-label">Effect -</span><span>Temporarily increases the <strong>Damage and Speed</strong> of ALL towers on the map and shortens the delay between their shots (<strong>Fire Rate</strong>) - they fire faster and hit significantly harder while it lasts.</span></li>
+                <li><span class="mn-label">Timing -</span><span>Save this for massive waves or Boss enemies!</span></li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>⛏️ Ability: Gold Rush <span class="mn-type">Global</span></h3>
+            <p>A global economy boost that makes every kill worth more.</p>
+            <ul class="guide-list mn-plain-list">
+                <li><span class="mn-label">Usage -</span><span>Select the ability - it activates instantly, no tile needs to be chosen.</span></li>
+                <li><span class="mn-label">Effect -</span><span>While active, gold earned from <strong>killing enemies</strong> is increased by a percentage bonus (e.g. +100% = double gold).</span></li>
+                <li><span class="mn-label">Limits -</span><span>The bonus does not apply to gold from selling towers.</span></li>
+                <li><span class="mn-label">Timing -</span><span>Activate it right before a big wave to fund new towers!</span></li>
+            </ul>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>❄️ Ability: Ice Storm <span class="mn-type">Targeted</span></h3>
+            <p>A freezing storm that turns a stretch of the road into ice.</p>
+            <ul class="guide-list mn-plain-list">
+                <li><span class="mn-label">Usage -</span><span>Select the ability and click a path tile.</span></li>
+                <li><span class="mn-label">Effect -</span><span>Freezes a stretch of road around the chosen tile - enemies on the ice move much slower (e.g. -80% speed) and take extra damage from <strong>all sources</strong> - towers and Lava Floor alike (e.g. +50%: a 50 damage hit deals 75).</span></li>
+                <li><span class="mn-label">Limits -</span><span>The effect lasts only while an enemy stands on the ice. Frozen enemies glow blue.</span></li>
+                <li><span class="mn-label">Timing -</span><span>Freeze the road inside the range of your strongest towers.</span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Hint:</strong> Combine it with Lava Floor - enemies stay in the fire longer and burn harder!
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3>⌨️ Controls</h3>
+            <div class="hotkey-grid-compact">
+                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-wheel"/></svg>Wheel Press</span> <span>Move Camera</span>
+                <span class="key-cap">SHIFT</span> <span>Show Tower's Range</span>
+
+                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-scroll"/></svg>Wheel Scroll</span> <span>Zoom In / Out</span>
+                <span class="key-cap mn-combo-cap"><kbd>SHIFT</kbd><i>+</i><kbd>A</kbd></span> <span>All Tower Ranges</span>
+
+                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-left"/></svg>Left Click</span> <span>Construct Tower</span>
+                <span class="key-cap mn-combo-cap"><kbd>P</kbd><i>/</i><kbd>ESC</kbd></span> <span>Pause Game</span>
+
+                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-right"/></svg>Right Click</span> <span>Dismantle Tower</span>
+                <span class="key-cap">E</span> <span>Buy Extra Life</span>
+
+                <span class="key-cap mn-combo-cap"><kbd>T</kbd><i>/</i><kbd>A</kbd></span> <span>Switch Towers / Abilities</span>
+                <span class="key-cap">1 - 9</span> <span>Quick select Towers / Abilities</span>
+            </div>
+            <div class="tip-box text-center" style="margin-top: 20px; border: none; background: rgba(76, 175, 80, 0.2);">
+                <strong>Enjoy the Game! <br>Good luck, Guardian!</strong>
+            </div>
+        </div>
+</div>
+
+<script>
+  // Every page of both versions as its own card (in the game only one page shows at a time)
+  const header = (i, n) => `
+    <button class="close-btn close-tutorial" title="Close">&times;</button>
+    <div class="tutorial-header">
+        <h2 class="cl-primary text-center">📜 Guardian's Manual</h2>
+        <div class="page-indicator text-center" style="font-size: 0.8em; opacity: 0.7;">Step ${i + 1} of ${n}</div>
+        <hr class="separator">
+    </div>`;
+  const card = (page, i, n) => {
+    const c = document.createElement('div');
+    c.className = 'tutorial-card';
+    c.innerHTML = header(i, n);
+    const p = page.cloneNode(true);
+    p.classList.remove('d-none');
+    p.removeAttribute('id');
+    c.appendChild(p);
+    return c;
+  };
+  const oldPages = [...document.querySelectorAll('#mnOld > .tutorial-page')];
+  const newPages = [...document.querySelectorAll('#mnNew > .tutorial-page')];
+  const grid = document.getElementById('mnGrid');
+  // which old page sits next to each new one (null = new page, empty slot on the left)
+  const oldFor = [0, null, 1, null, 2, 3, 4, 5, 6];
+  newPages.forEach((p, i) => {
+    const b = card(p, i, newPages.length);
+    b.classList.add('mn-new');
+    let a;
+    if (oldFor[i] === null) {
+      a = document.createElement('div');
+      a.className = 'mn-gap';
+      a.textContent = 'New page - not in the current manual';
+    } else {
+      a = card(oldPages[oldFor[i]], oldFor[i], oldPages.length);
+    }
+    grid.append(a, b);
+  });
+</script>
   </template>
 
   <script>

@@ -89,6 +89,7 @@
             "Fixed bug - after a map was updated, the browser could keep loading its old cached version (e.g. old starting coins) - maps are now always checked for changes when loaded"
           ]
         },
+        "FINAL TODO: Create new manual for the game",
         "FINAL TODO: Build new Adventure Map VII with new abilities"
       ]
     },
