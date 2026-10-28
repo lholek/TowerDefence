@@ -11,11 +11,12 @@ const SPECIAL_TILE_VISUAL_OFFSET = 6;
 // (see _resetEditorRng below) — so for a given tileSize/settings combo the result is
 // always byte-for-byte identical. Without this cache, every edit was redrawing all of
 // them from scratch (the Life Tree alone rolls ~1800 leaf placements), which is exactly
-// the "takes several seconds after I draw something" slowdown. Keyed by
-// `_editorAssetCacheKey`; invalidated automatically whenever tileSize or graphicsSettings
-// change (a new key just means a cache miss, not a stale hit).
+// the "takes several seconds after I draw something" slowdown. One cache per
+// tileSize/graphicsSettings combo (a new key just means a cache miss, not a stale hit),
+// all kept, so switching the editor's Graphics Low/High back and forth reuses them.
+// (A plain object - `Map` is this class's own name in this file.)
 let _editorAssetCache = null;
-let _editorAssetCacheKey = null;
+const _editorAssetCaches = {};
 
 export default class Map {
     constructor(canvas, layout, tileSize = 80, opts = {}) {
@@ -26,9 +27,8 @@ export default class Map {
         // Any change to tileSize/graphicsSettings naturally produces a different key,
         // which is treated as a cache miss further down — no explicit invalidation needed.
         const editorCacheKey = this.editorMode ? tileSize + '|' + JSON.stringify(this.graphicsSettings) : null;
-        if (this.editorMode && _editorAssetCacheKey !== editorCacheKey) {
-            _editorAssetCache = {};
-            _editorAssetCacheKey = editorCacheKey;
+        if (this.editorMode) {
+            _editorAssetCache = _editorAssetCaches[editorCacheKey] || (_editorAssetCaches[editorCacheKey] = {});
         }
 
         // If editorMode, install a deterministic PRNG for the duration of prerenders

@@ -85,6 +85,21 @@ export function resetEditorMap() {
     editorMapLayoutKey = '';
 }
 
+/**
+ * Graphics Low/High switch: keeps the current map (all its drawn layers) aside, so
+ * switching back reuses it instead of drawing every tile again - as long as the map
+ * wasn't changed meanwhile (checked in renderMap).
+ */
+export function switchEditorGraphics() {
+    if (editorMapInstance) {
+        builtMapsByGraphics.set(JSON.stringify(editorMapInstance.graphicsSettings), {
+            instance: editorMapInstance,
+            layoutJson: JSON.stringify(currentLevelData.maps[0].layout)
+        });
+    }
+    resetEditorMap();
+}
+
 // --- New Drawing State Variables ---
 let isDrawingLeft = false; // Tracks if left button (0) is held for drawing
 let isDrawingRight = false; // Tracks if right button (2) is held for erasing
@@ -105,8 +120,13 @@ const tileReachPx = (t) => /^(X|SNW)\[Tree\]$/.test(t) ? 46
 // Editor only: expensive tile drawings (fn name -> px they reach past the tile) that are
 // drawn once and then just copied (see installEditorTileCache)
 const CACHED_TILE_DRAWS = { _drawTree: 48, _drawSnowTree: 48, _drawHayField: 26 };
-let tileCacheStore = null; // see installEditorTileCache
-const TILE_CACHE_MAX_PIXELS = 24e6; // ~96 MB - fits holy ground for a whole big map + plenty of trees
+const tileCacheStores = new Map(); // see installEditorTileCache - one per graphics setting, Low/High switches keep both
+// Editor only: the last built map per graphics setting (see switchEditorGraphics)
+const builtMapsByGraphics = new Map();
+const TILE_CACHE_MAX_PIXELS = 24e6; // ~96 MB - plenty of trees / hay fields
+// Editor only: holy ground is drawn as one of these pre-drawn variants (see holyVariantsFor)
+const HOLY_VARIANTS = 16;
+let holyVariants = null;
 // Tiles whose look depends on their 4 neighbours of the same type (hasLeft / hasRight / ...)
 const isNeighbourDependent = (t) => t === 'X[Hay]' || /^(X|SNW)\[(Cut)?Tree\]$/.test(t);
 let lastPointerClientX = 0; // Last known mouse position, so the custom "loading cursor" (see
@@ -421,12 +441,12 @@ function applyTileToCurrentPosition(screenX, screenY, tileType) {
 function installEditorTileCache(m) {
     const ts = m.tileSize;
     // The drawings depend only on the position (+ neighbour flags / settings in the key),
-    // so the cache is kept across map rebuilds (undo, load, ...) while size + graphics stay.
-    const storeKey = `${ts}|${m.rows}x${m.cols}|${JSON.stringify(m.graphicsSettings)}`;
-    if (!tileCacheStore || tileCacheStore.key !== storeKey) {
-        tileCacheStore = { key: storeKey, cache: new Map(), pixels: 0, holy: null, holyDrawn: null, warmed: false };
+    // so the cache is kept across map rebuilds (undo, load, resize, ...) - one per graphics setting.
+    const storeKey = `${ts}|${JSON.stringify(m.graphicsSettings)}`;
+    if (!tileCacheStores.has(storeKey)) {
+        tileCacheStores.set(storeKey, { key: storeKey, cache: new Map(), pixels: 0 });
     }
-    const store = tileCacheStore;
+    const store = tileCacheStores.get(storeKey);
     const cache = store.cache;
     for (const [fn, pad] of Object.entries(CACHED_TILE_DRAWS)) {
         const draw = m[fn];
@@ -452,65 +472,51 @@ function installEditorTileCache(m) {
         };
     }
 
-    // Holy ground clips itself to its tile, so all of it fits one map-sized canvas,
-    // each tile drawn at its own place (hundreds of small canvases were slow in the browser).
+    // Holy ground (260 leaves per tile) is just copied from the pre-drawn variants
     const drawHoly = m._drawHolyGround;
     if (typeof drawHoly === 'function') {
-        if (!store.holy) {
-            store.holy = document.createElement('canvas');
-            store.holy.width = m.cols * ts;
-            store.holy.height = m.rows * ts;
-            store.holyDrawn = new Uint8Array(m.rows * m.cols);
-        }
-        const holy = store.holy;
-        const hctx = holy.getContext('2d');
-        const drawn = store.holyDrawn;
         m._drawHolyGround = function (ctx, x, y) {
             const r = y / ts, c = x / ts;
-            if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || r >= m.rows || c < 0 || c >= m.cols) {
-                return drawHoly.call(this, ctx, x, y);
-            }
-            if (!drawn[r * m.cols + c]) {
-                drawHoly.call(this, hctx, x, y);
-                drawn[r * m.cols + c] = 1;
-            }
-            if (ctx !== hctx) ctx.drawImage(holy, x, y, ts, ts, x, y, ts, ts);
+            if (!Number.isInteger(r) || !Number.isInteger(c)) return drawHoly.call(this, ctx, x, y);
+            const v = holyVariantsFor(this, drawHoly);
+            ctx.drawImage(v, holyVariantIndex(r, c) * ts, 0, ts, ts, x, y, ts, ts);
         };
     }
 }
 
 /**
- * Editor only: holy ground is by far the most expensive tile (260 leaves, every tile
- * different), so its first drawing is what made painting it lag. Right after the map
- * is built, pre-draw it for every map position in idle time (from the map centre out) -
- * painting then only copies ready tiles. Runs once per cache (see installEditorTileCache).
+ * Editor only: holy ground is by far the most expensive tile (260 leaves), and drawing it
+ * for every map position made the editor lag. In the game every tile is random anyway, so
+ * the editor draws HOLY_VARIANTS different tiles once into one strip and each map position
+ * always picks the same one of them (holyVariantIndex) - nothing depends on the map size,
+ * so after the start-up loading screen (preloadEditorTiles) there is never anything to draw.
  */
-function warmHolyGroundCache() {
-    const store = tileCacheStore;
-    const m = editorMapInstance;
-    if (!store || !store.holyDrawn || store.warmed || !m || m.graphicsSettings.terrain === 'low') return;
-    store.warmed = true;
+function holyVariantsFor(m, drawHoly) {
     const ts = m.tileSize;
-    const rows = m.rows, cols = m.cols;
-    const midR = rows >> 1, midC = cols >> 1;
-    const order = [];
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) order.push([r, c]);
-    }
-    order.sort((a, b) => (Math.abs(a[0] - midR) + Math.abs(a[1] - midC)) - (Math.abs(b[0] - midR) + Math.abs(b[1] - midC)));
-    const sink = document.createElement('canvas').getContext('2d'); // the copy gets drawn here, unused
-    sink.canvas.width = sink.canvas.height = 1;
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(() => fn({ timeRemaining: () => 8 }), 50));
-    let i = 0;
-    const step = (deadline) => {
-        if (tileCacheStore !== store || !editorMapInstance) return; // size / graphics changed
-        while (i < order.length && deadline.timeRemaining() > 2) {
-            const [r, c] = order[i++];
-            if (!store.holyDrawn[r * cols + c]) editorMapInstance._drawHolyGround(sink, c * ts, r * ts);
-        }
-        if (i < order.length) idle(step);
-    };
-    idle(step);
+    if (holyVariants && holyVariants.height === ts) return holyVariants;
+    holyVariants = document.createElement('canvas');
+    holyVariants.width = HOLY_VARIANTS * ts;
+    holyVariants.height = ts;
+    const ctx = holyVariants.getContext('2d');
+    // the drawing is seeded by its position, so each slot of the strip is a different tile
+    for (let i = 0; i < HOLY_VARIANTS; i++) drawHoly.call(m, ctx, i * ts, 0);
+    return holyVariants;
+}
+
+function holyVariantIndex(r, c) {
+    let h = Math.imul(r + 1, 73856093) ^ Math.imul(c + 1, 19349663);
+    h = Math.imul(h ^ (h >>> 13), 0x5bd1e995);
+    return ((h ^ (h >>> 15)) >>> 0) % HOLY_VARIANTS;
+}
+
+/**
+ * Editor start-up loading screen (see main.js): draws the holy ground variants right away,
+ * so the first holy ground tile on any map is just a copy.
+ */
+export async function preloadEditorTiles(onProgress = () => {}) {
+    const m = editorMapInstance;
+    if (m && typeof m._drawHolyGround === 'function') m._drawHolyGround(document.createElement('canvas').getContext('2d'), 0, 0);
+    onProgress(1);
 }
 
 /**
@@ -846,13 +852,20 @@ export function renderMap(layout = currentLevelData.maps[0].layout) {
     //    We use TILE_SIZE from the editor so the scale matches 1:1.
     const layoutKey = `${rows}x${cols}`;
     const isNewInstance = !editorMapInstance || editorMapLayoutKey !== layoutKey;
-    if (isNewInstance) {
+    // Same map at a graphics setting it was already drawn with (switched Low/High and back)?
+    const graphicsKey = JSON.stringify(JSON.parse(localStorage.getItem('graphicsSettings')) || {});
+    const built = isNewInstance && builtMapsByGraphics.get(graphicsKey);
+    builtMapsByGraphics.delete(graphicsKey);
+    if (built && built.layoutJson === JSON.stringify(layout)) {
+        editorMapInstance = built.instance;
+        editorMapInstance.grid = editorMapInstance.normalizeLayout(layout);
+        editorMapLayoutKey = layoutKey;
+    } else if (isNewInstance) {
         editorMapInstance = new GameMap(canvas, layout, TILE_SIZE, { editor: true });
         // The grass tile the grass layer was just drawn with (the block below swaps
         // grassVariants) - patchEditorMapLayers() redraws grass with it.
         editorMapInstance.editorLayerGrass = editorMapInstance.grassVariants && editorMapInstance.grassVariants[0];
         installEditorTileCache(editorMapInstance);
-        warmHolyGroundCache();
 
         // GameMap registers its own drag/zoom listeners on the canvas in its constructor.
         // The editor has its own handlers for these, so we must neutralise the Map ones

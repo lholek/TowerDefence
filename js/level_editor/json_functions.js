@@ -106,6 +106,39 @@ export function showCursorWarning(message, event) {
  */
 export function setModuleReferences(refs) {
     modules = refs;
+    watchEditorVisibility();
+}
+
+// The Final JSON textarea sits far below the map. Writing the whole map JSON into it makes
+// the browser lay out all that text again - on a big map that was a visible hitch after
+// every brush stroke, even with the textarea off screen. So while it's off screen the new
+// text only waits here, and is written as soon as it scrolls near the view or gets focus.
+let pendingEditorText = null;
+let editorOnScreen = true; // until the observer's first report
+
+function watchEditorVisibility() {
+    const ed = modules.editor;
+    if (!ed || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(entries => {
+        editorOnScreen = entries[entries.length - 1].isIntersecting;
+        if (editorOnScreen) flushEditorText();
+    }, { rootMargin: '600px 0px' }).observe(ed);
+    ed.addEventListener('focus', flushEditorText);
+}
+
+function setEditorText(text) {
+    if (editorOnScreen || document.activeElement === modules.editor) {
+        pendingEditorText = null;
+        modules.editor.value = text;
+    } else {
+        pendingEditorText = text;
+    }
+}
+
+function flushEditorText() {
+    if (pendingEditorText === null) return;
+    modules.editor.value = pendingEditorText;
+    pendingEditorText = null;
 }
 
 /**
@@ -169,8 +202,7 @@ export function modifyJson(modifyFn, successMessage, historySection = null, { re
     currentLevelData.maps[0].description[0]["abilites"] = currentLevelData.maps[0].abilities.map(x=>x.name+x.ui.icon).join(", ");
 
     // 3. Re-stringify using the custom compact formatter and update the textarea
-    const formattedJson = formatCompactLayout(currentLevelData);
-    modules.editor.value = formattedJson;
+    setEditorText(formatCompactLayout(currentLevelData));
     modules.setStatus(successMessage);
     
     // 4. Rerender all components after modification (especially important if map changed)
@@ -319,6 +351,7 @@ export function updateMapFromEditor() {
  */
 export function copyFormattedJson() {
     const formattedJson = formatCompactLayout(currentLevelData);
+    pendingEditorText = null; // written right now, an older waiting text must not win
     modules.editor.value = formattedJson;
 
     if (navigator.clipboard && window.isSecureContext) {
@@ -424,6 +457,7 @@ export function updateUIFromLoadedData() {
 
     // 5. JSON Editor Update (to reflect the new, clean data structure)
     if (modules.editor && modules.editor.value !== undefined) {
+        pendingEditorText = null;
         modules.editor.value = formatCompactLayout(currentLevelData);
     }
 

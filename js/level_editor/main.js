@@ -9,6 +9,7 @@ import * as saveSlots from './editor_save_slots.js';
 import { attachThousandsFormatting, parseThousands } from './number_format.js';
 import { initJsonSteppers } from './JsonStepper.js';
 import * as mapPreview from './editor_map_preview.js';
+import { setLoaderProgress, loaderStep, hideEditorLoader } from './editor_loader.js';
 
 // Global utility function
 function setStatus(message, isError = false) {
@@ -34,8 +35,19 @@ window.app = {
 };
 
 // --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-    
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await initEditor();
+    } finally {
+        hideEditorLoader(); // even if something failed, never leave the editor hidden
+    }
+});
+
+// The start is split into loading-screen steps with a frame in between, so the bar can
+// move and the page is never frozen for long in one go.
+async function initEditor() {
+    await loaderStep(0.05, 'Preparing the editor');
+
     // 1. Get DOM element references
     const editor = document.getElementById('jsonEditor');
     const canvas = document.getElementById('mapCanvas');
@@ -82,21 +94,28 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.addEventListener('input', jsonFunctions.updateMapFromEditor);
 
     // 5. Initial map render and interaction setup
+    await loaderStep(0.15, 'Drawing the map');
     mapEditor.renderMap(levelData.currentLevelData.maps[0].layout);
     mapEditor.setupMapInteractions();
 
+    await loaderStep(0.4, 'Loading tiles');
+    await mapEditor.preloadEditorTiles(p => setLoaderProgress(0.4 + p * 0.3));
+
     // --- MAP PREVIEW PANEL SETUP ---
+    await loaderStep(0.7, 'Loading map preview and towers');
     mapPreview.renderMapPreview();
 
 
     // --- TOWER EDITOR SETUP ---
-    initTowerEditor(); 
+    initTowerEditor();
     towerEditor.renderTowerRepeater(levelData.currentLevelData.maps[0].towerTypes);
 
     // 3. WAVE EDITOR SETUP ---
+    await loaderStep(0.8, 'Loading waves');
     initWaveEditor({ setStatus });
 
     // --- ABILITY EDITOR SETUP ---
+    await loaderStep(0.9, 'Loading abilities');
     initAbilityEditor();
     abilityEditor.renderAbilityRepeater(levelData.currentLevelData.maps[0].abilities);
 
@@ -244,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             current[key] = quality;
         });
         localStorage.setItem('graphicsSettings', JSON.stringify(current));
-        mapEditor.resetEditorMap();
+        mapEditor.switchEditorGraphics();
         mapEditor.renderMap(levelData.currentLevelData.maps[0].layout);
     };
 
@@ -266,4 +285,4 @@ document.addEventListener('DOMContentLoaded', () => {
             saveEditorBackground(theme);
         });
     }
-});
+}

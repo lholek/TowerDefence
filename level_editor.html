@@ -16,7 +16,16 @@
     <link rel="stylesheet" href="css/backgrounds.css" />
     <link rel="stylesheet" href="css/level_editor/JsonStepper.css" />
 </head>
-<body class="editor-body">
+<body class="editor-body editor-loading">
+    <!-- Loading screen: shown right away (plain HTML/CSS), hidden by js/level_editor/main.js
+         once the map, tiles and all editor panels are ready -->
+    <div id="editorLoader" class="editor-loader" role="status" aria-live="polite">
+        <div class="editor-loader-box">
+            <p class="editor-loader-title"><span class="editor-loader-title-text">Editor is loading</span><span class="editor-loader-dots"><i></i><i></i><i></i></span></p>
+            <div class="editor-loader-bar"><div id="editorLoaderFill" class="editor-loader-fill"></div></div>
+            <p id="editorLoaderStep" class="editor-loader-step">Starting</p>
+        </div>
+    </div>
     <div class="save-slots" id="saveSlotsPanel">
         <button id="saveSlotsToggle" class="panel-toggle-tab" title="Show/Hide Save Slots">💾</button>
         <h3 class="panel-title">Save Slots</h3>

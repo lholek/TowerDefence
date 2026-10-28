@@ -1,0 +1,133 @@
+{
+  "maps": [
+    {
+      "name": "Adventure Map VII (Ashen Caldera)",
+      "startingCoins": 100,
+      "startingLifes": 5,
+      "extraLife": true,
+      "extraLifePrices": [
+        10
+      ],
+      "description": [
+        {
+          "descriptionText": "7th Adventure map\nThe old volcano has awoken. Its portals spit enemies down the ash fields and over the lava rivers towards our farmland. Guard both Life Trees - the central portal at the foot of the volcano has the shortest road of all.",
+          "level count": 1,
+          "difficulty": "⭐⭐⭐⭐⭐",
+          "map_size": "33x25",
+          "tower types": 1,
+          "abilites": "Lava Floor🌋"
+        }
+      ],
+      "tileSize": 80,
+      "layout": [
+              ["M","M","M","M","M","M","M","M","M","M","M","M","M","M","M","LAVA","LAVA","LAVA","M","M","M","M","M","M","M","M","M","M","M","M","M","M","M"],
+              ["X[Dirt]","X[Dirt]","BRG","BRG","BRG","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","M","M","M","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","BRG","BRG","BRG","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","BRG","S1","BRG","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","M","M","M","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","BRG","S3","BRG","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","M","M","M","LAVA","LAVA","LAVA","LAVA","LAVA","M","M","M","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","O","O","O","X[Dirt]","X[Dirt]","M","M","M","LAVA","LAVA","LAVA","M","M","M","BRG","BRG","O","O","O","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","BRG","LAVA","M","M","M","M","M","M","M","M","M","LAVA","BRG","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","X[Dirt]","BRG","O","LAVA","LAVA","M","M","M","M","M","M","M","M","M","LAVA","LAVA","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","O","O","O","O","BRG","X[Dirt]","O","LAVA","BRG","BRG","X[Dirt]","X[Dirt]","BRG","BRG","BRG","X[Dirt]","X[Dirt]","X[Dirt]","BRG","LAVA","O","BRG","BRG","O","O","O","O","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","LAVA","O","X[Dirt]","BRG","X[Dirt]","X[Dirt]","X[Dirt]","BRG","S2","BRG","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","BRG","O","LAVA","X[Dirt]","BRG","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","BRG","LAVA","LAVA","O","BRG","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","O","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","BRG","O","LAVA","LAVA","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]","X[Dirt]"],
+              ["X[Dirt]","X[Dirt]","X","X[Dirt]","O","O","O","O","O","O","X","X[Dirt]","X","X","X","X[Dirt]","O","X[Dirt]","X[Dirt]","X","X","X[Dirt]","X","O","O","O","O","O","O","X[Dirt]","X[Dirt]","X","X"],
+              ["X","X","X","X","O","X","LAVA","BRG","X[Dirt]","X","X","X","X","X","X","X","O","X[CutTree]","X","X","X","X","X","X[Dirt]","X[Dirt]","X","LAVA","X[Dirt]","O","X","X","X","X"],
+              ["X","X","X","BRG","O","LAVA","LAVA","X","X","X","X","X","X","X[CutTree]","X","X","O","X","X","X","X[CutTree]","X","X","X","X","X","LAVA","LAVA","O","BRG","X","X","X"],
+              ["X","X","BRG","X","O","LAVA","BRG","BRG","X","X","X","X","X","X","O","O","O","O","O","X","X","X","X","X","X","X","X","LAVA","O","BRG","X","X","X"],
+              ["X","X","BRG","LAVA","O","BRG","BRG","X","X","X","X","X","X[Bush]","X","O","X","X","X","O","X","X","X[Log-1]","X","X","X","X","X","X","O","LAVA","X","X","X"],
+              ["X","X","X","X","O","O","O","O","O","O","X","X","X","X","O","X","X","X","O","X","X","X","X","O","O","O","O","O","O","BRG","X","X","X"],
+              ["X[Tree]","X","X","X","X","X","X","X[Hay]","X[Hay]","O","X","O","O","O","O","X","X","X","O","O","O","O","X","O","X[Hay]","X[Hay]","X","X","X","X","X","X[Tree]","X[Tree]"],
+              ["X[Tree]","X[Tree]","X[Tree]","X","X","X","X","X","X[Hay]","O","X","O","X","X","X","X","X","X","X","X","X","O","X","O","X[Hay]","X","X","X","X","X","X[Tree]","X[Tree]","X[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","X","X","X","X","X","O","O","O","X","X","W","W","W","W","W","X","X","O","O","O","X","X","X","X","X","X","X","X[Tree]","X[Tree]"],
+              ["X[Tree]","X","X","X","X","X","X","X[Well]","X","O","X","X","X","W","W","W","W","W","W","W","X","X","X","O","X","X[Bush]","X","X","X","X","X","X","X[Tree]"],
+              ["X[Tree]","X","X","X","O","O","O","O","O","O","X","X","W","W","W","W[Rock-1]","W","W","W","W","W","X","X","O","O","O","O","O","O","X","X","X","X[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","O","X","X","X","X","X","X","X","W","W","W[Rock-3]","W","W","W","W","W","W","X","X","X","X","X","X","X","O","X","X","X","X[Tree]"],
+              ["X[Tree]","X[Tree]","X","X","E1","X","X","X","X","X","X[Log-2]","X","W","W","W","W","W","W","W[Rock-1]","W","W","X","X[Bush]","X","X","X","X","X","E2","X","X","X[Tree]","X[Tree]"],
+              ["X[Tree]","X","X[Tree]","X","X[Tree]","X[Tree]","X","X[Tree]","X[Tree]","X","X","X","W","W","W","W","W","W","W","W","W","X","X","X","X[Tree]","X","X","X","X","X[Tree]","X[Tree]","X[Tree]","X[Tree]"],
+              ["X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","W","W","W","W","W","W","W","W","W","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]","X[Tree]"]
+          ],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Lava Floor",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 7,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 10000,
+          "effectDuration": 5000,
+          "color": "rgba(245, 164, 66, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        }
+      ],
+      "towerTypes": {
+        "001": {
+          "name": "Basic Tower",
+          "price": 1,
+          "damage": 50,
+          "fireRate": 400,
+          "range": 2500,
+          "color": "#468bb0",
+          "sellPrice": 1,
+          "speed": 2
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S1E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S3E2",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S2E1",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 4000
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 100,
+              "speed": 1,
+              "path": "S2E2",
+              "interval": 1000,
+              "coinReward": 1,
+              "firstDelay": 4000
+            }
+          ]
+        }
+      ],
+      "enemyEffects": []
+    }
+  ]
+}
