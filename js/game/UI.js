@@ -294,7 +294,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Saving differt themes ---
-  const savedBg = localStorage.getItem('game_background') || 'sky'; // 'sky' is the fallback
+  let savedBg = localStorage.getItem('game_background') || 'day'; // 'day' is the fallback
+  // old saved names -> new ones (Beta 1.1 renamed the backgrounds; 'sea' was the old Midnight Sky)
+  const renamedBg = { sky: 'day', sea: 'midnight', nebula: 'galactic' };
+  if (renamedBg[savedBg]) {
+    savedBg = renamedBg[savedBg];
+    localStorage.setItem('game_background', savedBg);
+  }
+  if (bgSelect && ![...bgSelect.options].some(o => o.value === savedBg)) savedBg = 'day';
   if (bgSelect) {
     bgSelect.value = savedBg;
   }
@@ -460,7 +467,7 @@ function applyBackground(type) {
   if (!clouds) return;
 
   // Odstraní všechny předchozí třídy pozadí
-  clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
+  [...clouds.classList].filter(c => c.startsWith('bg-')).forEach(c => clouds.classList.remove(c));
 
   void clouds.offsetWidth; // Restart animací
   clouds.classList.add(`bg-${type}`);

@@ -220,12 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadEditorBackground = () => {
-        return localStorage.getItem(editorBackgroundKey) || 'sky';
+        let theme = localStorage.getItem(editorBackgroundKey) || 'day';
+        // old saved names -> the new backgrounds shared with the game (css/backgrounds.css)
+        const renamedBg = { sky: 'day', sea: 'midnight', nebula: 'galactic' };
+        if (renamedBg[theme]) {
+            theme = renamedBg[theme];
+            saveEditorBackground(theme);
+        }
+        if (editorBgSelect && ![...editorBgSelect.options].some(o => o.value === theme)) theme = 'day';
+        return theme;
     };
 
     const applyEditorBackground = (theme) => {
         if (!clouds) return;
-        clouds.classList.remove('bg-sky', 'bg-sea', 'bg-nebula');
+        [...clouds.classList].filter(c => c.startsWith('bg-')).forEach(c => clouds.classList.remove(c));
         void clouds.offsetWidth;
         clouds.classList.add(`bg-${theme}`);
     };

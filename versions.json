@@ -28,7 +28,8 @@
           "The wave header now shows the wave's total enemy count, coins and enemy health - Enemies (⭐ Count: … | Coins: 🪙 … | ❤️ Health: …)",
           "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill), the section headings (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON) got the same fiery style",
           "The enemy group's Path field now gets a red border when the path doesn't exist on the map (e.g. a half-typed 'S1E')",
-          "Painting the map is now much faster - tiles appear right away while you draw, with no waiting after releasing the mouse"
+          "Painting the map is now much faster - tiles appear right away while you draw, with no waiting after releasing the mouse",
+          "The map now uses the same backgrounds as the game - Day Sky, Midnight Sky, Galactic Sky and Stormy Sky (the old Sea style is gone)"
           ]
         },
         {
@@ -46,10 +47,12 @@
             "Compact layout for smaller screens (up to 900px tall), so the whole game still fits without scrolling",
             "The game map now has rounded corners like the rest of the UI",
             "Victory / Defeat stats - clearer labels (Final Coins, Final Lives, Total Damage, Coins Earned, Coins Spent, Towers Built, Towers Sold, Abilities Used) and new icons",
-            "TODO: Upgraded visuals of 'Day Sky(Default)' background",
-            "TODO: Add new 'Stormy Sky' background",
-            "TODO: Changed name of new background 'The Nebula' to 'Galactic Sky'",
-            "TODO: Changed name of new background 'Sky (Default)' to 'Day Sky(Default)'"
+            "Upgraded 'Day Sky (Default)' background (formerly 'Sky (Default)') with realistic drifting clouds in the original sky colors",
+            "Upgraded 'Midnight Sky' background - a full moon behind a silver-lined cloud, the Milky Way, twinkling stars and drifting moonlit clouds",
+            "New 'Stormy Sky' background - dark rolling storm clouds with a lightning strike now and then",
+            "Renamed background 'The Nebula' to 'Galactic Sky'",
+            "Your chosen background is kept after the renaming - it switches to its new name automatically",
+            "With 'UI Effects' set to Low the backgrounds stand still and the lightning is off"
           ]
         },
         {
