@@ -3714,13 +3714,16 @@
   .mn-grid{
     display:grid;
     grid-template-columns:650px 750px;
-    gap:28px 46px;
+    gap:40px 110px; /* wide enough that the arrows of both columns never meet */
     align-items:start; /* every card only as tall as its page, like in the game */
     overflow-x:auto;
+    padding:0 24px; /* room for the prev / next arrows that stick out of the cards */
   }
   .mn-grid .tutorial-card{ box-sizing:border-box; max-width:none; }
   /* B) a bit wider than the old one */
   .mn-grid .tutorial-card.mn-new{ width:750px; }
+  /* more room between the side arrows (22px inside the card) and the text */
+  .mn-grid .tutorial-card.mn-new{ padding-left:46px; padding-right:46px; }
   .mn-source{ display:none; }
   /* empty slot in the A column next to a page that only the new manual has */
   .mn-gap{
@@ -3758,19 +3761,60 @@
   .guide-list.mn-plain-list{ grid-template-columns:max-content 1fr; }
   .mn-icon-list li, .mn-plain-list li, .mn-icon-list .mn-row{ display:contents; }
   .mn-icon-list .mn-ico{ text-align:center; }
+  /* SVG icons in a list: no title-style gap on the right, so they centre like the emoji */
+  .mn-icon-list .mn-ico .mn-h3-ico{ margin-right:0; }
   .mn-icon-list .mn-label, .mn-plain-list .mn-label{ padding-right:.8em; } /* space before the text column */
+
+  /* Step 1: the game loop as 3 numbered steps - gold number badge like the hotkey
+     number on the cards */
+  .mn-steps{
+    list-style:none;
+    margin:14px 0 16px;
+    padding:12px 14px;
+    display:grid;
+    row-gap:10px;
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.18);
+    border-radius:8px;
+    line-height:1.4;
+  }
+  .mn-steps li{ display:flex; align-items:baseline; gap:10px; }
+  .mn-step{
+    flex:0 0 22px;
+    height:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    align-self:center;
+    border-radius:5px;
+    background:linear-gradient(180deg, #ffe7a3, #c58a2e);
+    border:1px solid #4a2c0c;
+    color:#3a2208;
+    font-weight:bold;
+    font-size:13px;
+  }
 
   /* the tower icon from the Towers / Abilities switcher, in place of the bow */
   .mn-h3-ico{ width:20px; height:20px; vertical-align:-4px; margin-right:4px; }
 
-  /* Controls: mouse icons inside the key badges (left / right / wheel highlighted) */
+  /* Controls: every badge in a column as wide as the widest one, so they line up */
+  .mn-controls .key-cap{ justify-self:stretch; }
+
+  /* mouse icons inside the key badges (left / right / wheel highlighted) - pinned
+     to the same spot on the left, the text centred in the space next to it */
+  .key-cap.mn-mouse-cap{ padding-left:40px; padding-right:12px; }
   .key-cap .mn-mouse{
+    position:absolute;
+    left:12px;
+    top:50%;
     width:26px;
     height:26px;
-    flex:0 0 26px;
-    margin:0 6px 0 -6px;
+    transform:translateY(-50%);
     filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
   }
+
+  /* keyboard icon in the Controls title - same look as the mouse icons */
+  .mn-h3-ico.mn-keyboard{ width:24px; height:24px; vertical-align:-6px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
 
   /* Global / Targeted tag next to the ability name */
@@ -3819,6 +3863,15 @@
     <use href="#mn-mouse-body"/>
     <rect x="8.6" y="4.2" width="2.8" height="4.4" rx="1.4" fill="#ffb347"/>
     <path d="M10 1.2v1.4M10 22.8v-1.4" stroke="#ffb347" stroke-width="1.4" stroke-linecap="round"/>
+  </symbol>
+  <!-- keyboard for the Controls title: same body / outline colours, space bar glows orange -->
+  <symbol id="mn-keyboard" viewBox="0 0 24 24">
+    <rect x="1.75" y="5.75" width="20.5" height="12.5" rx="2.6" fill="rgba(30,12,2,.6)" stroke="#f3e5ab" stroke-width="1.5"/>
+    <g fill="#f3e5ab">
+      <rect x="4.2" y="8.3" width="2" height="2" rx=".5"/><rect x="7.4" y="8.3" width="2" height="2" rx=".5"/><rect x="10.6" y="8.3" width="2" height="2" rx=".5"/><rect x="13.8" y="8.3" width="2" height="2" rx=".5"/><rect x="17" y="8.3" width="2.8" height="2" rx=".5"/>
+      <rect x="5.4" y="11.3" width="2" height="2" rx=".5"/><rect x="8.6" y="11.3" width="2" height="2" rx=".5"/><rect x="11.8" y="11.3" width="2" height="2" rx=".5"/><rect x="15" y="11.3" width="2" height="2" rx=".5"/>
+    </g>
+    <rect x="7.4" y="14.4" width="9.2" height="1.9" rx=".9" fill="#ffb347"/>
   </symbol>
   <symbol id="mn-mouse-scroll" viewBox="0 0 24 24">
     <use href="#mn-mouse-body"/>
@@ -3967,31 +4020,35 @@
 <div class="mn-source" id="mnNew">
         <div class="tutorial-page">
             <h3>🌳 The Core Mission</h3>
-            <p>Protect the <strong>Tree of Life</strong>. Enemies emerge from Portals and march toward the Trees.</p>
+            <p>Protect the <strong>Trees of Life</strong>. Enemies come out of the Portals and march along the road toward them.</p>
+            <ol class="mn-steps">
+                <li><span class="mn-step">1</span><span><span class="mn-label">Pick a tower</span> - click a tower card at the bottom of the screen (or press <strong>1 - 9</strong>).</span></li>
+                <li><span class="mn-step">2</span><span><span class="mn-label">Build it</span> - click free ground next to the road. The tower shoots every enemy in its range.</span></li>
+                <li><span class="mn-step">3</span><span><span class="mn-label">Grow</span> - every kill gives you Gold for more towers. When it gets tough, use an <strong>Ability</strong>.</span></li>
+            </ol>
             <ul class="guide-list mn-icon-list">
-                <li><span class="mn-ico">❤️</span><span class="mn-row"><span class="mn-label">Lives</span><span>Every enemy that escapes takes your Lives - at 0 the game is over. Enemies that deal more than 1 show a damage indicator (⚔️).</span></span></li>
-                <li><span class="mn-ico">💖</span><span class="mn-row"><span class="mn-label">Healers</span><span>Some enemies carry a heal indicator (❤️) - when they escape, you <strong>gain</strong> Lives instead.</span></span></li>
-                <li><span class="mn-ico">🪙</span><span class="mn-row"><span class="mn-label">Gold</span><span>Earned by destroying enemies.</span></span></li>
-                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG2)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span><span class="mn-row"><span class="mn-label">Strategy</span><span>Place towers to defend the trees.</span></span></li>
-                <li><span class="mn-ico">🌋</span><span class="mn-row"><span class="mn-label">Strategy</span><span>Use abilities to defend the trees.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnLivesG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#mnLivesG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg></span><span class="mn-row"><span class="mn-label">Lives</span><span>Every enemy that reaches a Tree takes your Lives - 1, or the number on its damage indicator (⚔️). At 0 Lives the game is over.</span></span></li>
+                <li><span class="mn-ico">❤️</span><span class="mn-row"><span class="mn-label">Healers</span><span>Enemies with a heal indicator (❤️) <strong>give</strong> you Lives when they reach a Tree instead of taking them.</span></span></li>
+                <li><span class="mn-ico">🪙</span><span class="mn-row"><span class="mn-label">Gold</span><span>Earned by destroying enemies, spent on towers.</span></span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Tip:</strong> An indicator showing "+99" is capped - the real value (it can be 1,000 or more) is written to the Logs as soon as such an enemy appears, and the Log button shakes a little.
-            </div>
         </div>
 
         <div class="tutorial-page">
-            <h3>🧭 Game Flow</h3>
+            <h3><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnCompassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnCompassG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3.4a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2z"/><path fill="url(#mnCompassG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M16 8 13.2 13.2 8 16 10.8 10.8z"/><path fill="#7a4a12" d="M8 16 10.8 10.8 13.2 13.2z"/><circle cx="12" cy="12" r="1.1" fill="#4a2c0c"/></svg> Game Flow</h3>
             <p>How a map is played from the first enemy to the last:</p>
             <ul class="guide-list mn-icon-list">
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnBannerG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnBannerG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2.5h2V22H5zM7 3.5h12.5l-3.2 4.2 3.2 4.3H7z"/><path fill="#7a4a12" d="M10 6.2h4.5L13 7.7l1.5 1.6H10z"/></svg></span><span class="mn-row"><span class="mn-label">Waves</span><span>Every map is a series of waves. The next wave starts on its own as soon as every enemy of the current one is gone - the progress bar at the top shows how far the wave is.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnCrownG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnCrownG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 7.5l4.6 4L12 4l4.4 7.5L21 7.5 19.2 18H4.8zM4.8 19.2h14.4V21H4.8z"/><circle cx="12" cy="13.6" r="1.4" fill="#b3261e" stroke="#4a0d08" stroke-width=".5"/><circle cx="7.6" cy="14.6" r=".9" fill="#7a4a12"/><circle cx="16.4" cy="14.6" r=".9" fill="#7a4a12"/></svg></span><span class="mn-row"><span class="mn-label">Victory</span><span>Survive every wave with at least one ❤️ Life left. If your Lives drop to 0, it's a Defeat.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnHeartG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient></defs><path fill="url(#mnHeartG)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg></span><span class="mn-row"><span class="mn-label">Extra Life</span><span>The <strong>+1 Life</strong> button next to Towers / Abilities (or the <strong>E</strong> key) buys a life for gold. Every purchase costs more - and some maps don't offer it at all.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnSpeedG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnSpeedG)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M2.5 5.5l9 6.5-9 6.5zM12 5.5l9 6.5-9 6.5z"/></svg></span><span class="mn-row"><span class="mn-label">Game Speed</span><span>The Speed buttons in the top bar run the game from 1x up to 10x.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnScrollG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e7c1"/><stop offset="1" stop-color="#c9a76a"/></linearGradient></defs><path fill="url(#mnScrollG)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#7a5a2a" stroke-width="1.2" d="M8 8h6M8 11h6M8 14h4"/></svg></span><span class="mn-row"><span class="mn-label">Log</span><span>The <strong>Log</strong> button in the top bar lists everything that happened - every wave, towers built and sold, abilities used, Lives bought and the real damage / heal of enemies with an indicator.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG3)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span><span class="mn-row"><span class="mn-label">Tower Cards</span><span>Every card shows its Price, Sell value and DPS - hover it to see all six stats. The number in its corner is its 1 - 9 hotkey.</span></span></li>
             </ul>
             <div class="tip-box">
                 <strong>💡 Tip:</strong> Hold <strong>SHIFT</strong> while placing a tower to see its range before you build it.
+            </div>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> An indicator showing "+99" is capped - the real value (it can be 1,000 or more) is written to the Logs as soon as such an enemy appears, and the Log button shakes a little.
             </div>
         </div>
 
@@ -4011,9 +4068,26 @@
             </ul>
             <div class="tip-box">
                 Left-click to <strong>Build</strong> the selected tower on free ground - grass, snow, sand or dirt (not on the road, water, mountains, lava or objects).
+                Click the selected card again (or press its number) to <strong>cancel</strong> the selection.
             </div>
             <div class="tip-box">
                 Right-click a tower to <strong>Dismantle</strong> it and recover some gold.
+            </div>
+        </div>
+
+        <div class="tutorial-page">
+            <h3><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnSkullG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnSkullG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></svg> Enemies</h3>
+            <p>Every map sends its own mix of enemies - they differ in health, speed and the gold they drop.</p>
+            <ul class="guide-list mn-icon-list">
+                <li><span class="mn-ico">🩸</span><span class="mn-row"><span class="mn-label">Health</span><span>The bar above every enemy shows how much health it has left - yellow above half, red below.</span></span></li>
+                <li><span class="mn-ico">🥾</span><span class="mn-row"><span class="mn-label">Speed</span><span>Fast enemies spend less time in your towers' range - they need more towers or a faster Fire Rate.</span></span></li>
+                <li><span class="mn-ico">🪙</span><span class="mn-row"><span class="mn-label">Reward</span><span>Every enemy type drops its own amount of Gold when destroyed.</span></span></li>
+                <li><span class="mn-ico">⚔️</span><span class="mn-row"><span class="mn-label">Damage</span><span>An enemy with a damage indicator takes that many Lives if it reaches a Tree.</span></span></li>
+                <li><span class="mn-ico">❤️</span><span class="mn-row"><span class="mn-label">Healers</span><span>An enemy with a heal indicator gives you that many Lives when it reaches a Tree.</span></span></li>
+                <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnSkullG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnSkullG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></svg></span><span class="mn-row"><span class="mn-label">Bosses</span><span>Some maps have bosses - tough enemies with lots of health. On some maps the screen shakes when a boss enters. Get your strongest towers and abilities ready!</span></span></li>
+            </ul>
+            <div class="tip-box">
+                <strong>💡 Tip:</strong> Mix your towers - hard single hits for enemies with lots of health, a fast Fire Rate for quick ones.
             </div>
         </div>
 
@@ -4022,7 +4096,7 @@
             <p>Special powers granted by the Elder Mages - every map gives you its own set.</p>
             <ul class="guide-list mn-icon-list">
                 <li><span class="mn-ico">🎯</span><span class="mn-row"><span class="mn-label">Targeted</span><span>Select the card, then click a road tile - the effect covers a stretch of road around it (the card shows how many tiles). Click the card again to cancel.</span></span></li>
-                <li><span class="mn-ico">🌍</span><span class="mn-row"><span class="mn-label">Global</span><span>Starts the moment you click the card and affects the whole map.</span></span></li>
+                <li><span class="mn-ico">🗺️</span><span class="mn-row"><span class="mn-label">Global</span><span>Starts the moment you click the card and affects the whole map.</span></span></li>
                 <li><span class="mn-ico">🕒</span><span class="mn-row"><span class="mn-label">Duration</span><span>How long the effect lasts. While it runs, the card shows <strong>Active</strong> with a shrinking bar.</span></span></li>
                 <li><span class="mn-ico">⏳</span><span class="mn-row"><span class="mn-label">Cooldown</span><span>How long until you can use it again. It starts the moment you use the ability - the duration counts into it - and the dimmed card counts down.</span></span></li>
             </ul>
@@ -4080,22 +4154,22 @@
         </div>
 
         <div class="tutorial-page">
-            <h3>⌨️ Controls</h3>
-            <div class="hotkey-grid-compact">
-                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-wheel"/></svg>Wheel Press</span> <span>Move Camera</span>
+            <h3><svg class="mn-h3-ico mn-keyboard" aria-hidden="true"><use href="#mn-keyboard"/></svg> Controls</h3>
+            <div class="hotkey-grid-compact mn-controls">
+                <span class="key-cap mn-mouse-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-wheel"/></svg>Wheel Press</span> <span>Move Camera</span>
                 <span class="key-cap">SHIFT</span> <span>Show Tower's Range</span>
 
-                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-scroll"/></svg>Wheel Scroll</span> <span>Zoom In / Out</span>
+                <span class="key-cap mn-mouse-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-scroll"/></svg>Wheel Scroll</span> <span>Zoom In / Out</span>
                 <span class="key-cap mn-combo-cap"><kbd>SHIFT</kbd><i>+</i><kbd>A</kbd></span> <span>All Tower Ranges</span>
 
-                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-left"/></svg>Left Click</span> <span>Construct Tower</span>
+                <span class="key-cap mn-mouse-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-left"/></svg>Left Click</span> <span>Construct Tower</span>
                 <span class="key-cap mn-combo-cap"><kbd>P</kbd><i>/</i><kbd>ESC</kbd></span> <span>Pause Game</span>
 
-                <span class="key-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-right"/></svg>Right Click</span> <span>Dismantle Tower</span>
+                <span class="key-cap mn-mouse-cap"><svg class="mn-mouse" aria-hidden="true"><use href="#mn-mouse-right"/></svg>Right Click</span> <span>Dismantle Tower</span>
                 <span class="key-cap">E</span> <span>Buy Extra Life</span>
 
                 <span class="key-cap mn-combo-cap"><kbd>T</kbd><i>/</i><kbd>A</kbd></span> <span>Switch Towers / Abilities</span>
-                <span class="key-cap">1 - 9</span> <span>Quick select Towers / Abilities</span>
+                <span class="key-cap">1 - 9</span> <span>Select Tower / Ability - press again to cancel</span>
             </div>
             <div class="tip-box text-center" style="margin-top: 20px; border: none; background: rgba(76, 175, 80, 0.2);">
                 <strong>Enjoy the Game! <br>Good luck, Guardian!</strong>
@@ -4112,10 +4186,20 @@
         <div class="page-indicator text-center" style="font-size: 0.8em; opacity: 0.7;">Step ${i + 1} of ${n}</div>
         <hr class="separator">
     </div>`;
+  // Prev / next arrows - same markup as html/tutorial.html. Hidden on the first /
+  // last page like in the game; here they scroll to that page's card in the same column.
+  const arrows = (i, n) => `
+    <button class="tutorial-arrow tutorial-arrow-left" data-go="${i - 1}" title="Previous (← / A)"${i === 0 ? ' hidden' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tutorial-arrow tutorial-arrow-right" data-go="${i + 1}" title="Next (→ / D)"${i === n - 1 ? ' hidden' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 L17 12 L9 20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>`;
   const card = (page, i, n) => {
     const c = document.createElement('div');
     c.className = 'tutorial-card';
-    c.innerHTML = header(i, n);
+    c.dataset.page = i;
+    c.innerHTML = header(i, n) + arrows(i, n);
     const p = page.cloneNode(true);
     p.classList.remove('d-none');
     p.removeAttribute('id');
@@ -4126,7 +4210,7 @@
   const newPages = [...document.querySelectorAll('#mnNew > .tutorial-page')];
   const grid = document.getElementById('mnGrid');
   // which old page sits next to each new one (null = new page, empty slot on the left)
-  const oldFor = [0, null, 1, null, 2, 3, 4, 5, 6];
+  const oldFor = [0, null, 1, null, null, 2, 3, 4, 5, 6];
   newPages.forEach((p, i) => {
     const b = card(p, i, newPages.length);
     b.classList.add('mn-new');
@@ -4139,6 +4223,15 @@
       a = card(oldPages[oldFor[i]], oldFor[i], oldPages.length);
     }
     grid.append(a, b);
+  });
+
+  // arrow click -> scroll to the previous / next card of the same column
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('.tutorial-arrow');
+    if (!btn) return;
+    const isNew = btn.closest('.tutorial-card').classList.contains('mn-new');
+    const target = grid.querySelector(`.tutorial-card${isNew ? '.mn-new' : ':not(.mn-new)'}[data-page="${btn.dataset.go}"]`);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 </script>
   </template>
