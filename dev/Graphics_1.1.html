@@ -3817,6 +3817,17 @@
   .mn-h3-ico.mn-keyboard{ width:24px; height:24px; vertical-align:-6px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
 
+  /* Tip / Hint / Important boxes: the icon in its own column, so a wrapped line
+     starts under the text, not under the icon */
+  .tip-box.mn-tip{ display:flex; align-items:baseline; gap:.4em; }
+  .mn-tip-ico{ flex:0 0 auto; }
+
+  /* "Important" box - the tip box in red, for rules the player must know (stacking) */
+  .tip-box.mn-important{
+    background:rgba(185,28,28,.2);
+    border-left-color:#ef4444;
+  }
+
   /* Global / Targeted tag next to the ability name */
   .mn-type{
     display:inline-block;
@@ -4020,10 +4031,10 @@
 <div class="mn-source" id="mnNew">
         <div class="tutorial-page">
             <h3>🌳 The Core Mission</h3>
-            <p>Protect the <strong>Trees of Life</strong>. Enemies come out of the Portals and march along the road toward them.</p>
+            <p>Protect the <strong>Trees of Life</strong>. Enemies come out of the Portals and march along the path toward them.</p>
             <ol class="mn-steps">
                 <li><span class="mn-step">1</span><span><span class="mn-label">Pick a tower</span> - click a tower card at the bottom of the screen (or press <strong>1 - 9</strong>).</span></li>
-                <li><span class="mn-step">2</span><span><span class="mn-label">Build it</span> - click free ground next to the road. The tower shoots every enemy in its range.</span></li>
+                <li><span class="mn-step">2</span><span><span class="mn-label">Build it</span> - click free ground next to the path. The tower shoots every enemy in its range.</span></li>
                 <li><span class="mn-step">3</span><span><span class="mn-label">Grow</span> - every kill gives you Gold for more towers. When it gets tough, use an <strong>Ability</strong>.</span></li>
             </ol>
             <ul class="guide-list mn-icon-list">
@@ -4044,12 +4055,10 @@
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnScrollG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e7c1"/><stop offset="1" stop-color="#c9a76a"/></linearGradient></defs><path fill="url(#mnScrollG)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#7a5a2a" stroke-width="1.2" d="M8 8h6M8 11h6M8 14h4"/></svg></span><span class="mn-row"><span class="mn-label">Log</span><span>The <strong>Log</strong> button in the top bar lists everything that happened - every wave, towers built and sold, abilities used, Lives bought and the real damage / heal of enemies with an indicator.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnTowerG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnTowerG3)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span><span class="mn-row"><span class="mn-label">Tower Cards</span><span>Every card shows its Price, Sell value and DPS - hover it to see all six stats. The number in its corner is its 1 - 9 hotkey.</span></span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Tip:</strong> Hold <strong>SHIFT</strong> while placing a tower to see its range before you build it.
-            </div>
-            <div class="tip-box">
-                <strong>💡 Tip:</strong> An indicator showing "+99" is capped - the real value (it can be 1,000 or more) is written to the Logs as soon as such an enemy appears, and the Log button shakes a little.
-            </div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Tip:</strong> Hold <strong>SHIFT</strong> while placing a tower to see its range before you build it.
+            </div></div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Tip:</strong> An indicator showing "+99" is capped - the real value (it can be 1,000 or more) is written to the Logs as soon as such an enemy appears, and the Log button shakes a little.
+            </div></div>
         </div>
 
         <div class="tutorial-page">
@@ -4067,7 +4076,7 @@
                 <li><span class="mn-ico">💰</span><span class="mn-row"><span class="mn-label">Sell Price</span><span>The amount of gold you get back for removing the tower.</span></span></li>
             </ul>
             <div class="tip-box">
-                Left-click to <strong>Build</strong> the selected tower on free ground - grass, snow, sand or dirt (not on the road, water, mountains, lava or objects).
+                Left-click to <strong>Build</strong> the selected tower on free ground - grass, snow, sand or dirt (not on the path, water, mountains, lava or objects).
                 Click the selected card again (or press its number) to <strong>cancel</strong> the selection.
             </div>
             <div class="tip-box">
@@ -4086,23 +4095,21 @@
                 <li><span class="mn-ico">❤️</span><span class="mn-row"><span class="mn-label">Healers</span><span>An enemy with a heal indicator gives you that many Lives when it reaches a Tree.</span></span></li>
                 <li><span class="mn-ico"><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnSkullG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#mnSkullG)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></svg></span><span class="mn-row"><span class="mn-label">Bosses</span><span>Some maps have bosses - tough enemies with lots of health. On some maps the screen shakes when a boss enters. Get your strongest towers and abilities ready!</span></span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Tip:</strong> Mix your towers - hard single hits for enemies with lots of health, a fast Fire Rate for quick ones.
-            </div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Tip:</strong> Mix your towers - hard single hits for enemies with lots of health, a fast Fire Rate for quick ones.
+            </div></div>
         </div>
 
         <div class="tutorial-page">
             <h3><svg class="mn-h3-ico" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="mnAbilityG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs><path fill="url(#mnAbilityG)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></svg> Abilities</h3>
             <p>Special powers granted by the Elder Mages - every map gives you its own set.</p>
             <ul class="guide-list mn-icon-list">
-                <li><span class="mn-ico">🎯</span><span class="mn-row"><span class="mn-label">Targeted</span><span>Select the card, then click a road tile - the effect covers a stretch of road around it (the card shows how many tiles). Click the card again to cancel.</span></span></li>
+                <li><span class="mn-ico">🎯</span><span class="mn-row"><span class="mn-label">Targeted</span><span>Select the card, then click a path tile - the effect covers a stretch of path around it (the card shows how many tiles). Click the card again to cancel.</span></span></li>
                 <li><span class="mn-ico">🗺️</span><span class="mn-row"><span class="mn-label">Global</span><span>Starts the moment you click the card and affects the whole map.</span></span></li>
                 <li><span class="mn-ico">🕒</span><span class="mn-row"><span class="mn-label">Duration</span><span>How long the effect lasts. While it runs, the card shows <strong>Active</strong> with a shrinking bar.</span></span></li>
                 <li><span class="mn-ico">⏳</span><span class="mn-row"><span class="mn-label">Cooldown</span><span>How long until you can use it again. It starts the moment you use the ability - the duration counts into it - and the dimmed card counts down.</span></span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Tip:</strong> Both times are on every ability card (🕒 duration, ⏳ cooldown). Every ability page below shows whether it is <span class="mn-type">Targeted</span> or <span class="mn-type">Global</span>.
-            </div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Tip:</strong> Both times are on every ability card (🕒 duration, ⏳ cooldown). Every ability page below shows whether it is <span class="mn-type">Targeted</span> or <span class="mn-type">Global</span>.
+            </div></div>
         </div>
 
         <div class="tutorial-page">
@@ -4110,12 +4117,13 @@
             <p>A powerful area-of-effect (AoE) attack that scorches the earth.</p>
             <ul class="guide-list mn-plain-list">
                 <li><span class="mn-label">Usage</span><span>Select the ability and click a path tile.</span></li>
-                <li><span class="mn-label">Effect</span><span>Sets a stretch of road around the chosen tile on fire and deals rapid damage to every enemy standing on the burning tiles.</span></li>
+                <li><span class="mn-label">Effect</span><span>Sets a stretch of path around the chosen tile on fire and deals rapid damage to every enemy standing on the burning tiles.</span></li>
                 <li><span class="mn-label">Timing</span><span>Fire it when a big group of enemies is about to walk over the chosen tiles.</span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Hint:</strong> Best used on "choke points" where enemies group together!
-            </div>
+            <div class="tip-box mn-important mn-tip"><span class="mn-tip-ico">⚠️</span><div><strong>Important:</strong> <strong>Overlapping Lava Floors add up - every one of them deals its own damage.</strong>
+            </div></div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Hint:</strong> Best used on "choke points" where enemies group together!
+            </div></div>
         </div>
 
         <div class="tutorial-page">
@@ -4126,6 +4134,8 @@
                 <li><span class="mn-label">Effect</span><span>Temporarily increases the <strong>Damage and Speed</strong> of ALL towers on the map and shortens the delay between their shots (<strong>Fire Rate</strong>) - they fire faster and hit significantly harder while it lasts.</span></li>
                 <li><span class="mn-label">Timing</span><span>Save this for massive waves or Boss enemies!</span></li>
             </ul>
+            <div class="tip-box mn-important mn-tip"><span class="mn-tip-ico">⚠️</span><div><strong>Important:</strong> <strong>Two different Tower's Fury abilities active at once multiply (+50% and +50% Damage = +125%, not +100%).</strong>
+            </div></div>
         </div>
 
         <div class="tutorial-page">
@@ -4137,20 +4147,23 @@
                 <li><span class="mn-label">Limits</span><span>The bonus does not apply to gold from selling towers.</span></li>
                 <li><span class="mn-label">Timing</span><span>Activate it right before a big wave to fund new towers!</span></li>
             </ul>
+            <div class="tip-box mn-important mn-tip"><span class="mn-tip-ico">⚠️</span><div><strong>Important:</strong> <strong>Two different Gold Rush abilities active at once add up (+100% and +100% = +200%).</strong>
+            </div></div>
         </div>
 
         <div class="tutorial-page">
             <h3>❄️ Ability: Ice Storm <span class="mn-type">Targeted</span></h3>
-            <p>A freezing storm that turns a stretch of the road into ice.</p>
+            <p>A freezing storm that turns a stretch of the path into ice.</p>
             <ul class="guide-list mn-plain-list">
                 <li><span class="mn-label">Usage</span><span>Select the ability and click a path tile.</span></li>
-                <li><span class="mn-label">Effect</span><span>Freezes a stretch of road around the chosen tile - enemies on the ice move much slower (e.g. -80% speed) and take extra damage from <strong>all sources</strong> - towers and Lava Floor alike (e.g. +50%: a 50 damage hit deals 75).</span></li>
+                <li><span class="mn-label">Effect</span><span>Freezes a stretch of path around the chosen tile - enemies on the ice move much slower (e.g. -80% speed) and take extra damage from <strong>all sources</strong> - towers and Lava Floor alike (e.g. +50%: a 50 damage hit deals 75).</span></li>
                 <li><span class="mn-label">Limits</span><span>The effect lasts only while an enemy stands on the ice. Frozen enemies glow blue.</span></li>
-                <li><span class="mn-label">Timing</span><span>Freeze the road inside the range of your strongest towers.</span></li>
+                <li><span class="mn-label">Timing</span><span>Freeze the path inside the range of your strongest towers.</span></li>
             </ul>
-            <div class="tip-box">
-                <strong>💡 Hint:</strong> Combine it with Lava Floor - enemies stay in the fire longer and burn harder!
-            </div>
+            <div class="tip-box mn-important mn-tip"><span class="mn-tip-ico">⚠️</span><div><strong>Important:</strong> <strong>Overlapping Ice Storms don't add up - the strongest slow and the strongest vulnerability apply.</strong>
+            </div></div>
+            <div class="tip-box mn-tip"><span class="mn-tip-ico">💡</span><div><strong>Hint:</strong> Combine it with Lava Floor - enemies stay in the fire longer and burn harder!
+            </div></div>
         </div>
 
         <div class="tutorial-page">
