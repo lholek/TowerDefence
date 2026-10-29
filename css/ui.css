@@ -755,9 +755,11 @@
 /* Tutorial Popup Styles */
 .tutorial-card {
     background: var(--main-bg-color); /* Your requested variable */
-    padding: 30px;
+    /* wider sides: room between the side arrows (half inside the card) and the text */
+    padding: 30px 46px;
     border-radius: 12px;
-    width: 650px;
+    box-sizing: border-box; /* 750px including the padding */
+    width: 750px;
     max-width: 95vw;
     position: relative;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
@@ -916,6 +918,122 @@
     margin: 15px 0;
     font-size: 0.9em;
 }
+
+/* Guardian's Manual pages (html/tutorial.html) - the tall pages scroll inside the card on
+   short screens, so the header and the side arrows always stay in place */
+#tutorialPages {
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+}
+
+  /* "Price -" style labels in our gold */
+  .tut-label{ color:#f0c674; font-weight:bold; }
+
+  /* Lists with icons (stat icons from the tower card, Game.js) and plain ability lists:
+     one grid per list - icon | label | text - so the labels and the
+     texts all line up in columns, and a wrapped line stays under its own text */
+  .guide-list.tut-icon-list,
+  .guide-list.tut-plain-list{
+    display:grid;
+    column-gap:.45em;
+    row-gap:11px;
+    align-items:baseline;
+    list-style:none;
+    padding-left:6px;
+    line-height:1.4;
+  }
+  .guide-list.tut-icon-list{ grid-template-columns:1.6em max-content 1fr; }
+  .guide-list.tut-plain-list{ grid-template-columns:max-content 1fr; }
+  .tut-icon-list li, .tut-plain-list li, .tut-icon-list .tut-row{ display:contents; }
+  .tut-icon-list .tut-ico{ text-align:center; }
+  /* SVG icons in a list: no title-style gap on the right, so they centre like the emoji */
+  .tut-icon-list .tut-ico .tut-h3-ico{ margin-right:0; }
+  .tut-icon-list .tut-label, .tut-plain-list .tut-label{ padding-right:.8em; } /* space before the text column */
+
+  /* Step 1: the game loop as 3 numbered steps - gold number badge like the hotkey
+     number on the cards */
+  .tut-steps{
+    list-style:none;
+    margin:14px 0 16px;
+    padding:12px 14px;
+    display:grid;
+    row-gap:10px;
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.18);
+    border-radius:8px;
+    line-height:1.4;
+  }
+  .tut-steps li{ display:flex; align-items:baseline; gap:10px; }
+  .tut-step{
+    flex:0 0 22px;
+    height:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    align-self:center;
+    border-radius:5px;
+    background:linear-gradient(180deg, #ffe7a3, #c58a2e);
+    border:1px solid #4a2c0c;
+    color:#3a2208;
+    font-weight:bold;
+    font-size:13px;
+  }
+
+  /* the tower icon from the Towers / Abilities switcher, in place of the bow */
+  .tut-h3-ico{ width:20px; height:20px; vertical-align:-4px; margin-right:4px; }
+
+  /* Controls: every badge in a column as wide as the widest one, so they line up */
+  .tut-controls .key-cap{ justify-self:stretch; }
+
+  /* mouse icons inside the key badges (left / right / wheel highlighted) - pinned
+     to the same spot on the left, the text centred in the space next to it */
+  .key-cap.tut-mouse-cap{ padding-left:40px; padding-right:12px; }
+  .key-cap .tut-mouse{
+    position:absolute;
+    left:12px;
+    top:50%;
+    width:26px;
+    height:26px;
+    transform:translateY(-50%);
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+  }
+
+  /* keyboard icon in the Controls title - same look as the mouse icons */
+  .tut-h3-ico.tut-keyboard{ width:24px; height:24px; vertical-align:-6px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+
+
+  /* Tip / Hint / Important boxes: the icon in its own column, so a wrapped line
+     starts under the text, not under the icon */
+  .tip-box.tut-tip{ display:flex; align-items:baseline; gap:.4em; }
+  .tut-tip-ico{ flex:0 0 auto; }
+
+  /* "Important" box - the tip box in red, for rules the player must know (stacking) */
+  .tip-box.tut-important{
+    background:rgba(185,28,28,.2);
+    border-left-color:#ef4444;
+  }
+
+  /* Global / Targeted tag next to the ability name */
+  .tut-type{
+    display:inline-block;
+    margin-left:6px;
+    padding:1px 8px;
+    border-radius:999px;
+    border:1px solid rgba(240,198,116,.55);
+    background:rgba(240,198,116,.12);
+    color:#f3e5ab;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    vertical-align:2px;
+  }
+
+  /* Key combos (SHIFT + A, P / ESC, T / A): the same single badge as every other key,
+     the sign between the keys plain and a little dimmer */
+  .tut-combo-cap{ gap:8px; }
+  .tut-combo-cap kbd{ position:relative; font:inherit; }
+  .tut-combo-cap i{ position:relative; font-style:normal; opacity:.7; }
 
 /* *** TUTORIAL *** */
 

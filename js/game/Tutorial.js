@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const openBtn = document.getElementById('openTutorialBtn');
 
     let currentPage = 0;
-    const totalPages = 7;
+    // Counted from html/tutorial.html when it loads - adding a page there is enough
+    let totalPages = 0;
 
     async function loadAndOpen() {
         // Only fetch if we haven't loaded it yet
@@ -24,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(`HTTP ${response.status} ${response.statusText} while fetching html/tutorial.html`);
                 }
                 const html = await response.text();
+                totalPages = (html.match(/class="tutorial-page[\s"]/g) || []).length;
+                if (totalPages === 0) {
+                    throw new Error('tutorial.html has no pages');
+                }
                 // Check that all pages (id="page-0" .. id="page-{N-1}") are present.
                 for (let i = 0; i < totalPages; i++) {
                     if (!html.includes(`id="page-${i}"`)) {
@@ -98,6 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update Step Number
         if (stepNum) stepNum.innerText = (currentPage + 1);
+        const totalNum = document.getElementById('totalStepNum');
+        if (totalNum) totalNum.innerText = totalPages;
+
+        // Every page starts at its top (the tall ones scroll on short screens)
+        const pagesContainer = document.getElementById('tutorialPages');
+        if (pagesContainer) pagesContainer.scrollTop = 0;
     }
 
     // --- Keyboard navigation: ArrowLeft/ArrowRight or A/D ---

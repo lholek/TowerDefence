@@ -79,6 +79,18 @@
           ]
         },
         {
+          "<b>How to Play</b>": [
+            "Redesigned Guardian's Manual - 10 pages instead of 5, with game icons and gold labels on every page",
+            "New 'Game Flow' page - waves, victory, extra life, game speed, the Log and the tower cards",
+            "New 'Enemies' page - health, speed, reward, damage and heal indicators, and bosses",
+            "New 'Abilities' page - Targeted and Global abilities, duration and cooldown",
+            "Every ability page is explained the same way (Usage, Effect, Limits, Timing) with its Targeted / Global tag, an Important box and a Hint",
+            "Tower Mechanics now explain that a fired arrow chases its enemy even out of range",
+            "New 'Controls' page with mouse and keyboard icons",
+            "The manual is wider and the lists are lined up in columns"
+          ]
+        },
+        {
           "<b>System</b>": [
             "Recommended resolution 1920x1080 (Full HD) - the unsupported resolution screen now checks the real browser window size, smaller screens can zoom out (CTRL -) to play"
           ]
