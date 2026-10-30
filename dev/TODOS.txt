@@ -1,0 +1,509 @@
+LONG TODOS:
++ price or time or level to unlock towers
++ UI music
++ Teleports
++ Explosive enemies
++ Ability enemies (10s imunity - no demage (50% chance on spawn), Explosive enemies)
++ heroes like ablity - on the start you will choose hero whit special ablity
++ ability leveling
++ multiple block towers
++ boss summoning (Custom bosses send after click, whit some reload 3 per games)
++ Camping
+  " + bulding time" , " + zvuky stavění"
++ New Ability - 'Lightining strikes, strikes directly enemies'
++ New Ability - 'Swamp'
+  "TODO: Improve - Editor - Json - Colored json",
+  "TODO: Improve - Editor - Json - Json checks more then format and paths",
+  "???TODO: New Ability - 'Freeze'",
+
+Beta 1.1
+oheň - lava floor
+voda - Ledová vychřice zpomalující enemáky, a může je dělat více zranitělnějším (+20% damge) ??
+vzduch - towers Fury
+země - Zlatá důl - Okamžiě zvýší přijmy z nepřátel o 100%
+
+? Zmatení nepřítele
+? Klonvané věže
+? vychřice
+? Bažina 
+? Barriera
+? Puklina v zemi 
+
+Abilities ?
+Baricade ? - Pevný blok který má třeba 5000 života, nebo
+
+
+================================================================
+NewTowerDefence — Nápady na vyladění (polish, ne core feature)
+================================================================
+Založeno na tom, co ve hře reálně chybí (ověřeno v kódu, ne
+odhadem) - žádná z těchto věcí nemění balanc ani gameplay,
+jde čistě o to, aby se hra "cítila" živěji a reagovala na
+akce hráče.
+
+
+================================================================
+🔊 ZVUKY — největší reálná mezera
+================================================================
+V assets/sounds/ je jen background hudba (12 skladeb). Ve hře
+NEEXISTUJE žádný zvukový efekt - žádný zvuk výstřelu, zásahu,
+smrti nepřítele, postavení věže, nákupu, kliknutí v menu, ani
+varování při ztrátě života. Tohle je pravděpodobně jednotlivě
+nejvíc znatelná věc, která hře chybí - i pár krátkých .mp3/.ogg
+zvuků dodá pocit odezvy, který teď úplně chybí.
+
+[IDEA 1] SFX na výstřel věže a zásah nepřítele
+  Krátký "pew"/"twang" při výstřelu (Tower.js, kde se vytváří
+  bullet) a lehký "thud"/"hit" při zásahu (Bullet.js, kde bullet
+  zasáhne cíl). Ať netrhá uši při desítkách věží najednou -
+  potřeba omezit počet současně hrajících instancí (např. max
+  3-5 překrývajících se hitů najednou) nebo mírně randomizovat
+  pitch, ať to nezní jako kulomet.
+  Náročnost: nízká-střední (potřeba pár zvukových souborů + audio
+  pool podobný bullet poolu, aby se negenerovaly nové Audio()
+  instance pořád dokola).
+
+[IDEA 2] SFX na smrt nepřítele a únik nepřítele (ztráta života)
+  Smrt = krátký "poof"/"splat" podle typu nepřítele (aspoň jeden
+  obecný zvuk na začátek stačí). Únik (enemy dorazí do cíle a
+  ubere život) = výraznější negativní zvuk, aby hráč OKAMŽITĚ
+  věděl, že přišel o život, i když se dívá jinam na obrazovku.
+  Náročnost: nízká.
+
+[IDEA 3] SFX na postavení věže, prodej věže, nákup extra life
+  Tower.js/Game.js handleSell/handleBuild - krátké "cink"/"clunk"
+  potvrzení akce. Malá věc, ale hráč okamžitě cítí, že klik
+  "zabral".
+  Náročnost: nízká.
+
+[IDEA 4] UI klik zvuk v menu
+  Hlavní menu (index.html) má spoustu tlačítek (Start, Editor,
+  Lore, Settings...) a žádné z nich nevydá zvuk. I jeden tichý
+  "click.mp3" na všechna .btn tlačítka v menu udělá menu méně
+  "mrtvé".
+  Náročnost: nízká (jeden globální listener na .btn v menu).
+
+[IDEA 5] Crossfade mezi hudebními skladbami
+  Music.js aktuálně (podle version historie "when one music ends
+  another begins") přepíná skladby natvrdo. Krátký fade-out/fade-in
+  (např. 1-2s) mezi skladbami by odstranil ostré řezy.
+  Náročnost: nízká (Web Audio gain node nebo <audio>.volume tween).
+
+
+================================================================
+✨ VIZUÁLNÍ FEEDBACK ("juice")
+================================================================
+Enemy smrt je dnes okamžité zmizení (Game.js:403-411 - health<=0
+=> return false z filtru, žádná animace/efekt). Nákup mincí za
+kill taky nemá žádnou vizuální odezvu kromě čísla nahoře, které
+se prostě přepíše.
+
+[IDEA 6] Death "poof" efekt při smrti nepřítele
+  Krátká částicová exploze / rychle mizící kruh v místě smrti
+  (podobný systém už existuje pro Tower's Fury v Tower.js:366-380
+  - dá se recyklovat stejný přístup na lehčí verzi). I 5-10
+  částic na 200-300ms udělá obrovský rozdíl oproti současnému
+  "prostě zmizí".
+  Náročnost: střední (nový lightweight particle systém nebo
+  rozšíření toho stávajícího z Tower.js).
+
+[IDEA 7] Létající "+X 🪙" text nad mrtvým nepřítelem
+  Krátce se objeví a odpluje nahoru/zmizí (fade+translateY na
+  canvasu, ne DOM - žádné DOM uzly v herní smyčce, viz interní
+  poznámka v PERFORMANCE_ERRORS že se to záměrně nedělá). Dá
+  hráči okamžitou vizuální vazbu kill -> zisk, hlavně při rychlé
+  hře na vyšší game speed.
+  Náročnost: střední (malý pool "floating text" objektů, podobně
+  jako bullet pool).
+
+[IDEA 8] Červený pulse/vinětace obrazovky při ztrátě života
+  Když enemy unikne a ubere život, krátký červený záblesk po
+  okrajích canvasu (200-400ms fade) - dnes se to pozná jen podle
+  čísla životů nahoře, které hráč nemusí sledovat.
+  Náročnost: nízká (jedna proměnná v Game.js jako "damageFlash"
+  časovač + kreslení gradientu v render(), analogicky k
+  shakeDuration, který už existuje).
+
+[IDEA 9] Vlnová "banner" hláška při startu nové vlny
+  Krátký nápis uprostřed obrazovky typu "Wave 5" (fade in/out,
+  ~1.5s), který zmizí sám. Dnes hráč pozná novou vlnu jen podle
+  UI countru nahoře.
+  Náročnost: nízká-střední.
+
+[IDEA 10] Vizuální odlišení bossů/silných nepřátel
+  Pokud existuje enemy s výrazně vyšším health/damage než
+  ostatní ve vlně, přidat mu tenký zlatý obrys nebo větší health
+  bar - hráč hned pozná prioritní cíl bez čtení configu mapy.
+  Náročnost: střední (potřeba definovat práh "co je boss" -
+  buď per-config flag v editoru, nebo heuristika podle health
+  relativně k průměru vlny).
+
+
+================================================================
+🖱️ UI ODEZVA
+================================================================
+[IDEA 11] Count-up animace čísel na Game Over / Victory obrazovce
+  Statistiky (kills, gold, damage...) se dnes zobrazí staticky
+  najednou. Krátké "počítání nahoru" od 0 k finální hodnotě
+  (~0.6-1s) dá výsledkům větší váhu/dramatičnost.
+  Náročnost: nízká.
+
+[IDEA 12] Jemný pulse na tlačítku Game Speed, když je aktivní >x1
+  Připomene hráči, že hraje zrychleně (snadno se zapomene po
+  pár minutách) - stačí CSS animace na aktivní stav tlačítka.
+  Náročnost: velmi nízká (čisté CSS, žádný JS).
+
+[IDEA 13] "Perfect wave" bonus + hláška, když vlna proběhne bez
+  úniku jediného nepřítele
+  Malý bonus gold + krátká pozitivní hláška (podobně jako IDEA 9)
+  - odměňuje pozorné hráče a dodává vlnám pocit "výzvy", ne jen
+  countdown.
+  Náročnost: střední (potřeba trackovat úniky per-vlna, ne jen
+  celkově).
+
+
+================================================================
+🌍 AMBIENTNÍ ŽIVOT MAPY / MENU
+================================================================
+[IDEA 14] Drobná idle animace na hlavní menu pozadí
+  I jemný parallax mraků nebo pomalu plovoucí částice (jiskry u
+  ohnivého titulku, které už existují v fire-title.css/js, by šlo
+  rozšířit i mimo titulek) - menu dnes je čistě statický obrázek
+  na pozadí.
+  Náročnost: nízká-střední (v závislosti na tom, co přesně
+  fireTitle.js už umí recyklovat).
+
+[IDEA 15] Jemné "dýchání"/idle pohyb věží mezi výstřely
+  Věže dnes stojí úplně staticky, dokud nevystřelí (Tower.js
+  preRenderedImage se nikdy nemění mimo výstřel). I nepatrné
+  pravidelné škálování (např. 1.0 -> 1.02 -> 1.0 přes pár sekund)
+  by dodalo pocit, že věže "žijí", ne že je to statická mapa s
+  objekty navrch.
+  Náročnost: nízká (transformace při kreslení, žádná změna
+  cachovaného obrázku samotného).
+
+
+================================================================
+DOPORUČENÉ POŘADÍ (nejlepší poměr dojem/náročnost)
+================================================================
+1. IDEA 1+2 (SFX výstřel/zásah/smrt/únik) - největší citelný
+   rozdíl za nejmíň práce, hra dnes nemá ŽÁDNÉ herní zvuky.
+2. IDEA 8 (red flash při ztrátě života) - triviální implementačně
+   (kopíruje existující shakeDuration vzor), velký dojem.
+3. IDEA 6+7 (death poof + floating gold text) - největší vizuální
+   "wow" efekt za rozumnou práci.
+4. Zbytek podle chuti - jsou to všechno nezávislé, malé kousky,
+   dají se dělat postupně bez rizika rozbití něčeho stávajícího.
+
+
+================================================================
+NewTowerDefence — Beta 1.1: nápady na nový obsah
+================================================================
+Na rozdíl od IDEAS.txt (to je čistě "juice"/polish, žádný nový
+obsah) je tohle brainstorm skutečně NOVÝCH věcí do hry - nové
+ability, zvuky, kampaň, nepřátelé, terén... Nic z toho není
+odškrtnuté/rozhodnuté, je to k výběru a diskuzi než se do
+čehokoliv pustíme.
+
+POZNÁMKA: při procházení kódu jsem zjistil, že IDEA 8 (red flash
+při ztrátě života) a IDEA 9 (wave banner) z IDEAS.txt se v kódu
+NENACHÁZEJÍ, i když jsme si o nich dřív povídali jako o hotových -
+vypadá to, že se ta implementace ztratila (pravděpodobně to samé
+externí přepisování souborů, co jsme řešili u versions.json).
+Klidně je zařaď i do Bety 1.1, pokud je chceš.
+
+
+================================================================
+⚔️ NOVÉ ABILITY
+================================================================
+Aktuálně existují jen 2 typy (registrované v AbilityManager.js):
+lava_floor (targeted, damage-over-time na dlaždicích) a
+towers_fury (global, buff věží). Cokoliv nového buď dědí z jednoho
+z těchto vzorů, nebo je úplně nový typ (např. "placed obstacle").
+
+[ABILITY 1] Ice Storm / Zamrznutí
+  Targeted ability jako Lava Floor, ale místo damage zpomalí nebo
+  na X sekund úplně zastaví nepřátele na vybraných dlaždicích cesty.
+  Skvělý crowd-control protipól k Lava Floor (ta zabíjí, tahle
+  zdrží). Vizuálně: modro-bílé dlaždice místo červeno-oranžových.
+  Náročnost: nízká-střední (kopíruje LavaFloor.js, jen namísto
+  damage tiku nastaví enemy.speedMultiplier nebo podobně).
+
+[ABILITY 2] Meteor Strike
+  Jednorázový velký damage burst na jednu dlaždici/malou oblast,
+  na rozdíl od Lava Floor (DOT po více vteřin). Vysoký cooldown,
+  vysoký damage - "panic button" na těžkou vlnu/boss enemy.
+  Náročnost: nízká (žádný nový tick systém, jen okamžitý damage
+  všem enemy na zasažených dlaždicích při activate()).
+
+[ABILITY 3] Barikáda / Wall
+  Targeted ability, která na 1 dlaždici cesty postaví dočasnou
+  překážku - nepřátelé si musí najít jinou cestu (pokud mapa má
+  víc cest) nebo se před ní hromadí a věže je snadno sbírají.
+  Zajímavá nová mechanika, ne jen "další damage ability".
+  Náročnost: střední (potřeba dočasně upravit pathfinding/grid a
+  pak ho po vypršení vrátit zpět - přesně na tohle bych se
+  potřeboval podívat, jak Map.js aktuálně řeší cesty nepřátel).
+
+[ABILITY 4] Přetížení věže / Turret Overcharge
+  Targeted na JEDNU konkrétní věž (ne celou mapu jako Tower's
+  Fury) - masivní ale krátký boost (např. 3x damage na 5s) pro tu
+  jednu věž, co hráč vybere. Dává hráči důvod mít "hlavní" věž,
+  ne jen plošné buffy.
+  Náročnost: nízká-střední (podobné Tower's Fury, jen s jedním
+  tower ID místo globálního efektu).
+
+[ABILITY 5] Gold Rush
+  Global ability (jako Tower's Fury) - po dobu trvání dá enemy
+  kills dvojnásobný/trojnásobný gold. Dává hráči důvod aktivně
+  farmit kills v konkrétní chvíli, ne jen defenzivní nástroj.
+  Náročnost: nízká (jen multiplier na goldEarned při kill, dokud
+  je aktivní).
+
+
+================================================================
+🔊 ZVUKY
+================================================================
+IDEAS.txt už řeší SFX podrobně (IDEA 1-5) - tohle jen doplňuje
+úhel "nový obsah", ne polish:
+
+[SOUND 1] Ability-specific zvuky
+  Každá nová ability z sekce výše by měla svůj vlastní
+  charakteristický zvuk (praskání ledu pro Ice Storm, "BOOM" pro
+  Meteor Strike...) - dá jim to identitu už jen ze zvuku, ne jen
+  z barvy ikony.
+
+[SOUND 2] Základní SFX vrstva (bez prostorového zvuku)
+  Probírali jsme, že plný prostorový (positional) audio je
+  relativně náročný projekt navíc. Doporučuju v Betě 1.1 udělat
+  jen běžné (ne prostorové) SFX podle IDEAS.txt IDEA 1-4 a
+  prostorový zvuk věží nechat jako samostatný, pozdější krok -
+  je to jasně oddělitelná práce navíc, ne blokující.
+
+
+================================================================
+🗺️ KAMPAŇ / PROGRESE
+================================================================
+Aktuálně je výběr mapy jen dropdown bez pořadí/odemykání - hráč
+může hrát cokoliv od začátku.
+
+[CAMPAIGN 1] Lineární kampaň s odemykáním map
+  Mapy (Adventure Map I-VI) se odemykají popořadě - dokončení
+  mapy N odemkne mapu N+1 (uloženo v localStorage, žádný
+  backend potřeba). Dá hrám pocit postupu, ne "švédský stůl" map.
+  Náročnost: střední (potřeba trackovat "completed maps" a
+  upravit #mapSelect, aby nezobrazoval/šedě zobrazoval zamčené).
+
+[CAMPAIGN 2] Lore mezi mapami
+  Už existuje Lore systém (openLoreBtn) - rozšířit ho tak, aby se
+  krátký úryvek příběhu ukázal PŘED nebo PO dokončení konkrétní
+  mapy kampaně, ne jen jako statický text v menu. Propojí to, co
+  už máš (lore), s progresí z CAMPAIGN 1.
+  Náročnost: nízká-střední (znovupoužije existující lore popup UI,
+  jen s obsahem podle aktuální mapy).
+
+[CAMPAIGN 3] Obtížnosti (Normal / Hard / Nightmare)
+  Stejná mapa, ale vyšší HP/damage/rychlost nepřátel a méně
+  startovních životů/mincí na vyšší obtížnost - "⭐ rating
+  difficulty" už v mapách existuje jako koncept, tohle by ho
+  posunulo z popisku na skutečnou volitelnou mechaniku.
+  Náročnost: střední (multiplikátory na enemy stats při loadu,
+  podobně jako Fury multiplikátory na Tower.js).
+
+[CAMPAIGN 4] Boss mapy / boss nepřátelé
+  Navazuje na IDEA 10 z IDEAS.txt (vizuální odlišení silných
+  nepřátel) - jít dál a dát bossům unikátní mechaniku (např. při
+  50% HP se na chvíli zrychlí, nebo periodicky "odrazí" všechny
+  aktivní ability efekty). Dobrý cíl na konec kampaně.
+  Náročnost: vysoká (unikátní kód per-boss, ne jen stat multiplier).
+
+
+================================================================
+👹 NOVÍ NEPŘÁTELÉ / TERÉN
+================================================================
+[ENEMY 1] Štítový nepřítel
+  Ignoruje první zásah/X damage z každého útoku (štít se musí
+  "rozbít" než začne reálně ztrácet HP) - nutí hráče řešit burst
+  damage věže, ne jen DPS.
+  Náročnost: střední (nový stat + vizuální indikátor štítu).
+
+[ENEMY 2] Dělící se nepřítel
+  Při smrti se rozpadne na 2-3 slabší kopie (klasika u TD her) -
+  dobrý test na to, jak hráč rozmisťuje AoE věže/abilities.
+  Náročnost: střední (spawn nových enemy instancí ze
+  spawn/death logiky, ne z vlnové konfigurace).
+
+[ENEMY 3] Létající nepřítel
+  Ignoruje terénní překážky, co blokují ostatní (Mountain, Well,
+  Rock...) - ale možná ho MŮŽOU zasáhnout jen věže s "anti-air"
+  vlastností (nová vlastnost typu věže). Zajímavá nová vrstva
+  strategie (kam postavit anti-air věže).
+  Náročnost: vysoká (nová kategorie věží + úprava LOS/pathing pro
+  let mimo cestu).
+
+[TERRAIN 1] Prokletá / posvátná půda jako aktivní modifikátor
+  "Holy Ground"/"Burned Ground" dlaždice už existují vizuálně -
+  rozšířit je na skutečný efekt: věž postavená na Holy Ground má
+  +X% damage, na Burned Ground -X% fire rate. Dá hráči důvod
+  přemýšlet KDE stavět, ne jen ŽE stavět.
+  Náročnost: střední (check terénu pod věží při update()).
+
+
+================================================================
+🎯 DALŠÍ KREATIVNÍ NÁPADY
+================================================================
+[MISC 1] Endless / Survival mód
+  Po poslední nakonfigurované vlně mapy pokračují nekonečné,
+  postupně těžší vlny (škálování HP/počtu) - skóre = jak dlouho
+  přežiješ. Dobré pro replay value bez nutnosti nových map.
+  Náročnost: střední (generovat vlny proceduálně po vyčerpání
+  configu, ne jen skončit hru).
+
+[MISC 2] Achievementy / výzvy
+  Využívá stats, co už trackuješ (stats.enemiesKilled,
+  towersSold, abilitiesUsed...) - "Zabij 1000 nepřátel", "Dokonči
+  mapu bez ztráty života", uloženo v localStorage, zobrazené
+  třeba v Version History popupu nebo novém tlačítku v menu.
+  Náročnost: nízká-střední (žádná nová herní logika, jen
+  sledování existujících čísel + UI na jejich zobrazení).
+
+[MISC 3] Tower upgrade cesty (ne jen postav/prodej)
+  Aktuálně věž jen stojí nebo se prodá - přidat 2-3 stupně
+  upgradu za gold (věž postavená -> upgrade 1 -> upgrade 2),
+  místo nutnosti stavět novou věž vedle. Zásadnější gameplay
+  změna, ne kosmetika.
+  Náročnost: vysoká (nová ekonomika, UI pro upgrade, vizuální
+  varianty věží per úroveň).
+
+[MISC 4] Denní/týdenní seed výzva
+  Fixní kombinace mapy + vlny (seedované datem) se stejným
+  žebříčkem pro všechny hráče ten den/týden - i bez backendu lze
+  aspoň lokálně ukládat "můj nejlepší výsledek na seed XY".
+  Náročnost: vysoká (potřeba deterministický seed do celého
+  spawn systému, což dnes zjevně používá Math.random přímo).
+
+
+================================================================
+DOPORUČENÉ POŘADÍ (nejlepší poměr nový obsah / náročnost)
+================================================================
+1. ABILITY 1 (Ice Storm) + ABILITY 5 (Gold Rush) - nejnižší
+   náročnost, dvě nové ability rozšíří výběr ze 2 na 4.
+2. SOUND 1+2 - i základní (ne prostorové) SFX dají pocit "nové
+   generace" hry, viz IDEAS.txt.
+3. CAMPAIGN 1 (odemykání map) - relativně nízká náročnost, velký
+   dopad na pocit progrese celé hry.
+4. MISC 2 (achievementy) - levné na implementaci, dobrý "malý
+   bonus" bez rizika rozbití balancu.
+5. Zbytek podle chuti/kapacity - CAMPAIGN 4, MISC 3 a ENEMY 3 jsou
+   nejnáročnější, spíš pro Betu 1.2+ než jako první krok.
+
+
+================================================================
+NewTowerDefence — Beta 1.1: sada 4 živlových ability
+================================================================
+Analýza nápadu "4 základní živly, jedna ability na každý" - zatím
+jen rozbor a zhodnocení, nic z tohohle není implementované.
+
+
+================================================================
+NAVRŽENÁ SADA
+================================================================
+
+🔥 OHEŇ — Lava Floor (existuje)
+  Targeted, damage-over-time na vybraných dlaždicích cesty.
+  - je to doslova láva/oheň (barva #ff5000, "fiery" motiv, který
+    se táhne celou hrou - fire sword cursor, ohnivý titulek...)
+  - dává to sadě čistý 1 živel/1 slot bez kolize
+
+💧 VODA — Ice Storm (nová)
+  Targeted (stejný vzor jako Lava Floor - vybereš N dlaždic
+  cesty). Efekt: nepřátelé na vybraných dlaždicích jsou
+  zpomalení (např. -20% rychlost) A ZÁROVEŇ zranitelnější
+  (např. +20% damage, co od věží dostanou) po dobu trvání
+  efektu.
+
+💨 VZDUCH — Tower's Fury (existuje)
+  Global, dočasný buff všech věží (damage/rychlost
+  střel/rate of fire).
+
+🌍 ZEMĚ — Gold Rush "Mine" (nová)
+  Global, dočasný bonus na zlato ze zabitých nepřátel
+  (např. +50 % na 30 s). Čistě ekonomická, žádný bojový efekt.
+
+
+================================================================
+ZHODNOCENÍ — dává to smysl?
+================================================================
+Krátce: ANO, je to dobrý, dobře vyvážený nápad. Konkrétně:
+
+[+] Typové rozložení 2+2
+  Máš 2 targeted (Lava Floor, Ice Storm) a 2 global (Tower's
+  Fury, Gold Rush) - přesně kopíruje 2 architektury, co už máš
+  hotové a otestované z minulého refaktoru Ability.js. Obě nové
+  ability jsou tak nízkonákladové na implementaci - nejde o nový
+  typ chování, jen o nové hodnoty/efekt v existujícím vzoru.
+
+[+] Žádné 2 ability neřeší to samé
+  Oheň = čisté poškození v čase, Voda = kontrola pohybu +
+  zesílení poškození odjinud, Vzduch = přímý boost výkonu věží,
+  Země = ekonomika/dlouhodobá výhoda. 4 jasně odlišné "role",
+  nic se nepřekrývá - to je přesně to, co dělá sadu ability
+  zajímavou (hráč má reálný důvod mít víc než jednu).
+
+[+] Živlová identita sedí
+  Oheň/láva, Voda/led, Země/těžba - to jsou přímočaré, čitelné
+  asociace. Vzduch/Tower's Fury je nejvíc abstraktní ze čtyř
+  (vítr žene šípy rychleji = fire rate/rychlost střel), ale
+  funguje to už teď a hráči si to nejspíš nijak nerozporují.
+
+[!] Jedna věc k rozmyšlení - Ice Storm dělá DVĚ věci najednou
+  -20 % rychlost A +20 % damage je vlastně silnější než jeden
+  efekt - je to částečně kontrola (jako Kořeny/Zemětřesení co
+  jsme probírali) A částečně debuff/enabler (jako by věže samy
+  dostaly dočasný buff na damage, jen nepřímo přes nepřítele).
+  Není to špatně, ale konkrétní čísla (20 %/20 %) bych
+  odzkoušel v praxi - kdyby to bylo příliš silné, stačí snížit
+  jednu ze dvou hodnot nebo prodloužit cooldown, mechanika sama
+  je v pořádku.
+
+[!] Gold Rush - pozor na timing s vlnami
+  Bonus zlato jen "ze zabitých nepřátel" znamená, že hodnota
+  ability hodně kolísá podle toho, KDY ji použiješ (30s před
+  velkou vlnou = mnohem cennější než 30s během klidu). To je u
+  ekonomických ability běžné a dává to hráči rozhodování "kdy na
+  to sáhnout", takže bych to nepovažoval za bug, jen buď
+  připravený, že zkušení hráči ji budou timovat agresivně.
+
+
+================================================================
+GRAFICKÉ ODLIŠENÍ KARET PODLE ŽIVLU
+================================================================
+Ano, jde to udělat - karty (.ability-card) jsou obyčejné DOM
+divy stylované přes CSS/JS, žádná překážka.
+
+Dvě úrovně, jak moc do toho jít:
+1) Levná varianta - barevný gradient/glow pozadí karty podle
+   ability.color (co už každá ability má), + jiná emoji ikona
+   (🔥/❄️/💨/⛏️) - žádný nový kód navíc, jen CSS.
+2) Plná varianta - opravdová procedurální textura na pozadí
+   karty (popraskaná láva, led, vířící vzduch, kamenná/hlínová
+   textura) přes offscreen canvas, stejný princip, jaký už máš
+   použitý u trávy v tile-selectoru editoru (viz
+   editor_map.js/grass_preview_url). Vypadá to nejlíp, ale je to
+   4x offscreen-canvas kreslicí funkce navíc - řádově hodiny
+   práce, ne minuty.
+
+Nic z tohohle jsem teď nedělal (jak jsi řekl) - jen potvrzuju
+proveditelnost pro obě úrovně, ať víš, do čeho jdeš, až na to
+dojde.
+
+
+================================================================
+DALŠÍ KROK
+================================================================
+Až budeš chtít začít implementovat, navrhuju pořadí:
+1. Ice Storm (kopíruje LavaFloor.js 1:1 strukturou, jen jiný
+   efekt v activate()/onTick)
+2. Gold Rush (kopíruje TowersFury.js 1:1 strukturou)
+3. Grafické odlišení karet (levná varianta nejdřív, plná textura
+   až případně později)
