@@ -61,6 +61,19 @@
           ]
         },
         {
+          "<b>Map Select</b>": [
+            "Redesigned map info in the main menu - the old table is now a map card in the new style",
+            "Map name with its subtitle in gold and the difficulty as 5 gold stars",
+            "Levels, Map Size, Towers and Extra Life with gold icons like in the top bar",
+            "Abilities shown as tags - a long list scrolls",
+            "The map preview is always the same size and shows the real map size in the corner",
+            "The map card keeps one height for every map, so the menu no longer jumps",
+            "New arrows next to the map select to step through the maps",
+            "New Standard / Custom maps switch with icons",
+            "A custom map shows its own name from the file"
+          ]
+        },
+        {
           "<b>Map browser</b>": [
             "New map browser - the ☰ button next to the map select opens a table of all maps (description, level count, difficulty, map size, towers, extra life and abilities), click a map to select it",
             "Map browser - sort by name, level count, difficulty, map size or towers (click again to reverse), the last sort is remembered, hovering a map shows its minimap",

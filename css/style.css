@@ -837,43 +837,6 @@ max-width: 400px;
   background: #a0522d;
 }
 
-/* Description */
-.mapInfo {
-    min-width: 700px;
-    max-width: 700px;
-    min-height: 370px; /* Matches the filled-state height (350px minimap + padding), so the empty "No map selected" state doesn't collapse the box */
-    background: var(--main-bg-color);
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    gap: 2px;
-    align-items: stretch;
-    border-radius: 8px;
-    text-align: center;
-    align-items: center
-}
-
-/* Only the empty "No map selected" state gets vertically centered + enlarged
-   text - the filled preview (table + minimap) keeps its normal top-aligned layout. */
-.mapInfo.is-empty {
-    align-items: center !important;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.25rem;
-}
-
-
-.mapInfo p {
-    margin: 0 !important;
-    margin-top: 5px !important;
-    margin-right: 20px !important;
-}
-
-.mapInfo b {
-    color: #ffde59;
-}
-/* Description */
 
 /* --- Canvas & Game Area Containers --- */
 #canvasWrapper {

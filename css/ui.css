@@ -56,34 +56,12 @@
 }
 
 /* mini map */
-.mapInfo {
-    display: flex;
-    flex-wrap: wrap; /* Allows map to drop below text if needed, or stay side-by-side */
-    justify-content: center;
-    align-items: flex-start !important;
-}
-
-#minimapContainer {
-    width: 400px;
-    height: 400px;
-    flex: 0 0 400px; /* Forces the width to stay at 400px regardless of other content */
-}
-
-
-.map-desc{
-  max-width: 250px;
-}
 /* Ensure tiles have no margins/padding that could break the grid */
 .minimap-tile {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
-}
-
-#minimap {
-  display: grid;
-  shape-rendering: crispEdges;
 }
 
 .minimap-tile {
@@ -114,109 +92,6 @@
 .minimap-tile.snw-spike{ background: #1a3d5c; }
 /* mini map */
 
-/* map info table */
-/* The parent wrapper for 2 columns */
-.map-preview-wrapper {
-    display: flex;
-    flex-direction: row;    /* Side by side */
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-/* Left Column: Table adjustments */
-.map-stats-col {
-    flex: 1; /* Takes up remaining space */
-    min-width: 200px;
-}
-
-.map-info-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    color: #eee;
-}
-
-.map-info-table tr {
-    border-bottom: 1px solid rgba(240, 198, 116, 0.1);
-}
-
-.map-info-table td {
-    padding: 8px 4px;
-}
-
-.map-info-table td:first-child {
-    color: #f0c674;
-    white-space: nowrap;
-    font-weight: bold;
-}
-
-.map-info-table .description{
-  display: block;
-  max-height: 80px;
-  overflow-y: auto;
-}
-
-.map-info-table .ability-list{
-  display: block;
-  max-height: 50px;
-  overflow-y: auto;
-}
-
-/* scrollbar-width/-color removed on purpose (see css/cursor.css) - having
-   both that AND ::-webkit-scrollbar-* on the same element makes Chrome
-   render the scrollbar through its newer standard-properties path, which
-   ignores the cursor CSS entirely; ::-webkit-scrollbar-* alone renders
-   through the older path, which respects it. Firefox (no ::-webkit-
-   scrollbar support) just falls back to its default scrollbar here. */
-.map-info-table .description::-webkit-scrollbar,
-.map-info-table .ability-list::-webkit-scrollbar {
-  width: 6px;
-}
-.map-info-table .description::-webkit-scrollbar-track,
-.map-info-table .ability-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-.map-info-table .description::-webkit-scrollbar-thumb,
-.map-info-table .ability-list::-webkit-scrollbar-thumb {
-  background: rgb(240, 198, 116);
-  border-radius: 4px;
-}
-
-.info-table-life{
-  font-weight: 900;
-}
-
-.info-table-life-no{
-  color: red;
-}
-
-.info-table-life-yes{
-  color: green;
-
-}
-
-/* Right Column: Fixed Map Box */
-#minimapContainer {
-    width: 350px !important;
-    height: 350px !important;
-    flex: 0 0 350px; /* Forces it to stay exactly 350px width */
-    /*background: #BBC7D4;*/
-    border-radius: 4px;
-    overflow: hidden;
-    display: block;
-}
-
-#minimap {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    /* grid-template logic remains in main.js using 1fr */
-} /* Columns/Rows are set dynamically in JS */
-/* map info table */
 
 /* Log Popup Specifics */
 .log-popup-content {

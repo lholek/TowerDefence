@@ -1,7 +1,7 @@
 /* Map browser - the "☰" button next to the map select + its popup with a
    table of every standard map (js/game/MapBrowser.js). Same card look as
    the Settings / Version History popups, table styled like the map info
-   table under the select (.map-info-table in ui.css). */
+   map card under the select (css/map_select.css). */
 
 /* square game-styled button (.btn) right of the select, same height */
 .map-browser-btn {

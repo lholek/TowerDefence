@@ -101,29 +101,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Text from a map file goes into innerHTML below - escape it (custom maps are user files)
+    const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // Centered message across the whole map card (empty / error)
+    function showMapMessage(infoDiv, html) {
+        infoDiv.innerHTML = `<div class="mc-message">${html}</div>`;
+    }
+    const MAP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></svg>';
+
+    // Only the newest request may fill the card - quick prev / next clicks
+    // could otherwise let an older, slower fetch overwrite a newer map
+    let previewRequest = 0;
+
     async function updateMapPreview() {
         const infoDiv = document.getElementById('mapInfo');
-        infoDiv.classList.remove('is-empty');
-        infoDiv.innerHTML = 'Loading map info...';
+        const request = ++previewRequest;
 
         try {
             const isFileMode = modeFileBtn.classList.contains('active-mode');
             let map;
+            let label;
 
             if (isFileMode) {
                 if (!mapFileInput.files.length) {
-                    infoDiv.classList.add('is-empty');
-                    infoDiv.textContent = 'No map selected';
+                    showMapMessage(infoDiv, `${MAP_ICON}No map selected - choose a .json file above`);
                     return;
                 }
 
                 const data = await loadMapDataFromFile(mapFileInput.files[0]);
                 map = data.maps ? data.maps[0] : data;
+                label = (map && map.name) || mapFileInput.files[0].name.replace(/\.json$/i, '');
 
             } else {
                 if (!mapSelect.value) {
-                    infoDiv.classList.add('is-empty');
-                    infoDiv.textContent = 'No map selected';
+                    showMapMessage(infoDiv, `${MAP_ICON}No map selected`);
                     return;
                 }
 
@@ -131,75 +143,110 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!res.ok) throw new Error('Fetch failed');
                 const data = await res.json();
                 map = data.maps ? data.maps[0] : data;
+                label = mapSelect.selectedOptions[0] ? mapSelect.selectedOptions[0].textContent : '';
             }
 
+            if (request !== previewRequest) return;
             if (!map) {
-                infoDiv.textContent = 'Invalid map data.';
+                showMapMessage(infoDiv, `${MAP_ICON}Invalid map data.`);
                 return;
             }
 
-            // ✅ description
-            if (map.description && map.description.length) {
-                const d = map.description[0];
-                // Create a 2-column layout wrapper
-                infoDiv.innerHTML = `
-                    <div class="map-preview-wrapper">
-                        <div class="map-stats-col">
-                            <table class="map-info-table">
-                                <tr><td><b>Description:</b></td><td class="description">${d.descriptionText || '-'}</td></tr>
-                                <tr><td><b>Level Count:</b></td><td>${d['level count'] || '-'}</td></tr>
-                                <tr><td><b>Difficulty:</b></td><td>${d.difficulty || '-'}</td></tr>
-                                <tr><td><b>Map Size:</b></td><td>${d.map_size || '-'}</td></tr>
-                                <tr><td><b>Towers:</b></td><td>${Object.keys(map.towerTypes).length || '-'} types</td></tr>
-                                <tr><td><b>Extra Life:</b></td><td class="info-table-life ${map.extraLife === false ? 'info-table-life-no' : 'info-table-life-yes'}">${map.extraLife === false ? '✖' : '✔'}</td></tr>
-                                <tr>
-                                    <td><b>Abilities:</b></td>
-                                    <td class="ability-list">
-                                        ${map.abilities && map.abilities.length > 0
-                                            ? map.abilities.map(ab => `<span>${ab.ui.icon} ${ab.name}</span>`).join('<br>')
-                                            : '-'
-                                        }
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                                    
-                        <div id="minimapContainer">
-                            <div id="minimap"></div>
-                        </div>
-                    </div>
-                `;
-                                    
-                // Call the minimap render function
-                renderMinimap(map); 
-            } else {
-                infoDiv.textContent = 'No description available.';
-            }
-            renderMinimap(map);
+            renderMapCard(infoDiv, map, label);
 
         } catch (err) {
+            if (request !== previewRequest) return;
             // This displays your requested Alpha 0.1.4 error notice
-            infoDiv.innerHTML = `
+            showMapMessage(infoDiv, `
                 <div class="import-error-notice">
                     <h3>Malformed data for Map</h3>
-                    <p>Reason: ${err.message}</p>
+                    <p>Reason: ${escapeHtml(err.message)}</p>
                 </div>
-            `;
+            `);
         }
+    }
+
+    // The map card (css/map_select.css): name + subtitle + difficulty stars,
+    // description, 4 stats, abilities as chips and the minimap
+    function renderMapCard(infoDiv, map, label) {
+        const d = (map.description && map.description[0]) || {};
+        // "Adventure Map VI (Crossroads of Realms)" -> name + subtitle
+        const parts = /^(.*?)\s*\((.*)\)\s*$/.exec(label || '');
+        const name = parts ? parts[1] : (label || 'Unnamed map');
+        const subtitle = parts ? parts[2] : '';
+
+        const stars = [...String(d.difficulty || '')].filter(c => c === '⭐').length || parseInt(d.difficulty) || 0;
+        const star = (on) => `<svg class="${on ? 'on' : 'off'}" viewBox="0 0 24 24"><use href="#mcStar"/></svg>`;
+        const life = map.extraLife !== false;
+        const abilities = map.abilities || [];
+        const rows = (map.layout && map.layout.length) || 0;
+        const cols = (rows && map.layout[0].length) || 0;
+
+        infoDiv.innerHTML = `
+            <div class="mc-info">
+                <div class="mc-head">
+                    <div class="mc-name">
+                        <h3 title="${escapeHtml(name)}">${escapeHtml(name)}</h3>
+                        ${subtitle ? `<div class="mc-sub">${escapeHtml(subtitle)}</div>` : ''}
+                    </div>
+                    <div class="mc-stars" title="Difficulty ${stars} / 5">${[1, 2, 3, 4, 5].map(i => star(i <= stars)).join('')}</div>
+                </div>
+
+                <div class="mc-desc">${escapeHtml(d.descriptionText || 'No description.')}</div>
+
+                <div class="mc-stats">
+                    <div class="mc-stat">
+                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2.5h2V22H5zM7 3.5h12.5l-3.2 4.2 3.2 4.3H7z"/><path fill="#7a4a12" d="M10 6.2h4.5L13 7.7l1.5 1.6H10z"/></svg></span>
+                        <span class="mc-stat-text"><span class="mc-label">Levels</span><b class="mc-value">${escapeHtml(d['level count'] || '-')}</b></span>
+                    </div>
+                    <div class="mc-stat">
+                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3.4a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2z"/><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M16 8 13.2 13.2 8 16 10.8 10.8z"/><path fill="#7a4a12" d="M8 16 10.8 10.8 13.2 13.2z"/><circle cx="12" cy="12" r="1.1" fill="#4a2c0c"/></svg></span>
+                        <span class="mc-stat-text"><span class="mc-label">Map Size</span><b class="mc-value">${escapeHtml(String(d.map_size || '-').replace('x', ' × '))}</b></span>
+                    </div>
+                    <div class="mc-stat">
+                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span>
+                        <span class="mc-stat-text"><span class="mc-label">Towers</span><b class="mc-value">${Object.keys(map.towerTypes || {}).length || '-'}</b></span>
+                    </div>
+                    <div class="mc-stat ${life ? 'mc-life-yes' : 'mc-life-no'}">
+                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcHeart)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></span>
+                        <span class="mc-stat-text"><span class="mc-label">Extra Life</span><b class="mc-value" title="${life ? 'Yes' : 'No'}">${life ? '✔' : '✖'}</b></span>
+                    </div>
+                </div>
+
+                <div class="mc-abilities">
+                    <span class="mc-label">Abilities</span>
+                    <div class="mc-chips">${abilities.length
+                        ? abilities.map(ab => `<span class="mc-chip" title="${ab.type === 'global' ? 'Global' : 'Targeted'}">${escapeHtml((ab.ui && ab.ui.icon) || '')} ${escapeHtml(ab.name || '')}</span>`).join('')
+                        : '<span class="mc-none">No abilities on this map</span>'}</div>
+                </div>
+            </div>
+
+            <div class="mc-map">
+                <div class="mc-frame">
+                    <div class="mc-minimap"></div>
+                    ${cols ? `<span class="mc-size">${cols} × ${rows}</span>` : ''}
+                </div>
+            </div>
+        `;
+        fillMinimap(infoDiv.querySelector('.mc-minimap'), map);
     }
     // --- Logika přepínání režimů mapy (Select / File) ---
 
-    // Nastaví výchozí režim
-    mapSelectArea.style.display = 'block';
+    // Standard / Custom maps tabs - the brown thumb slides under the active one (.is-custom)
+    const mapModeTabs = document.getElementById('mapModeTabs');
+
+    // Nastaví výchozí režim ('' = the display from the CSS, flex for the select row)
+    mapSelectArea.style.display = '';
     fileUploadArea.style.display = 'none';
     modeSelectBtn.classList.add('active-mode');
     updateStartButtonState();
 
     modeSelectBtn.addEventListener('click', () => {
-        mapSelectArea.style.display = 'block';
+        mapSelectArea.style.display = '';
         fileUploadArea.style.display = 'none';
         modeSelectBtn.classList.add('active-mode');
         modeFileBtn.classList.remove('active-mode');
+        mapModeTabs.classList.remove('is-custom');
         updateStartButtonState();
         updateMapPreview(); // refresh preview from the SELECT dropdown
     });
@@ -209,9 +256,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         fileUploadArea.style.display = 'block';
         modeFileBtn.classList.add('active-mode');
         modeSelectBtn.classList.remove('active-mode');
+        mapModeTabs.classList.add('is-custom');
         updateStartButtonState();
         updateMapPreview(); // refresh preview - shows the already-chosen file again, or "No map selected"
     });
+
+    // Prev / next arrows around the map select - step through the list (wraps around).
+    // Setting .value keeps the custom select in sync (CustomSelect.js), the 'change'
+    // event runs the same listeners as picking the map by hand.
+    const stepMap = (dir) => {
+        const count = mapSelect.options.length;
+        if (!count) return;
+        const i = (mapSelect.selectedIndex + dir + count) % count;
+        mapSelect.value = mapSelect.options[i].value;
+        mapSelect.dispatchEvent(new Event('change'));
+    };
+    document.getElementById('prevMapBtn').addEventListener('click', () => stepMap(-1));
+    document.getElementById('nextMapBtn').addEventListener('click', () => stepMap(1));
 
     // Handle pause after leave window (již existující funkce)
     window.addEventListener('blur', pauseOnBlur);
@@ -389,38 +450,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    //Render minimap
- function renderMinimap(mapData) {
-  const mapInfo = document.getElementById('mapInfo');
-  if (!mapInfo) return;
-
-  // 1. Ensure the container is strictly 400x400 and ignores parent layout rules
-  let container = document.getElementById('minimapContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'minimapContainer';
-    container.style.cssText = `
-        width: 300px !important;
-        height: 300px !important;
-        overflow: hidden;
-        background: transparent;
-        border-radius: 8px;
-        margin: 10px auto;
-        display: block;
-        flex-shrink: 0; 
-    `;
-    mapInfo.appendChild(container);
-  }
-
-  let minimap = document.getElementById('minimap');
-  if (!minimap) {
-    minimap = document.createElement('div');
-    minimap.id = 'minimap';
-    container.appendChild(minimap);
-  }
-
-  fillMinimap(minimap, mapData);
-}
 
     mapSelect.addEventListener('change', updateMapPreview);
     mapFileInput.addEventListener('change', () => {

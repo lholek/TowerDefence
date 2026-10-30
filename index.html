@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/ui.css" />
   <link rel="stylesheet" href="css/ui_lore.css" />
   <link rel="stylesheet" href="css/map_browser.css" />
+  <link rel="stylesheet" href="css/map_select.css" />
   <link rel="stylesheet" href="css/settings.css" />
   <link rel="stylesheet" href="css/popups.css" />
   <link rel="stylesheet" href="css/fire-title.css" />
@@ -26,9 +27,15 @@
   <link rel="stylesheet" href="css/cursor.css" />
 </head>
 <body id="gameContainer">
-  <!-- Shared gradient for the Music Player icons (css/music.css .mp-fill) -->
+  <!-- Shared gradients for the Music Player icons (css/music.css .mp-fill) and the
+       map card in the menu (css/map_select.css - gold icons / stars, red heart) -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs><linearGradient id="mpGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="mpGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+      <linearGradient id="mcGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+      <linearGradient id="mcHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
+    </defs>
+    <symbol id="mcStar" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5-4.9-4.5 6.6-.8z"/></symbol>
   </svg>
 
   <!-- Start overlay -->
@@ -127,8 +134,24 @@
       </div>
 
       <h2 class="title title-select-map">Select map</h2>
-      <!-- Styled select on its own row -->
-      <div id="mapSelectionArea">
+
+      <!-- Standard / Custom maps (css/map_select.css .mc-tabs, switched in main.js) -->
+      <div class="mc-tabs" id="mapModeTabs">
+        <button id="modeSelectBtn" class="mc-tab active-mode" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></svg>
+          Standard maps
+        </button>
+        <button id="modeFileBtn" class="mc-tab" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2h9l5 5v15H5z"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".7" stroke-linejoin="round" d="M14 2v5h5"/><path fill="none" stroke="#4a2c0c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 18v-6.5M9.2 14l2.8-2.8 2.8 2.8"/></svg>
+          Custom maps
+        </button>
+      </div>
+
+      <!-- prev | map select | next | map browser -->
+      <div id="mapSelectionArea" class="mc-pick">
+        <button id="prevMapBtn" class="mc-arrow" type="button" title="Previous map">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <select id="mapSelect" class="styled-select">
           <option value="./games/00X_test.json">Test Map</option>
           <option value="./games/001_basicGame.json">Basic</option>
@@ -146,8 +169,11 @@
           <option value="./games/011_simpleRoads2.json">Simple Roads II</option>
           <option value="./games/00X_alltereins.json">All Tereains Map</option>
         </select>
+        <button id="nextMapBtn" class="mc-arrow" type="button" title="Next map">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <!-- opens the map browser (table of all maps) - js/game/MapBrowser.js -->
-        <button id="openMapBrowserBtn" class="btn map-browser-btn" type="button">
+        <button id="openMapBrowserBtn" class="btn map-browser-btn" type="button" title="All maps">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
         </button>
       </div>
@@ -161,14 +187,9 @@
           <input type="file" id="mapFileInput" accept=".json" class="file-upload-input">
         </label>
       </div>
-      
-      <div>
-          <button id="modeSelectBtn" class="btn active-mode">Standart Maps</button>
-          <button id="modeFileBtn" class="btn">Custom maps</button>
-      </div>
 
-      <!-- Map info -->
-      <div id="mapInfo" class="mapInfo"></div>
+      <!-- Map card - filled by main.js updateMapPreview (css/map_select.css) -->
+      <div id="mapInfo" class="mc-card"></div>
 
       <!-- 🗺️ Map Browser Popup - all standard maps in one table, click a row to select it -->
       <div id="mapBrowserPopup" class="menu-popup-overlay">
