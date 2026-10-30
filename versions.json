@@ -84,7 +84,8 @@
             "The map card keeps one height for every map, so the menu no longer jumps",
             "New arrows next to the map select to step through the maps",
             "New Standard / Custom maps switch with icons",
-            "A custom map shows its own name from the file"
+            "A custom map shows its own name from the file",
+            "New look when no custom map is chosen yet - the map card shows a gold map icon with 'No map selected - choose a .json file above'"
           ]
         },
         {
