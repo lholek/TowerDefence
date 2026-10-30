@@ -2018,6 +2018,11 @@
     <iframe class="mock-frame" data-template="tplManual" data-autoheight title="Guardian's Manual mockup"></iframe>
   </div>
 
+  <div class="bar-section">
+    <h2 class="section-label">Music Player — current vs new</h2>
+    <iframe class="mock-frame" data-template="tplMusic" data-autoheight title="Music Player mockup"></iframe>
+  </div>
+
   <style>
     .mock-frame{
       display:block;
@@ -4247,6 +4252,727 @@
     const target = grid.querySelector(`.tutorial-card${isNew ? '.mn-new' : ':not(.mn-new)'}[data-page="${btn.dataset.go}"]`);
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
+</script>
+  </template>
+
+  <template id="tplMusic">
+<meta charset="UTF-8" />
+<title>Music Player</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<!-- A) the old css/music.css player rules (before Beta 1.1), kept here so column A stays as it was -->
+<style>
+.music-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px !important;
+}
+
+.music-title {
+  flex: 1;
+  text-align: center;
+  color: #ddd;
+  font-weight: bold;
+}
+
+.btn-music {
+  font-weight: bold;
+  padding: 4px 10px;
+}
+
+.music-progress {
+  text-align: center;
+  margin-bottom: 16px !important;
+  margin-top: 16px !important;
+}
+
+#musicProgressBarContainer {
+  height: 6px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+  cursor: pointer; /* clickable to seek (see Music.js's seekMusic) - was missing, unlike its .menu-music-progress-container sibling */
+}
+
+#musicProgressBar {
+  margin: unset;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+  transition: width 0.1s linear;
+}
+
+#menuMusicProgressBar {
+  height: 6px;
+  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.musicTime {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.music-volume {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+#musicVolume {
+  flex: 1;
+}
+
+.musicVolume {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.musicVolume::-webkit-slider-thumb,
+.musicVolume::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 2px solid gold;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.musicVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid gold;
+  cursor: pointer;
+}
+
+.menu-music-progress-container {
+  height: 6px;
+  background: rgba(255, 255, 255); /* Semi-transparent white */
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+  cursor: pointer; /* Shows the user they can click it */
+}
+
+/* This styles the gold moving bar for BOTH players */
+.menu-music-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+  transition: width 0.1s linear;
+}
+
+.menu-music-button{
+  min-width: 62%;
+  white-space: nowrap;
+}
+
+.music-button{
+  min-width: 60%;
+}
+</style>
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  :root{ --gold:#f0c674; --gold-soft:#f3e5ab; }
+  html, body{ margin:0; padding:0; background:#1E1E1E; color:#eee; font-family: Arial, sans-serif; }
+  body{ padding:30px 34px 50px; }
+  h1{ margin:0 0 6px; color:var(--gold); font-family: Georgia, 'Times New Roman', serif; }
+  .page-note{ margin:0 0 26px; color:#bbb; }
+  .section-label{ margin:0; color:var(--gold); font-size:18px; font-family: Georgia, 'Times New Roman', serif; }
+  .section-desc{ margin:4px 0 0; max-width:440px; color:#aaa; font-size:14px; line-height:1.4; }
+
+  .mp-grid{
+    display:grid;
+    grid-template-columns:420px 640px;
+    gap:20px 80px;
+    align-items:start;
+  }
+  /* the dropdowns are normally absolute under the Music button - here they just sit in the column */
+  .mp-stage{ position:relative; height:440px; }
+  .mp-stage .pop-under-menu{ display:block !important; top:0; }
+
+  /* ================================================================
+     B) NEW - namespaced "mp-"
+     ================================================================ */
+  .mp-box{
+    width:360px;
+    box-sizing:border-box;
+    padding:14px 16px 16px;
+    border-color:#8B4513;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(240,198,116,.10), transparent 70%),
+      var(--main-bg-color);
+  }
+  .mp-box *{ box-sizing:border-box; }
+
+  .mp-head{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:12px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+  }
+  .mp-head svg{ width:20px; height:20px; }
+  .mp-head h3{ font-family:'Cinzel', Georgia, serif; font-size:17px; letter-spacing:.5px; }
+
+  /* now playing: equalizer + title + "Track 3 of 12" */
+  .mp-now{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 12px;
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+  }
+  .mp-eq{
+    flex:0 0 auto;
+    display:flex;
+    align-items:flex-end;
+    gap:3px;
+    width:34px;
+    height:30px;
+    padding:4px 5px;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+  }
+  .mp-eq i{
+    flex:1;
+    height:100%;
+    border-radius:1px;
+    background:linear-gradient(180deg, #ffe7a3, #c58a2e);
+    transform-origin:bottom;
+    transform:scaleY(.25);
+    animation:mp-eq 0.9s ease-in-out infinite alternate;
+    animation-play-state:paused;
+  }
+  .mp-eq i:nth-child(2){ animation-duration:.65s; animation-delay:-.3s; }
+  .mp-eq i:nth-child(3){ animation-duration:1.1s; animation-delay:-.6s; }
+  .mp-eq i:nth-child(4){ animation-duration:.75s; animation-delay:-.15s; }
+  .is-playing .mp-eq i{ animation-play-state:running; }
+  @keyframes mp-eq{ from{ transform:scaleY(.2); } to{ transform:scaleY(1); } }
+
+  .mp-meta{ min-width:0; flex:1; }
+  .mp-title{
+    color:var(--gold-soft);
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:700;
+    font-size:15px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mp-sub{ margin-top:2px; color:#a8957a; font-size:12px; }
+
+  /* progress: dark track, gold fill (scaleX) + knob (translateX) - no layout per frame */
+  .mp-seek{
+    display:grid;
+    grid-template-columns:38px 1fr 38px;
+    align-items:center;
+    gap:8px;
+    margin:14px 0 6px;
+    font-size:12px;
+    color:#aaa;
+    font-variant-numeric:tabular-nums;
+  }
+  .mp-seek span:last-child{ text-align:right; }
+  .mp-bar{
+    position:relative;
+    height:18px;
+    cursor:pointer;
+    touch-action:none;
+  }
+  .mp-bar-track, .mp-bar-fill{
+    position:absolute;
+    left:0; right:0; top:6px;
+    height:6px;
+    border-radius:4px;
+  }
+  .mp-bar-track{ background:rgba(0,0,0,.45); box-shadow:inset 0 1px 2px rgba(0,0,0,.6); }
+  .mp-bar-fill{
+    background:linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
+    transform-origin:left;
+    transform:scaleX(0);
+  }
+  .mp-bar-knob{
+    position:absolute;
+    left:0; right:0; top:2px;
+    height:14px;
+    transform:translateX(0);
+    pointer-events:none;
+  }
+  .mp-bar-knob::before{
+    content:"";
+    position:absolute;
+    left:-7px;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid gold;
+    box-shadow:0 1px 3px rgba(0,0,0,.6);
+    transform:scale(0);
+    transition:transform .15s ease;
+  }
+  .mp-bar:hover .mp-bar-knob::before, .mp-bar.is-dragging .mp-bar-knob::before{ transform:scale(1); }
+
+  /* transport: shuffle | prev | PLAY | next | repeat-one */
+  .mp-transport{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    margin:4px 0 14px;
+  }
+  .mp-ctrl{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:38px; height:38px;
+    padding:0;
+    border-radius:50%;
+    border:1px solid rgba(240,198,116,.35);
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+    color:#a8957a;
+    cursor:pointer;
+    transition:transform .1s ease, box-shadow .2s ease, color .2s ease;
+  }
+  .mp-ctrl:hover{ transform:translateY(-1px); box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 0 10px rgba(243,229,171,.3); }
+  .mp-ctrl:active{ transform:translateY(1px); }
+  .mp-ctrl svg{ width:20px; height:20px; }
+  .mp-ctrl .mp-fill{ fill:url(#mpGold); stroke:#4a2c0c; stroke-width:.8; stroke-linejoin:round; }
+  .mp-ctrl .mp-line{ fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* toggles (shuffle / repeat one): dull when off, gold + dot when on */
+  .mp-toggle{ position:relative; width:32px; height:32px; }
+  .mp-toggle svg{ width:18px; height:18px; }
+  .mp-toggle.is-on{ color:var(--gold); border-color:rgba(240,198,116,.7); }
+  .mp-toggle.is-on::after{
+    content:"";
+    position:absolute;
+    bottom:-7px; left:50%;
+    width:4px; height:4px; margin-left:-2px;
+    border-radius:50%;
+    background:var(--gold);
+  }
+  .mp-one{ font:bold 8px Arial, sans-serif; fill:currentColor; stroke:none; }
+
+  /* the big play button - the game's brown .btn look, round */
+  .mp-play{
+    width:54px; height:54px;
+    border:2px solid #5c2e0e;
+    background:radial-gradient(circle at 50% 30%, #a0522d, #8B4513 60%, #6e3510);
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,.3),
+      inset 0 -8px 12px rgba(0,0,0,.25),
+      0 4px 0 #4a250b,
+      0 8px 14px rgba(0,0,0,.4);
+  }
+  .mp-play:hover{ box-shadow:inset 0 2px 1px rgba(255,255,255,.35), inset 0 -8px 12px rgba(0,0,0,.2), 0 4px 0 #4a250b, 0 0 16px rgba(243,229,171,.4); }
+  .mp-play:active{ transform:translateY(3px); box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 1px 0 #4a250b; }
+  .mp-play svg{ width:26px; height:26px; }
+  .mp-play .mp-i-pause{ display:none; }
+  .is-playing .mp-play .mp-i-play{ display:none; }
+  .is-playing .mp-play .mp-i-pause{ display:inline; }
+
+  /* volume: speaker (click = mute) + gold-filled slider + % */
+  .mp-vol{
+    display:grid;
+    grid-template-columns:32px 1fr 38px;
+    align-items:center;
+    gap:10px;
+    padding:8px 10px;
+    background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    border-radius:8px;
+  }
+  .mp-vol .mp-ctrl{ width:32px; height:32px; color:var(--gold); }
+  .mp-vol .mp-ctrl svg{ width:18px; height:18px; }
+  .mp-vol .mp-i-mute{ display:none; }
+  .is-muted .mp-vol .mp-i-wave{ display:none; }
+  .is-muted .mp-vol .mp-i-mute{ display:inline; }
+  .is-muted .mp-vol .mp-ctrl{ color:#ef6f5c; }
+  .mp-vol-pct{ text-align:right; font-size:12px; color:#aaa; font-variant-numeric:tabular-nums; }
+  .mp-range{
+    -webkit-appearance:none;
+    appearance:none;
+    width:100%;
+    height:6px;
+    margin:0;
+    border-radius:4px;
+    background:linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90)) 0 0 / var(--v, 50%) 100% no-repeat, rgba(0,0,0,.45);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.6);
+    outline:none;
+    cursor:pointer;
+  }
+  .is-muted .mp-range{ filter:grayscale(1) brightness(.7); }
+  .mp-range::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid gold;
+    box-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+
+  /* playlist - folds open under the volume */
+  .mp-list-toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    margin-top:10px;
+    padding:6px 4px;
+    background:none;
+    border:0;
+    border-top:1px solid rgba(240,198,116,.2);
+    color:var(--gold);
+    font:700 13px 'Cinzel', Georgia, serif;
+    cursor:pointer;
+  }
+  .mp-list-toggle svg{ width:12px; height:12px; transition:transform .2s ease; }
+  .mp-list-toggle .mp-count{ margin-left:auto; color:#a8957a; font:12px Arial, sans-serif; }
+  .is-list-open .mp-list-toggle svg{ transform:rotate(180deg); }
+
+  /* playlist panel - slides out on the right of the player, as tall as the player,
+     so the player itself never grows (in the game: flip to the left near the screen edge) */
+  .mp-side{
+    display:none;
+    flex-direction:column;
+    position:absolute;
+    top:-2px; bottom:-2px;
+    left:calc(100% + 6px);
+    width:250px;
+    padding:14px 10px 12px 14px;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(240,198,116,.10), transparent 70%),
+      var(--main-bg-color);
+    border-radius:8px;
+    box-shadow:0 4px 15px rgba(0,0,0,.5);
+  }
+  .is-list-open .mp-side{ display:flex; animation:mp-side-in .2s ease-out; }
+  @keyframes mp-side-in{ from{ opacity:0; transform:translateX(-10px); } to{ opacity:1; transform:none; } }
+  .mp-side-head{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin:0 4px 8px 0;
+    padding-bottom:9px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+    color:var(--gold);
+    font:700 15px 'Cinzel', Georgia, serif;
+  }
+  .mp-side-head .mp-count{ margin-left:auto; color:#a8957a; font:12px Arial, sans-serif; }
+  .mp-list{
+    flex:1;
+    min-height:0;
+    margin:0;
+    padding:0 4px 0 0;
+    overflow-y:auto;
+    list-style:none;
+  }
+  .mp-list::-webkit-scrollbar{ width:6px; }
+  .mp-list::-webkit-scrollbar-thumb{ background:rgb(240,198,116); border-radius:4px; }
+  .mp-list li{
+    display:grid;
+    grid-template-columns:22px 1fr auto;
+    align-items:center;
+    gap:8px;
+    padding:5px 8px;
+    border-radius:6px;
+    color:#ddd;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .mp-list li:hover{ background:rgba(240,198,116,.08); }
+  .mp-list li .mp-n{ color:#7d6c55; font-size:11px; text-align:right; font-variant-numeric:tabular-nums; }
+  .mp-list li .mp-d{ color:#8c7b63; font-size:11px; font-variant-numeric:tabular-nums; }
+  .mp-list li.is-current{ background:rgba(240,198,116,.14); color:var(--gold-soft); font-weight:bold; }
+  .mp-list li.is-current .mp-n{ color:var(--gold); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="mpGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+  </defs>
+</svg>
+
+<h1>Music Player - current vs new</h1>
+<p class="page-note">The same dropdown is in the main menu (Music) and in the game's top bar (Music). Column B really plays the game's tracks - press play.</p>
+
+<div class="mp-grid">
+  <div>
+    <h2 class="section-label">A) Current (index.html #musicDropdown)</h2>
+    <p class="section-desc">As it is in the game now - unchanged.</p>
+  </div>
+  <div>
+    <h2 class="section-label">B) New proposal</h2>
+    <p class="section-desc">Now-playing panel with a gold equalizer that moves only while music plays, clean track names + "Track 3 of 12", dark seek bar with a knob and both times, round transport buttons (big brown Play / Pause), Shuffle and Repeat one, speaker icon that mutes, volume in %, a playlist that slides out on the right (click a track to play it - the player itself keeps its size) and a short fade between tracks instead of a hard cut.</p>
+  </div>
+
+  <!-- ============================================================
+       A) CURRENT - copied 1:1 from index.html (game top bar)
+       ============================================================ -->
+  <div class="mp-stage">
+    <div class="pop-under-menu" style="left:0; transform:none;">
+      <div class="box">
+        <h3 class="cl-primary pb-1">Music Player</h3>
+        <div class="music-controls">
+          <button class="btn btn-music">&lt;&lt;</button>
+          <span class="music-title">medieval_003</span>
+          <button class="btn btn-music">&gt;&gt;</button>
+        </div>
+        <div class="music-progress">
+          <div id="musicProgressBarContainer" class="progress-container">
+            <div id="musicProgressBar" class="progress-bar" style="width:38%"></div>
+          </div>
+          <div class="musicTime">01:12 / 03:09</div>
+        </div>
+        <div class="music-volume">
+          <button class="btn music-button">Music: ON</button>
+          <input type="range" class="musicVolume" min="0" max="1" step="0.01" value="0.5">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       B) NEW
+       ============================================================ -->
+  <div class="mp-stage">
+    <div class="pop-under-menu mp-box" id="mpPlayer" style="left:0; transform:none;">
+      <div class="mp-head">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mpGold)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/></svg>
+        <h3>Music Player</h3>
+      </div>
+
+      <div class="mp-now">
+        <div class="mp-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="mp-meta">
+          <div class="mp-title" id="mpTitle">Medieval 001</div>
+          <div class="mp-sub" id="mpSub">Track 1 of 12</div>
+        </div>
+      </div>
+
+      <div class="mp-seek">
+        <span id="mpCur">0:00</span>
+        <div class="mp-bar" id="mpBar">
+          <div class="mp-bar-track"></div>
+          <div class="mp-bar-fill" id="mpFill"></div>
+          <div class="mp-bar-knob" id="mpKnob"></div>
+        </div>
+        <span id="mpDur">0:00</span>
+      </div>
+
+      <div class="mp-transport">
+        <button class="mp-ctrl mp-toggle" id="mpShuffle" title="Shuffle">
+          <svg viewBox="0 0 24 24"><path class="mp-line" d="M3 7h3.5l9 10H21M3 17h3.5l2.6-2.9M13 9.9 15.5 7H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>
+        </button>
+        <button class="mp-ctrl" id="mpPrev" title="Previous">
+          <svg viewBox="0 0 24 24"><path class="mp-fill" d="M5 5h3v14H5zM20 5v14L9 12z"/></svg>
+        </button>
+        <button class="mp-ctrl mp-play" id="mpToggle" title="Play / Pause">
+          <svg viewBox="0 0 24 24"><path class="mp-fill mp-i-play" d="M8 4.5v15l12-7.5z"/><path class="mp-fill mp-i-pause" d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z"/></svg>
+        </button>
+        <button class="mp-ctrl" id="mpNext" title="Next">
+          <svg viewBox="0 0 24 24"><path class="mp-fill" d="M16 5h3v14h-3zM4 5v14l11-7z"/></svg>
+        </button>
+        <button class="mp-ctrl mp-toggle" id="mpRepeat" title="Repeat this track">
+          <svg viewBox="0 0 24 24"><path class="mp-line" d="M4 12V9.5A3.5 3.5 0 0 1 7.5 6H19M16 3l3 3-3 3M20 12v2.5a3.5 3.5 0 0 1-3.5 3.5H5M8 21l-3-3 3-3"/><text class="mp-one" x="12" y="14.8" text-anchor="middle">1</text></svg>
+        </button>
+      </div>
+
+      <div class="mp-vol">
+        <button class="mp-ctrl" id="mpMute" title="Mute">
+          <svg viewBox="0 0 24 24"><path class="mp-fill" d="M3 9h4l5-4v14l-5-4H3z"/><path class="mp-line mp-i-wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mp-line mp-i-mute" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+        </button>
+        <input type="range" class="mp-range" id="mpVolume" min="0" max="1" step="0.01" value="0.5">
+        <span class="mp-vol-pct" id="mpVolPct">50%</span>
+      </div>
+
+      <button class="mp-list-toggle" id="mpListToggle">
+        Playlist
+        <span class="mp-count" id="mpCount">12 tracks</span>
+        <svg viewBox="0 0 12 12"><path d="M4 2l5 4-5 4z" fill="currentColor"/></svg>
+      </button>
+
+      <div class="mp-side">
+        <div class="mp-side-head">Playlist <span class="mp-count" id="mpSideCount">12 tracks</span></div>
+        <ul class="mp-list" id="mpList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const DIR = '../assets/sounds/background/';
+  const TRACKS = [
+    ['medieval_001.mp3', 'Medieval 001'], ['medieval_002.mp3', 'Medieval 002'], ['medieval_003.mp3', 'Medieval 003'],
+    ['medieval_004.mp3', 'Medieval 004'], ['medieval_005.mp3', 'Medieval 005'], ['medieval_006.mp3', 'Medieval 006'],
+    ['medieval_007.mp3', 'Medieval 007'], ['medieval_008.mp3', 'Medieval 008'],
+    ['medieval_009_Medieval-Abbey.mp3', 'Medieval Abbey'], ['medieval_010_Medieval-Background.mp3', 'Medieval Background'],
+    ['medieval_011_Medieval-Escape.mp3', 'Medieval Escape'], ['medieval_012_The-Minstrels-Return.mp3', "The Minstrel's Return"]
+  ];
+  const FADE = 600; // ms - fade out / in between tracks instead of a hard cut
+
+  const player = $('mpPlayer');
+  const audio = new Audio();
+  let index = 0, volume = 0.5, muted = false, shuffle = false, repeatOne = false, dragging = false, fadeRaf = 0;
+
+  const fmt = s => isFinite(s) ? Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0') : '0:00';
+
+  // playlist rows (durations from metadata, loaded once when the list is first opened)
+  const list = $('mpList');
+  TRACKS.forEach(([, name], i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="mp-n">${i + 1}</span><span>${name}</span><span class="mp-d">-:--</span>`;
+    li.addEventListener('click', () => go(i, true));
+    list.appendChild(li);
+  });
+  $('mpCount').textContent = $('mpSideCount').textContent = TRACKS.length + ' tracks';
+  let durationsLoaded = false;
+  function loadDurations() {
+    if (durationsLoaded) return;
+    durationsLoaded = true;
+    TRACKS.forEach(([file], i) => {
+      const a = new Audio();
+      a.preload = 'metadata';
+      a.addEventListener('loadedmetadata', () => { list.children[i].querySelector('.mp-d').textContent = fmt(a.duration); a.src = ''; }, { once: true });
+      a.src = DIR + file;
+    });
+  }
+
+  function syncTrack() {
+    $('mpTitle').textContent = TRACKS[index][1];
+    $('mpSub').textContent = `Track ${index + 1} of ${TRACKS.length}`;
+    [...list.children].forEach((li, i) => li.classList.toggle('is-current', i === index));
+  }
+  function syncPlay() { player.classList.toggle('is-playing', !audio.paused); }
+  function setProgress(p) {
+    $('mpFill').style.transform = `scaleX(${p})`;
+    $('mpKnob').style.transform = `translateX(${p * 100}%)`;
+  }
+
+  function fadeTo(target, ms, done) {
+    cancelAnimationFrame(fadeRaf);
+    const from = audio.volume, t0 = performance.now();
+    const step = now => {
+      const k = Math.min(1, (now - t0) / ms);
+      audio.volume = Math.min(1, Math.max(0, from + (target - from) * k));
+      if (k < 1) fadeRaf = requestAnimationFrame(step); else if (done) done();
+    };
+    fadeRaf = requestAnimationFrame(step);
+  }
+  const outVolume = () => muted ? 0 : volume;
+
+  function load(i) {
+    index = (i + TRACKS.length) % TRACKS.length;
+    audio.src = DIR + TRACKS[index][0];
+    setProgress(0);
+    $('mpCur').textContent = '0:00';
+    $('mpDur').textContent = '0:00';
+    syncTrack();
+  }
+  function go(i, play) {
+    const start = () => {
+      load(i);
+      if (play) { audio.volume = 0; audio.play().then(() => fadeTo(outVolume(), FADE)).catch(() => {}); }
+      syncPlay();
+    };
+    if (!audio.paused) fadeTo(0, FADE, start); else start();
+  }
+  const nextIndex = () => {
+    if (!shuffle) return index + 1;
+    let n; do { n = Math.floor(Math.random() * TRACKS.length); } while (TRACKS.length > 1 && n === index);
+    return n;
+  };
+
+  $('mpToggle').addEventListener('click', () => {
+    if (audio.paused) { audio.volume = 0; audio.play().then(() => fadeTo(outVolume(), 250)).catch(() => {}); }
+    else fadeTo(0, 250, () => { audio.pause(); syncPlay(); });
+    syncPlay();
+  });
+  $('mpPrev').addEventListener('click', () => {
+    // past the first 3 s "previous" restarts the track, like most players
+    if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+    go(index - 1, !audio.paused);
+  });
+  $('mpNext').addEventListener('click', () => go(nextIndex(), !audio.paused));
+  $('mpShuffle').addEventListener('click', e => { shuffle = !shuffle; e.currentTarget.classList.toggle('is-on', shuffle); });
+  $('mpRepeat').addEventListener('click', e => { repeatOne = !repeatOne; audio.loop = repeatOne; e.currentTarget.classList.toggle('is-on', repeatOne); });
+
+  audio.addEventListener('ended', () => go(nextIndex(), true));
+  audio.addEventListener('loadedmetadata', () => { $('mpDur').textContent = fmt(audio.duration); });
+  audio.addEventListener('timeupdate', () => {
+    if (dragging || !audio.duration) return;
+    setProgress(audio.currentTime / audio.duration);
+    $('mpCur').textContent = fmt(audio.currentTime);
+  });
+
+  // seek: click or drag along the bar
+  const bar = $('mpBar');
+  const ratioAt = e => { const r = bar.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); };
+  bar.addEventListener('pointerdown', e => {
+    if (!audio.duration) return;
+    dragging = true;
+    bar.classList.add('is-dragging');
+    bar.setPointerCapture(e.pointerId);
+    setProgress(ratioAt(e));
+  });
+  bar.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const p = ratioAt(e);
+    setProgress(p);
+    $('mpCur').textContent = fmt(p * audio.duration);
+  });
+  bar.addEventListener('pointerup', e => {
+    if (!dragging) return;
+    dragging = false;
+    bar.classList.remove('is-dragging');
+    audio.currentTime = ratioAt(e) * audio.duration;
+  });
+
+  // volume + mute
+  const range = $('mpVolume');
+  function syncVolume() {
+    range.style.setProperty('--v', (volume * 100) + '%');
+    $('mpVolPct').textContent = muted ? 'Muted' : Math.round(volume * 100) + '%';
+    player.classList.toggle('is-muted', muted);
+    cancelAnimationFrame(fadeRaf);
+    audio.volume = outVolume();
+  }
+  range.addEventListener('input', () => { volume = +range.value; muted = volume === 0; syncVolume(); });
+  $('mpMute').addEventListener('click', () => {
+    muted = !muted;
+    if (!muted && volume === 0) { volume = 0.5; range.value = 0.5; }
+    syncVolume();
+  });
+
+  $('mpListToggle').addEventListener('click', () => { loadDurations(); player.classList.toggle('is-list-open'); });
+
+  load(0);
+  syncVolume();
+})();
 </script>
   </template>
 

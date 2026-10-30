@@ -26,6 +26,10 @@
   <link rel="stylesheet" href="css/cursor.css" />
 </head>
 <body id="gameContainer">
+  <!-- Shared gradient for the Music Player icons (css/music.css .mp-fill) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs><linearGradient id="mpGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs>
+  </svg>
 
   <!-- Start overlay -->
   <div id="startOverlay" class="overlay-center">
@@ -56,24 +60,65 @@
       <div class="menu-row">
         <div class="dropdown-wrapper">
           <button id="menuMusicBtn" class="btn btn-menu">Music</button>
-          <div id="menuMusicDropdown" class="pop-under-menu" style="display: none;">
-            <div id="menuMusicBox" class="box">
-              <h3 class="cl-primary pb-1">Music Player</h3>
-              <div class="music-controls">
-                <button id="menuMusicPrev" class="btn btn-music">«</button>
-                <div id="menuMusicTitle" class="music-title">Loading...</div>
-                <button id="menuMusicNext" class="btn btn-music">»</button>
+          <div id="menuMusicDropdown" class="pop-under-menu mp-box" style="display: none;">
+            <div class="mp-head">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mpGold)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/></svg>
+              <h3>Music Player</h3>
+            </div>
+          
+            <div class="mp-now">
+              <div class="mp-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+              <div class="mp-meta">
+                <div class="mp-title" data-mp="title">Loading...</div>
+                <div class="mp-sub" data-mp="sub"></div>
               </div>
-              <div class="music-progress">
-                <div class="menu-music-progress-container">
-                  <div id="menuMusicProgressBar" class="menu-music-progress-bar"></div>
-                </div>
-                <div id="menuMusicTime" class="musicTime">00:00 / 00:00</div>
+            </div>
+          
+            <div class="mp-seek">
+              <span data-mp="cur">0:00</span>
+              <div class="mp-bar" data-mp="bar">
+                <div class="mp-bar-track"></div>
+                <div class="mp-bar-fill" data-mp="fill"></div>
+                <div class="mp-bar-knob" data-mp="knob"></div>
               </div>
-              <div class="music-volume">
-                <button id="menuMusicToggle" class="menu-music-button btn w-100 mt-1">Music: Off</button>
-                <input type="range" id="menuMusicVolume" class="musicVolume" min="0" max="1" step="0.01">
-              </div>
+              <span data-mp="dur">0:00</span>
+            </div>
+          
+            <div class="mp-transport">
+              <button class="mp-ctrl mp-toggle" data-mp="shuffle" title="Shuffle" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-line" d="M3 7h3.5l9 10H21M3 17h3.5l2.6-2.9M13 9.9 15.5 7H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>
+              </button>
+              <button class="mp-ctrl" data-mp="prev" title="Previous" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-fill" d="M5 5h3v14H5zM20 5v14L9 12z"/></svg>
+              </button>
+              <button class="mp-ctrl mp-play" data-mp="toggle" title="Play / Pause" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-fill mp-i-play" d="M8 4.5v15l12-7.5z"/><path class="mp-fill mp-i-pause" d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z"/></svg>
+              </button>
+              <button class="mp-ctrl" data-mp="next" title="Next" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-fill" d="M16 5h3v14h-3zM4 5v14l11-7z"/></svg>
+              </button>
+              <button class="mp-ctrl mp-toggle" data-mp="repeat" title="Repeat this track" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-line" d="M4 12V9.5A3.5 3.5 0 0 1 7.5 6H19M16 3l3 3-3 3M20 12v2.5a3.5 3.5 0 0 1-3.5 3.5H5M8 21l-3-3 3-3"/><text class="mp-one" x="12" y="14.8" text-anchor="middle">1</text></svg>
+              </button>
+            </div>
+          
+            <div class="mp-vol">
+              <button class="mp-ctrl" data-mp="mute" title="Mute" type="button">
+                <svg viewBox="0 0 24 24"><path class="mp-fill" d="M3 9h4l5-4v14l-5-4H3z"/><path class="mp-line mp-i-wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mp-line mp-i-mute" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+              </button>
+              <input type="range" class="mp-range" data-mp="volume" min="0" max="1" step="0.01" value="0.5">
+              <span class="mp-vol-pct" data-mp="volPct">50%</span>
+            </div>
+          
+            <button class="mp-list-toggle" data-mp="listToggle" type="button">
+              Playlist
+              <span class="mp-count" data-mp="count"></span>
+              <svg viewBox="0 0 12 12"><path d="M4 2l5 4-5 4z" fill="currentColor"/></svg>
+            </button>
+          
+            <div class="mp-side">
+              <div class="mp-side-head">Playlist <span class="mp-count" data-mp="count"></span></div>
+              <ul class="mp-list" data-mp="list"></ul>
             </div>
           </div>
         </div>
@@ -634,25 +679,66 @@
               <svg class="concept-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ntuNoteG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient></defs><path fill="url(#ntuNoteG)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/></svg>
               <span class="concept-tab-label">Music</span>
             </button>
-            <div id="musicDropdown" class="pop-under-menu" style="display: none;">
-                <div id="musicBox" class="box">
-                    <h3 class="cl-primary pb-1">Music Player</h3>
-                    <div class="music-controls">
-                        <button id="musicPrev" class="btn btn-music">&lt;&lt;</button>
-                        <span id="musicTitle" class="music-title">No track loaded</span>
-                        <button id="musicNext" class="btn btn-music">&gt;&gt;</button>
-                    </div>
-                    <div class="music-progress">
-                        <div id="musicProgressBarContainer" class="progress-container">
-                            <div id="musicProgressBar" class="progress-bar"></div>
-                        </div>
-                        <div id="musicTime" class="musicTime">00:00 / 00:00</div>
-                    </div>
-                    <div class="music-volume">
-                        <button id="musicToggle" class="btn music-button">Music: OFF</button>
-                        <input type="range" id="musicVolume" class="musicVolume" min="0" max="1" step="0.01" value="0.5">
-                    </div>
+            <div id="musicDropdown" class="pop-under-menu mp-box" style="display: none;">
+              <div class="mp-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mpGold)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/></svg>
+                <h3>Music Player</h3>
+              </div>
+            
+              <div class="mp-now">
+                <div class="mp-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                <div class="mp-meta">
+                  <div class="mp-title" data-mp="title">Loading...</div>
+                  <div class="mp-sub" data-mp="sub"></div>
                 </div>
+              </div>
+            
+              <div class="mp-seek">
+                <span data-mp="cur">0:00</span>
+                <div class="mp-bar" data-mp="bar">
+                  <div class="mp-bar-track"></div>
+                  <div class="mp-bar-fill" data-mp="fill"></div>
+                  <div class="mp-bar-knob" data-mp="knob"></div>
+                </div>
+                <span data-mp="dur">0:00</span>
+              </div>
+            
+              <div class="mp-transport">
+                <button class="mp-ctrl mp-toggle" data-mp="shuffle" title="Shuffle" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-line" d="M3 7h3.5l9 10H21M3 17h3.5l2.6-2.9M13 9.9 15.5 7H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>
+                </button>
+                <button class="mp-ctrl" data-mp="prev" title="Previous" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-fill" d="M5 5h3v14H5zM20 5v14L9 12z"/></svg>
+                </button>
+                <button class="mp-ctrl mp-play" data-mp="toggle" title="Play / Pause" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-fill mp-i-play" d="M8 4.5v15l12-7.5z"/><path class="mp-fill mp-i-pause" d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z"/></svg>
+                </button>
+                <button class="mp-ctrl" data-mp="next" title="Next" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-fill" d="M16 5h3v14h-3zM4 5v14l11-7z"/></svg>
+                </button>
+                <button class="mp-ctrl mp-toggle" data-mp="repeat" title="Repeat this track" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-line" d="M4 12V9.5A3.5 3.5 0 0 1 7.5 6H19M16 3l3 3-3 3M20 12v2.5a3.5 3.5 0 0 1-3.5 3.5H5M8 21l-3-3 3-3"/><text class="mp-one" x="12" y="14.8" text-anchor="middle">1</text></svg>
+                </button>
+              </div>
+            
+              <div class="mp-vol">
+                <button class="mp-ctrl" data-mp="mute" title="Mute" type="button">
+                  <svg viewBox="0 0 24 24"><path class="mp-fill" d="M3 9h4l5-4v14l-5-4H3z"/><path class="mp-line mp-i-wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="mp-line mp-i-mute" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+                </button>
+                <input type="range" class="mp-range" data-mp="volume" min="0" max="1" step="0.01" value="0.5">
+                <span class="mp-vol-pct" data-mp="volPct">50%</span>
+              </div>
+            
+              <button class="mp-list-toggle" data-mp="listToggle" type="button">
+                Playlist
+                <span class="mp-count" data-mp="count"></span>
+                <svg viewBox="0 0 12 12"><path d="M4 2l5 4-5 4z" fill="currentColor"/></svg>
+              </button>
+            
+              <div class="mp-side">
+                <div class="mp-side-head">Playlist <span class="mp-count" data-mp="count"></span></div>
+                <ul class="mp-list" data-mp="list"></ul>
+              </div>
             </div>
         </div>
 

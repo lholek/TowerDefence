@@ -50,7 +50,7 @@ html, body {
    <option>s, range sliders (music volume AND the FPS target slider -
    any current or future input[type="range"], not just specific ones),
    and the other clickable widgets that aren't <button>s (tower/ability
-   cards, the file-picker row, the music progress bars).
+   cards, the file-picker row, the music seek bars + playlist rows).
    .version-title.first-version is excluded - it's just a heading, not
    actually clickable. Note: cursor on <option> is spotty across
    browsers since the open dropdown list is native OS chrome - this
@@ -75,8 +75,8 @@ select option:hover,
 .custom-select-option:hover,
 #fileUploadArea:hover,
 .file-upload-row:hover,
-#musicProgressBarContainer:hover,
-.menu-music-progress-container:hover,
+.mp-bar:hover,
+.mp-list li:hover,
 input[type="range"]:hover,
 .concept-card:hover {
     cursor: url('../assets/images/cursor-hover.png') 1 1, auto !important;

@@ -1,69 +1,463 @@
-.music-controls {
+/* *** MUSIC PLAYER (Beta 1.1) ***
+   One look for both players - the main menu's (#menuMusicDropdown) and the
+   game top bar's (#musicDropdown). Both are driven by js/game/Music.js
+   through their data-mp="..." parts. Animations only move transform /
+   opacity (equalizer, seek bar, playlist slide-in).
+   .pop-under-menu.mp-box: ui.css (.pop-under-menu) loads after this file. */
+.pop-under-menu.mp-box {
+  /* the whole player (+ its playlist) at 80% - one knob instead of shrinking every size */
+  zoom: 0.8;
+  width: 360px;
+  box-sizing: border-box;
+  padding: 14px 16px 16px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(240, 198, 116, 0.10), transparent 70%),
+    var(--main-bg-color);
+}
+.mp-box * {
+  box-sizing: border-box;
+}
+
+.mp-head {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 8px !important;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(240, 198, 116, 0.25);
+}
+.mp-head svg {
+  width: 20px;
+  height: 20px;
+}
+.mp-head h3 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 17px;
+  letter-spacing: 0.5px;
 }
 
-.music-title {
+/* now playing: equalizer + title + "Track 3 of 12" */
+.mp-now {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(240, 198, 116, 0.15);
+  border-radius: 8px;
+}
+.mp-eq {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  width: 34px;
+  height: 30px;
+  padding: 4px 5px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.22));
+  border: 1px solid rgba(240, 198, 116, 0.35);
+}
+.mp-eq i {
   flex: 1;
-  text-align: center;
-  color: #ddd;
-  font-weight: bold;
-}
-
-.btn-music {
-  font-weight: bold;
-  padding: 4px 10px;
-}
-
-.music-progress {
-  text-align: center;
-  margin-bottom: 16px !important;
-  margin-top: 16px !important;
-}
-
-#musicProgressBarContainer {
-  height: 6px;
-  background: white;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 4px;
-  cursor: pointer; /* clickable to seek (see Music.js's seekMusic) - was missing, unlike its .menu-music-progress-container sibling */
-}
-
-#musicProgressBar {
-  margin: unset;
-  width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
-  transition: width 0.1s linear;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #ffe7a3, #c58a2e);
+  transform-origin: bottom;
+  transform: scaleY(0.25);
+  animation: mp-eq 0.9s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.mp-eq i:nth-child(2) { animation-duration: 0.65s; animation-delay: -0.3s; }
+.mp-eq i:nth-child(3) { animation-duration: 1.1s; animation-delay: -0.6s; }
+.mp-eq i:nth-child(4) { animation-duration: 0.75s; animation-delay: -0.15s; }
+/* only moves while the music plays AND its dropdown is open */
+.mp-box.is-playing .mp-eq i { animation-play-state: running; }
+@keyframes mp-eq {
+  from { transform: scaleY(0.2); }
+  to { transform: scaleY(1); }
 }
 
-#menuMusicProgressBar {
-  height: 6px;
-  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
-  border-radius: 4px;
+.mp-meta {
+  min-width: 0;
+  flex: 1;
+}
+.mp-title {
+  color: #f3e5ab;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
   overflow: hidden;
-  margin-bottom: 4px;
+  text-overflow: ellipsis;
+}
+.mp-sub {
+  margin-top: 2px;
+  color: #a8957a;
+  font-size: 12px;
 }
 
-.musicTime {
+/* seek bar: dark track, gold fill (scaleX) + knob (translateX) - no layout per frame */
+.mp-seek {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
   font-size: 12px;
   color: #aaa;
+  font-variant-numeric: tabular-nums;
+}
+.mp-seek span:last-child {
+  text-align: right;
+}
+.mp-bar {
+  position: relative;
+  height: 18px;
+  touch-action: none;
+}
+.mp-bar-track,
+.mp-bar-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  height: 6px;
+  border-radius: 4px;
+}
+.mp-bar-track {
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.mp-bar-fill {
+  background: linear-gradient(90deg, rgb(240, 198, 116), rgb(220, 170, 90));
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.mp-bar-knob {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 14px;
+  transform: translateX(0);
+  pointer-events: none;
+}
+.mp-bar-knob::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid gold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  transform: scale(0);
+  transition: transform 0.15s ease;
+}
+.mp-bar:hover .mp-bar-knob::before,
+.mp-bar.is-dragging .mp-bar-knob::before {
+  transform: scale(1);
 }
 
-.music-volume {
+/* transport: shuffle | prev | PLAY | next | repeat one */
+.mp-transport {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 4px 0 14px;
+}
+.mp-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 198, 116, 0.35);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.22));
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: #a8957a;
+  transition: transform 0.1s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+.mp-ctrl:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 10px rgba(243, 229, 171, 0.3);
+}
+.mp-ctrl:active {
+  transform: translateY(1px);
+}
+.mp-ctrl svg {
+  width: 20px;
+  height: 20px;
+}
+.mp-ctrl .mp-fill {
+  fill: url(#mpGold);
+  stroke: #4a2c0c;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+.mp-ctrl .mp-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* toggles (shuffle / repeat one): dull when off, gold + dot when on */
+.mp-toggle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+.mp-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+.mp-toggle.is-on {
+  color: #f0c674;
+  border-color: rgba(240, 198, 116, 0.7);
+}
+.mp-toggle.is-on::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #f0c674;
+}
+.mp-one {
+  font: bold 8px Arial, sans-serif;
+  fill: currentColor;
+  stroke: none;
+}
+
+/* the big Play / Pause - the game's brown .btn look, round */
+.mp-play {
+  width: 54px;
+  height: 54px;
+  border: 2px solid #5c2e0e;
+  background: radial-gradient(circle at 50% 30%, #a0522d, #8B4513 60%, #6e3510);
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -8px 12px rgba(0, 0, 0, 0.25),
+    0 4px 0 #4a250b,
+    0 8px 14px rgba(0, 0, 0, 0.4);
+}
+.mp-play:hover {
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -8px 12px rgba(0, 0, 0, 0.2),
+    0 4px 0 #4a250b,
+    0 0 16px rgba(243, 229, 171, 0.4);
+}
+.mp-play:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.5), 0 1px 0 #4a250b;
+}
+.mp-play svg {
+  width: 26px;
+  height: 26px;
+}
+.mp-play .mp-i-pause { display: none; }
+.mp-box.is-playing .mp-play .mp-i-play { display: none; }
+.mp-box.is-playing .mp-play .mp-i-pause { display: inline; }
+
+/* volume: speaker (click = mute) + gold-filled slider + % */
+.mp-vol {
+  display: grid;
+  grid-template-columns: 32px 1fr 44px;
   align-items: center;
   gap: 10px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(240, 198, 116, 0.15);
+  border-radius: 8px;
+}
+.mp-vol .mp-ctrl {
+  width: 32px;
+  height: 32px;
+  color: #f0c674;
+}
+.mp-vol .mp-ctrl svg {
+  width: 18px;
+  height: 18px;
+}
+.mp-vol .mp-i-mute { display: none; }
+.mp-box.is-muted .mp-vol .mp-i-wave { display: none; }
+.mp-box.is-muted .mp-vol .mp-i-mute { display: inline; }
+.mp-box.is-muted .mp-vol .mp-ctrl { color: #ef6f5c; }
+.mp-vol-pct {
+  text-align: right;
+  font-size: 12px;
+  color: #aaa;
+  font-variant-numeric: tabular-nums;
+}
+.mp-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  margin: 0;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, rgb(240, 198, 116), rgb(220, 170, 90)) 0 0 / var(--v, 50%) 100% no-repeat,
+    rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+.mp-box.is-muted .mp-range {
+  filter: grayscale(1) brightness(0.7);
+}
+.mp-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid gold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.mp-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid gold;
 }
 
-#musicVolume {
-  flex: 1;
+/* "Playlist >" at the bottom of the player */
+.mp-list-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px 4px;
+  background: none;
+  border: 0;
+  border-top: 1px solid rgba(240, 198, 116, 0.2);
+  color: #f0c674;
+  font: 700 13px 'Cinzel', Georgia, serif;
 }
+.mp-list-toggle svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s ease;
+}
+.mp-count {
+  margin-left: auto;
+  color: #a8957a;
+  font: 12px Arial, sans-serif;
+}
+.mp-box.is-list-open .mp-list-toggle svg { transform: rotate(180deg); }
+.mp-box.mp-side-left .mp-list-toggle svg { transform: rotate(180deg); }
+.mp-box.mp-side-left.is-list-open .mp-list-toggle svg { transform: none; }
+
+/* playlist panel - slides out on the right of the player, as tall as the player,
+   so the player itself never grows. Near the right screen edge (the game's top
+   bar) Music.js flips it to the left (.mp-side-left). */
+.mp-side {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: calc(100% + 6px);
+  width: 250px;
+  padding: 14px 10px 12px 14px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(240, 198, 116, 0.10), transparent 70%),
+    var(--main-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+.mp-box.mp-side-left .mp-side {
+  left: auto;
+  right: calc(100% + 6px);
+}
+.mp-box.is-list-open .mp-side {
+  display: flex;
+  animation: mp-side-in 0.2s ease-out;
+}
+.mp-box.mp-side-left.is-list-open .mp-side {
+  animation-name: mp-side-in-left;
+}
+@keyframes mp-side-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mp-side-in-left {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: none; }
+}
+.mp-side-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 4px 8px 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(240, 198, 116, 0.25);
+  color: #f0c674;
+  font: 700 15px 'Cinzel', Georgia, serif;
+}
+.mp-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.mp-list::-webkit-scrollbar {
+  width: 6px;
+}
+.mp-list::-webkit-scrollbar-thumb {
+  background: rgb(240, 198, 116);
+  border-radius: 4px;
+}
+.mp-list li {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: #ddd;
+  font-size: 13px;
+  text-align: left;
+}
+.mp-list li:hover {
+  background: rgba(240, 198, 116, 0.08);
+}
+.mp-n {
+  color: #7d6c55;
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.mp-d {
+  color: #8c7b63;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.mp-list li.is-current {
+  background: rgba(240, 198, 116, 0.14);
+  color: #f3e5ab;
+  font-weight: bold;
+}
+.mp-list li.is-current .mp-n {
+  color: #f0c674;
+}
+/* *** MUSIC PLAYER *** */
 
 #eventsList {
   max-height: 370px; /* reduce a bit to make space */
@@ -83,60 +477,4 @@
 #eventsList::-webkit-scrollbar-thumb {
   background: rgb(240, 198, 116);
   border-radius: 4px;
-}
-
-.musicVolume {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
-  outline: none;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.musicVolume::-webkit-slider-thumb,
-.musicVolume::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  border: 2px solid gold;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.musicVolume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  background: #fff;
-  border-radius: 50%;
-  border: 2px solid gold;
-  cursor: pointer;
-}
-
-.menu-music-progress-container {
-  height: 6px;
-  background: rgba(255, 255, 255); /* Semi-transparent white */
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 4px;
-  cursor: pointer; /* Shows the user they can click it */
-}
-
-/* This styles the gold moving bar for BOTH players */
-.menu-music-progress-bar {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, rgb(240,198,116), rgb(220,170,90));
-  transition: width 0.1s linear;
-}
-
-.menu-music-button{
-  min-width: 62%;
-  white-space: nowrap;
-}
-
-.music-button{
-  min-width: 60%;
 }
