@@ -5,14 +5,22 @@
    opacity (equalizer, seek bar, playlist slide-in).
    .pop-under-menu.mp-box: ui.css (.pop-under-menu) loads after this file. */
 .pop-under-menu.mp-box {
-  /* the whole player (+ its playlist) at 80% - one knob instead of shrinking every size */
+  /* the whole player (+ its playlist) at 80% - one knob instead of shrinking every size;
+     the width is 324px (instead of 360px) so it is narrower but the text stays readable */
   zoom: 0.8;
-  width: 360px;
+  width: 324px;
   box-sizing: border-box;
   padding: 14px 16px 16px;
+  /* no brown frame (like the playlist) + a gap under the Music button */
+  border: 0;
+  margin-top: 24px;
   background:
     radial-gradient(120% 60% at 50% 0%, rgba(240, 198, 116, 0.10), transparent 70%),
     var(--main-bg-color);
+}
+/* main menu: the big menu button needs less room than the game's top bar */
+#menuMusicDropdown.mp-box {
+  margin-top: 10px;
 }
 .mp-box * {
   box-sizing: border-box;
@@ -234,11 +242,6 @@
   border-radius: 50%;
   background: #f0c674;
 }
-.mp-one {
-  font: bold 8px Arial, sans-serif;
-  fill: currentColor;
-  stroke: none;
-}
 
 /* the big Play / Pause - the game's brown .btn look, round */
 .mp-play {
@@ -369,8 +372,8 @@
   display: none;
   flex-direction: column;
   position: absolute;
-  top: -2px;
-  bottom: -2px;
+  top: 0;
+  bottom: 0;
   left: calc(100% + 6px);
   width: 250px;
   padding: 14px 10px 12px 14px;
@@ -437,6 +440,13 @@
 }
 .mp-list li:hover {
   background: rgba(240, 198, 116, 0.08);
+}
+/* track name - one line, a long one ends with "..." */
+.mp-list li > span:nth-child(2) {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mp-n {
   color: #7d6c55;

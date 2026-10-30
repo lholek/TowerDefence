@@ -109,8 +109,8 @@ export class MusicManager {
             const opening = !player.classList.contains('is-list-open');
             if (opening) {
                 const rect = player.getBoundingClientRect();
-                // the playlist is ~0.72x the player's width (both scale with the player's zoom)
-                player.classList.toggle('mp-side-left', rect.right + rect.width * 0.72 > window.innerWidth);
+                // the playlist (250px + 6px gap) is ~0.8x the player's 324px (both scale with the player's zoom)
+                player.classList.toggle('mp-side-left', rect.right + rect.width * 0.8 > window.innerWidth);
             }
             player.classList.toggle('is-list-open', opening);
         });
