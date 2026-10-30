@@ -61,6 +61,20 @@
           ]
         },
         {
+          "<b>Music Player</b>": [
+            "Redesigned Music Player - same new look in the main menu and in the game",
+            "Now playing panel with the track name, 'Track 2 of 12' and a gold equalizer that moves while music plays",
+            "New seek bar with both times - click or drag to jump anywhere in the track",
+            "Round Play / Pause, Previous and Next buttons - Previous restarts the track after its first 3 seconds",
+            "New Shuffle and Repeat one buttons",
+            "Speaker button mutes the music, volume is shown in %",
+            "New Playlist - slides out next to the player, shows every track with its length, click a track to play it",
+            "Tracks fade into each other instead of a hard cut",
+            "The player remembers the track, the time where it stopped, the volume, mute, shuffle and repeat - after a reload it continues where it left off",
+            "A volume of 0 no longer resets to 50% after a reload"
+          ]
+        },
+        {
           "<b>Map Select</b>": [
             "Redesigned map info in the main menu - the old table is now a map card in the new style",
             "Map name with its subtitle in gold and the difficulty as 5 gold stars",
@@ -149,16 +163,7 @@
         },
         {
           "<b>Music Player</b>": [
-            "Redesigned Music Player - same new look in the main menu and in the game",
-            "Now playing panel with the track name, 'Track 2 of 12' and a gold equalizer that moves while music plays",
-            "New seek bar with both times - click or drag to jump anywhere in the track",
-            "Round Play / Pause, Previous and Next buttons - Previous restarts the track after its first 3 seconds",
-            "New Shuffle and Repeat one buttons",
-            "Speaker button mutes the music, volume is shown in %",
-            "New Playlist - slides out next to the player, shows every track with its length, click a track to play it",
-            "Tracks fade into each other instead of a hard cut",
-            "The player remembers the track, the time where it stopped, the volume, mute, shuffle and repeat - after a reload it continues where it left off",
-            "A volume of 0 no longer resets to 50% after a reload"
+            "Changed the music toggle button text from 'Music: Paused' to 'Music: Off', and widened the button slightly so it fits on one line"
           ]
         },
         {
