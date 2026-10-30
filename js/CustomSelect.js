@@ -22,7 +22,8 @@
 // underneath the custom trigger, which sits on top and intercepts the
 // mouse.
 
-function enhanceSelect(selectEl) {
+// exported so a mockup (dev/Graphics_1.1.html) can enhance its own extra selects too
+export function enhanceSelect(selectEl) {
     if (!selectEl || selectEl.dataset.customSelectEnhanced) return;
     selectEl.dataset.customSelectEnhanced = 'true';
 

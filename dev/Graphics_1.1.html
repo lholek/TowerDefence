@@ -2023,6 +2023,11 @@
     <iframe class="mock-frame" data-template="tplMusic" data-autoheight title="Music Player mockup"></iframe>
   </div>
 
+  <div class="bar-section">
+    <h2 class="section-label">Map Select — map info table + minimap, current vs new</h2>
+    <iframe class="mock-frame" data-template="tplMapSelect" data-autoheight title="Map Select mockup"></iframe>
+  </div>
+
   <style>
     .mock-frame{
       display:block;
@@ -4698,6 +4703,608 @@
   load(savedIndex >= 0 && savedIndex < TRACKS.length ? savedIndex : 0, parseFloat(store.get('Time')) || 0);
   syncVolume();
 })();
+</script>
+  </template>
+
+  <template id="tplMapSelect">
+<meta charset="UTF-8" />
+<title>Map Select</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<link rel="stylesheet" href="../css/map_browser.css" />
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  :root{ --gold:#f0c674; --gold-soft:#f3e5ab; }
+  html, body{ margin:0; padding:0; background:#1E1E1E; color:#eee; font-family: Arial, sans-serif; }
+  body{ padding:30px 34px 50px; }
+  h1{ margin:0 0 6px; color:var(--gold); font-family: Georgia, 'Times New Roman', serif; }
+  .page-note{ margin:0 0 26px; color:#bbb; }
+  .section-label{ margin:0; color:var(--gold); font-size:18px; font-family: Georgia, 'Times New Roman', serif; }
+  .section-desc{ margin:4px 0 0; max-width:700px; color:#aaa; font-size:14px; line-height:1.4; }
+
+  .ms-grid{
+    display:grid;
+    grid-template-columns:740px 740px;
+    gap:20px 60px;
+    align-items:start;
+  }
+  /* stand-in for the main menu's dark glass panel the select sits on */
+  .ms-stage{
+    padding:6px 20px 24px;
+    border-radius:14px;
+    background:rgba(28, 24, 20, .72);
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+    text-align:center;
+  }
+  .ms-stage .title{ margin-top:10px; }
+  .ms-stage .mapInfo{ margin:16px auto 0; text-align:center; }
+
+  /* ================================================================
+     B) NEW - namespaced "mc-" (map card)
+     ================================================================ */
+  .mc-title{
+    margin:12px 0 12px;
+    color:var(--gold);
+    font:700 22px 'Cinzel', Georgia, serif;
+    letter-spacing:.5px;
+    text-shadow:0 2px 4px rgba(0,0,0,.6);
+  }
+
+  /* Standard / Custom maps - dark socket track (like the top bar / player buttons)
+     with a brown .btn-like thumb that slides under the active tab (transform only) */
+  .mc-tabs{
+    position:relative;
+    display:inline-grid;
+    grid-template-columns:1fr 1fr;
+    width:360px;
+    margin:0 auto 14px;
+    padding:4px;
+    box-sizing:border-box;
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.25));
+    border:1px solid rgba(240,198,116,.3);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+  }
+  .mc-tabs::before{
+    content:"";
+    position:absolute;
+    top:4px; bottom:4px; left:4px;
+    width:calc(50% - 4px);
+    box-sizing:border-box;
+    border-radius:7px;
+    background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+    border:1px solid #5c2e0e;
+    box-shadow:
+      inset 0 2px 1px rgba(255,255,255,.3),
+      inset 0 -6px 8px rgba(0,0,0,.25),
+      0 0 12px rgba(243,229,171,.22);
+    transition:transform .25s ease;
+  }
+  .mc-tabs.is-custom::before{ transform:translateX(100%); }
+  .mc-tab{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:7px 10px;
+    background:none;
+    border:0;
+    color:#a8957a;
+    font:700 14px 'Cinzel', Georgia, serif;
+    transition:color .2s ease;
+  }
+  .mc-tab svg{
+    width:18px; height:18px;
+    filter:grayscale(.85) brightness(.7) drop-shadow(0 1px 1px rgba(0,0,0,.6));
+    transition:filter .2s ease;
+  }
+  .mc-tab:not(.is-active):hover{ color:var(--gold); }
+  .mc-tab:not(.is-active):hover svg{ filter:grayscale(.3) drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+  .mc-tab.is-active{ color:var(--gold-soft); text-shadow:0 1px 2px rgba(0,0,0,.7); }
+  .mc-tab.is-active svg{ filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+
+  /* prev | select | next | map browser */
+  .mc-pick{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  /* the select keeps a fixed width between the arrows (its trigger otherwise sizes itself) */
+  .mc-pick .custom-select-wrapper{ flex:0 0 380px; width:380px; }
+  .mc-pick .custom-select-trigger{ width:100%; min-width:0; max-width:none; box-sizing:border-box; }
+  /* a long map name stays on one line and ends with "..." (the open list still shows it whole) */
+  .mc-pick .custom-select-trigger{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:40px; }
+  .mc-arrow{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    width:34px; height:34px;
+    padding:0;
+    border-radius:50%;
+    border:1px solid rgba(240,198,116,.35);
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+    color:var(--gold);
+    transition:transform .1s ease, box-shadow .2s ease;
+  }
+  .mc-arrow:hover{ transform:translateY(-1px); box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 0 10px rgba(243,229,171,.3); }
+  .mc-arrow:active{ transform:translateY(1px); }
+  .mc-arrow svg{ width:16px; height:16px; }
+  .mc-pick .map-browser-btn{ margin-left:4px; }
+  .mc-file{ display:none; max-width:440px; margin:0 auto; }
+  .is-custom .mc-pick{ display:none; }
+  .is-custom .mc-file{ display:block; }
+
+  /* the card */
+  .mc-card{
+    display:grid;
+    grid-template-columns:1fr 300px;
+    gap:18px;
+    width:700px;
+    height:350px;
+    margin:16px auto 0;
+    padding:16px 18px;
+    box-sizing:border-box;
+    text-align:left;
+    border-radius:10px;
+    background:
+      radial-gradient(120% 60% at 30% 0%, rgba(240,198,116,.10), transparent 70%),
+      var(--main-bg-color);
+    box-shadow:0 6px 18px rgba(0,0,0,.45);
+  }
+  .mc-card *{ box-sizing:border-box; }
+  .mc-info{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-width:0;
+    min-height:0;
+  }
+
+  .mc-head{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+  }
+  .mc-name{ min-width:0; flex:1; }
+  .mc-name h3{
+    margin:0;
+    text-align:left;
+    color:var(--gold-soft);
+    font:700 19px/1.2 'Cinzel', Georgia, serif;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mc-sub{ margin-top:2px; color:var(--gold); font-size:13px; font-style:italic; }
+  .mc-stars{ display:flex; gap:2px; flex:0 0 auto; padding-top:3px; }
+  .mc-stars svg{ width:19px; height:19px; }
+  .mc-stars .on{ fill:url(#mcGold); stroke:#4a2c0c; stroke-width:.9; }
+  .mc-stars .off{ fill:rgba(0,0,0,.35); stroke:rgba(240,198,116,.35); stroke-width:1; }
+
+  .mc-desc{
+    flex:0 1 auto;
+    max-height:57px; /* exactly 3 lines, the rest scrolls */
+    overflow-y:auto;
+    padding-right:6px;
+    color:#ddd;
+    font-size:13px;
+    line-height:1.45;
+    white-space:pre-line;
+  }
+  .mc-desc::-webkit-scrollbar{ width:6px; }
+  .mc-desc::-webkit-scrollbar-thumb{ background:rgb(240,198,116); border-radius:4px; }
+
+  /* 4 stats - same socket + label/value look as the game's top bar */
+  .mc-stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .mc-stat{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:5px 8px;
+    border-radius:8px;
+    background:rgba(0,0,0,.2);
+    border:1px solid rgba(240,198,116,.15);
+  }
+  .mc-ico{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:30px; height:30px;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+  }
+  .mc-ico svg{ width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+  .mc-stat-text{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .mc-label{
+    font:700 9.5px/1 Arial, sans-serif;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    color:#a8957a;
+  }
+  .mc-value{
+    font:700 15px/1 Arial, sans-serif;
+    color:var(--gold-soft);
+    font-variant-numeric:tabular-nums;
+  }
+  .mc-life-no .mc-ico svg{ filter:grayscale(1) brightness(.6) drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+  .mc-life-no .mc-value{ color:#ef6f5c; font-size:16px; }
+  .mc-life-yes .mc-value{ color:var(--gold); font-size:17px; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+
+  /* abilities as chips */
+  /* abilities take all the room left in the card, the rest scrolls (gold scrollbar) */
+  .mc-abilities{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  .mc-chips{
+    flex:1;
+    display:flex;
+    flex-wrap:wrap;
+    align-content:flex-start;
+    gap:6px;
+    min-height:0;
+    margin-top:6px;
+    overflow-y:auto;
+    padding-right:4px;
+  }
+  .mc-chips::-webkit-scrollbar{ width:6px; }
+  .mc-chips::-webkit-scrollbar-thumb{ background:rgb(240,198,116); border-radius:4px; }
+  .mc-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 9px 3px 6px;
+    border-radius:999px;
+    background:rgba(240,198,116,.08);
+    border:1px solid rgba(240,198,116,.3);
+    color:#eee;
+    font-size:12px;
+    white-space:nowrap;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mc-none{ color:#7d6c55; font-size:12px; }
+
+  /* minimap - keeps the map's real aspect ratio, framed, size badge in the corner */
+  .mc-map{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:0;
+  }
+  /* always the same size - fills the whole right half of the card for every map */
+  .mc-frame{
+    position:relative;
+    width:300px;
+    height:318px;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid rgba(240,198,116,.45);
+    box-shadow:0 4px 14px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.4);
+  }
+  .mc-frame #mcMinimap{ width:100%; height:100%; }
+  .mc-size{
+    position:absolute;
+    right:6px; bottom:6px;
+    padding:2px 7px;
+    border-radius:5px;
+    background:rgba(20,14,8,.78);
+    color:var(--gold-soft);
+    font:700 11px Arial, sans-serif;
+  }
+
+  /* empty state (custom maps, no file yet) */
+  .mc-empty{
+    display:none;
+    grid-column:1 / -1;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:10px;
+    color:#a8957a;
+    font-size:15px;
+    text-align:center;
+  }
+  .mc-empty svg{ width:44px; height:44px; opacity:.8; }
+  .mc-card.is-empty .mc-info, .mc-card.is-empty .mc-map{ display:none; }
+  .mc-card.is-empty .mc-empty{ display:flex; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="mcGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+    <linearGradient id="mcHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
+  </defs>
+  <symbol id="mcStar" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5-4.9-4.5 6.6-.8z"/></symbol>
+</svg>
+
+<h1>Map Select - current vs new</h1>
+<p class="page-note">Both columns load the real maps from games/ - pick a map in either one, the other follows. Uses the game's real styles + js/CustomSelect.js + the minimap from js/game/minimapTiles.js.</p>
+
+<div class="ms-grid">
+  <div>
+    <h2 class="section-label">A) Current (index.html #mapSelectionArea + #mapInfo)</h2>
+    <p class="section-desc">As it is in the game now - unchanged.</p>
+  </div>
+  <div>
+    <h2 class="section-label">B) New proposal</h2>
+    <p class="section-desc">Standard / Custom maps as tabs with gold icons and a sliding brown thumb, arrows to step through the maps, and a map card: name + subtitle with the difficulty as gold stars, the description, 4 stats with gold icons like the top bar (Levels, Map Size, Towers, Extra Life), abilities as chips and the minimap filling the whole right half (always the same size) with the real size in the corner. The card keeps one height for every map, so the menu doesn't jump.</p>
+  </div>
+
+  <!-- ============================================================
+       A) CURRENT - same markup as index.html, table built like main.js updateMapPreview
+       ============================================================ -->
+  <div class="ms-stage">
+    <h2 class="title title-select-map">Select map</h2>
+    <div id="mapSelectionArea">
+      <select id="mapSelect" class="styled-select"></select>
+      <button class="btn map-browser-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div>
+      <button class="btn active-mode">Standart Maps</button>
+      <button class="btn">Custom maps</button>
+    </div>
+    <div id="mapInfo" class="mapInfo"></div>
+  </div>
+
+  <!-- ============================================================
+       B) NEW
+       ============================================================ -->
+  <div class="ms-stage" id="mcStage">
+    <h2 class="mc-title">Select Map</h2>
+
+    <div class="mc-tabs" id="mcMode">
+      <button type="button" class="mc-tab is-active" data-mode="standard">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></svg>
+        Standard maps
+      </button>
+      <button type="button" class="mc-tab" data-mode="custom">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2h9l5 5v15H5z"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".7" stroke-linejoin="round" d="M14 2v5h5"/><path fill="none" stroke="#4a2c0c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 18v-6.5M9.2 14l2.8-2.8 2.8 2.8"/></svg>
+        Custom maps
+      </button>
+    </div>
+
+    <div class="mc-pick">
+      <button class="mc-arrow" id="mcPrev" type="button" title="Previous map">
+        <svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <select id="mcSelect" class="styled-select"></select>
+      <button class="mc-arrow" id="mcNext" type="button" title="Next map">
+        <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn map-browser-btn" type="button" title="All maps">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="mc-file">
+      <label class="file-upload-row">
+        <span class="file-upload-btn">Choose File</span>
+        <span class="file-upload-divider"></span>
+        <span class="file-upload-name">No file selected</span>
+      </label>
+    </div>
+
+    <div class="mc-card" id="mcCard">
+      <div class="mc-info">
+        <div class="mc-head">
+          <div class="mc-name">
+            <h3 id="mcName"></h3>
+            <div class="mc-sub" id="mcSub"></div>
+          </div>
+          <div class="mc-stars" id="mcStars" title="Difficulty"></div>
+        </div>
+
+        <div class="mc-desc" id="mcDesc"></div>
+
+        <div class="mc-stats">
+          <div class="mc-stat">
+            <span class="mc-ico"><svg viewBox="0 0 24 24"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2.5h2V22H5zM7 3.5h12.5l-3.2 4.2 3.2 4.3H7z"/><path fill="#7a4a12" d="M10 6.2h4.5L13 7.7l1.5 1.6H10z"/></svg></span>
+            <span class="mc-stat-text"><span class="mc-label">Levels</span><b class="mc-value" id="mcLevels"></b></span>
+          </div>
+          <div class="mc-stat">
+            <span class="mc-ico"><svg viewBox="0 0 24 24"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3.4a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2z"/><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M16 8 13.2 13.2 8 16 10.8 10.8z"/><path fill="#7a4a12" d="M8 16 10.8 10.8 13.2 13.2z"/><circle cx="12" cy="12" r="1.1" fill="#4a2c0c"/></svg></span>
+            <span class="mc-stat-text"><span class="mc-label">Map Size</span><b class="mc-value" id="mcSize"></b></span>
+          </div>
+          <div class="mc-stat">
+            <span class="mc-ico"><svg viewBox="0 0 24 24"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span>
+            <span class="mc-stat-text"><span class="mc-label">Towers</span><b class="mc-value" id="mcTowers"></b></span>
+          </div>
+          <div class="mc-stat" id="mcLifeStat">
+            <span class="mc-ico"><svg viewBox="0 0 24 24"><path fill="url(#mcHeart)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></span>
+            <span class="mc-stat-text"><span class="mc-label">Extra Life</span><b class="mc-value" id="mcLife"></b></span>
+          </div>
+        </div>
+
+        <div class="mc-abilities">
+          <span class="mc-label">Abilities</span>
+          <div class="mc-chips" id="mcAbilities"></div>
+        </div>
+      </div>
+
+      <div class="mc-map">
+        <div class="mc-frame" id="mcFrame">
+          <div id="mcMinimap"></div>
+          <span class="mc-size" id="mcSizeBadge"></span>
+        </div>
+      </div>
+
+      <div class="mc-empty">
+        <svg viewBox="0 0 24 24"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></svg>
+        No map selected - choose a .json file above
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { fillMinimap } from '../js/game/minimapTiles.js';
+import { enhanceSelect } from '../js/CustomSelect.js';
+
+const $ = id => document.getElementById(id);
+const SIM_LONG = '__simulated_long_map';
+// same list (and order) as index.html #mapSelect
+const MAPS = [
+  ['00X_test.json', 'Test Map'], ['001_basicGame.json', 'Basic'], ['004_adventureMap.json', 'Adventure Map'],
+  ['006_adventureMap2.json', 'Adventure Map II (Islands)'], ['007_adventureMap3.json', 'Adventure Map III (Crossroads)'],
+  ['008_adventureMap4.json', "Adventure Map IV (Spirit's Land)"], ['010_adventureMap5.json', 'Adventure Map V (Seasons)'],
+  ['012_adventureMap6.json', 'Adventure Map VI (Crossroads of Realms)'], ['013_adventureMap7.json', 'Adventure Map VII ()'],
+  ['005_abilityMap.json', 'Lava Map'], ['002_zigZagGame.json', 'Zig-Zag'], ['003_longMapGame.json', 'Long Map'],
+  ['009_simpleRoads.json', 'Simple Roads'], ['011_simpleRoads2.json', 'Simple Roads II'], ['00X_alltereins.json', 'All Tereains Map'],
+  // dev-only stress test (no file - built in loadMap below)
+  [SIM_LONG, 'Custom Long Map Whit very long text and desciptions']
+];
+const selA = $('mapSelect'), selB = $('mcSelect');
+for (const sel of [selA, selB]) sel.innerHTML = MAPS.map(([f, n]) => `<option value="../games/${f}">${n}</option>`).join('');
+
+const cache = new Map();
+async function loadMap(url) {
+  if (url.endsWith(SIM_LONG)) return simulatedLongMap();
+  if (!cache.has(url)) cache.set(url, fetch(url, { cache: 'no-cache' }).then(r => r.json()).then(d => d.maps ? d.maps[0] : d));
+  return cache.get(url);
+}
+
+// Stress test: Adventure Map VI's layout + towers, a very long description,
+// 8 abilities (2 of each type that works now) and no Extra Life
+async function simulatedLongMap() {
+  const base = await loadMap('../games/012_adventureMap6.json');
+  const ab = (name, icon, type) => ({ name, type, ui: { icon } });
+  return {
+    ...base,
+    extraLife: false,
+    description: [{
+      descriptionText: 'Custom long map for testing\n' +
+        'This map only exists in the dev mockup. Its description is far longer than any real one, so we can see how the card handles it: ' +
+        'the text has to stay in its 3 lines and scroll, the title has to end with "..." instead of pushing the stars out, and the ' +
+        'abilities have to wrap into rows and scroll as well. Ancient roads cross burning lava fields, frozen lakes and sacred groves, ' +
+        'and every one of them is guarded by a different kind of tower. Only a true guardian of the realm can hold all eight powers at once.',
+      'level count': 999,
+      difficulty: '⭐⭐⭐⭐⭐',
+      map_size: '35x25'
+    }],
+    abilities: [
+      ab("Mage's Everlasting Flames of the Burning Realm", '🌋', 'targeted'),
+      ab("Redeemer's Volcanic Fire", '🌋', 'targeted'),
+      ab("Thunder's Fury of the Seven Towers", '🏹', 'global'),
+      ab('Cosmic Overdrive', '🏹', 'global'),
+      ab("King's Endless Gold Rush", '⛏️', 'global'),
+      ab('Dwarven Mine Fever', '⛏️', 'global'),
+      ab("Nivaris' Frozen Storm of the North", '❄️', 'targeted'),
+      ab('Blizzard', '❄️', 'targeted')
+    ]
+  };
+}
+
+// ---------- A) the current table (copy of main.js updateMapPreview) ----------
+function renderA(map) {
+  const infoDiv = $('mapInfo');
+  const d = (map.description || [])[0];
+  if (!d) { infoDiv.textContent = 'No description available.'; return; }
+  infoDiv.innerHTML = `
+    <div class="map-preview-wrapper">
+      <div class="map-stats-col">
+        <table class="map-info-table">
+          <tr><td><b>Description:</b></td><td class="description">${d.descriptionText || '-'}</td></tr>
+          <tr><td><b>Level Count:</b></td><td>${d['level count'] || '-'}</td></tr>
+          <tr><td><b>Difficulty:</b></td><td>${d.difficulty || '-'}</td></tr>
+          <tr><td><b>Map Size:</b></td><td>${d.map_size || '-'}</td></tr>
+          <tr><td><b>Towers:</b></td><td>${Object.keys(map.towerTypes).length || '-'} types</td></tr>
+          <tr><td><b>Extra Life:</b></td><td class="info-table-life ${map.extraLife === false ? 'info-table-life-no' : 'info-table-life-yes'}">${map.extraLife === false ? '✖' : '✔'}</td></tr>
+          <tr><td><b>Abilities:</b></td><td class="ability-list">${map.abilities && map.abilities.length > 0 ? map.abilities.map(ab => `<span>${ab.ui.icon} ${ab.name}</span>`).join('<br>') : '-'}</td></tr>
+        </table>
+      </div>
+      <div id="minimapContainer"><div id="minimap"></div></div>
+    </div>`;
+  fillMinimap($('minimap'), map);
+}
+
+// ---------- B) the map card ----------
+const STAR = cls => `<svg class="${cls}" viewBox="0 0 24 24"><use href="#mcStar"/></svg>`;
+function renderB(map, label) {
+  const d = (map.description || [])[0] || {};
+  // "Adventure Map VI (Crossroads of Realms)" -> name + subtitle
+  const m = /^(.*?)\s*\((.*)\)\s*$/.exec(label);
+  $('mcName').textContent = m ? m[1] : label;
+  $('mcName').title = m ? m[1] : label;
+  $('mcSub').textContent = m && m[2] ? m[2] : (d.descriptionText ? '' : '');
+  $('mcSub').hidden = !(m && m[2]);
+
+  const stars = [...String(d.difficulty || '')].filter(c => c === '⭐').length || parseInt(d.difficulty) || 0;
+  $('mcStars').innerHTML = [1, 2, 3, 4, 5].map(i => STAR(i <= stars ? 'on' : 'off')).join('');
+  $('mcStars').title = `Difficulty ${stars} / 5`;
+
+  $('mcDesc').textContent = d.descriptionText || 'No description.';
+  $('mcDesc').scrollTop = 0;
+  $('mcLevels').textContent = d['level count'] || '-';
+  $('mcSize').textContent = (d.map_size || '-').replace('x', ' × ');
+  $('mcTowers').textContent = Object.keys(map.towerTypes || {}).length || '-';
+  const life = map.extraLife !== false;
+  $('mcLife').textContent = life ? '✔' : '✖';
+  $('mcLife').title = life ? 'Yes' : 'No';
+  $('mcLifeStat').className = 'mc-stat ' + (life ? 'mc-life-yes' : 'mc-life-no');
+
+  const abs = map.abilities || [];
+  $('mcAbilities').innerHTML = abs.length
+    ? abs.map(ab => `<span class="mc-chip" title="${ab.type === 'global' ? 'Global' : 'Targeted'}">${ab.ui?.icon || ''} ${ab.name}</span>`).join('')
+    : '<span class="mc-none">No abilities on this map</span>';
+
+  // minimap fills the fixed 300 x 318 frame; the real size is in the corner badge
+  const rows = map.layout?.length || 1, cols = map.layout?.[0]?.length || 1;
+  $('mcSizeBadge').textContent = `${cols} × ${rows}`;
+  fillMinimap($('mcMinimap'), map);
+}
+
+async function show(url, from) {
+  if (selA.value !== url) selA.value = url;
+  if (selB.value !== url) selB.value = url;
+  const map = await loadMap(url);
+  const label = MAPS.find(([f]) => url.endsWith(f))?.[1] || '';
+  renderA(map);
+  renderB(map, label);
+}
+selA.addEventListener('change', () => show(selA.value));
+selB.addEventListener('change', () => show(selB.value));
+
+// prev / next step through the list (wraps around)
+const step = dir => {
+  const i = (selB.selectedIndex + dir + selB.options.length) % selB.options.length;
+  show(selB.options[i].value);
+};
+$('mcPrev').addEventListener('click', () => step(-1));
+$('mcNext').addEventListener('click', () => step(1));
+
+// Standard / Custom maps switch
+const mode = $('mcMode');
+mode.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+  const custom = btn.dataset.mode === 'custom';
+  mode.classList.toggle('is-custom', custom);
+  mode.querySelectorAll('button').forEach(b => b.classList.toggle('is-active', b === btn));
+  $('mcStage').classList.toggle('is-custom', custom);
+  $('mcCard').classList.toggle('is-empty', custom);
+}));
+
+enhanceSelect(selB); // #mapSelect (A) is enhanced by CustomSelect.js itself
+show(selB.options[7].value); // Adventure Map VI
 </script>
   </template>
 
