@@ -2024,7 +2024,7 @@
   </div>
 
   <div class="bar-section">
-    <h2 class="section-label">Map Select — map info table + minimap, current vs new</h2>
+    <h2 class="section-label">Map Select — map info table + minimap, old vs new (new is now in the game: css/map_select.css)</h2>
     <iframe class="mock-frame" data-template="tplMapSelect" data-autoheight title="Map Select mockup"></iframe>
   </div>
 
@@ -4741,6 +4741,120 @@
   .ms-stage .mapInfo{ margin:16px auto 0; text-align:center; }
 
   /* ================================================================
+     A) OLD - the map info table + minimap styles as they were in the
+     game before the map card (removed from css/style.css + css/ui.css
+     in "+ new map prewiew"), copied 1:1 so A keeps its old look
+     ================================================================ */
+  /* --- from css/style.css --- */
+  .mapInfo {
+      min-width: 700px;
+      max-width: 700px;
+      min-height: 370px;
+      background: var(--main-bg-color);
+      margin: 0px;
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+      gap: 2px;
+      align-items: stretch;
+      border-radius: 8px;
+      text-align: center;
+      align-items: center
+  }
+  .mapInfo.is-empty {
+      align-items: center !important;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.25rem;
+  }
+  .mapInfo p {
+      margin: 0 !important;
+      margin-top: 5px !important;
+      margin-right: 20px !important;
+  }
+  .mapInfo b { color: #ffde59; }
+
+  /* --- from css/ui.css --- */
+  .mapInfo {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start !important;
+  }
+  #minimapContainer {
+      width: 400px;
+      height: 400px;
+      flex: 0 0 400px;
+  }
+  .map-desc{ max-width: 250px; }
+  #minimap {
+    display: grid;
+    shape-rendering: crispEdges;
+  }
+  .map-preview-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+  }
+  .map-stats-col {
+      flex: 1;
+      min-width: 200px;
+  }
+  .map-info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      color: #eee;
+  }
+  .map-info-table tr { border-bottom: 1px solid rgba(240, 198, 116, 0.1); }
+  .map-info-table td { padding: 8px 4px; }
+  .map-info-table td:first-child {
+      color: #f0c674;
+      white-space: nowrap;
+      font-weight: bold;
+  }
+  .map-info-table .description{
+    display: block;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+  .map-info-table .ability-list{
+    display: block;
+    max-height: 50px;
+    overflow-y: auto;
+  }
+  .map-info-table .description::-webkit-scrollbar,
+  .map-info-table .ability-list::-webkit-scrollbar { width: 6px; }
+  .map-info-table .description::-webkit-scrollbar-track,
+  .map-info-table .ability-list::-webkit-scrollbar-track { background: transparent; }
+  .map-info-table .description::-webkit-scrollbar-thumb,
+  .map-info-table .ability-list::-webkit-scrollbar-thumb {
+    background: rgb(240, 198, 116);
+    border-radius: 4px;
+  }
+  .info-table-life{ font-weight: 900; }
+  .info-table-life-no{ color: red; }
+  .info-table-life-yes{ color: green; }
+  #minimapContainer {
+      width: 350px !important;
+      height: 350px !important;
+      flex: 0 0 350px;
+      border-radius: 4px;
+      overflow: hidden;
+      display: block;
+  }
+  #minimap {
+      width: 100%;
+      height: 100%;
+      display: grid;
+  }
+
+  /* ================================================================
      B) NEW - namespaced "mc-" (map card)
      ================================================================ */
   .mc-title{
@@ -4877,7 +4991,8 @@
   .mc-name h3{
     margin:0;
     text-align:left;
-    color:var(--gold-soft);
+    color:var(--gold);
+    text-shadow:0 1px 2px rgba(0,0,0,.7);
     font:700 19px/1.2 'Cinzel', Georgia, serif;
     white-space:nowrap;
     overflow:hidden;
@@ -5036,16 +5151,16 @@
   <symbol id="mcStar" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5-4.9-4.5 6.6-.8z"/></symbol>
 </svg>
 
-<h1>Map Select - current vs new</h1>
+<h1>Map Select - old vs new</h1>
 <p class="page-note">Both columns load the real maps from games/ - pick a map in either one, the other follows. Uses the game's real styles + js/CustomSelect.js + the minimap from js/game/minimapTiles.js.</p>
 
 <div class="ms-grid">
   <div>
-    <h2 class="section-label">A) Current (index.html #mapSelectionArea + #mapInfo)</h2>
-    <p class="section-desc">As it is in the game now - unchanged.</p>
+    <h2 class="section-label">A) Old (before Beta 1.1)</h2>
+    <p class="section-desc">The map info table + minimap as it was in the game before the map card - same markup and styles as back then.</p>
   </div>
   <div>
-    <h2 class="section-label">B) New proposal</h2>
+    <h2 class="section-label">B) New (now in the game: index.html #mapInfo, css/map_select.css)</h2>
     <p class="section-desc">Standard / Custom maps as tabs with gold icons and a sliding brown thumb, arrows to step through the maps, and a map card: name + subtitle with the difficulty as gold stars, the description, 4 stats with gold icons like the top bar (Levels, Map Size, Towers, Extra Life), abilities as chips and the minimap filling the whole right half (always the same size) with the real size in the corner. The card keeps one height for every map, so the menu doesn't jump.</p>
   </div>
 
