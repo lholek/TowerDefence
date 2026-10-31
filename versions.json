@@ -93,7 +93,9 @@
             "New map browser - the ☰ button next to the map select opens a table of all maps (description, level count, difficulty, map size, towers, extra life and abilities), click a map to select it",
             "Map browser - sort by name, level count, difficulty, map size or towers (click again to reverse), the last sort is remembered, hovering a map shows its minimap",
             "Map browser - search by name and filters for Extra Life, abilities and difficulty, 'Reset' goes back to the default order without filters",
-            "Map browser - keyboard control: Up / Down to browse the maps (with their minimap), Enter to select"
+            "Map browser - keyboard control: Up / Down to browse the maps (with their minimap), Enter to select",
+            "Map browser now matches the map card - gold icons next to the column names, difficulty as 5 gold stars, map names in gold with their subtitle, abilities as chips and a gold ✔ / red ✖ for Extra Life",
+            "Map browser - 'Level Count' column renamed to 'Levels'"
           ]
         },
         {

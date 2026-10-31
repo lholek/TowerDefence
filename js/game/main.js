@@ -196,19 +196,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 <div class="mc-stats">
                     <div class="mc-stat">
-                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 2.5h2V22H5zM7 3.5h12.5l-3.2 4.2 3.2 4.3H7z"/><path fill="#7a4a12" d="M10 6.2h4.5L13 7.7l1.5 1.6H10z"/></svg></span>
+                        <span class="mc-ico"><svg aria-hidden="true"><use href="#mcIcoLevels"/></svg></span>
                         <span class="mc-stat-text"><span class="mc-label">Levels</span><b class="mc-value">${escapeHtml(d['level count'] || '-')}</b></span>
                     </div>
                     <div class="mc-stat">
-                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3.4a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2z"/><path fill="url(#mcGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M16 8 13.2 13.2 8 16 10.8 10.8z"/><path fill="#7a4a12" d="M8 16 10.8 10.8 13.2 13.2z"/><circle cx="12" cy="12" r="1.1" fill="#4a2c0c"/></svg></span>
+                        <span class="mc-ico"><svg aria-hidden="true"><use href="#mcIcoSize"/></svg></span>
                         <span class="mc-stat-text"><span class="mc-label">Map Size</span><b class="mc-value">${escapeHtml(String(d.map_size || '-').replace('x', ' × '))}</b></span>
                     </div>
                     <div class="mc-stat">
-                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></svg></span>
+                        <span class="mc-ico"><svg aria-hidden="true"><use href="#mcIcoTowers"/></svg></span>
                         <span class="mc-stat-text"><span class="mc-label">Towers</span><b class="mc-value">${Object.keys(map.towerTypes || {}).length || '-'}</b></span>
                     </div>
                     <div class="mc-stat ${life ? 'mc-life-yes' : 'mc-life-no'}">
-                        <span class="mc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#mcHeart)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></span>
+                        <span class="mc-ico"><svg aria-hidden="true"><use href="#mcIcoLife"/></svg></span>
                         <span class="mc-stat-text"><span class="mc-label">Extra Life</span><b class="mc-value" title="${life ? 'Yes' : 'No'}">${life ? '✔' : '✖'}</b></span>
                     </div>
                 </div>

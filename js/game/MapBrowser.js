@@ -60,7 +60,11 @@ async function loadMap(url) {
 }
 
 const descOf = map => (map.description && map.description[0]) || {};
-const starsOf = map => ((descOf(map).difficulty || '').match(/⭐/g) || []).length;
+// same rule as the map card (main.js renderMapCard): count the ⭐, or a plain number
+const starsOf = map => {
+    const diff = String(descOf(map).difficulty || '');
+    return (diff.match(/⭐/g) || []).length || parseInt(diff) || 0;
+};
 
 // ---------- remembered sort ----------
 function loadSort() {
@@ -97,25 +101,32 @@ function nameCell(row) {
     const desc = text && text !== 'Edit description'
         ? `<div class="map-browser-desc" title="${escapeHtml(text)}">${escapeHtml(text)}</div>`
         : '';
-    return `<td class="map-browser-name-cell"><div class="map-browser-name">${escapeHtml(row.name)}</div>${desc}</td>`;
+    // "Adventure Map VI (Crossroads of Realms)" -> name + gold subtitle, like the map card
+    const parts = /^(.*?)\s*\((.*)\)\s*$/.exec(row.name);
+    const sub = parts && parts[2] ? `<span class="map-browser-sub">${escapeHtml(parts[2])}</span>` : '';
+    return `<td class="map-browser-name-cell"><div class="map-browser-name" title="${escapeHtml(row.name)}">${escapeHtml(parts ? parts[1] : row.name)}${sub}</div>${desc}</td>`;
 }
 
+// same look as the map card (css/map_select.css): 5 gold / grey stars,
+// gold values, ✔ / ✖ for Extra Life and abilities as chips
 function rowCells(map) {
     const d = descOf(map);
+    const stars = starsOf(map);
     const towers = Object.keys(map.towerTypes || {}).length;
+    const star = on => `<svg class="${on ? 'on' : 'off'}" viewBox="0 0 24 24"><use href="#mcStar"/></svg>`;
     const life = map.extraLife === false
-        ? '<span class="info-table-life info-table-life-no">✖</span>'
-        : '<span class="info-table-life info-table-life-yes">✔</span>';
+        ? '<span class="map-browser-life is-no" title="No">✖</span>'
+        : '<span class="map-browser-life is-yes" title="Yes">✔</span>';
     const abilities = map.abilities && map.abilities.length
-        ? map.abilities.map(ab => `<span>${escapeHtml((ab.ui && ab.ui.icon) || '')} ${escapeHtml(ab.name)}</span>`).join('')
-        : '-';
+        ? map.abilities.map(ab => `<span class="mc-chip" title="${ab.type === 'global' ? 'Global' : 'Targeted'}">${escapeHtml((ab.ui && ab.ui.icon) || '')} ${escapeHtml(ab.name)}</span>`).join('')
+        : '<span class="mc-none">No abilities</span>';
     return `
-        <td>${escapeHtml(d['level count'] || '-')}</td>
-        <td class="map-browser-difficulty">${escapeHtml(d.difficulty || '-')}</td>
-        <td>${escapeHtml(d.map_size || '-')}</td>
-        <td>${towers ? towers + ' types' : '-'}</td>
+        <td class="map-browser-value">${escapeHtml(d['level count'] || '-')}</td>
+        <td><div class="mc-stars map-browser-stars" title="Difficulty ${stars} / 5">${[1, 2, 3, 4, 5].map(i => star(i <= stars)).join('')}</div></td>
+        <td class="map-browser-value">${escapeHtml(String(d.map_size || '-').replace('x', ' × '))}</td>
+        <td class="map-browser-value">${towers || '-'}</td>
         <td>${life}</td>
-        <td class="map-browser-abilities">${abilities}</td>`;
+        <td class="map-browser-abilities"><div class="mc-chips">${abilities}</div></td>`;
 }
 
 function markSelected() {

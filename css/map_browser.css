@@ -63,10 +63,14 @@
   z-index: 1;
   background: var(--main-bg-color);
   color: #f0c674;
-  font-weight: bold;
+  /* uppercase labels like the map card (.mc-label), just in gold */
+  font: 700 11.5px Arial, sans-serif;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
   text-align: center;
+  vertical-align: bottom;
   white-space: nowrap;
-  padding: 8px 8px;
+  padding: 8px 6px;
   border-bottom: 2px solid rgba(240, 198, 116, 0.45);
 }
 .map-browser-table th:first-child,
@@ -90,7 +94,7 @@
   background: rgba(240, 198, 116, 0.18);
   box-shadow: inset 3px 0 0 #f0c674;
 }
-.map-browser-table tbody tr.is-selected .map-browser-name { color: #f0c674; }
+.map-browser-table tbody tr.is-selected .map-browser-name { color: #ffe7a3; }
 
 /* ---------- sorting ---------- */
 .map-browser-toolbar {
@@ -213,7 +217,25 @@
 
 /* ---------- name + description ---------- */
 .map-browser-name-cell { max-width: 270px; }
-.map-browser-name { font-weight: bold; white-space: nowrap; }
+/* gold Cinzel name + italic subtitle - same as the map card title (.mc-name) */
+.map-browser-name {
+  max-width: 270px; /* caps the column - a long name ends with "..." (full name in the tooltip) */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #f0c674;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  font: 700 15px/1.25 'Cinzel', Georgia, serif;
+  white-space: nowrap;
+}
+.map-browser-sub {
+  display: block;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #c9a94a;
+  font: italic 400 12.5px Arial, sans-serif;
+  text-shadow: none;
+}
 .map-browser-desc {
   margin-top: 3px;
   color: #b9a988;
@@ -258,18 +280,42 @@
   border-radius: 4px;
   overflow: hidden;
 }
-.map-browser-difficulty { white-space: nowrap; letter-spacing: 1px; }
+/* ---------- cells in the map card style (css/map_select.css) ---------- */
+.map-browser-value {
+  font: 700 15px/1 Arial, sans-serif;
+  color: #f3e5ab;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.map-browser-stars { justify-content: center; padding-top: 0; }
+.map-browser-stars svg { width: 16px; height: 16px; }
+.map-browser-life { font: 700 16px/1 Arial, sans-serif; }
+.map-browser-life.is-yes { color: #f0c674; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.map-browser-life.is-no { color: #ef6f5c; }
+
+/* gold icon above each column name, like the map card stats (above, not
+   beside it - keeps the columns narrow so the table fits the popup) */
+.mb-th-ico {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+/* same icons in the filter chips */
+.mb-chip-ico {
+  width: 13px;
+  height: 13px;
+  margin: 0 0 0 2px;
+  vertical-align: -2px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+.map-filter-chip[data-filter="life"] .mb-chip-ico { margin: 0 5px 0 0; }
+.map-filter-chip:not(.is-on) .mb-chip-ico { filter: grayscale(0.6) brightness(0.8) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)); }
 .map-browser-loading { color: #aaa; font-style: italic; }
 
-/* abilities as small tags, wrapping onto more lines if there are many */
+/* abilities as the map card chips (.mc-chip), wrapping onto more lines if there are many */
 .map-browser-abilities { text-align: left !important; min-width: 230px; }
-.map-browser-abilities span {
-  display: inline-block;
-  margin: 2px 4px 2px 0;
-  padding: 1px 7px;
-  border-radius: 5px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(240, 198, 116, 0.25);
-  white-space: nowrap;
-  font-size: 12.5px;
-}
+.map-browser-abilities .mc-chips { margin: 0; overflow: visible; padding: 0; gap: 4px; }
+/* a long ability name wraps inside its chip instead of being cut off */
+.map-browser-abilities .mc-chip { white-space: normal; overflow: visible; }
