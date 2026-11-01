@@ -2029,7 +2029,7 @@
   </div>
 
   <div class="bar-section">
-    <h2 class="section-label">Version History — old vs new</h2>
+    <h2 class="section-label">Version History — old vs new <span style="color:#ef4444">(not implemented yet)</span></h2>
     <iframe class="mock-frame" data-template="tplVersions" data-autoheight title="Version History mockup"></iframe>
   </div>
 
@@ -5431,13 +5431,14 @@ show(selB.options[7].value); // Adventure Map VI
   <template id="tplVersions">
 <meta charset="UTF-8" />
 <title>Version History</title>
-<!-- Version History - old vs new. Both load the real ../versions.json.
+<!-- Version History - old vs new, side by side. Both load the real ../versions.json.
      A) uses the game's real css/versions.css + the same render as js/versions.js.
-     B) keeps the dots + lines, just styled like the new graphics (map card /
-        settings): gem dots on a gold rail, category icons in sockets, badges,
-        smooth open / close, search and Expand / Collapse all.
-     Only the look changes - B shows versions.json exactly as it is: its
-     category objects become categories, plain strings stay plain dots. -->
+     B) the same content in the new graphics: version rows like the Settings rows
+        (header stays pinned at the top while you scroll through its version),
+        categories as panels like the Settings groups with a gold icon in a socket,
+        and the old ring dots + line for the changes.
+     B shows versions.json exactly as it is: its category objects become panels,
+     plain strings stay plain dots. -->
 <link rel="stylesheet" href="../css/style.css" />
 <link rel="stylesheet" href="../css/helpers.css" />
 <link rel="stylesheet" href="../css/versions.css" />
@@ -5449,8 +5450,15 @@ show(selB.options[7].value); // Adventure Map VI
   h1{ margin:0 0 6px; color:var(--gold); font-family: Georgia, 'Times New Roman', serif; }
   .page-note{ margin:0 0 26px; color:#bbb; }
   .section-label{ margin:0; color:var(--gold); font-size:18px; font-family: Georgia, 'Times New Roman', serif; }
-  .section-desc{ margin:4px 0 14px; max-width:1000px; color:#aaa; font-size:14px; line-height:1.4; }
-  .vh-block{ margin-bottom:40px; }
+  .section-desc{ margin:4px 0 14px; color:#aaa; font-size:14px; line-height:1.4; min-height:58px; }
+
+  /* A and B side by side, same size */
+  .vh-grid{
+    display:grid;
+    grid-template-columns:1000px 1000px;
+    gap:20px 50px;
+    align-items:start;
+  }
 
   /* A) the real popup card, just not as an overlay */
   .vh-old #versionPopupContent{ width:1000px; box-sizing:border-box; }
@@ -5458,191 +5466,140 @@ show(selB.options[7].value); // Adventure Map VI
   /* ================================================================
      B) NEW - namespaced "vh-"
      ================================================================ */
+  /* card - same as the Settings popup (.settings-content) */
   .vh-card{
     position:relative;
     width:1000px;
     box-sizing:border-box;
-    padding:20px 26px 22px;
+    padding:20px 22px 22px;
     border-radius:12px;
-    color:#eee;
-    background:
-      radial-gradient(90% 40% at 50% 0%, rgba(240,198,116,.12), transparent 70%),
-      var(--main-bg-color);
-    box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 0 0 1px rgba(240,198,116,.12);
+    color:#fff;
+    background:var(--main-bg-color);
+    box-shadow:0 12px 30px rgba(0,0,0,.55);
   }
   .vh-card *{ box-sizing:border-box; }
+  .vh-card h2{ margin:0 0 14px; text-align:center; }
 
-  /* heading - Cinzel + gold icon, the version count under it */
-  .vh-title{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    margin:0 0 14px;
-    color:var(--gold);
-    font:700 24px 'Cinzel', Georgia, serif;
-    letter-spacing:.5px;
-    text-shadow:0 2px 4px rgba(0,0,0,.6);
-  }
-  .vh-title svg{ width:26px; height:26px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
-
-  /* search + expand / collapse - same plates as the map browser toolbar */
-  .vh-toolbar{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding-bottom:12px;
-    border-bottom:1px solid rgba(240,198,116,.25);
-  }
-  .vh-search{
-    flex:0 0 260px;
-    height:30px;
-    padding:0 10px;
-    border-radius:7px;
-    border:1px solid rgba(197,152,72,.55);
-    background:rgba(0,0,0,.3);
-    color:#fff;
-    font:13px Arial, sans-serif;
-    outline:none;
-    transition:border-color .15s ease, box-shadow .15s ease;
-  }
-  .vh-search::placeholder{ color:#9d8e72; }
-  .vh-search:focus{ border-color:var(--gold); box-shadow:0 0 8px rgba(240,198,116,.3); }
-  .vh-found{ flex:1; color:var(--muted); font-size:12.5px; }
-  .vh-plate{
-    height:28px;
-    padding:0 12px;
-    border-radius:7px;
-    border:1px solid rgba(197,152,72,.55);
-    background:linear-gradient(#47321f, #2a1c10);
-    color:#d9c7a0;
-    font:700 12px/1 Arial, sans-serif;
-    text-shadow:0 1px 2px #000;
-    box-shadow:inset 0 1px 0 rgba(255,230,170,.16), 0 3px 0 rgba(0,0,0,.55);
-    transition:transform .15s ease, border-color .15s ease, color .15s ease;
-  }
-  .vh-plate:hover{ transform:translateY(-1px); border-color:var(--gold); color:#fff3d0; }
-  .vh-plate:active{ transform:translateY(2px); box-shadow:inset 0 1px 0 rgba(255,230,170,.16), 0 1px 0 rgba(0,0,0,.55); }
-
-  /* the list scrolls, heading + toolbar stay */
+  /* the list scrolls, the heading stays */
   .vh-list{
-    height:560px;
-    margin-top:12px;
-    padding:4px 8px 4px 0;
+    position:relative; /* offsetTop of the versions is measured from here */
+    height:500px;
+    padding-right:8px;
     overflow-y:auto;
   }
   .vh-list::-webkit-scrollbar{ width:8px; }
   .vh-list::-webkit-scrollbar-track{ background:transparent; }
   .vh-list::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:4px; }
-  .vh-empty{ padding:40px 0; text-align:center; color:var(--muted); font-style:italic; }
 
-  /* ---------- one version = a big gem on the main rail ---------- */
+  /* ---------- one version = a ring dot on the rail + its row ---------- */
   .vh-version{
     position:relative;
-    padding-left:40px;
-    padding-bottom:6px;
+    padding-bottom:8px;
   }
-  /* main rail - from this version's gem down to the next one */
+  /* the rail - from this version's dot down to the next one */
   .vh-version::before{
     content:"";
     position:absolute;
-    left:13px;
-    top:28px;
-    bottom:-14px;
+    left:13px;   /* 13 + 2/2 = 14 = centre of the dot */
+    top:23px;    /* centre of the 46px row */
+    bottom:-23px; /* ... down to the centre of the next version's dot */
     width:2px;
-    border-radius:2px;
-    background:linear-gradient(to bottom, rgba(240,198,116,.75), rgba(240,198,116,.22));
-    box-shadow:0 0 6px rgba(240,198,116,.35);
+    background:linear-gradient(to bottom, rgba(240,198,116,.6), rgba(240,198,116,.2));
   }
   .vh-version:last-child::before{ display:none; }
 
-  .vh-gem{
-    position:absolute;
-    left:4px;
-    top:9px;
-    /* same ring dot as the changes, just bigger: 14 + 2 x 3 border = 20px */
-    width:14px;
-    height:14px;
-    border-radius:50%;
-    background:#1a1a1a;
-    border:3px solid #f0c674;
-    box-shadow:0 0 10px #f0c674, inset 0 0 5px #f0c674;
-    filter:saturate(.55) brightness(.75);
-    transition:filter .25s ease, box-shadow .25s ease, transform .25s ease;
-    z-index:1;
+  /* dot + row - stays pinned at the top while scrolling through this
+     version, so you always see which version you're in */
+  .vh-sticky{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    height:46px;
+    /* covers the changes scrolling under it - but not the dot column, so the
+       rail runs into the dot instead of being cut off around it */
+    background:linear-gradient(to right, transparent 28px, var(--main-bg-color) 28px);
   }
-  .vh-version:hover .vh-gem{ filter:none; transform:scale(1.15); box-shadow:0 0 16px #f0c674, inset 0 0 7px #f0c674; }
-  .vh-version.is-open .vh-gem{
-    filter:none;
-    transform:scale(1.1);
-    box-shadow:0 0 16px #f0c674, inset 0 0 7px #f0c674;
-  }
-  /* the version still in progress pulses */
-  .vh-version.is-wip .vh-gem::after{
-    content:"";
-    position:absolute;
-    inset:-7px;
-    border-radius:50%;
-    border:2px solid rgba(240,198,116,.7);
-    animation:vh-pulse 2s ease-out infinite;
-  }
-  @keyframes vh-pulse{
-    0%  { transform:scale(.6); opacity:1; }
-    100%{ transform:scale(1.5); opacity:0; }
+  /* pinned at the top (.is-stuck, set while scrolling): the rail of this
+     version would show above its dot - cover the dot column's top half too */
+  .vh-version.is-stuck .vh-sticky{
+    background:
+      linear-gradient(var(--main-bg-color), var(--main-bg-color)) 0 0 / 28px 23px no-repeat,
+      linear-gradient(to right, transparent 28px, var(--main-bg-color) 28px);
   }
 
-  /* version header - the whole row opens / closes it */
+  /* the old ring dot (css/versions.css), a bit bigger for the versions */
+  .vh-gem{
+    flex:0 0 auto;
+    box-sizing:border-box; /* 20px incl. the ring - centre at x 14 (4 + 10) */
+    width:20px;
+    height:20px;
+    margin:0 4px 0 4px;
+    border-radius:50%;
+    background:#1a1a1a;
+    border:3px solid var(--gold);
+    box-shadow:0 0 10px var(--gold), inset 0 0 5px var(--gold);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .vh-version:has(.vh-head:hover) .vh-gem{
+    transform:scale(1.2);
+    box-shadow:0 0 16px var(--gold), inset 0 0 7px var(--gold);
+  }
+
+  /* version row - same plate as the Settings rows / map card stats */
   .vh-head{
+    flex:1;
     display:flex;
     align-items:center;
     gap:10px;
-    width:100%;
-    padding:7px 10px;
-    border:1px solid transparent;
-    border-radius:9px;
-    background:none;
+    min-width:0;
+    height:40px;
+    padding:0 8px 0 14px;
+    border-radius:8px;
+    border:1px solid rgba(240,198,116,.15);
+    background:rgba(0,0,0,.18);
     color:inherit;
     text-align:left;
-    transition:background-color .2s ease, border-color .2s ease;
+    transition:border-color .2s ease, background-color .2s ease;
   }
-  .vh-head:hover{ background:rgba(240,198,116,.06); border-color:rgba(240,198,116,.18); }
-  .vh-version.is-open .vh-head{
-    background:linear-gradient(90deg, rgba(240,198,116,.12), rgba(240,198,116,.02));
-    border-color:rgba(240,198,116,.28);
-  }
+  .vh-head:hover{ border-color:rgba(240,198,116,.45); background:rgba(0,0,0,.26); }
   .vh-name{
     color:var(--gold);
-    font:700 17px/1.2 'Cinzel', Georgia, serif;
+    font:700 16px/1 'Cinzel', Georgia, serif;
     text-shadow:0 1px 2px rgba(0,0,0,.7);
     white-space:nowrap;
   }
-  .vh-version:not(.is-open) .vh-name{ color:#d8bf8a; }
   .vh-badge{
     padding:2px 8px;
     border-radius:999px;
-    font:700 10px/1.4 Arial, sans-serif;
+    border:1px solid rgba(240,198,116,.45);
+    background:rgba(240,198,116,.08);
+    color:var(--gold-soft);
+    font:700 9.5px/1.4 Arial, sans-serif;
     letter-spacing:.8px;
     text-transform:uppercase;
-    white-space:nowrap;
   }
-  .vh-badge.is-wip{ color:#2a1a0c; background:linear-gradient(#ffe7a3, #c58a2e); box-shadow:0 0 10px rgba(240,198,116,.45); }
-  .vh-badge.is-latest{ color:var(--gold-soft); border:1px solid rgba(240,198,116,.55); background:rgba(240,198,116,.1); }
   .vh-spacer{ flex:1; }
-  .vh-count{ color:var(--muted); font-size:12px; white-space:nowrap; }
+  /* date in a small socket */
   .vh-date{
     display:inline-flex;
     align-items:center;
     gap:6px;
-    padding:3px 9px;
+    height:26px;
+    padding:0 9px;
     border-radius:6px;
-    background:rgba(0,0,0,.25);
-    border:1px solid rgba(240,198,116,.18);
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.3);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
     color:var(--gold-soft);
-    font:700 12px/1.2 Arial, sans-serif;
+    font:700 12px/1 Arial, sans-serif;
     font-variant-numeric:tabular-nums;
     white-space:nowrap;
   }
-  .vh-date svg{ width:14px; height:14px; }
+  .vh-date svg{ width:14px; height:14px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+  /* round socket arrow - same as the map select arrows (.mc-arrow) */
   .vh-chev{
     display:inline-flex;
     align-items:center;
@@ -5656,106 +5613,109 @@ show(selB.options[7].value); // Adventure Map VI
     color:var(--gold);
     transition:transform .25s ease;
   }
-  .vh-chev svg{ width:13px; height:13px; }
+  .vh-chev svg{ width:12px; height:12px; }
   .vh-version.is-open .vh-chev{ transform:rotate(90deg); }
 
   /* smooth open / close (0fr -> 1fr) */
   .vh-body{
     display:grid;
     grid-template-rows:0fr;
+    margin-left:40px;
     transition:grid-template-rows .3s ease;
   }
   .vh-version.is-open .vh-body{ grid-template-rows:1fr; }
   .vh-body-inner{ min-height:0; overflow:hidden; }
-  .vh-groups{ padding:10px 4px 14px 10px; }
+  .vh-groups{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin:6px 0 4px;
+    padding:10px 16px 6px;
+    /* one panel for the whole version, like a Settings group */
+    border-radius:8px;
+    border:1px solid rgba(240,198,116,.15);
+    background:rgba(0,0,0,.18);
+  }
 
-  /* ---------- category: icon socket + name, its changes hang under it ---------- */
-  .vh-cat{ position:relative; margin-bottom:12px; }
-  .vh-cat-head{ display:flex; align-items:center; gap:9px; }
+  /* ---------- category = heading (icon + name) + its changes ---------- */
+  .vh-cat-head{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:6px;
+    padding-bottom:6px;
+    border-bottom:1px solid rgba(240,198,116,.25);
+  }
+  /* gold icon in a small dark socket - same as .settings-ico */
   .vh-ico{
-    position:relative;
-    z-index:1;
     flex:0 0 auto;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    width:28px; height:28px;
-    border-radius:7px;
-    background:linear-gradient(180deg, #2c1f12, #1a120a);
-    border:1px solid rgba(240,198,116,.4);
-    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 0 8px rgba(240,198,116,.15);
+    width:30px; height:30px;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
   }
-  .vh-ico svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+  .vh-ico svg{ width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
   .vh-cat-name{
-    color:var(--gold-soft);
-    font:700 13.5px 'Cinzel', Georgia, serif;
-    letter-spacing:.4px;
+    color:var(--gold);
+    font:700 15px 'Cinzel', Georgia, serif;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
   .vh-cat-name b{ font-weight:inherit; }
-  .vh-cat-count{
-    min-width:20px;
-    padding:1px 6px;
-    border-radius:999px;
-    background:rgba(240,198,116,.12);
-    color:var(--gold);
-    font:700 10.5px/1.4 Arial, sans-serif;
-    text-align:center;
-  }
 
-  /* changes - small gold dots on a thin line coming out of the icon */
+  /* ---------- changes - the old ring dots on a thin gold line ---------- */
   .vh-items{
     list-style:none;
-    margin:4px 0 0;
-    padding:0 0 0 13px;
+    margin:0;
+    padding:2px 0 0 8px;
   }
   .vh-item{
     position:relative;
-    padding:3px 0 7px 22px;
+    padding:3px 0 7px 20px;
     color:#e4dccb;
     font-size:13.5px;
     line-height:1.45;
     transition:color .15s ease;
   }
-  /* the line - each item draws its piece up to the next dot */
+  /* the line - each item draws its piece down to the next dot */
   .vh-item::after{
     content:"";
     position:absolute;
     left:0;
-    top:-6px;
+    top:0;
     bottom:0;
     width:2px;
     background:rgba(240,198,116,.22);
   }
-  .vh-item:first-child::after{ top:13px; } /* the line starts AT the first dot, nothing above it */
-  .vh-item:last-child::after{ bottom:auto; height:18px; background:linear-gradient(rgba(240,198,116,.22), transparent); }
+  .vh-item:first-child::after{ top:13px; } /* starts AT the first dot, nothing above it */
+  .vh-item:last-child::after{ bottom:auto; height:13px; }
   .vh-item:first-child:last-child::after{ display:none; }
-  /* the old ring dot (css/versions.css): dark middle, gold ring + gold glow */
   .vh-item::before{
     content:"";
     position:absolute;
+    box-sizing:border-box; /* 16px incl. the ring -> centre at x 1 (= the line), y 13 */
     left:-7px;
     top:5px;
-    width:12px;
-    height:12px;
+    width:16px;
+    height:16px;
     border-radius:50%;
     background:#1a1a1a;
-    border:2px solid #f0c674;
-    box-shadow:0 0 8px #f0c674, inset 0 0 4px #f0c674;
+    border:2px solid var(--gold);
+    box-shadow:0 0 8px var(--gold), inset 0 0 4px var(--gold);
     z-index:1;
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .vh-item:hover{ color:#fff; }
-  .vh-item:hover::before{ transform:scale(1.25); box-shadow:0 0 14px #f0c674, inset 0 0 6px #f0c674; }
+  .vh-item:hover::before{ transform:scale(1.25); box-shadow:0 0 14px var(--gold), inset 0 0 6px var(--gold); }
   .vh-item b{ color:var(--gold); }
   /* nested sub-list (an object inside a category) */
   .vh-item .vh-items{ margin-top:6px; padding-left:4px; }
-  .vh-item .vh-item::before{ width:8px; height:8px; left:-5px; top:7px; }
-
-  /* without a category (the older versions) the dots sit right under the header */
-  .vh-groups.is-flat .vh-items{ padding-left:13px; }
+  .vh-item .vh-item::before{ width:12px; height:12px; left:-5px; top:7px; } /* centre x 1, y 13 */
 
   @media (prefers-reduced-motion: reduce){
-    .vh-version.is-wip .vh-gem::after{ animation:none; opacity:.6; }
     .vh-body, .vh-chev, .vh-gem{ transition:none; }
   }
 </style>
@@ -5766,56 +5726,70 @@ show(selB.options[7].value); // Adventure Map VI
     <linearGradient id="vhFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient>
     <linearGradient id="vhRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
   </defs>
-  <!-- category icons (gold, dark outline - same style as the map card stats) -->
+  <!-- Category icons - gold silhouette, dark brown outline, darker gold details
+       (same style as the map card / Settings / top bar icons). Where the game
+       already has the icon, it's the same one:
+         Towers + Abilities  = the Towers / Abilities tabs
+         Music, Log, Menu    = the in-game Music / Log / Menu buttons
+         Map                 = the Standard maps switch
+         Performance         = Settings "Show FPS"
+         Version History     = the hourglass of the top bar timer -->
   <symbol id="vhIcoTowers" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></symbol>
-  <symbol id="vhIcoAbilities" viewBox="0 0 24 24"><path fill="url(#vhFire)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></symbol>
-  <symbol id="vhIcoEditor" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M4 17.5 15.5 6 18 8.5 6.5 20H4z"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M15.5 6l1.8-1.8a1.2 1.2 0 0 1 1.7 0l.8.8a1.2 1.2 0 0 1 0 1.7L18 8.5z"/></symbol>
-  <symbol id="vhIcoUI" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M3 4h18v16H3zM5 9v9h14V9z"/><path fill="#7a4a12" d="M5.5 5.6h1.6v1.6H5.5zM8.3 5.6h1.6v1.6H8.3z"/></symbol>
-  <symbol id="vhIcoMusic" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M9 5.5 20 3v12.5a2.8 2.8 0 1 1-2-2.7V7.3l-7 1.6v9.6a2.8 2.8 0 1 1-2-2.7z"/></symbol>
+  <symbol id="vhIcoAbilities" viewBox="0 0 24 24"><path fill="url(#vhFire)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></symbol>
+  <symbol id="vhIcoMusic" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" d="M9 4l11-2v13.5a3 3 0 1 1-2-2.8V6.3L11 7.6v10.4a3 3 0 1 1-2-2.8z"/></symbol>
   <symbol id="vhIcoMap" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></symbol>
-  <symbol id="vhIcoBook" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2H21z"/></symbol>
-  <symbol id="vhIcoScroll" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M7 3h11a2 2 0 0 1 2 2v2h-3v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2h3z"/><path fill="none" stroke="#7a4a12" stroke-width="1.2" stroke-linecap="round" d="M10 8h4.5M10 11h4.5M10 14h3"/></symbol>
-  <symbol id="vhIcoGear" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M10 2h4l.6 2.6 2.2 1.3 2.6-.8 2 3.4-2 1.9v2.6l2 1.9-2 3.4-2.6-.8-2.2 1.3L14 22h-4l-.6-2.6-2.2-1.3-2.6.8-2-3.4 2-1.9v-2.6l-2-1.9 2-3.4 2.6.8 2.2-1.3zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></symbol>
-  <symbol id="vhIcoBug" viewBox="0 0 24 24"><path fill="none" stroke="#c58a2e" stroke-width="1.6" stroke-linecap="round" d="M5 9l2.5 1.5M19 9l-2.5 1.5M4 14h3M20 14h-3M5 19.5 7.5 17M19 19.5 16.5 17"/><path fill="url(#vhRed)" stroke="#4a0d08" stroke-width=".8" d="M12 7.5c2.9 0 4.8 2.5 4.8 6s-2 6.5-4.8 6.5-4.8-3-4.8-6.5 1.9-6 4.8-6z"/><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" d="M8.8 8a3.2 3.2 0 0 1 6.4 0z"/><path stroke="#4a0d08" stroke-width=".9" d="M12 9.5V20"/></symbol>
-  <symbol id="vhIcoBolt" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M13.5 2 4.5 13.5h6L9.5 22l9-11.5h-6z"/></symbol>
-  <symbol id="vhIcoSword" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M20.5 3.5v3L11 16l-3-3 9.5-9.5z"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5.5 11.5 12.5 18.5 11 20l-2.2-2.2L5.5 21 3 18.5l3.2-3.3L4 13z"/></symbol>
-  <symbol id="vhIcoHome" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 3 2.5 11H5v9h5v-6h4v6h5v-9h2.5z"/></symbol>
-  <symbol id="vhIcoList" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".7" d="M3.5 4.5h3.5V8H3.5zM3.5 10.25h3.5v3.5H3.5zM3.5 16h3.5v3.5H3.5z"/><path fill="none" stroke="#c58a2e" stroke-width="2" stroke-linecap="round" d="M10 6.25h10M10 12h10M10 17.75h7"/></symbol>
-  <symbol id="vhIcoClock" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/><path fill="none" stroke="#c58a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="vhIcoList" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#4a2c0c" stroke-width="1.2" opacity=".75" d="M8 8h6M8 11h6M8 14h4"/></symbol>
+  <symbol id="vhIcoHome" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" d="M5 21V8a7 7 0 0 1 14 0v13z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9.5 9v12M14.5 9v12"/><circle cx="16.6" cy="14.5" r="1.1" fill="#4a2c0c"/></symbol>
+  <symbol id="vhIcoBolt" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 4.5A10 10 0 0 0 2 14.5c0 2 .6 3.9 1.6 5.5h16.8a10 10 0 0 0 1.6-5.5 10 10 0 0 0-10-10z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M5 14.5h1.4M12 7.5v1.4M17.6 14.5H19M7 9.5l1 1M17 9.5l-1 1"/><path fill="none" stroke="#4a2c0c" stroke-width="1.6" stroke-linecap="round" d="M12 15.5l4.2-5"/><circle cx="12" cy="15.5" r="1.6" fill="#4a2c0c"/></symbol>
+  <symbol id="vhIcoClock" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" d="M6 2h12v2h-1v2.5c0 2-1.4 3.6-3.3 5.5 1.9 1.9 3.3 3.5 3.3 5.5V20h1v2H6v-2h1v-2.5c0-2 1.4-3.6 3.3-5.5C8.4 10.1 7 8.5 7 6.5V4H6z"/><path fill="#7a4a12" d="M9 6.2h6c0 1-.9 2.2-3 4.1-2.1-1.9-3-3.1-3-4.1zM12 15.4c1.6 1.3 2.6 2.4 2.9 3.6H9.1c.3-1.2 1.3-2.3 2.9-3.6z"/></symbol>
+
+  <!-- new ones, drawn in the same style -->
+  <!-- Editor: quill -->
+  <symbol id="vhIcoEditor" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M21 2.5c-6.5.6-11.6 4.6-13.6 11l-1 3.2 1.4.4.9-2.4c2 .1 4-.6 5.4-2l-2.2-.3 3.3-1.3c2.8-2.3 4.8-5 5.8-8.6z"/><path fill="none" stroke="#7a4a12" stroke-width="1" stroke-linecap="round" d="M18.6 5 9 15"/><path fill="none" stroke="#4a2c0c" stroke-width="1.6" stroke-linecap="round" d="M7.2 16.6 4.5 21.5"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6" d="M3 20.5h8v1.5H3z"/></symbol>
+  <!-- UI: window panel with a header bar -->
+  <symbol id="vhIcoUI" viewBox="0 0 24 24"><rect x="2" y="3.5" width="20" height="17" rx="2.2" fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8"/><rect x="4" y="8.5" width="16" height="10" rx="1" fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6"/><circle cx="5.3" cy="6" r="1" fill="#7a4a12"/><circle cx="8.3" cy="6" r="1" fill="#7a4a12"/><path fill="url(#vhGold)" d="M6 10.5h7.5v2H6zM6 14.2h5v2H6zM15 10.5h3v5.7h-3z"/></symbol>
+  <!-- Lore: parchment with the red wax seal -->
+  <symbol id="vhIcoScroll" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M5 3h12.5a2.5 2.5 0 0 1 0 5H17v11.5a2.5 2.5 0 0 1-2.5 2.5H4.5a2.5 2.5 0 0 1 0-5H5z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M8 7.5h6M8 10.5h6M8 13.5h3.5"/><circle cx="14.2" cy="17.3" r="3" fill="url(#vhRed)" stroke="#4a0d08" stroke-width=".8"/><path fill="none" stroke="#ffb3a6" stroke-width=".8" opacity=".8" d="M13 17.3h2.4M14.2 16.1v2.4"/></symbol>
+  <!-- How to Play: open book -->
+  <symbol id="vhIcoBook" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M2 5c3.4-1.2 6.8-.8 10 1.6C15.2 4.2 18.6 3.8 22 5v14c-3.4-1.2-6.8-.8-10 1.6C8.8 18.2 5.4 17.8 2 19z"/><path fill="none" stroke="#4a2c0c" stroke-width=".9" d="M12 6.6v14"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M4.5 8.4c2-.5 3.8-.2 5.4.7M4.5 11.4c2-.5 3.8-.2 5.4.7M4.5 14.4c2-.5 3.8-.2 5.4.7M14.1 9.1c1.6-.9 3.4-1.2 5.4-.7M14.1 12.1c1.6-.9 3.4-1.2 5.4-.7M14.1 15.1c1.6-.9 3.4-1.2 5.4-.7"/></symbol>
+  <!-- Gameplay: sword -->
+  <symbol id="vhIcoSword" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 1.5l2 2.5v10.5h-4V4z"/><path fill="none" stroke="#7a4a12" stroke-width=".9" d="M12 4v10"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M6 14.5h12l-1 2H7z"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".7" d="M11 16.5h2V20h-2z"/><circle cx="12" cy="21" r="1.6" fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".7"/></symbol>
+  <!-- Bugs (fixed): wrench -->
+  <symbol id="vhIcoBug" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M21.3 6.3a5.2 5.2 0 0 1-6.9 5L6.8 18.9a2.1 2.1 0 0 1-3-3l7.6-7.6a5.2 5.2 0 0 1 5-6.9l-3 3 .6 3.4 3.4.6z"/><circle cx="5.3" cy="17.4" r="1" fill="#7a4a12"/></symbol>
+  <!-- System: gear -->
+  <symbol id="vhIcoGear" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M10.2 2h3.6l.5 2.4 1.9 1.1 2.3-.8 1.8 3.1-1.8 1.6v2.2l1.8 1.6-1.8 3.1-2.3-.8-1.9 1.1-.5 2.4h-3.6l-.5-2.4-1.9-1.1-2.3.8-1.8-3.1 1.8-1.6v-2.2L3.7 7.8l1.8-3.1 2.3.8 1.9-1.1zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z"/><circle cx="12" cy="12" r="2.2" fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6"/></symbol>
   <symbol id="vhIcoStar" viewBox="0 0 24 24"><path fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5-4.9-4.5 6.6-.8z"/></symbol>
-  <symbol id="vhIcoCalendar" viewBox="0 0 24 24"><path fill="url(#vhGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M3 5h18v16H3zM5 10v9h14v-9z"/><path fill="none" stroke="#4a2c0c" stroke-width="2" stroke-linecap="round" d="M8 3v4M16 3v4"/></symbol>
+  <symbol id="vhIcoCalendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2" fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8"/><path fill="#7a4a12" d="M3.4 8.5h17.2V10H3.4z"/><path fill="#7a4a12" d="M6.5 12.5h2.5V15H6.5zM10.75 12.5h2.5V15h-2.5zM15 12.5h2.5V15H15zM6.5 16.5h2.5V19H6.5zM10.75 16.5h2.5V19h-2.5z"/><path fill="none" stroke="#4a2c0c" stroke-width="2" stroke-linecap="round" d="M8 3v3M16 3v3"/></symbol>
 </svg>
 
-<h1>Version History - old vs new</h1>
-<p class="page-note">Both load the real versions.json. Click a version to open / close it.</p>
+<h1>Version History - old vs new <span style="color:#ef4444">(not implemented yet)</span></h1>
+<p class="page-note">Both load the real versions.json. Click a version to open / close it, scroll to see the pinned version row.</p>
 
-<!-- ============================================================
-     A) OLD - real css/versions.css, same render as js/versions.js
-     ============================================================ -->
-<div class="vh-block vh-old">
-  <h2 class="section-label">A) Old (index.html #versionPopup)</h2>
-  <p class="section-desc">As it is in the game now - unchanged.</p>
-  <div id="versionPopupContent">
-    <h2 class="text-center cl-primary">Version History</h2>
-    <div id="versionList" class="transparent-scrollbar-track"></div>
+<div class="vh-grid">
+  <div>
+    <h2 class="section-label">A) Old (index.html #versionPopup)</h2>
+    <p class="section-desc">As it is in the game now - unchanged.</p>
   </div>
-</div>
+  <div>
+    <h2 class="section-label">B) New proposal</h2>
+    <p class="section-desc">Same card as Settings. Every version is a row like the Settings rows with the date in a socket - it stays pinned at the top while you scroll through it. All categories of a version sit together in one panel like a Settings group, each with a gold icon, the changes keep the old ring dots + line.</p>
+  </div>
 
-<!-- ============================================================
-     B) NEW
-     ============================================================ -->
-<div class="vh-block">
-  <h2 class="section-label">B) New proposal</h2>
-  <p class="section-desc">The dots and lines stay, now as gold gems on a glowing rail - the open version shines, the one still in progress pulses. Every version header shows its badge (In progress / Latest), the number of changes and the date. Categories get a gold icon in a socket like the map card stats, their changes hang under it on a thin gold line. Everything comes straight from versions.json - categories only where it has them (Beta 1.0 and newer), the older versions stay a plain list of dots. Smooth open / close, search through all changes and Expand / Collapse all.</p>
-
-  <div class="vh-card">
-    <h2 class="vh-title"><svg aria-hidden="true"><use href="#vhIcoClock"/></svg>Version History</h2>
-    <div class="vh-toolbar">
-      <input type="search" id="vhSearch" class="vh-search" placeholder="Search changes..." autocomplete="off" spellcheck="false">
-      <span class="vh-found" id="vhFound"></span>
-      <button type="button" class="vh-plate" id="vhExpand">Expand all</button>
-      <button type="button" class="vh-plate" id="vhCollapse">Collapse all</button>
+  <!-- ============================================================
+       A) OLD - real css/versions.css, same render as js/versions.js
+       ============================================================ -->
+  <div class="vh-old">
+    <div id="versionPopupContent">
+      <h2 class="text-center cl-primary">Version History</h2>
+      <div id="versionList" class="transparent-scrollbar-track"></div>
     </div>
+  </div>
+
+  <!-- ============================================================
+       B) NEW
+       ============================================================ -->
+  <div class="vh-card">
+    <h2 class="cl-primary">Version History</h2>
     <div class="vh-list" id="vhList"></div>
   </div>
 </div>
@@ -5876,14 +5850,13 @@ const plain = html => String(html).replace(/<[^>]*>/g, '').trim();
 // category name -> icon (first match wins)
 const ICONS = [
   [/tower/i, 'Towers'], [/abilit/i, 'Abilities'], [/editor/i, 'Editor'],
-  [/music/i, 'Music'], [/map|multipath/i, 'Map'], [/lore|^story$/i, 'Scroll'],
+  [/music/i, 'Music'], [/map/i, 'Map'], [/lore/i, 'Scroll'],
   [/how to play|manual|tutorial/i, 'Book'], [/bug/i, 'Bug'], [/performance/i, 'Bolt'],
-  [/system|compatib|set$/i, 'Gear'], [/menu/i, 'Home'], [/log/i, 'List'],
+  [/system/i, 'Gear'], [/menu/i, 'Home'], [/log/i, 'List'],
   [/version/i, 'Clock'], [/game/i, 'Sword'], [/ui|ux|graphic/i, 'UI'],
 ];
 const iconFor = cat => {
-  const name = plain(cat);
-  const hit = ICONS.find(([re]) => re.test(name));
+  const hit = ICONS.find(([re]) => re.test(plain(cat)));
   return `<svg aria-hidden="true"><use href="#vhIco${hit ? hit[1] : 'Star'}"/></svg>`;
 };
 
@@ -5913,37 +5886,30 @@ function groupChanges(changes) {
   return [...groups].map(([cat, items]) => ({ cat, items }));
 }
 
-const countItems = items => items.reduce((n, it) => n + (it.sub ? countItems(it.sub) : 1), 0);
-
 const itemsHtml = items => `<ul class="vh-items">${items.map(it => `
   <li class="vh-item"><span>${it.html}</span>${it.sub ? itemsHtml(it.sub) : ''}</li>`).join('')}</ul>`;
 
+// a panel per category; changes without one get a panel without a heading
+const groupHtml = g => `
+  <div class="vh-cat">
+    ${g.cat ? `<div class="vh-cat-head"><span class="vh-ico">${iconFor(g.cat)}</span><span class="vh-cat-name">${g.cat}</span></div>` : ''}
+    ${itemsHtml(g.items)}
+  </div>`;
+
 function versionHtml(v, groups, isLatest) {
-  const wip = !v.release || v.release === '-';
-  const total = groups.reduce((n, g) => n + countItems(g.items), 0);
-  const flat = groups.length === 1 && !groups[0].cat;
-  const body = flat
-    ? itemsHtml(groups[0].items)
-    : groups.map(g => `
-      <div class="vh-cat">
-        <div class="vh-cat-head">
-          <span class="vh-ico">${iconFor(g.cat || 'General')}</span>
-          <span class="vh-cat-name">${g.cat || 'General'}</span>
-          <span class="vh-cat-count">${countItems(g.items)}</span>
-        </div>
-        ${itemsHtml(g.items)}
-      </div>`).join('');
+  const released = v.release && v.release !== '-';
   return `
-    <span class="vh-gem" aria-hidden="true"></span>
-    <button type="button" class="vh-head" aria-expanded="false">
-      <span class="vh-name">${v.version.trim()}</span>
-      ${wip ? '<span class="vh-badge is-wip">In progress</span>' : isLatest ? '<span class="vh-badge is-latest">Latest</span>' : ''}
-      <span class="vh-spacer"></span>
-      <span class="vh-count">${total} ${total === 1 ? 'change' : 'changes'}</span>
-      ${wip ? '' : `<span class="vh-date"><svg aria-hidden="true"><use href="#vhIcoCalendar"/></svg>${formatVersionDate(v.release)}</span>`}
-      <span class="vh-chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-    </button>
-    <div class="vh-body"><div class="vh-body-inner"><div class="vh-groups${flat ? ' is-flat' : ''}">${body}</div></div></div>`;
+    <div class="vh-sticky">
+      <span class="vh-gem" aria-hidden="true"></span>
+      <button type="button" class="vh-head" aria-expanded="false">
+        <span class="vh-name">${v.version.trim()}</span>
+        ${isLatest ? '<span class="vh-badge">Latest</span>' : ''}
+        <span class="vh-spacer"></span>
+        ${released ? `<span class="vh-date"><svg aria-hidden="true"><use href="#vhIcoCalendar"/></svg>${formatVersionDate(v.release)}</span>` : ''}
+        <span class="vh-chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+    </div>
+    <div class="vh-body"><div class="vh-body-inner"><div class="vh-groups">${groups.map(groupHtml).join('')}</div></div></div>`;
 }
 
 function setOpen(el, open) {
@@ -5955,51 +5921,29 @@ function renderB(versions) {
   const list = $('vhList');
   const latest = versions.findIndex(v => v.release && v.release !== '-');
   versions.forEach((v, i) => {
-    const groups = groupChanges(v.changes || []);
     const el = document.createElement('div');
-    el.className = 'vh-version' + (!v.release || v.release === '-' ? ' is-wip' : '');
-    el.innerHTML = versionHtml(v, groups, i === latest);
-    el.querySelector('.vh-head').addEventListener('click', () => setOpen(el, !el.classList.contains('is-open')));
+    el.className = 'vh-version';
+    el.innerHTML = versionHtml(v, groupChanges(v.changes || []), i === latest);
+    el.querySelector('.vh-head').addEventListener('click', () => {
+      const open = !el.classList.contains('is-open');
+      setOpen(el, open);
+      // closing a version while its row is pinned -> jump back to that row
+      if (!open && el.offsetTop < list.scrollTop) list.scrollTop = el.offsetTop;
+    });
     if (i === 0) setOpen(el, true);
     list.appendChild(el);
   });
+  // the version whose row is pinned at the top = the one the top edge is inside
+  const markStuck = () => list.querySelectorAll('.vh-version').forEach(el =>
+    el.classList.toggle('is-stuck', el.offsetTop < list.scrollTop && el.offsetTop + el.offsetHeight > list.scrollTop));
+  list.addEventListener('scroll', markStuck, { passive: true });
+  list.addEventListener('transitionend', markStuck); // after a version opens / closes
 }
-
-// search: shows only the matching changes and opens their versions
-function search() {
-  const q = $('vhSearch').value.trim().toLowerCase();
-  const list = $('vhList');
-  let hits = 0;
-  list.querySelectorAll('.vh-version').forEach((ver, i) => {
-    let verHits = 0;
-    ver.querySelectorAll('.vh-groups > .vh-cat, .vh-groups.is-flat').forEach(group => {
-      let groupHits = 0;
-      group.querySelectorAll(':scope > .vh-items > .vh-item, :scope.is-flat > .vh-items > .vh-item').forEach(li => {
-        const ok = !q || li.textContent.toLowerCase().includes(q);
-        li.hidden = !ok;
-        if (ok) groupHits++;
-      });
-      if (group.classList.contains('vh-cat')) group.hidden = !groupHits;
-      verHits += groupHits;
-    });
-    ver.hidden = !!q && !verHits;
-    if (q) setOpen(ver, verHits > 0);
-    hits += verHits;
-  });
-  if (!q) list.querySelectorAll('.vh-version').forEach((ver, i) => setOpen(ver, i === 0));
-  $('vhFound').textContent = q ? `${hits} ${hits === 1 ? 'change' : 'changes'} found` : '';
-  let empty = list.querySelector('.vh-empty');
-  if (q && !hits && !empty) list.insertAdjacentHTML('beforeend', '<div class="vh-empty">No change matches the search</div>');
-  if ((!q || hits) && empty) empty.remove();
-}
-$('vhSearch').addEventListener('input', search);
-$('vhExpand').addEventListener('click', () => $('vhList').querySelectorAll('.vh-version:not([hidden])').forEach(v => setOpen(v, true)));
-$('vhCollapse').addEventListener('click', () => $('vhList').querySelectorAll('.vh-version').forEach(v => setOpen(v, false)));
 
 fetch('../versions.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(data => { renderA(data.versions); renderB(data.versions); })
-  .catch(err => { $('vhList').innerHTML = `<div class="vh-empty">Failed to load versions.json (${err.message})</div>`; });
+  .catch(err => { $('vhList').textContent = `Failed to load versions.json (${err.message})`; });
 </script>
   </template>
 
