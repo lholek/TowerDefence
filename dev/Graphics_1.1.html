@@ -5484,7 +5484,7 @@ show(selB.options[7].value); // Adventure Map VI
   .vh-list{
     position:relative; /* offsetTop of the versions is measured from here */
     height:500px;
-    padding-right:8px;
+    padding:0 8px 0 8px; /* left: room for the version dot's glow */
     overflow-y:auto;
   }
   .vh-list::-webkit-scrollbar{ width:8px; }
@@ -5517,7 +5517,8 @@ show(selB.options[7].value); // Adventure Map VI
     display:flex;
     align-items:center;
     gap:12px;
-    height:46px;
+    height:43px;
+    padding-top:3px; /* row 3..43 - no gap below it, the panel hangs right under it */
     /* covers the changes scrolling under it - but not the dot column, so the
        rail runs into the dot instead of being cut off around it */
     background:linear-gradient(to right, transparent 28px, var(--main-bg-color) 28px);
@@ -5530,6 +5531,18 @@ show(selB.options[7].value); // Adventure Map VI
       linear-gradient(to right, transparent 28px, var(--main-bg-color) 28px);
   }
 
+  /* short gold bar from the dot into the version row (dot ends at x 24, row starts at 40) */
+  .vh-sticky::after{
+    content:"";
+    position:absolute;
+    left:24px;
+    top:22px; /* centre of the dot = 23 */
+    width:16px;
+    height:2px;
+    background:linear-gradient(to right, var(--gold), rgba(240,198,116,.45));
+    pointer-events:none;
+  }
+
   /* the old ring dot (css/versions.css), a bit bigger for the versions */
   .vh-gem{
     flex:0 0 auto;
@@ -5540,12 +5553,12 @@ show(selB.options[7].value); // Adventure Map VI
     border-radius:50%;
     background:#1a1a1a;
     border:3px solid var(--gold);
-    box-shadow:0 0 10px var(--gold), inset 0 0 5px var(--gold);
+    box-shadow:0 0 6px rgba(240,198,116,.8), inset 0 0 4px var(--gold);
     transition:transform .2s ease, box-shadow .2s ease;
   }
   .vh-version:has(.vh-head:hover) .vh-gem{
-    transform:scale(1.2);
-    box-shadow:0 0 16px var(--gold), inset 0 0 7px var(--gold);
+    transform:scale(1.12);
+    box-shadow:0 0 9px var(--gold), inset 0 0 5px var(--gold);
   }
 
   /* version row - same plate as the Settings rows / map card stats */
@@ -5562,24 +5575,23 @@ show(selB.options[7].value); // Adventure Map VI
     background:rgba(0,0,0,.18);
     color:inherit;
     text-align:left;
-    transition:border-color .2s ease, background-color .2s ease;
+    /* closing: the bottom corners round only once the panel is folded away */
+    transition:border-color .2s ease, background-color .2s ease,
+               border-bottom-left-radius 0s .3s, border-bottom-right-radius 0s .3s;
   }
   .vh-head:hover{ border-color:rgba(240,198,116,.45); background:rgba(0,0,0,.26); }
+  /* open: the row and its panel are one plate - flat bottom + a thin divider */
+  .vh-version.is-open .vh-head{
+    border-bottom-left-radius:0;
+    border-bottom-right-radius:0;
+    border-bottom-color:rgba(240,198,116,.25);
+    transition:border-color .2s ease, background-color .2s ease;
+  }
   .vh-name{
     color:var(--gold);
     font:700 16px/1 'Cinzel', Georgia, serif;
     text-shadow:0 1px 2px rgba(0,0,0,.7);
     white-space:nowrap;
-  }
-  .vh-badge{
-    padding:2px 8px;
-    border-radius:999px;
-    border:1px solid rgba(240,198,116,.45);
-    background:rgba(240,198,116,.08);
-    color:var(--gold-soft);
-    font:700 9.5px/1.4 Arial, sans-serif;
-    letter-spacing:.8px;
-    text-transform:uppercase;
   }
   .vh-spacer{ flex:1; }
   /* date in a small socket */
@@ -5625,38 +5637,68 @@ show(selB.options[7].value); // Adventure Map VI
   }
   .vh-version.is-open .vh-body{ grid-template-rows:1fr; }
   .vh-body-inner{ min-height:0; overflow:hidden; }
+  /* the panel hangs straight under the open row - one plate, no gap */
   .vh-groups{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    margin:6px 0 4px;
-    padding:10px 16px 6px;
-    /* one panel for the whole version, like a Settings group */
-    border-radius:8px;
+    padding:0 16px 10px;
     border:1px solid rgba(240,198,116,.15);
+    border-top:0;
+    border-radius:0 0 8px 8px;
     background:rgba(0,0,0,.18);
+    transition:border-color .2s ease;
   }
+  .vh-version:has(.vh-head:hover) .vh-groups{ border-color:rgba(240,198,116,.45); }
 
-  /* ---------- category = heading (icon + name) + its changes ---------- */
+  /* ---------- the tree: ONE line from the version row down through the
+     category icons to the last change. Everything sits on x = 15 of a
+     category (line 14..16, icon socket 0..30, ring dots centred on it).
+     The line is opaque (= gold .3 on the panel) so overlapping pieces
+     don't get brighter. ---------- */
+  .vh-cat{
+    position:relative;
+    padding:10px 0 4px;
+  }
+  .vh-cat::before{
+    content:"";
+    position:absolute;
+    left:14px;
+    top:0;
+    bottom:0;
+    width:2px;
+    background:#6c5837;
+  }
+  /* the last category: only down to its first change, the changes carry
+     the line on and it stops at the last dot */
+  .vh-cat:last-child::before{ bottom:auto; height:46px; } /* 10 + icon 30 + 4 + 2 */
+  .vh-cat:last-child:not(:has(.vh-cat-head))::before{ height:12px; }
+  /* nothing above the first icon / dot of the panel: the line starts at its
+     centre (10 + 15 icon, or 10 + 2 + 13 dot = 25 either way) */
+  .vh-cat:first-child::before{ top:25px; }
+  .vh-cat:first-child:last-child::before{ height:21px; } /* 25 -> 46 */
+  .vh-cat:first-child:last-child:not(:has(.vh-cat-head))::before{ display:none; }
+  .vh-cat:first-child:not(:has(.vh-cat-head)) > .vh-items > .vh-item:first-child::after{ top:13px; }
+  .vh-cat:first-child:not(:has(.vh-cat-head)) > .vh-items > .vh-item:first-child:last-child::after{ display:none; }
+
+  /* ---------- category = icon on the line + name ---------- */
   .vh-cat-head{
     display:flex;
     align-items:center;
     gap:9px;
-    margin-bottom:6px;
-    padding-bottom:6px;
-    border-bottom:1px solid rgba(240,198,116,.25);
+    margin-bottom:4px;
   }
-  /* gold icon in a small dark socket - same as .settings-ico */
+  /* gold icon in a small dark socket - same as .settings-ico, but opaque so
+     the line runs behind it */
   .vh-ico{
+    position:relative;
+    z-index:1;
     flex:0 0 auto;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     width:30px; height:30px;
     border-radius:6px;
-    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22)), #33291d;
     border:1px solid rgba(240,198,116,.35);
-    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
   }
   .vh-ico svg{ width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
   .vh-cat-name{
@@ -5666,21 +5708,21 @@ show(selB.options[7].value); // Adventure Map VI
   }
   .vh-cat-name b{ font-weight:inherit; }
 
-  /* ---------- changes - the old ring dots on a thin gold line ---------- */
+  /* ---------- changes - the old ring dots on the line ---------- */
   .vh-items{
     list-style:none;
     margin:0;
-    padding:2px 0 0 8px;
+    padding:2px 0 0 14px; /* li starts at x 14 = on the line */
   }
   .vh-item{
     position:relative;
-    padding:3px 0 7px 20px;
+    padding:3px 0 7px 25px; /* text at x 39 = under the category name */
     color:#e4dccb;
     font-size:13.5px;
     line-height:1.45;
     transition:color .15s ease;
   }
-  /* the line - each item draws its piece down to the next dot */
+  /* each change draws its piece of the line down to the next dot */
   .vh-item::after{
     content:"";
     position:absolute;
@@ -5688,11 +5730,9 @@ show(selB.options[7].value); // Adventure Map VI
     top:0;
     bottom:0;
     width:2px;
-    background:rgba(240,198,116,.22);
+    background:#6c5837;
   }
-  .vh-item:first-child::after{ top:13px; } /* starts AT the first dot, nothing above it */
-  .vh-item:last-child::after{ bottom:auto; height:13px; }
-  .vh-item:first-child:last-child::after{ display:none; }
+  .vh-item:last-child::after{ bottom:auto; height:13px; } /* ends AT the last dot */
   .vh-item::before{
     content:"";
     position:absolute;
@@ -5704,19 +5744,39 @@ show(selB.options[7].value); // Adventure Map VI
     border-radius:50%;
     background:#1a1a1a;
     border:2px solid var(--gold);
-    box-shadow:0 0 8px var(--gold), inset 0 0 4px var(--gold);
+    box-shadow:0 0 4px rgba(240,198,116,.7), inset 0 0 3px var(--gold);
     z-index:1;
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease;
   }
+  /* hover: a small, tight glow (no big halo that gets cut off) + the dot fills */
   .vh-item:hover{ color:#fff; }
-  .vh-item:hover::before{ transform:scale(1.25); box-shadow:0 0 14px var(--gold), inset 0 0 6px var(--gold); }
+  .vh-item:hover::before{
+    transform:scale(1.12);
+    background:#3a2c14;
+    box-shadow:0 0 6px var(--gold), inset 0 0 4px var(--gold);
+  }
   .vh-item b{ color:var(--gold); }
-  /* nested sub-list (an object inside a category) */
+  /* nested sub-list (an object inside a change) - its own short line */
   .vh-item .vh-items{ margin-top:6px; padding-left:4px; }
+  .vh-item .vh-item{ padding-left:18px; }
   .vh-item .vh-item::before{ width:12px; height:12px; left:-5px; top:7px; } /* centre x 1, y 13 */
+  .vh-item .vh-item:first-child::after{ top:13px; } /* starts at its first dot */
+  .vh-item .vh-item:first-child:last-child::after{ display:none; }
+
+  /* opening: the categories slide in one after another */
+  .vh-version.is-open .vh-cat{ animation:vhCatIn .35s ease both; }
+  .vh-version.is-open .vh-cat:nth-child(2){ animation-delay:.05s; }
+  .vh-version.is-open .vh-cat:nth-child(3){ animation-delay:.1s; }
+  .vh-version.is-open .vh-cat:nth-child(4){ animation-delay:.15s; }
+  .vh-version.is-open .vh-cat:nth-child(n+5){ animation-delay:.2s; }
+  @keyframes vhCatIn{
+    from{ opacity:0; transform:translateY(-6px); }
+    to{ opacity:1; transform:none; }
+  }
 
   @media (prefers-reduced-motion: reduce){
-    .vh-body, .vh-chev, .vh-gem{ transition:none; }
+    .vh-body, .vh-chev, .vh-gem, .vh-head{ transition:none; }
+    .vh-version.is-open .vh-cat{ animation:none; }
   }
 </style>
 
@@ -5896,14 +5956,13 @@ const groupHtml = g => `
     ${itemsHtml(g.items)}
   </div>`;
 
-function versionHtml(v, groups, isLatest) {
+function versionHtml(v, groups) {
   const released = v.release && v.release !== '-';
   return `
     <div class="vh-sticky">
       <span class="vh-gem" aria-hidden="true"></span>
       <button type="button" class="vh-head" aria-expanded="false">
         <span class="vh-name">${v.version.trim()}</span>
-        ${isLatest ? '<span class="vh-badge">Latest</span>' : ''}
         <span class="vh-spacer"></span>
         ${released ? `<span class="vh-date"><svg aria-hidden="true"><use href="#vhIcoCalendar"/></svg>${formatVersionDate(v.release)}</span>` : ''}
         <span class="vh-chev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -5919,11 +5978,10 @@ function setOpen(el, open) {
 
 function renderB(versions) {
   const list = $('vhList');
-  const latest = versions.findIndex(v => v.release && v.release !== '-');
   versions.forEach((v, i) => {
     const el = document.createElement('div');
     el.className = 'vh-version';
-    el.innerHTML = versionHtml(v, groupChanges(v.changes || []), i === latest);
+    el.innerHTML = versionHtml(v, groupChanges(v.changes || []));
     el.querySelector('.vh-head').addEventListener('click', () => {
       const open = !el.classList.contains('is-open');
       setOpen(el, open);
