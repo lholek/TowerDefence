@@ -99,6 +99,15 @@
           ]
         },
         {
+          "<b>Version History</b>": [
+            "Redesigned 'Version History' to match the new graphics - wider card like Settings, every version is its own row with a gold dot on a timeline and its release date with a calendar icon",
+            "Versions open / close smoothly with a click, the newest one is open right away",
+            "The row of the version you are reading stays pinned at the top while you scroll through its changes",
+            "Every section has its own gold icon (Towers, Abilities, Editor, UI, Music, Map, Lore, How to Play, Bugs...) sitting on one line that runs through all the changes of the version",
+            "Smaller glow on the dots when you hover over a change, and the sections slide in one after another when a version opens"
+          ]
+        },
+        {
           "<b>Lore</b>": [
             "New Lore scroll - the Ember Decree is now followed by the four Elder Mages (Pyrrhos, Sylvaran, Aurelius and Nivaris), each telling their story and the ability they gift to the Guardian",
             "Chapter tabs on the bottom roll to jump between the Decree and each mage",

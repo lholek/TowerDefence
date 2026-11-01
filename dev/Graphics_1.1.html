@@ -2029,7 +2029,7 @@
   </div>
 
   <div class="bar-section">
-    <h2 class="section-label">Version History — old vs new <span style="color:#ef4444">(not implemented yet)</span></h2>
+    <h2 class="section-label">Version History — old vs new (new is now in the game: css/versions.css, js/versions.js)</h2>
     <iframe class="mock-frame" data-template="tplVersions" data-autoheight title="Version History mockup"></iframe>
   </div>
 
@@ -5441,7 +5441,164 @@ show(selB.options[7].value); // Adventure Map VI
      plain strings stay plain dots. -->
 <link rel="stylesheet" href="../css/style.css" />
 <link rel="stylesheet" href="../css/helpers.css" />
-<link rel="stylesheet" href="../css/versions.css" />
+<!-- A) the OLD css/versions.css (before Beta 1.1), kept here so A still shows the old look -->
+<style>
+/* Version popup styling */
+#versionPopupContent {
+  background: var(--main-bg-color);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  max-width: 1000px;
+  color: #fff;
+  position: relative; /* anchors the "×" close button in the corner */
+}
+
+/* The list itself scrolls (not the whole card) so the heading and the "×"
+   close button stay put and reachable while scrolling a long history. */
+#versionList {
+  margin-top: 10px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* scrollbar-width/-color removed on purpose (see css/cursor.css) - having
+   both that AND ::-webkit-scrollbar-* below made Chrome render this
+   scrollbar through its newer standard-properties path, which ignores
+   the cursor CSS entirely; ::-webkit-scrollbar-* alone respects it. */
+#versionList::-webkit-scrollbar {
+  width: 8px;
+}
+#versionList::-webkit-scrollbar-track {
+  border-radius: 4px;
+}
+
+/* Reusable: put class="transparent-scrollbar-track" on any scrollable
+   box to make its scrollbar TRACK see-through (just the thumb visible) -
+   used here on #versionList instead of the dark #333 it had before. */
+.transparent-scrollbar-track::-webkit-scrollbar-track {
+  background: transparent;
+}
+#versionList::-webkit-scrollbar-thumb {
+  background: #f0c674;
+  border-radius: 4px;
+}
+
+#versionList h3 {
+  color: #f0c674;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+  font-size: 1.1rem; /* Adjust to match your preference */
+}
+
+#versionList ul {
+  list-style: none;
+  padding: 0;
+  margin-left: 10px; /* Adjusted to give ball room */
+}
+
+/* Nested <ul> (sub-points) gets a little breathing room from the parent bullet's text above it */
+#versionList ul ul {
+  padding-top: 6px;
+}
+
+#versionList ul li {
+  position: relative;
+  padding-left: 25px;   /* Space between line and text */
+  padding-bottom: 10px; /* Gap between items */
+  border-left: 2px solid #1a1a1a; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix: Remove line after last item AND prevent it from poking out the top */
+#versionList ul li:last-child {
+  border-left-color: transparent;
+}
+
+/* Fix: When there's only ONE item, it's both first and last child.
+   The :first-child rule below sets a border-image gradient which paints
+   OVER border-left-color, so the transparent color above isn't enough on
+   its own to hide the line - the border-image has to be cleared too. */
+#versionList ul li:first-child:last-child {
+  border-image: none;
+  border-left-color: transparent;
+}
+
+#versionList ul li::before {
+  content: "";
+  position: absolute;
+  
+  /* PERFECT CENTERING:
+     Line is 2px wide. Dot is 12px wide + 4px border = 16px.
+     Calculation: -(16/2) + (2/2) = -8px + 1px = -7px.
+  */
+  left: -8px; /* Tweaked slightly to account for browser sub-pixel rendering */
+  
+  /* Alignment to text: 
+     Using 'px' here is more stable than 'em' for fixed-size balls. 
+  */
+  top: 2px; 
+    
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a; 
+  border: 2px solid #f0c674;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #f0c674, inset 0 0 4px #f0c674;
+  z-index: 1;
+}
+
+/* Ensure the line starts AT the dot, not above it */
+#versionList ul li:first-child {
+  border-image: linear-gradient(to bottom, transparent 10px, #1a1a1a 10px) 1;
+}
+
+/* Legacy styles below */
+.version-item {
+  margin-bottom: 1rem;
+}
+
+.version-title {
+  /* cursor: default sword at rest, blazing on hover - see css/style.css */
+  user-select: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0;
+  transition: background-color 0.2s;
+}
+
+.version-title.first-version {
+  /* not clickable - keep the plain cursor, no hover swap (see style.css) */
+  color: #ffd700;
+  font-size: 1.2em;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.version-item:not(:first-child) {
+  border-top: 1px solid #444;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.version-title:not(.first-version):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.expand-icon {
+  display: inline-block;
+  width: 1.5em;
+  user-select: none;
+  color: #f0c674;
+}
+
+.version-content {
+  padding: 0.5rem 1rem;
+  margin-left: 1.5em;
+}
+
+</style>
 <link rel="stylesheet" href="../css/cursor.css" />
 <style>
   :root{ --gold:#f0c674; --gold-soft:#f3e5ab; --muted:#a8957a; }
@@ -5822,16 +5979,16 @@ show(selB.options[7].value); // Adventure Map VI
   <symbol id="vhIcoCalendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2" fill="url(#vhGold)" stroke="#4a2c0c" stroke-width=".8"/><path fill="#7a4a12" d="M3.4 8.5h17.2V10H3.4z"/><path fill="#7a4a12" d="M6.5 12.5h2.5V15H6.5zM10.75 12.5h2.5V15h-2.5zM15 12.5h2.5V15H15zM6.5 16.5h2.5V19H6.5zM10.75 16.5h2.5V19h-2.5z"/><path fill="none" stroke="#4a2c0c" stroke-width="2" stroke-linecap="round" d="M8 3v3M16 3v3"/></symbol>
 </svg>
 
-<h1>Version History - old vs new <span style="color:#ef4444">(not implemented yet)</span></h1>
+<h1>Version History - old vs new</h1>
 <p class="page-note">Both load the real versions.json. Click a version to open / close it, scroll to see the pinned version row.</p>
 
 <div class="vh-grid">
   <div>
-    <h2 class="section-label">A) Old (index.html #versionPopup)</h2>
-    <p class="section-desc">As it is in the game now - unchanged.</p>
+    <h2 class="section-label">A) Old (before Beta 1.1)</h2>
+    <p class="section-desc">As it was in the game before Beta 1.1 (the old css/versions.css is kept inline below).</p>
   </div>
   <div>
-    <h2 class="section-label">B) New proposal</h2>
+    <h2 class="section-label">B) New (now in the game: index.html #versionPopup, css/versions.css)</h2>
     <p class="section-desc">Same card as Settings. Every version is a row like the Settings rows with the date in a socket - it stays pinned at the top while you scroll through it. All categories of a version sit together in one panel like a Settings group, each with a gold icon, the changes keep the old ring dots + line.</p>
   </div>
 
