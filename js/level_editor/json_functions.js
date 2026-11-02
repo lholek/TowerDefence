@@ -819,7 +819,8 @@ export async function generateShareLink() {
             .replace(/=+$/, '');
 
         // 3. Create URL and copy to clipboard
-        const shareUrl = `${window.location.origin}${window.location.pathname.replace('level_editor.html', 'index.html')}?customMap=${base64String}`;
+        // resolved against the page's base URL, so it also works from dev/level_editor_new.html (<base href="../">)
+        const shareUrl = `${new URL('index.html', document.baseURI).href}?customMap=${base64String}`;
         
         await navigator.clipboard.writeText(shareUrl);
         modules.setStatus("Share link copied to clipboard!");
