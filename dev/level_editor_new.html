@@ -17,112 +17,341 @@
     <link rel="stylesheet" href="css/level_editor/map.css" />
     <link rel="stylesheet" href="css/backgrounds.css" />
     <link rel="stylesheet" href="css/level_editor/JsonStepper.css" />
-    <!-- dev only: "TODOs" button (top right) + popup with the planned graphic updates -->
+    <!-- dev only: graphic updates of the new editor (only this file - the shared css/level_editor/* stays untouched) -->
     <style>
-        .dev-todo-btn{
-            /* top right, just left of the fixed Map Preview panel (right 30 + 264 wide + 12 gap) */
+        /* --- "DEV" button (top right, left of the fixed Map Preview panel: right 30 + 264 wide + 12 gap)
+               + popup listing what this dev editor changes compared to level_editor.html --- */
+        .dev-btn{
             position:fixed; top:20px; right:306px; z-index:20000;
-            display:inline-flex; align-items:center; gap:8px;
-            padding:8px 14px; border-radius:8px;
+            padding:8px 16px; border-radius:8px;
             border:1px solid rgba(240,198,116,.55);
             background:linear-gradient(180deg, #4a3b28, #2f2619);
             box-shadow:0 4px 12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,231,163,.15);
-            color:#f0c674; font:700 14px 'Cinzel', Georgia, serif; letter-spacing:.5px;
+            color:#f0c674; font:700 14px 'Cinzel', Georgia, serif; letter-spacing:1px;
+            cursor:pointer;
         }
-        .dev-todo-btn:hover{ border-color:#f0c674; color:#ffe7a3; }
-        .dev-todo-btn b{
-            display:inline-flex; align-items:center; justify-content:center;
-            min-width:22px; height:22px; padding:0 6px; border-radius:999px;
-            background:#f0c674; color:#3e3223; font:700 12px Arial, sans-serif;
-        }
-        .dev-todo-overlay{
+        .dev-btn:hover{ border-color:#f0c674; color:#ffe7a3; }
+        .dev-overlay{
             position:fixed; inset:0; z-index:20001;
             display:none; align-items:center; justify-content:center;
             background:rgba(0,0,0,.85);
         }
-        .dev-todo-overlay.is-open{ display:flex; }
-        .dev-todo-card{
+        .dev-overlay.is-open{ display:flex; }
+        .dev-card{
             position:relative; box-sizing:border-box;
-            width:820px; max-width:calc(100vw - 40px); max-height:calc(100vh - 60px);
+            width:760px; max-width:calc(100vw - 32px); max-height:calc(100vh - 60px);
             display:flex; flex-direction:column;
             padding:20px 22px 22px; border-radius:12px;
             background:#3e3223; color:#fff; text-align:left;
             box-shadow:0 12px 30px rgba(0,0,0,.55);
         }
-        .dev-todo-card h2{ margin:0 0 4px; text-align:center; color:#f0c674; font-family:'Cinzel', Georgia, serif; }
-        .dev-todo-card .dev-todo-note{ margin:0 0 14px; text-align:center; color:#c9b48a; font-size:13px; }
-        .dev-todo-close{
-            position:absolute; top:12px; right:18px; padding:0;
+        .dev-card h2{ margin:0 0 4px; text-align:center; color:#f0c674; font-family:'Cinzel', Georgia, serif; }
+        .dev-card .dev-note{ margin:0 0 14px; text-align:center; color:#c9b48a; font-size:13px; }
+        .dev-close{
+            position:absolute; top:12px; right:18px; padding:0; cursor:pointer;
             background:none; border:0; color:#888; font-size:28px; line-height:1;
         }
-        .dev-todo-close:hover{ color:#fff; }
-        .dev-todo-list{
-            margin:0; padding:0 8px 0 0; list-style:none; counter-reset:todo;
-            overflow-y:auto;
+        .dev-close:hover{ color:#fff; }
+        .dev-changes{ overflow-y:auto; padding-right:8px; }
+        .dev-changes::-webkit-scrollbar{ width:8px; }
+        .dev-changes::-webkit-scrollbar-track{ background:transparent; }
+        .dev-changes::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
+        .dev-changes h3{
+            display:flex; align-items:center; gap:8px;
+            margin:14px 0 8px; padding-bottom:6px;
+            border-bottom:1px solid rgba(240,198,116,.25);
+            color:#f0c674; font:700 15px 'Cinzel', Georgia, serif;
         }
-        .dev-todo-list::-webkit-scrollbar{ width:8px; }
-        .dev-todo-list::-webkit-scrollbar-track{ background:transparent; }
-        .dev-todo-list::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
-        .dev-todo-list li{
-            counter-increment:todo;
-            display:grid; grid-template-columns:30px 1fr; gap:2px 12px;
-            margin-bottom:8px; padding:9px 12px;
-            border-radius:8px; border:1px solid rgba(240,198,116,.15);
-            background:rgba(0,0,0,.18);
+        .dev-changes h3:first-child{ margin-top:0; }
+        .dev-changes h3::before{
+            content:''; width:7px; height:7px; transform:rotate(45deg);
+            background:linear-gradient(135deg, #ffe7a3, #c58a2e); box-shadow:0 0 0 1px #4a2c0c;
         }
-        .dev-todo-list li::before{
-            content:counter(todo);
-            grid-row:span 2; align-self:start;
+        .dev-changes ul{ margin:0; padding:0; list-style:none; }
+        .dev-changes li{
+            margin-bottom:6px; padding:8px 12px; border-radius:8px;
+            border:1px solid rgba(240,198,116,.15); background:rgba(0,0,0,.18);
+            color:#e4dccb; font-size:13.5px; line-height:1.45;
+        }
+        .dev-changes li strong{ color:#f0c674; }
+
+        /* --- Map: a bit more space between the top bar and the map --- */
+        /* position + z-index: the Map Style / Graphics lists drop over the canvas, which sits at
+           z-index 1000 (editor.css #mapCanvas) - stays under the fixed side panels (1002) */
+        .map-top-bar{ margin-bottom:12px; position:relative; z-index:1001; }
+
+        /* --- Map: Brush Settings on top, tile picker under it over the whole row.
+               min-width:0 everywhere on the way down, otherwise the wide tile row (it scrolls
+               sideways inside .tile-grid-main) stretches the boxes and overflows the card. --- */
+        #tileDrawingPanel{ flex-direction:column; align-items:stretch; }
+        #tileDrawingPanel > div,
+        #tileDrawingPanel > div:first-child,
+        #tileDrawingPanel > div:last-child{ flex:0 0 auto; width:100%; min-width:0; }
+        #tileDrawingPanel .tile-key-container{ max-width:100%; width:100%; min-width:0; box-sizing:border-box; }
+        /* (not on .tile-key-container - the tile search suggestions drop out of it) */
+        #tileDrawingPanel .tile-slider-wrapper{ max-width:100%; width:100%; min-width:0; overflow:hidden; }
+        #tileDrawingPanel .tile-grid-main{ min-width:0; max-width:100%; box-sizing:border-box; }
+        .tileDrawingTiles{ text-align:center; }
+        /* tiles first, search + filters under them (editor_map.js renders the header first) */
+        #tileKey{ display:flex; flex-direction:column; }
+        #tileKey .tile-slider-wrapper{ order:-1; margin-bottom:10px; }
+        #tileKey .tile-grid-main{ margin-top:0; }
+
+        /* --- Map: "Selected" tile as the same 70px square as the tiles in the picker
+               (map.css .tile-item / .tile-selector-btn), gold border = the chosen one --- */
+        #tileDrawingPanel .current-tile-display{
+            flex:0 0 auto;
+            display:flex; align-items:center; justify-content:center;
+            width:70px; min-width:70px; height:70px; box-sizing:border-box;
+            padding:2px; border:2px solid #f0c674; border-radius:4px;
+            font-weight:bold; font-size:.72rem; line-height:1.15;
+            white-space:normal; text-align:center; overflow:hidden;
+            background-size:cover; background-position:center;
+        }
+
+        /* --- Map: Brush Settings in one row - title + size, then the shapes --- */
+        #tileDrawingPanel .tileDrawingBrushItems{ margin-top:0; }
+        #tileDrawingPanel .brush-key-container{
+            display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px 18px;
+            box-sizing:border-box;
+        }
+        #tileDrawingPanel .brush-key-container .brush-options{ margin:0; }
+        .brush-button-row{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+        .brush-settings-head{
+            display:flex; align-items:center; justify-content:center; gap:8px;
+        }
+        .brush-settings-head .brushSizeInput{
+            width:50px; padding:4px; border-radius:4px; border:1px solid #ccc;
+        }
+
+        /* "Selected:" + tile + X / Y moved from the tile header into the Brush row - the editor
+           re-renders that header on every hover, so the originals stay there hidden and the
+           Brush row shows mirrors of them (script at the bottom) */
+        #tileKey .tile-editor-header-row > strong:first-child,
+        #tileKey #currentTileDisplay,
+        #tileKey #tileCoordinates{ display:none; }
+
+        /* X / Y of the hovered tile - framed like the Settings panels, gold dark sockets for the numbers */
+        .dev-coords{
+            display:flex; align-items:center; gap:6px;
+            padding:5px 8px; border-radius:8px;
+            background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.35);
+            box-shadow:inset 0 1px 3px rgba(0,0,0,.45);
+        }
+        .dev-coord{ display:inline-flex; align-items:center; gap:5px; }
+        .dev-coord b{ color:#f0c674; font:700 14px 'Cinzel', Georgia, serif; }
+        .dev-coord span{
+            display:inline-block; min-width:34px; padding:3px 6px; box-sizing:border-box;
+            border-radius:5px; text-align:center;
+            background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+            border:1px solid rgba(240,198,116,.25);
+            color:#ffe7a3; font:700 14px Arial, sans-serif; font-variant-numeric:tabular-nums;
+        }
+
+        /* --- Menu buttons: same .btn look as Main Menu (radius, bevel, drop, glow), own colours kept --- */
+        .editor-tabs .btn-test-map,
+        .editor-tabs .btn-blue,
+        .editor-tabs .btn-help,
+        .editor-tabs .active-tab{
+            --dev-btn-edge:#5c2e0e;
+            border:2px solid var(--dev-btn-edge) !important;
+            border-radius:10px;
+            padding:10px 20px;
+            transform:none;
+            box-shadow:
+                inset 0 2px 1px rgba(255,255,255,.3),
+                inset 0 -10px 14px rgba(0,0,0,.22),
+                0 5px 0 var(--dev-btn-edge),
+                0 11px 16px rgba(0,0,0,.4) !important;
+        }
+        .editor-tabs .btn-test-map:hover,
+        .editor-tabs .btn-blue:hover,
+        .editor-tabs .btn-help:hover,
+        .editor-tabs .active-tab:hover{
+            transform:translateY(-2px);
+            box-shadow:
+                inset 0 2px 1px rgba(255,255,255,.35),
+                inset 0 -10px 14px rgba(0,0,0,.2),
+                0 5px 0 var(--dev-btn-edge),
+                0 0 16px rgba(243,229,171,.4) !important;
+        }
+        .editor-tabs .btn-test-map:active,
+        .editor-tabs .btn-blue:active,
+        .editor-tabs .btn-help:active,
+        .editor-tabs .active-tab:active{
+            transform:translateY(5px);
+            box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 1px 0 var(--dev-btn-edge) !important;
+        }
+        .editor-tabs .btn-test-map{ --dev-btn-edge:#1e3d1a; }
+        .editor-tabs .btn-blue{ --dev-btn-edge:#1a334d; }
+        .editor-tabs .btn-help{ --dev-btn-edge:#9c978d; text-shadow:none; }
+        .editor-tabs .btn-help:active{ background-color:#d1ccc0; }
+        .editor-tabs .active-tab{ --dev-btn-edge:#b8860b; text-shadow:0 1px 0 rgba(255,255,255,.35); }
+
+        /* --- Gold icons (same socket + gold silhouette as the Settings icons in the game) --- */
+        .dev-ico{
+            flex:0 0 auto;
             display:inline-flex; align-items:center; justify-content:center;
-            width:30px; height:30px; border-radius:6px;
+            width:26px; height:26px; margin-right:8px; border-radius:6px;
             background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
             border:1px solid rgba(240,198,116,.35);
-            box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
-            color:#f0c674; font:700 13px Arial, sans-serif;
+            box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+            vertical-align:middle;
         }
-        .dev-todo-list strong{ color:#f0c674; font:700 14.5px 'Cinzel', Georgia, serif; }
-        .dev-todo-list span{ color:#e4dccb; font-size:13.5px; line-height:1.45; }
+        .dev-ico svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+        #basicInfoEditorPanel .dev-ico-label{ display:flex; align-items:center; }
+        /* Title + Description headings centered; Title text centered too, Description text stays left */
+        #basicInfoEditorPanel .dev-ico-label.is-centered{ justify-content:center; }
+        #mapNameInput{ text-align:center; }
+
+        /* --- Extra Life: Off / On switch like Show FPS in Settings (css/ui.css .segmented-control).
+               The real checkbox stays (json_functions.js reads/sets .checked), just hidden -
+               a click anywhere on the row flips it through the <label>. --- */
+        .dev-switch-row{
+            display:flex !important; align-items:center; justify-content:space-between; gap:12px;
+            margin:0 0 12px; padding:8px 10px; border-radius:6px;
+            background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.15);
+            cursor:pointer; transition:background-color .15s ease;
+        }
+        .dev-switch-row:hover{ background-color:rgba(240,198,116,.07); }
+        .dev-switch-row .dev-switch-text{ display:flex; align-items:center; gap:4px; }
+        .dev-switch-input{ position:absolute; opacity:0; width:0; height:0; pointer-events:none; }
+        .dev-switch{
+            display:flex; position:relative; flex:0 0 auto;
+            background:#967456; color:#fff; font-weight:700;
+            border-radius:6px; padding:2px;
+        }
+        .dev-switch::before{
+            content:""; position:absolute; box-sizing:border-box;
+            top:2px; left:2px; bottom:2px; width:calc(50% - 2px);
+            background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+            border:1px solid #5c2e0e; border-radius:4px;
+            box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -6px 8px rgba(0,0,0,.25), inset 0 0 0 1px rgba(0,0,0,.15);
+            transition:transform .25s ease;
+        }
+        .dev-switch span{
+            position:relative; z-index:1; padding:5px 15px; border-radius:4px;
+            font-size:.9rem; font-weight:700; opacity:.6; transition:color .2s, opacity .2s;
+        }
+        .dev-switch span:first-child,
+        .dev-switch-input:checked + .dev-switch span:last-child{ color:#f3e5ab; opacity:1; }
+        .dev-switch-input:checked + .dev-switch span:first-child{ color:#fff; opacity:.6; }
+        .dev-switch-input:checked + .dev-switch::before{ transform:translateX(100%); }
+        .dev-switch-input:focus-visible + .dev-switch{ outline:2px solid #f0c674; outline-offset:2px; }
+
+        /* --- Selects: same look as the Background picker in the game's Settings
+               (tan #967456, rounded, white arrow -> gold on hover, custom option list).
+               The real <select> stays underneath as the source of truth (see the script at the bottom). --- */
+        .dev-sel{ position:relative; display:inline-block; vertical-align:middle; max-width:100%; }
+        .dev-sel.is-block,
+        .dev-sel:has(> .input-enemy-effect-type),
+        .dev-sel:has(> .enemy-custom-damage-row){ display:block; width:100%; }
+        .dev-sel:has(> .input-enemy-type){ display:block; width:100%; max-width:181px; margin-top:3px; }
+        .dev-sel[data-for="ability-type-selector"]{ width:250px; }
+        .dev-sel[data-for="difficultyInput"]{ display:block; width:100%; margin-top:3px; }
+        .dev-sel[data-for="difficultyInput"] .dev-sel-trigger,
+        .dev-sel[data-for="difficultyInput"] .dev-sel-option{ text-align:center; }
+
+        /* Shake Effects / Custom Damage cards - spacing between them and the Enemy Types List card */
+        .dev-wave-card{ margin-top:16px; }
+        .dev-wave-card h3{ margin-top:0; }
+        /* the card is the frame now - the rows inside lose their own (wave.css .effect-row) */
+        .dev-wave-card .effect-row{ border:0; background:transparent; padding:4px 0; }
+        .dev-sel > select.dev-sel-native{
+            position:absolute; inset:0; width:100%; height:100%; margin:0;
+            opacity:0; pointer-events:none;
+        }
+        .dev-sel-trigger{
+            display:block; width:100%; box-sizing:border-box; min-width:150px;
+            padding:6px 32px 6px 12px; margin:0;
+            border:2px solid transparent; border-radius:6px;
+            background-color:#967456; color:#fff;
+            background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23fff" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+            background-repeat:no-repeat; background-position:right 12px top 50%; background-size:12px auto;
+            font:700 .9rem Arial, sans-serif; text-align:left;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            cursor:pointer; transition:border-color .2s;
+        }
+        .dev-sel-trigger:hover,
+        .dev-sel-trigger:focus-visible,
+        .dev-sel-trigger.is-open{
+            outline:none; border-color:#f0c674;
+            background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23f0c674" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+        }
+        .dev-sel-list{
+            position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:60;
+            display:none; margin:0; padding:4px; list-style:none;
+            min-width:100%; max-height:240px; overflow-y:auto; box-sizing:border-box;
+            background-color:#967456; border-radius:8px;
+            box-shadow:0 8px 20px rgba(0,0,0,.5);
+        }
+        .dev-sel-list.is-open{ display:block; }
+        .dev-sel-list::-webkit-scrollbar{ width:6px; }
+        .dev-sel-list::-webkit-scrollbar-track{ background:transparent; }
+        .dev-sel-list::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
+        .dev-sel-option{
+            padding:6px 10px; border-radius:6px; color:#fff;
+            font:700 .85rem Arial, sans-serif; text-align:left;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;
+        }
+        .dev-sel-option:hover,
+        .dev-sel-option.is-selected{
+            background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+            box-shadow:inset 0 0 0 1px #5c2e0e, inset 0 2px 1px rgba(255,255,255,.3), inset 0 -4px 6px rgba(0,0,0,.25);
+            color:#f3e5ab;
+        }
+        .dev-sel-option.is-active{ outline:1px solid #f0c674; outline-offset:-2px; }
     </style>
 </head>
 <body class="editor-body editor-loading">
-    <!-- dev only: TODOs - planned graphic updates of the new editor (button top right) -->
-    <button type="button" id="devTodoBtn" class="dev-todo-btn" title="Plánované grafické updaty editoru">TODOs <b id="devTodoCount"></b></button>
-    <div id="devTodoPopup" class="dev-todo-overlay" role="dialog" aria-modal="true" aria-labelledby="devTodoTitle">
-        <div class="dev-todo-card">
-            <button type="button" class="dev-todo-close" title="Zavřít">&times;</button>
-            <h2 id="devTodoTitle">TODOs - grafické updaty editoru</h2>
-            <p class="dev-todo-note">Návrhy, aby editor vizuálně více seděl s novou grafikou hry</p>
-            <ol class="dev-todo-list">
-                <li><strong>Hlavička</strong><span>Název editoru písmem Cinzel ve zlaté se stínem, pod ním verze jako zlatý štítek (jako v hlavním menu).</span></li>
-                <li><strong>Editor jako karta hry</strong><span>Pozadí v barvě hry (#3e3223), zaoblení a stín, sekce jako panely ze Settings (tmavší podklad + tenký zlatý okraj).</span></li>
-                <li><strong>Zlaté ikony místo emoji</strong><span>💾 ❌ 🗺️ ☰ 🪙 ❤️ 📋 ⭐ nahradit zlatými SVG ikonami ze hry (věže, schopnosti, mapa, mince, srdce, svitek, ozubené kolo).</span></li>
-                <li><strong>Menu jako přepínače ve hře</strong><span>Map / Map Settings / Towers / Waves / Abilities jako přepínače Towers / Abilities ve hře - ikona + text, aktivní záložka zlatě zvýrazněná.</span></li>
-                <li><strong>Nadpisy sekcí s ikonou</strong><span>Map, Tower Editor, Wave Editor... se zlatou ikonou před textem, stejně jako Settings a Version History.</span></li>
-                <li><strong>Inputy jako sockety</strong><span>Tmavá políčka s gradientem, zlatým okrajem a vnitřním stínem, při psaní zlatě zvýrazněný okraj.</span></li>
-                <li><strong>Přepínače Off / On</strong><span>Checkbox Extra Life a podobné nahradit přepínačem Off / On se zlatou animací jako v Settings (Show FPS).</span></li>
-                <li><strong>Vlastní selecty</strong><span>Map Style, Graphics a typ schopnosti přes CustomSelect ze hry místo obyčejného selectu.</span></li>
-                <li><strong>Karty věží</strong><span>Tower Editor jako nové karty věží ve hře - větší náhled věže, cena, DPS a statistiky se zlatými ikonami.</span></li>
-                <li><strong>Karty schopností</strong><span>Ability Editor s animovaným pozadím podle typu (lava / ice / fury / gold rush) jako karty schopností ve hře.</span></li>
-                <li><strong>Vlny jako Version History</strong><span>Každá vlna jako rozbalovací řádek s kolečkem na časové ose, připnutý nahoře při scrollu, plynulé otevření.</span></li>
-                <li><strong>Save Slots jako karty</strong><span>Název mapy zlatě, prázdný slot se zlatou ikonou a textem „Empty slot“, mazání zlatým / červeným ✖ místo ❌.</span></li>
-                <li><strong>Map Preview</strong><span>Minimapa v rámečku jako náhled mapy v hlavním menu.</span></li>
-                <li><strong>Dlaždice a štětce jako chipy</strong><span>Tile key a tvary štětce jako zlaté chipy, aktivní volba se zlatým okrajem.</span></li>
-                <li><strong>Sjednocená tlačítka</strong><span>Tlačítka jako ve hře (zlatá / hnědá místo zelené a modré), Test Map jako hlavní výrazné zlaté tlačítko.</span></li>
-                <li><strong>Info ikonky a tooltipy</strong><span>„i“ jako malé kulaté zlaté sockety, tooltip jako tmavá karta se zlatým okrajem (nebo pergamen jako Lore).</span></li>
-                <li><strong>Potvrzovací popup</strong><span>Delete... přes PopupController ze hry - plynulé zobrazení, × v rohu, zavření ESC nebo klikem mimo.</span></li>
-                <li><strong>Loading screen</strong><span>Ve stylu hry - písmo Cinzel a zlatý progress bar jako progress bar levelu.</span></li>
-                <li><strong>Status zprávy jako toasty</strong><span>Validate, Copy a Export jako krátké oznámení v rohu se zlatou / červenou ikonou místo textu pod tlačítky.</span></li>
-                <li><strong>Final JSON</strong><span>Tmavý panel s monospace písmem a zlatým scrollbarem jako ve Version History.</span></li>
-            </ol>
+    <!-- dev only: "DEV" button (top right) + popup with what changed compared to level_editor.html -->
+    <button type="button" id="devBtn" class="dev-btn" title="Změny oproti klasickému editoru">DEV</button>
+    <div id="devPopup" class="dev-overlay" role="dialog" aria-modal="true" aria-labelledby="devPopupTitle">
+        <div class="dev-card">
+            <button type="button" class="dev-close" title="Zavřít">&times;</button>
+            <h2 id="devPopupTitle">Změny oproti klasickému editoru</h2>
+            <p class="dev-note">Vše jen v dev/level_editor_new.html - sdílené css/level_editor/* a js/level_editor/* zůstávají beze změny</p>
+            <div class="dev-changes">
+                <h3>Mapa</h3>
+                <ul>
+                    <li><strong>Horní lišta</strong> - větší mezera mezi lištou (Width / Height / Map Style / Graphics) a mapou.</li>
+                    <li><strong>Seznamy Map Style a Graphics</strong> se otevírají přes mapu (dřív by se schovaly pod canvas).</li>
+                    <li><strong>Řádek Brush nad dlaždicemi</strong> - vybraná dlaždice, „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
+                    <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem. Slovo „Selected:“ odstraněno.</li>
+                    <li><strong>X / Y</strong> v zarámovaném boxu - zlatá písmena, čísla v tmavých políčkách.</li>
+                    <li><strong>Výběr dlaždic</strong> přes celou šířku karty, už nepřetéká z divu (posouvá se do strany uvnitř).</li>
+                    <li><strong>Dlaždice nahoře</strong>, vyhledávání a filtry (Terrains / Paths / Map Objects) pod nimi.</li>
+                </ul>
+                <h3>Tlačítka v Menu</h3>
+                <ul>
+                    <li><strong>Test Map, Share Map, Help</strong> ve stylu Main Menu (zaoblení, 3D hrana, zlatá záře a zvednutí při najetí) - barvy zachované.</li>
+                    <li><strong>Aktivní záložky</strong> (Map, Map Settings, Towers, Waves, Abilities) zlaté ve stylu Main Menu - přepínání panelů funguje stejně.</li>
+                </ul>
+                <h3>Map Settings</h3>
+                <ul>
+                    <li><strong>Title</strong> - zlatá ikonka mapy místo emoji, nadpis i text na střed.</li>
+                    <li><strong>Description</strong> - zlatá ikonka svitku místo emoji, nadpis na střed, text vlevo.</li>
+                    <li><strong>Difficulty</strong> - výběr ⭐ až ⭐⭐⭐⭐⭐ místo volného textového pole.</li>
+                    <li><strong>Extra Life</strong> - přepínač Off / On jako Show FPS v Settings místo checkboxu, klik kamkoli na řádek ho přepne.</li>
+                </ul>
+                <h3>Waves</h3>
+                <ul>
+                    <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
+                </ul>
+                <h3>Selecty</h3>
+                <ul>
+                    <li><strong>Všechny selecty</strong> v editoru (Map Style, Graphics, schopnosti i ty ve vlnách / Shake Effects / Custom Damage) vypadají jako Background v Settings - vlastní seznam se zvýrazněním, ovládání i šipkami.</li>
+                    <li><strong>Výběr schopnosti</strong> s ikonkami 🌋 Lava Floor, 🏹 Towers Fury, ⛏️ Gold Rush, ❄️ Ice Storm.</li>
+                </ul>
+            </div>
         </div>
     </div>
     <script>
         (() => {
-            const popup = document.getElementById('devTodoPopup');
+            const popup = document.getElementById('devPopup');
             const setOpen = open => popup.classList.toggle('is-open', open);
-            document.getElementById('devTodoCount').textContent = popup.querySelectorAll('.dev-todo-list li').length;
-            document.getElementById('devTodoBtn').addEventListener('click', () => setOpen(true));
-            popup.querySelector('.dev-todo-close').addEventListener('click', () => setOpen(false));
+            document.getElementById('devBtn').addEventListener('click', () => setOpen(true));
+            popup.querySelector('.dev-close').addEventListener('click', () => setOpen(false));
             popup.addEventListener('click', e => { if (e.target === popup) setOpen(false); });
             document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
         })();
@@ -226,17 +455,18 @@
                     <div id="cloudsLayer" class="cloudsLayer"></div>
                 </div>
                 <div id="tileDrawingPanel" class="tileDrawingPanel">
-                    <div>
-                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
-                        <div class="w-100 tile-drawing-descripton"><small>(Drawing is disabled for Start and End)</small></div>
-                        <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
-                    </div>
                     <div class="tileDrawingBrushItems">
                         <div class="control-group brush-key-container editor-key-container mt-0">
-                            <strong>Brush Settings</strong>
-                            <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
+                            <!-- mirror of the editor's #currentTileDisplay (see the script at the bottom) -->
+                            <span id="devCurrentTile" class="current-tile-display" title="Selected tile"></span>
+                            <div class="brush-settings-head">
+                                <strong>Brush</strong>
+                                <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" title="Brush size"
+                                oninput="window.app.mapEditor.setBrushSize(this.value)">
+                                <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
+                            </div>
                             <div class="brush-toolbar brush-options">
-                                <div class="brush-button-row" style="display:flex; gap:6px; flex-wrap:wrap; flex-direction: column;">
+                                <div class="brush-button-row">
                                     <button id="btn-brush-square" class="tile-filter-btn tile-filter-active"
                                     onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
                                     <button id="btn-brush-diamond" class="tile-filter-btn"
@@ -244,18 +474,19 @@
                                     <button id="btn-brush-circle" class="tile-filter-btn"
                                     onclick="window.app.mapEditor.setBrushShape('circle')">● Circle</button>
                                 </div>
-                                <div class="brush-size-control" style="display: inline-flex; align-items: center; margin-top: 10px; width: 100%; justify-content: center;">
-                                    <div>
-                                        <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" 
-                                        oninput="window.app.mapEditor.setBrushSize(this.value)" 
-                                        style="width: 50px; padding: 4px; border-radius: 4px; border: 1px solid #ccc;">
-                                    </div>
-
-                                </div>
                             </div>
-                        </div>    
+                            <!-- mirror of the editor's #tileCoordinates (hovered tile) -->
+                            <div class="dev-coords" title="Hovered tile">
+                                <span class="dev-coord"><b>X</b><span id="devCoordX">-</span></span>
+                                <span class="dev-coord"><b>Y</b><span id="devCoordY">-</span></span>
+                            </div>
+                        </div>
                     </div>
-
+                    <div class="tileDrawingTiles">
+                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
+                        <div class="w-100 tile-drawing-descripton"><small>(Drawing is disabled for Start and End)</small></div>
+                        <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
+                    </div>
                 </div>
                 </div>
             </div>
@@ -265,14 +496,14 @@
                 <div class="editor-description">
                     <div class="input-row">
                         <div class="input-group mt-4">
-                            <label for="mapNameInput">🗺️ Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
+                            <label for="mapNameInput" class="dev-ico-label is-centered"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg></i>Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
                             <input type="text" id="mapNameInput" value="EDIT TITLE"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('name', this.value)">
                         </div>
                     </div>
 
                     <div class="input-group mt-4">
-                        <label for="descriptionTextInput">📋 Description<i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
+                        <label for="descriptionTextInput" class="dev-ico-label is-centered"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoScroll"/></svg></i>Description<i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
                         <textarea id="descriptionTextInput" rows="3"
                                   onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
                     </div>
@@ -285,8 +516,15 @@
                         </div>
                         <div class="input-group">
                             <label for="difficultyInput">Difficulty <i class="info-icon" data-tooltip="map-settings.difficulty">i</i></label>
-                            <input type="text" id="difficultyInput" class="text-center" value="⭐"
-                                   onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                            <!-- dev: select instead of a free text field (a map with another value gets it added, see the select script) -->
+                            <select id="difficultyInput" data-dev-keep-unknown="1"
+                                    onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                                <option value="⭐">⭐</option>
+                                <option value="⭐⭐">⭐⭐</option>
+                                <option value="⭐⭐⭐">⭐⭐⭐</option>
+                                <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+                                <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
+                            </select>
                         </div>
                     </div>
 
@@ -305,9 +543,10 @@
 
                     <div class="input-row mt-4">
                         <div class="input-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="extraLifeCheckbox" class="extraLifeCheckbox" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
-                                Enable(❤️ Extra Life ) Button<i class="info-icon" data-tooltip="map-settings.extra-lifes">i</i>
+                            <label class="checkbox-label dev-switch-row">
+                                <span class="dev-switch-text">Enable ❤️ Extra Life Button<i class="info-icon" data-tooltip="map-settings.extra-lifes">i</i></span>
+                                <input type="checkbox" id="extraLifeCheckbox" class="extraLifeCheckbox dev-switch-input" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
+                                <span class="dev-switch" aria-hidden="true"><span>Off</span><span>On</span></span>
                             </label>
 
                             <label>
@@ -351,16 +590,19 @@
                     </div>
 
                     <p class="enemyTypesEditorDescription">Manage the enemy types available for selection in the Wave Editor, Enemy Shake Effects and Custom Damage sections. Enemies can have different effects depending on their type.</p>
-                    <h3>Enemy Shake Effects</h3>
-                                    
-                    <div id="enemy-effects-repeater"></div>
-                                    
-                    <button class="btn btn-add btn-green mt-1" id="add-effect-btn">+ Add New Effect</button>
-                
-                    <h3>Custom Enemy Damage</h3>
-                    <div id="enemy-damage-repeater" class="repeater-container">
-                        </div>
-                    <button class="btn btn-add btn-green mt-1" id="add-damage-btn">+ Add Custom Damage</button>
+                    <!-- dev: same brown card as the Enemy Types List above -->
+                    <div class="enemy-types-list-card dev-wave-card">
+                        <h3>Enemy Shake Effects</h3>
+                        <div id="enemy-effects-repeater"></div>
+                        <button class="btn btn-add btn-green mt-1" id="add-effect-btn">+ Add New Effect</button>
+                    </div>
+
+                    <div class="enemy-types-list-card dev-wave-card">
+                        <h3>Custom Enemy Damage</h3>
+                        <div id="enemy-damage-repeater" class="repeater-container">
+                            </div>
+                        <button class="btn btn-add btn-green mt-1" id="add-damage-btn">+ Add Custom Damage</button>
+                    </div>
                 </div>
 
                 <div id="waves-editor-container" class="repeater-container">
@@ -384,10 +626,10 @@
                     
                     <div class="ability-controls mt-4">
                         <select id="ability-type-selector" class="input-medium ability-type-selector">
-                            <option value="lava_floor">Lava Floor (Targeted)</option>
-                            <option value="towers_fury">Towers Fury (Global Buff)</option>
-                            <option value="gold_rush">Gold Rush (Global Buff)</option>
-                            <option value="ice_storm">Ice Storm (Targeted)</option>
+                            <option value="lava_floor">🌋 Lava Floor (Targeted)</option>
+                            <option value="towers_fury">🏹 Towers Fury (Global Buff)</option>
+                            <option value="gold_rush">⛏️ Gold Rush (Global Buff)</option>
+                            <option value="ice_storm">❄️ Ice Storm (Targeted)</option>
                         </select>
                         <button id="add-ability-button" class="btn cl-green">+ Add New Ability</button>
                     </div>
@@ -423,6 +665,208 @@
             </div>
         </div>
     </div>
+    <!-- dev only: gold icons (same symbols as the game's Version History map / scroll icons in index.html) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <linearGradient id="devGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+        </defs>
+        <symbol id="devIcoMap" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></symbol>
+        <symbol id="devIcoScroll" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M5.5 5h13v14h-13z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M8.5 9h7M8.5 12h7M8.5 15h4.5"/><rect x="3" y="2.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><rect x="3" y="17.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><path fill="none" stroke="#ffe7a3" stroke-width=".7" stroke-linecap="round" opacity=".7" d="M5 3.8h14M5 18.8h14"/></symbol>
+    </svg>
+    <!-- dev only: every <select> in the editor (incl. the ones the wave editor renders later) gets the
+         Settings "Background" look. Same idea as js/CustomSelect.js - the real <select> stays the source
+         of truth (value, 'change' events, inline onchange) - but with ONE set of document listeners
+         instead of one per select, because the wave editor re-renders hundreds of selects. -->
+    <script>
+        (() => {
+            const nativeValue = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+            let openWrap = null;
+
+            const parts = wrap => ({
+                sel: wrap.querySelector(':scope > select'),
+                trigger: wrap.querySelector(':scope > .dev-sel-trigger'),
+                list: wrap.querySelector(':scope > .dev-sel-list')
+            });
+
+            function sync(wrap) {
+                const { sel, trigger } = parts(wrap);
+                const opt = sel.options[sel.selectedIndex];
+                trigger.textContent = opt ? opt.textContent.trim() : '';
+            }
+
+            function enhance(sel) {
+                if (sel.dataset.devSel || sel.multiple || sel.size > 1) return;
+                sel.dataset.devSel = '1';
+                const wrap = document.createElement('div');
+                wrap.className = 'dev-sel';
+                if (sel.id) wrap.dataset.for = sel.id;
+                if (sel.style.width === '100%') wrap.classList.add('is-block');
+                sel.before(wrap);
+                wrap.append(sel);
+                sel.classList.add('dev-sel-native');
+                sel.tabIndex = -1;
+
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'dev-sel-trigger';
+                const list = document.createElement('ul');
+                list.className = 'dev-sel-list';
+                wrap.append(trigger, list);
+
+                // `sel.value = x` from the editor code doesn't fire 'change' -> re-sync the trigger too
+                Object.defineProperty(sel, 'value', {
+                    configurable: true,
+                    get() { return nativeValue.get.call(sel); },
+                    set(v) {
+                        // e.g. Difficulty: a loaded map may carry a value the list doesn't have - keep it selectable
+                        if (sel.dataset.devKeepUnknown && v !== '' && v != null && ![...sel.options].some(o => o.value === String(v))) {
+                            sel.add(new Option(String(v), String(v)));
+                        }
+                        nativeValue.set.call(sel, v);
+                        sync(wrap);
+                    }
+                });
+                sel.addEventListener('change', () => sync(wrap));
+                sync(wrap);
+            }
+
+            function close() {
+                if (!openWrap) return;
+                const { trigger, list } = parts(openWrap);
+                list.classList.remove('is-open');
+                trigger.classList.remove('is-open');
+                openWrap = null;
+            }
+
+            function open(wrap) {
+                close();
+                const { sel, trigger, list } = parts(wrap);
+                list.innerHTML = '';
+                Array.from(sel.options).forEach((opt, i) => {
+                    if (opt.disabled || opt.hidden) return;
+                    const li = document.createElement('li');
+                    li.className = 'dev-sel-option';
+                    li.textContent = opt.textContent.trim();
+                    li.dataset.index = i;
+                    li.classList.toggle('is-selected', i === sel.selectedIndex);
+                    list.appendChild(li);
+                });
+                list.classList.add('is-open');
+                trigger.classList.add('is-open');
+                openWrap = wrap;
+                setActive(wrap, sel.selectedIndex);
+            }
+
+            function setActive(wrap, index) {
+                const items = [...parts(wrap).list.children];
+                if (!items.length) return;
+                let pos = items.findIndex(li => +li.dataset.index === index);
+                if (pos < 0) pos = 0;
+                items.forEach((li, i) => li.classList.toggle('is-active', i === pos));
+                items[pos].scrollIntoView({ block: 'nearest' });
+            }
+
+            function commit(wrap, index) {
+                const { sel } = parts(wrap);
+                if (index < 0 || index >= sel.options.length || index === sel.selectedIndex) return;
+                sel.selectedIndex = index;
+                sync(wrap);
+                sel.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // next / previous enabled option, clamped at the ends like a native select
+            function step(wrap, from, delta) {
+                const opts = parts(wrap).sel.options;
+                for (let i = from + delta; i >= 0 && i < opts.length; i += delta) {
+                    if (!opts[i].disabled && !opts[i].hidden) return i;
+                }
+                return from;
+            }
+
+            document.addEventListener('click', e => {
+                const option = e.target.closest('.dev-sel-option');
+                if (option) {
+                    // the wave editor's selects sit inside <label>s - don't let the label re-target the click
+                    e.preventDefault();
+                    const wrap = option.closest('.dev-sel');
+                    commit(wrap, +option.dataset.index);
+                    close();
+                    parts(wrap).trigger.focus();
+                    return;
+                }
+                const trigger = e.target.closest('.dev-sel-trigger');
+                if (trigger) {
+                    e.preventDefault();
+                    const wrap = trigger.parentElement;
+                    if (openWrap === wrap) close(); else open(wrap);
+                    return;
+                }
+                if (openWrap && !openWrap.contains(e.target)) close();
+            });
+
+            document.addEventListener('keydown', e => {
+                const trigger = e.target.closest?.('.dev-sel-trigger');
+                if (!trigger) return;
+                const wrap = trigger.parentElement;
+                const { sel } = parts(wrap);
+                const isOpen = openWrap === wrap;
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    commit(wrap, step(wrap, sel.selectedIndex, e.key === 'ArrowDown' ? 1 : -1));
+                    if (isOpen) {
+                        [...parts(wrap).list.children].forEach(li => li.classList.toggle('is-selected', +li.dataset.index === sel.selectedIndex));
+                        setActive(wrap, sel.selectedIndex);
+                    }
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (isOpen) close(); else open(wrap);
+                } else if (e.key === 'Escape' && isOpen) {
+                    e.preventDefault();
+                    close();
+                }
+            });
+
+            // selects in the static HTML now, and any the editor renders later (waves, effects, damage...)
+            const scan = root => {
+                if (root.matches?.('select')) enhance(root);
+                root.querySelectorAll?.('select').forEach(enhance);
+            };
+            document.addEventListener('DOMContentLoaded', () => {
+                scan(document.body);
+                new MutationObserver(records => {
+                    records.forEach(r => r.addedNodes.forEach(n => { if (n.nodeType === 1) scan(n); }));
+                    // the open list's select was re-rendered away
+                    if (openWrap && !openWrap.isConnected) openWrap = null;
+                }).observe(document.body, { childList: true, subtree: true });
+            });
+        })();
+    </script>
+    <!-- dev only: keeps the Brush row's selected tile + X / Y in sync with the editor's own (hidden)
+         #currentTileDisplay / #tileCoordinates inside #tileKey. Those get rebuilt on every render
+         (and coords are written right after), so this just copies their final state once things settle. -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tileKey = document.getElementById('tileKey');
+            const tile = document.getElementById('devCurrentTile');
+            const coordX = document.getElementById('devCoordX');
+            const coordY = document.getElementById('devCoordY');
+            if (!tileKey || !tile) return;
+
+            const copy = () => {
+                const src = document.getElementById('currentTileDisplay');
+                if (src) {
+                    tile.textContent = src.textContent;
+                    tile.className = src.className;
+                }
+                // "X: 3, Y: 5" or "X: - | Y: -"
+                const m = (document.getElementById('tileCoordinates')?.textContent || '').match(/X:\s*([^,|]*?)\s*[,|]\s*Y:\s*(.*)/);
+                coordX.textContent = m ? m[1].trim() || '-' : '-';
+                coordY.textContent = m ? m[2].trim() || '-' : '-';
+            };
+            new MutationObserver(copy).observe(tileKey, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+            copy();
+        });
+    </script>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/main.js"></script>
