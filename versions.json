@@ -41,6 +41,7 @@
             "New top bar - lives, gold and time with new icons, game speed as quick 1x-5x buttons, and redesigned Log, Music and Menu buttons",
             "New level progress bar",
             "Redesigned Settings - graphics options are now grouped into World, Entities and Abilities & UI with icons, and a click anywhere on a row switches it",
+            "Gold gear icon next to the 'Settings' heading",
             "All graphics settings are now set to High by default",
             "Settings now show 'You have unsaved changes' above the Save button whenever something was changed and not saved yet - it disappears again after saving or switching it back",
             "New 10x game speed - for quicker games on small maps",
@@ -104,7 +105,8 @@
             "Versions open / close smoothly with a click, the newest one is open right away",
             "The row of the version you are reading stays pinned at the top while you scroll through its changes",
             "Every section has its own gold icon (Towers, Abilities, Editor, UI, Music, Map, Lore, How to Play, Bugs...) sitting on one line that runs through all the changes of the version",
-            "Smaller glow on the dots when you hover over a change, and the sections slide in one after another when a version opens"
+            "Smaller glow on the dots when you hover over a change, and the sections slide in one after another when a version opens",
+            "Gold scroll icon next to the 'Version History' heading"
           ]
         },
         {
