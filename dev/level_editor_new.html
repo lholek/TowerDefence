@@ -397,7 +397,10 @@
         /* the Color "i" sits after the colour swatch (moved there by the preview script) */
         #towerEditorContent .card-header .card-body-tower-color .info-icon{ margin-left:0; }
 
-        /* Drag (9 dots) / Copy / Delete in the card headers - all the same size */
+        /* Drag (9 dots) / Copy / Delete in the card headers - all the same size, and in one line
+           (inline they sat on the text baseline, the drag button has no text -> 3px higher) */
+        .header-actions{ display:flex; align-items:center; gap:4px; }
+        .header-actions > .btn-copy svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
         .header-actions > .btn-drag,
         .header-actions > .btn-copy,
         .header-actions > .btn-delete{
@@ -462,7 +465,8 @@
                 </ul>
                 <h3>Karty (Towers, Abilities…)</h3>
                 <ul>
-                    <li><strong>Tlačítka v hlavičce karty</strong> - přesun (9 teček), Copy a Delete mají stejnou velikost.</li>
+                    <li><strong>Tlačítka v hlavičce karty</strong> - přesun (9 teček), Copy a Delete mají stejnou velikost a jsou v jedné výšce.</li>
+                    <li><strong>Copy</strong> - zlatá ikonka dvou listů místo 📋.</li>
                 </ul>
                 <h3>Waves</h3>
                 <ul>
@@ -1188,6 +1192,19 @@
         content.addEventListener('click', e => { const card = e.target.closest('.tower-card'); if (card) setTimeout(() => update(card), 0); });
         document.getElementById('editorGraphicsSelect')?.addEventListener('change', addPreviews);
         addPreviews();
+    </script>
+    <!-- dev only: gold "copy" icon in the Copy buttons of the card headers (towers, abilities...) -
+         the editor writes a 📋 into them on every render, so an observer swaps it right after -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><rect x="3.5" y="6.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><path d="M6.5 11.5h6M6.5 14.5h6M6.5 17.5h4" stroke="#7a4a12" stroke-width="1.2" stroke-linecap="round"/></svg>';
+            const swap = () => document.querySelectorAll('.header-actions > .btn-copy:not([data-dev-ico])').forEach(b => {
+                b.dataset.devIco = '1';
+                b.innerHTML = ICON;
+            });
+            new MutationObserver(swap).observe(document.body, { childList: true, subtree: true });
+            swap();
+        });
     </script>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
