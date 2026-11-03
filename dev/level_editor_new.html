@@ -311,6 +311,20 @@
         .dev-wave-card h3{ margin-top:0; }
         /* the card is the frame now - the rows inside lose their own (wave.css .effect-row) */
         .dev-wave-card .effect-row{ border:0; background:transparent; padding:4px 0; }
+        /* Delete in line with the fields: rows sit on the bottom (the labels are above the fields),
+           fields and the button all 36px tall, button as wide as the card header buttons */
+        .dev-wave-card .effect-row{ align-items:flex-end; }
+        .dev-wave-card .effect-row .json-stepper-wrap,
+        .dev-wave-card .effect-row .dev-sel-trigger{ height:36px; box-sizing:border-box; }
+        .dev-wave-card .effect-row .json-stepper-wrap input{ height:100%; }
+        .dev-wave-card .effect-row > .btn-delete{
+            flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+            width:38px; height:36px; margin:0; padding:0 !important; box-sizing:border-box;
+        }
+
+        /* Gold Rush: the Round Up checkbox centred under its label */
+        .ability-card label.editor-row:has(> .roundUpCheckbox){ width:fit-content; }
+        .ability-card label.editor-row > .roundUpCheckbox{ align-self:center; }
         .dev-sel > select.dev-sel-native{
             position:absolute; inset:0; width:100%; height:100%; margin:0;
             opacity:0; pointer-events:none;
@@ -457,6 +471,156 @@
         .dev-tower-preview .label-text{ font-size:.9rem; color:#ccc; }
         /* same size as in the game's shop (bars.css: 260 x 132) */
         .dev-tower-preview .concept-tower{ width:260px; flex:0 0 auto; cursor:default; }
+
+        /* ================================================================
+           Gold icons instead of emoji (💾 ❌ 🗺️ ☰ in the panels, 📋 / X on the cards)
+           - symbols in the dev sprite (#devIco*), same look as the game's icons
+           ================================================================ */
+        .dev-btn-ico{
+            width:16px; height:16px; flex:0 0 auto; pointer-events:none;
+            filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+        }
+        .panel-toggle-tab .dev-btn-ico{ width:18px; height:18px; }
+        /* Copy / Delete on every card (header-actions on towers / abilities / waves, card-controls on enemy groups) */
+        .btn-copy[data-dev-ico],
+        .btn-delete[data-dev-ico]{ display:inline-flex; align-items:center; justify-content:center; }
+        .btn-copy[data-dev-ico] svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+        .btn-delete[data-dev-ico] .dev-btn-ico{ width:14px; height:14px; }
+        /* enemy groups in the wave columns: drag / copy / delete in one line, all the same size
+           (inline, the icon buttons sat on a different baseline than the 9-dots drag button) */
+        .enemy-card .card-controls{ display:flex; align-items:center; justify-content:center; gap:4px; }
+        .enemy-card .card-controls > .btn{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:38px; height:30px; margin:0; padding:0 !important; box-sizing:border-box;
+        }
+
+        /* ================================================================
+           Section headings with a gold icon (like Settings / Version History in the game)
+           ================================================================ */
+        .editor-panel > h2{ display:inline-flex; align-items:center; gap:12px; }
+        h2.final-json.d-block{ display:flex !important; align-items:center; justify-content:center; gap:12px; }
+        .dev-h-ico{ width:34px; height:34px; flex:0 0 auto; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
+
+        /* ================================================================
+           Save Slots as cards: number socket, map name in gold, empty slot = gold "+" and dim
+           italic text; small Save / Delete buttons with gold disk / red ✖
+           ================================================================ */
+        /* a bit wider than editor.css (220px) - more room for the map name */
+        .save-slots{ counter-reset:devslot; max-width:300px; width:300px; box-sizing:border-box; }
+        .save-slot-row{
+            counter-increment:devslot;
+            align-items:center; gap:4px; padding:4px;
+            border-radius:8px; background:rgba(0,0,0,.18);
+            border:1px solid rgba(240,198,116,.15);
+            transition:border-color .15s ease, background-color .15s ease;
+        }
+        .save-slot-row:hover{ border-color:rgba(240,198,116,.4); background-color:rgba(240,198,116,.06); }
+        .save-slot-row .btn-save-slot{
+            display:block; padding:5px 6px; text-align:left;
+            background-color:transparent; border:0; box-shadow:none;
+            color:#f0c674; font:700 .78rem 'Cinzel', Georgia, serif; text-transform:none;
+            text-shadow:0 1px 2px rgba(0,0,0,.6);
+        }
+        .save-slot-row .btn-save-slot:hover{ background-color:transparent; box-shadow:none; transform:none; color:#ffe7a3; }
+        .save-slot-row .btn-save-slot:active{ transform:none; box-shadow:none; }
+        /* the .btn shading layer becomes the slot number socket */
+        .save-slot-row .btn-save-slot::before{
+            content:counter(devslot);
+            position:static; inset:auto;
+            display:inline-block; vertical-align:middle;
+            width:20px; height:20px; margin-right:8px; box-sizing:border-box;
+            border-radius:5px; text-align:center; line-height:18px;
+            background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+            border:1px solid rgba(240,198,116,.35);
+            box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+            color:#f0c674; font:700 11px Arial, sans-serif; font-style:normal;
+        }
+        .save-slot-row .btn-save-slot.is-empty{ opacity:1; color:rgba(240,198,116,.5); font-style:italic; font-weight:400; }
+        .save-slot-row .btn-save-slot.is-empty::before{
+            content:'';
+            border-style:dashed;
+            background:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23f0c674" stroke="%234a2c0c" stroke-width=".6" d="M10.6 4h2.8v6.6H20v2.8h-6.6V20h-2.8v-6.6H4v-2.8h6.6z"/></svg>') center / 11px no-repeat,
+                       linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+        }
+        .save-slot-row .btn-save-slot-save,
+        .save-slot-row .btn-save-slot-delete{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:34px; height:32px; padding:0; border-width:2px !important;
+        }
+        .save-slot-row .dev-btn-ico{ width:20px; height:20px; }
+        /* line box exactly as tall as the number socket + socket at its top -> number and name on one
+           line (vertical-align:middle put the socket off, it centres on the font's x-height) */
+        .save-slot-row .btn-save-slot{ font-size:.82rem; line-height:20px; }
+        /* number in the middle of its socket - flex centring (the `font` shorthand above resets
+           line-height to normal, so line-height:18px never applied and the number sat high) */
+        .save-slot-row .btn-save-slot::before{
+            vertical-align:top;
+            display:inline-flex; align-items:center; justify-content:center;
+            line-height:1;
+        }
+
+        /* ================================================================
+           Ability cards: animated background of their type, the same as the game's ability cards
+           (css/bars.css .concept-lava-floor / -towers-fury / -gold-rush / -ice-storm + js/game/CardFx.js)
+           - a .dev-ab-bg layer behind the card's content, added by the script at the bottom
+           ================================================================ */
+        .ability-card.dev-ab{ position:relative; isolation:isolate; }
+        .ability-card > .dev-ab-bg{
+            position:absolute; inset:0; z-index:0;
+            width:auto; height:auto; border:0; border-radius:inherit;
+            box-shadow:none; transform:none !important; pointer-events:none;
+        }
+        /* a touch more shade than the small game cards - the editor's fields sit on it */
+        .ability-card > .dev-ab-bg::after{ background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.5)); }
+        .ability-card.dev-ab > :not(.dev-ab-bg){ position:relative; z-index:1; }
+        /* the game's pieces are made for a 260 x 132 card (their moves are in px), so the big editor
+           card is covered by a grid of 260 x 132 tiles, each with its own pieces - no per-tile clipping,
+           so they drift over the tile edges and the whole card is one scene */
+        .dev-ab-tile{ position:absolute; width:260px; height:132px; pointer-events:none; }
+        .dev-ab-tile > .concept-fx{ overflow:visible; }
+        /* Ice Storm's white-out flash is per card in the game - per tile it would blink in squares */
+        .dev-ab-tile > .concept-fx::after{ display:none; }
+
+        /* ================================================================
+           Loading screen like the game: Cinzel title, gold level-progress bar (bars.css .ntu-progress)
+           ================================================================ */
+        .editor-loader-box{ background:#3e3223; }
+        .editor-loader-title{
+            font-family:'Cinzel', Georgia, serif; letter-spacing:.5px;
+            text-shadow:0 0 15px rgba(240,198,116,.3), 0 2px 2px rgba(0,0,0,.6);
+        }
+        .editor-loader-bar{
+            height:16px; border-radius:8px;
+            background:linear-gradient(#120c06, #241a0f);
+            border:1px solid #6b4a1e;
+            box-shadow:inset 0 2px 5px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.35);
+        }
+        .editor-loader-fill{
+            position:relative; overflow:hidden; border-radius:8px;
+            background:linear-gradient(90deg, #7a4c10, #c99332 55%, #f0c674 85%, #ffe7a3);
+            box-shadow:inset 0 1px 0 rgba(255,245,210,.55), 0 0 10px rgba(240,198,116,.35);
+        }
+        .editor-loader-fill::after{
+            content:""; position:absolute; inset:0;
+            background:linear-gradient(90deg, transparent 0 40%, rgba(255,250,225,.45) 50%, transparent 60% 100%);
+            animation:devLoaderShimmer 2.6s ease-in-out infinite;
+        }
+        @keyframes devLoaderShimmer{ from{ transform:translateX(-100%); } to{ transform:translateX(100%); } }
+        .editor-loader-step{ color:#c9b48a; letter-spacing:.3px; }
+
+        /* ================================================================
+           Final JSON: dark panel, monospace, gold scrollbar (editor.css already has it) like Version History
+           ================================================================ */
+        .json-textarea{
+            box-sizing:border-box; padding:12px 14px;
+            background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22)), #2e261d;
+            color:#e4dccb; line-height:1.45; caret-color:#f0c674;
+            border:1px solid rgba(240,198,116,.25); border-radius:8px;
+            box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+            transition:border-color .2s ease;
+        }
+        .json-textarea:focus{ outline:none; border-color:#f0c674; }
+        .json-textarea::selection{ background:rgba(240,198,116,.35); }
     </style>
 </head>
 <body class="editor-body editor-loading">
@@ -471,6 +635,11 @@
                 <h3>Celkově</h3>
                 <ul>
                     <li><strong>Boční okraje</strong> celého editoru o ~20 % menší (rámeček editoru, panely, box Map Settings, karta mapy).</li>
+                    <li><strong>Zlaté ikony místo emoji</strong> - ouška panelů (disketa, mapa, menu), Save / Delete u Save Slots (zlatá disketa, červený ✖) a Copy / Delete na všech kartách (zlaté listy, světlý ✖ místo „X“).</li>
+                    <li><strong>Nadpisy sekcí se zlatou ikonou</strong> jako v Settings / Version History - Map (mapa), Map Settings (ozubené kolo), Tower Editor (věž), Wave Editor (lebka), Ability Editor (plamen), Final JSON (svitek).</li>
+                    <li><strong>Save Slots jako karty</strong> - číslo slotu v tmavém socketu, název mapy zlatě, prázdný slot se zlatým „+“ a tlumeným textem. Panel širší (300 px - víc místa pro název), větší ikony Save / Delete, číslo slotu v jedné řadě s názvem.</li>
+                    <li><strong>Loading screen</strong> ve stylu hry - nadpis písmem Cinzel, zlatý progress bar s odleskem jako progress levelu.</li>
+                    <li><strong>Final JSON</strong> - tmavý panel s monospace písmem, zlatým okrajem při psaní a zlatým scrollbarem.</li>
                 </ul>
                 <h3>Mapa</h3>
                 <ul>
@@ -513,8 +682,15 @@
                     <li><strong>Tlačítka v hlavičce karty</strong> - přesun (9 teček), Copy a Delete mají stejnou velikost a jsou v jedné výšce.</li>
                     <li><strong>Copy</strong> - zlatá ikonka dvou listů místo 📋.</li>
                 </ul>
+                <h3>Abilities</h3>
+                <ul>
+                    <li><strong>Karty schopností</strong> mají animované pozadí podle typu - láva, vítr se šípy, padající mince, sněhová bouře - stejně jako karty schopností ve hře, přes celou kartu (poskládané z dlaždic velikosti herní karty).</li>
+                    <li><strong>Gold Rush</strong> - checkbox Round Up na středu pod svým nadpisem.</li>
+                </ul>
                 <h3>Waves</h3>
                 <ul>
+                    <li><strong>Skupiny nepřátel</strong> - přesun / Copy / Delete v jedné řadě, stejně velké a na středu (Copy předtím uskakovalo).</li>
+                    <li><strong>Shake Effects / Custom Damage</strong> - Delete stejně vysoké jako políčka a v jedné řadě s nimi.</li>
                     <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression.</li>
                     <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
                 </ul>
@@ -559,32 +735,32 @@
         </div>
     </div>
     <div class="save-slots" id="saveSlotsPanel">
-        <button id="saveSlotsToggle" class="panel-toggle-tab" title="Show/Hide Save Slots">💾</button>
+        <button id="saveSlotsToggle" class="panel-toggle-tab" title="Show/Hide Save Slots"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
         <h3 class="panel-title">Save Slots</h3>
         <div class="save-slot-row">
             <button id="loadSlotBtn1" class="btn btn-save-slot is-empty">Empty Slot 1</button>
-            <button id="saveSlotBtn1" class="btn btn-save-slot-save" title="Save current map to Slot 1">💾</button>
-            <button id="deleteSlotBtn1" class="btn btn-save-slot-delete" title="Delete Slot 1">❌</button>
+            <button id="saveSlotBtn1" class="btn btn-save-slot-save" title="Save current map to Slot 1"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn1" class="btn btn-save-slot-delete" title="Delete Slot 1"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn2" class="btn btn-save-slot is-empty">Empty Slot 2</button>
-            <button id="saveSlotBtn2" class="btn btn-save-slot-save" title="Save current map to Slot 2">💾</button>
-            <button id="deleteSlotBtn2" class="btn btn-save-slot-delete" title="Delete Slot 2">❌</button>
+            <button id="saveSlotBtn2" class="btn btn-save-slot-save" title="Save current map to Slot 2"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn2" class="btn btn-save-slot-delete" title="Delete Slot 2"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn3" class="btn btn-save-slot is-empty">Empty Slot 3</button>
-            <button id="saveSlotBtn3" class="btn btn-save-slot-save" title="Save current map to Slot 3">💾</button>
-            <button id="deleteSlotBtn3" class="btn btn-save-slot-delete" title="Delete Slot 3">❌</button>
+            <button id="saveSlotBtn3" class="btn btn-save-slot-save" title="Save current map to Slot 3"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn3" class="btn btn-save-slot-delete" title="Delete Slot 3"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn4" class="btn btn-save-slot is-empty">Empty Slot 4</button>
-            <button id="saveSlotBtn4" class="btn btn-save-slot-save" title="Save current map to Slot 4">💾</button>
-            <button id="deleteSlotBtn4" class="btn btn-save-slot-delete" title="Delete Slot 4">❌</button>
+            <button id="saveSlotBtn4" class="btn btn-save-slot-save" title="Save current map to Slot 4"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn4" class="btn btn-save-slot-delete" title="Delete Slot 4"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn5" class="btn btn-save-slot is-empty">Empty Slot 5</button>
-            <button id="saveSlotBtn5" class="btn btn-save-slot-save" title="Save current map to Slot 5">💾</button>
-            <button id="deleteSlotBtn5" class="btn btn-save-slot-delete" title="Delete Slot 5">❌</button>
+            <button id="saveSlotBtn5" class="btn btn-save-slot-save" title="Save current map to Slot 5"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn5" class="btn btn-save-slot-delete" title="Delete Slot 5"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <p class="save-slots-info">Save slots store your map edits locally in this browser only. It's always recommended to export the JSON as a backup — clearing browser data will erase these slots.</p>
     </div>
@@ -592,12 +768,12 @@
         <h1 class="title cl-primary text-center editor-main-title">The CZSrna's Tower Defence – Map Editor</h1>
         <h2 class="subtitle editor-main-subtitle"></h2>
         <div class="map-preview-panel" id="mapPreviewPanel">
-            <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview">🗺️</button>
+            <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg></button>
             <h3 class="panel-title">Map Preview</h3>
             <div id="mapPreviewMinimap" class="map-preview-minimap"></div>
         </div>
         <div class="editor-tabs" id="editorMenuPanel">
-            <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu">☰</button>
+            <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMenu"/></svg></button>
             <h3 class="panel-title">Menu</h3>
             <!-- dev: Map Style + Graphics moved here from the map's top bar (same ids - main.js finds them) -->
             <div class="dev-menu-selects">
@@ -633,7 +809,7 @@
 
         <div class="editor-panels-container">
             <div id="mapEditorPanel" class="editor-panel map-layout-wrapper">
-                <h2>Map</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg>Map</h2>
                 <div class="map-editor-card">
                 <div class="map-top-bar">
                     <div class="map-top-bar-left">
@@ -701,7 +877,7 @@
             </div>
             <hr id="hr-map">
             <div id="basicInfoEditorPanel" class="editor-panel">
-                <h2>Map Settings</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoGear"/></svg>Map Settings</h2>
                 <div class="editor-description">
                     <div class="input-row">
                         <div class="input-group mt-4">
@@ -776,7 +952,7 @@
             </div>
             <hr id="hr-settings">
             <div id="towerEditorPanel" class="editor-panel"> 
-                <h2>Tower Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoTower"/></svg>Tower Editor</h2>
 
                 <div class="tower-editor-layout"> 
                     <div id="towerEditorContent" class="repeater-container">
@@ -787,7 +963,7 @@
             </div>
             <hr id="hr-tower">
             <div id="waveEditorPanel" class="editor-panel d-none"> 
-                <h2>Wave Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoSkull"/></svg>Wave Editor</h2>
 
                 <div class="enemy-types-editor box-card repeater-header mb-4">
                     <div class="enemy-types-list-card">
@@ -828,7 +1004,7 @@
             </div>
             <hr id="hr-wave">
             <div id="abilityEditorPanel" class="editor-panel">
-                <h2>Ability Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoFire"/></svg>Ability Editor</h2>
                     
                 <div class="ability-editor-layout"> 
                     <div id="abilityEditorContent" class="repeater-container">
@@ -848,7 +1024,7 @@
             </div>
             <hr id="hr-ability">
         </div>
-        <h2 class="text-center d-block final-json">Final JSON</h2>
+        <h2 class="text-center d-block final-json"><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoList"/></svg>Final JSON</h2>
         <div class="text-center">Paste your map JSON here, or export the generated JSON using copy, save, or download.</div>
         <textarea id="jsonEditor" class="json-textarea mt-1"></textarea>
 
@@ -882,7 +1058,22 @@
             <linearGradient id="devGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
             <!-- same red heart as Lives in the game's top bar (index.html) -->
             <linearGradient id="devHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
+            <!-- fire of the game's Abilities tab (index.html #vhFire) -->
+            <linearGradient id="devFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient>
         </defs>
+        <!-- section headings: same symbols as the game (Settings gear, Towers tab, Settings enemies skull,
+             Abilities tab flame, Version History list) -->
+        <symbol id="devIcoGear" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M10.14 4.53L10.3 1.84A10.3 10.3 0 0 1 13.7 1.84L13.86 4.53A7.7 7.7 0 0 1 15.97 5.4L17.98 3.61A10.3 10.3 0 0 1 20.39 6.02L18.6 8.03A7.7 7.7 0 0 1 19.47 10.14L22.16 10.3A10.3 10.3 0 0 1 22.16 13.7L19.47 13.86A7.7 7.7 0 0 1 18.6 15.97L20.39 17.98A10.3 10.3 0 0 1 17.98 20.39L15.97 18.6A7.7 7.7 0 0 1 13.86 19.47L13.7 22.16A10.3 10.3 0 0 1 10.3 22.16L10.14 19.47A7.7 7.7 0 0 1 8.03 18.6L6.02 20.39A10.3 10.3 0 0 1 3.61 17.98L5.4 15.97A7.7 7.7 0 0 1 4.53 13.86L1.84 13.7A10.3 10.3 0 0 1 1.84 10.3L4.53 10.14A7.7 7.7 0 0 1 5.4 8.03L3.61 6.02A10.3 10.3 0 0 1 6.02 3.61L8.03 5.4A7.7 7.7 0 0 1 10.14 4.53ZM12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0 -7z"/><circle cx="12" cy="12" r="2.2" fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6"/></symbol>
+        <symbol id="devIcoTower" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></symbol>
+        <symbol id="devIcoSkull" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></symbol>
+        <symbol id="devIcoFire" viewBox="0 0 24 24"><path fill="url(#devFire)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></symbol>
+        <symbol id="devIcoList" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#4a2c0c" stroke-width="1.2" opacity=".75" d="M8 8h6M8 11h6M8 14h4"/></symbol>
+        <!-- panels / Save Slots / cards (instead of 💾 ☰ ❌ X) -->
+        <symbol id="devIcoDisk" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3.5 4.5a1 1 0 0 1 1-1h12.3l3.7 3.7v12.3a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6" d="M7 3.5h8.5v5.2H7z"/><path fill="url(#devGold)" d="M12.4 4.4h1.9v3.4h-1.9z"/><rect x="6.5" y="12.5" width="11" height="7.2" rx=".6" fill="#fff3d0" stroke="#4a2c0c" stroke-width=".6"/><path fill="none" stroke="#c58a2e" stroke-width=".9" stroke-linecap="round" d="M8.5 15h7M8.5 17.4h5"/></symbol>
+        <symbol id="devIcoMenu" viewBox="0 0 24 24"><g fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8"><rect x="3" y="4.5" width="18" height="3.4" rx="1.7"/><rect x="3" y="10.3" width="18" height="3.4" rx="1.7"/><rect x="3" y="16.1" width="18" height="3.4" rx="1.7"/></g></symbol>
+        <symbol id="devIcoX" viewBox="0 0 24 24"><path fill="url(#devHeart)" stroke="#4a0d08" stroke-width=".9" stroke-linejoin="round" d="M5.6 3.5 12 9.9l6.4-6.4 2.1 2.1-6.4 6.4 6.4 6.4-2.1 2.1-6.4-6.4-6.4 6.4-2.1-2.1 6.4-6.4-6.4-6.4z"/></symbol>
+        <!-- light ✖ for the red Delete buttons (red on red wouldn't show) -->
+        <symbol id="devIcoXLight" viewBox="0 0 24 24"><path fill="#fff3d0" stroke="#5c0f0a" stroke-width="1" stroke-linejoin="round" d="M5.6 3.5 12 9.9l6.4-6.4 2.1 2.1-6.4 6.4 6.4 6.4-2.1 2.1-6.4-6.4-6.4 6.4-2.1-2.1 6.4-6.4-6.4-6.4z"/></symbol>
         <symbol id="devIcoMap" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></symbol>
         <symbol id="devIcoScroll" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M5.5 5h13v14h-13z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M8.5 9h7M8.5 12h7M8.5 15h4.5"/><rect x="3" y="2.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><rect x="3" y="17.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><path fill="none" stroke="#ffe7a3" stroke-width=".7" stroke-linecap="round" opacity=".7" d="M5 3.8h14M5 18.8h14"/></symbol>
     </svg>
@@ -1265,18 +1456,91 @@
         document.getElementById('editorGraphicsSelect')?.addEventListener('change', addPreviews);
         addPreviews();
     </script>
-    <!-- dev only: gold "copy" icon in the Copy buttons of the card headers (towers, abilities...) -
-         the editor writes a 📋 into them on every render, so an observer swaps it right after -->
+    <!-- dev only: gold "copy" icon instead of 📋 and a light ✖ instead of "X" on the cards' Copy / Delete
+         buttons (towers, abilities, waves, enemy groups, shake effects, custom damage) - the editor writes
+         the text into them on every render, so an observer swaps it right after. Only newly added nodes
+         are looked at (the map's tile header re-renders on every hover - no full-page scan for that). -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><rect x="3.5" y="6.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><path d="M6.5 11.5h6M6.5 14.5h6M6.5 17.5h4" stroke="#7a4a12" stroke-width="1.2" stroke-linecap="round"/></svg>';
-            const swap = () => document.querySelectorAll('.header-actions > .btn-copy:not([data-dev-ico])').forEach(b => {
-                b.dataset.devIco = '1';
-                b.innerHTML = ICON;
-            });
-            new MutationObserver(swap).observe(document.body, { childList: true, subtree: true });
-            swap();
+            const COPY = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><rect x="3.5" y="6.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><path d="M6.5 11.5h6M6.5 14.5h6M6.5 17.5h4" stroke="#7a4a12" stroke-width="1.2" stroke-linecap="round"/></svg>';
+            const DELETE = '<svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoXLight"/></svg>';
+            const swapIn = root => {
+                root.querySelectorAll('.btn-copy:not([data-dev-ico]), .btn-delete:not([data-dev-ico])').forEach(b => {
+                    const text = b.textContent.trim();
+                    if (b.classList.contains('btn-copy') && text === '📋') b.innerHTML = COPY;
+                    else if (b.classList.contains('btn-delete') && text === 'X') { b.innerHTML = DELETE; b.title ||= 'Delete'; }
+                    else return; // e.g. "Yes, remove" in the confirm popup keeps its text
+                    b.dataset.devIco = '1';
+                });
+            };
+            new MutationObserver(records => {
+                // a re-render adds many cards to one container - look at each container once
+                const roots = new Set();
+                records.forEach(r => { if ([...r.addedNodes].some(n => n.nodeType === 1)) roots.add(r.target); });
+                roots.forEach(swapIn);
+            }).observe(document.body, { childList: true, subtree: true });
+            swapIn(document.body);
         });
+    </script>
+    <!-- dev only: ability cards get the animated background of their type, built exactly like the game's
+         ability cards (js/game/CardFx.js + css/bars.css). The editor re-renders the list on edits, so an
+         observer adds the layer to every new card. The type comes from the card's Class ID field. -->
+    <script type="module">
+        import { buildCardFx } from './js/game/CardFx.js';
+
+        const THEMES = {
+            lava_floor: 'concept-lava-floor',
+            towers_fury: 'concept-towers-fury',
+            gold_rush: 'concept-gold-rush',
+            ice_storm: 'concept-ice-storm'
+        };
+
+        function decorate(card, index) {
+            if (card.querySelector(':scope > .dev-ab-bg')) return;
+            const id = card.querySelector('.card-header input[disabled]')?.value;
+            const theme = THEMES[id];
+            if (!theme) return;
+            const bg = document.createElement('div');
+            bg.className = `dev-ab-bg concept-card ${theme}`;
+            bg.setAttribute('aria-hidden', 'true');
+            bg.dataset.theme = theme;
+            bg.dataset.seed = index * 131 + 7;
+            card.classList.add('dev-ab');
+            card.prepend(bg);
+            resizer.observe(bg); // fills it with tiles once it has a size (hidden panel = 0 x 0)
+        }
+
+        // one 260 x 132 tile of the game card's pieces per grid cell - rebuilt only when the grid changes
+        function tile(bg) {
+            const cols = Math.ceil(bg.clientWidth / 260);
+            const rows = Math.ceil(bg.clientHeight / 132);
+            const grid = `${cols}x${rows}`;
+            if (!cols || !rows || bg.dataset.grid === grid) return;
+            bg.dataset.grid = grid;
+            bg.querySelectorAll(':scope > .dev-ab-tile').forEach(t => t.remove());
+            const seed = +bg.dataset.seed;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const t = document.createElement('div');
+                    t.className = 'dev-ab-tile';
+                    t.style.left = c * 260 + 'px';
+                    t.style.top = r * 132 + 'px';
+                    buildCardFx(t, bg.dataset.theme, seed + (r * cols + c) * 37);
+                    bg.appendChild(t);
+                }
+            }
+        }
+        const resizer = new ResizeObserver(entries => entries.forEach(e => {
+            if (!e.target.isConnected) resizer.unobserve(e.target); // card re-rendered away
+            else tile(e.target);
+        }));
+
+        const content = document.getElementById('abilityEditorContent');
+        const decorateAll = () => content.querySelectorAll('.ability-card').forEach((c, i) => decorate(c, i));
+        new MutationObserver(records => {
+            if (records.some(r => [...r.addedNodes].some(n => n.nodeType === 1 && !n.matches('.dev-ab-bg, .dev-ab-tile')))) decorateAll();
+        }).observe(content, { childList: true, subtree: true });
+        decorateAll();
     </script>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
