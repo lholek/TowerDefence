@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="css/level_editor/map.css" />
     <link rel="stylesheet" href="css/backgrounds.css" />
     <link rel="stylesheet" href="css/level_editor/JsonStepper.css" />
+    <!-- dev only: the game's tower card (Tower preview in the Tower editor) -->
+    <link rel="stylesheet" href="css/bars.css" />
     <!-- dev only: graphic updates of the new editor (only this file - the shared css/level_editor/* stays untouched) -->
     <style>
         /* --- "DEV" button (top right, left of the fixed Map Preview panel: right 30 + 264 wide + 12 gap)
@@ -248,9 +250,6 @@
         .dev-sel:has(> .enemy-custom-damage-row){ display:block; width:100%; }
         .dev-sel:has(> .input-enemy-type){ display:block; width:100%; max-width:181px; margin-top:3px; }
         .dev-sel[data-for="ability-type-selector"]{ width:250px; }
-        .dev-sel[data-for="difficultyInput"]{ display:block; width:100%; margin-top:3px; }
-        .dev-sel[data-for="difficultyInput"] .dev-sel-trigger,
-        .dev-sel[data-for="difficultyInput"] .dev-sel-option{ text-align:center; }
 
         /* Shake Effects / Custom Damage cards - spacing between them and the Enemy Types List card */
         .dev-wave-card{ margin-top:16px; }
@@ -301,6 +300,86 @@
             color:#f3e5ab;
         }
         .dev-sel-option.is-active{ outline:1px solid #f0c674; outline-offset:-2px; }
+
+        /* --- Whole editor: side frames ~20% thinner (editor.css: container 30px, panel 1rem,
+               Map Settings box 15px, map card 12px) --- */
+        .editor-container{ padding-left:24px; padding-right:24px; }
+        .editor-panel{ padding-left:.8rem; padding-right:.8rem; }
+        .editor-description{ padding-left:12px; padding-right:12px; }
+        .map-editor-card{ padding-left:10px; padding-right:10px; }
+
+        /* --- Map Settings: Price Progression gets the same gap above it as Starting Lifes (mt-4) --- */
+        .dev-price-label{ margin-top:1.5rem; }
+        /* Starting Coins / Lifes headings with the framed icon, centred like the other headings */
+        #basicInfoEditorPanel .input-row-basic-stats .dev-ico-label{ justify-content:center; }
+        .dev-ico.is-emoji{ font-style:normal; font-size:15px; line-height:1; }
+
+        /* --- Difficulty: autocomplete - a text field that offers the stars, but takes any text too.
+               Same tan look as the selects (.dev-sel-trigger), list = .dev-sel-list --- */
+        .dev-combo{ position:relative; display:block; width:100%; margin-top:3px; }
+        .dev-combo-input{
+            display:block; width:100%; box-sizing:border-box; margin:0 !important;
+            padding:6px 32px 6px 32px !important;
+            border:2px solid transparent !important; border-radius:6px;
+            background-color:#967456 !important; color:#fff;
+            background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23fff" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+            background-repeat:no-repeat; background-position:right 12px top 50%; background-size:12px auto;
+            font:700 .9rem Arial, sans-serif; text-align:center;
+            transition:border-color .2s;
+        }
+        .dev-combo-input::placeholder{ color:rgba(255,255,255,.55); font-weight:400; }
+        .dev-combo-input:hover,
+        .dev-combo-input:focus,
+        .dev-combo.is-open .dev-combo-input{
+            outline:none; border-color:#f0c674 !important;
+            background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23f0c674" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+        }
+        .dev-combo .dev-sel-list{ text-align:center; }
+        .dev-combo-option{
+            padding:6px 10px; border-radius:6px; color:#fff;
+            font:700 .85rem Arial, sans-serif; text-align:center;
+            white-space:nowrap; cursor:pointer;
+        }
+        .dev-combo-option:hover,
+        .dev-combo-option.is-selected{
+            background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+            box-shadow:inset 0 0 0 1px #5c2e0e, inset 0 2px 1px rgba(255,255,255,.3), inset 0 -4px 6px rgba(0,0,0,.25);
+            color:#f3e5ab;
+        }
+        .dev-combo-option.is-active{ outline:1px solid #f0c674; outline-offset:-2px; }
+
+        /* --- Extra Life: Off -> the Price Progression part slides shut, On -> open.
+               Pure CSS on the real checkbox, so a loaded map / undo sets it right too. --- */
+        .dev-collapse{
+            display:grid; grid-template-rows:1fr; opacity:1;
+            transition:grid-template-rows .35s ease, opacity .25s ease;
+        }
+        .dev-collapse > div{ min-height:0; overflow:hidden; }
+        .input-group:has(#extraLifeCheckbox:not(:checked)) .dev-collapse{ grid-template-rows:0fr; opacity:0; }
+        /* the switch row's own gap below isn't needed when there's nothing under it */
+        .input-group:has(#extraLifeCheckbox:not(:checked)) .dev-switch-row{ margin-bottom:0; }
+
+        /* --- Towers: Color up next to Name, the stats in 2 rows (Price / Damage / Fire Rate, then
+               Speed / Sell Price / Range) and the preview of the card exactly as in the game
+               (css/bars.css .concept-tower) on the right over both rows - so the card is about
+               as tall as the preview --- */
+        #towerEditorContent .tower-card .card-body{
+            grid-template-columns:repeat(3, minmax(0, 1fr)) 268px;
+            /* top, not centre - Speed / Range have the "(x tiles)" line under them, Sell Price
+               would sit lower than them otherwise */
+            align-items:start;
+        }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="range"]){ order:1; }
+        #towerEditorContent .tower-card .card-body > .dev-tower-preview{ order:2; grid-column:4; grid-row:1 / span 2; align-self:center; }
+        /* Color in the header: label + swatch in one line */
+        #towerEditorContent .card-header .card-body-tower-color{
+            display:flex; flex-direction:row; align-items:center; gap:8px; margin:0;
+        }
+        #towerEditorContent .card-header .card-body-tower-color input{ margin:0; }
+        .dev-tower-preview{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .dev-tower-preview .label-text{ font-size:.9rem; color:#ccc; }
+        /* same size as in the game's shop (bars.css: 260 x 132) */
+        .dev-tower-preview .concept-tower{ width:260px; flex:0 0 auto; cursor:default; }
     </style>
 </head>
 <body class="editor-body editor-loading">
@@ -312,6 +391,10 @@
             <h2 id="devPopupTitle">Změny oproti klasickému editoru</h2>
             <p class="dev-note">Vše jen v dev/level_editor_new.html - sdílené css/level_editor/* a js/level_editor/* zůstávají beze změny</p>
             <div class="dev-changes">
+                <h3>Celkově</h3>
+                <ul>
+                    <li><strong>Boční okraje</strong> celého editoru o ~20 % menší (rámeček editoru, panely, box Map Settings, karta mapy).</li>
+                </ul>
                 <h3>Mapa</h3>
                 <ul>
                     <li><strong>Horní lišta</strong> - větší mezera mezi lištou (Width / Height / Map Style / Graphics) a mapou.</li>
@@ -331,8 +414,16 @@
                 <ul>
                     <li><strong>Title</strong> - zlatá ikonka mapy místo emoji, nadpis i text na střed.</li>
                     <li><strong>Description</strong> - zlatá ikonka svitku místo emoji, nadpis na střed, text vlevo.</li>
-                    <li><strong>Difficulty</strong> - výběr ⭐ až ⭐⭐⭐⭐⭐ místo volného textového pole.</li>
+                    <li><strong>Difficulty</strong> - našeptávač: nabídne ⭐ až ⭐⭐⭐⭐⭐, ale dá se vepsat i vlastní hodnota.</li>
+                    <li><strong>Starting Coins / Starting Lifes</strong> - ikonky v rámečku jako u Title (🪙 a červené srdce jako v horní liště hry), nadpisy na střed.</li>
+                    <li><strong>Price Progression</strong> - větší mezera nad nadpisem, stejná jako nad Starting Lifes.</li>
+                    <li><strong>Extra Life Off</strong> - Price Progression (ceny + přidání ceny) se plynule zasune a schová, při On se zase vysune.</li>
                     <li><strong>Extra Life</strong> - přepínač Off / On jako Show FPS v Settings místo checkboxu, klik kamkoli na řádek ho přepne.</li>
+                </ul>
+                <h3>Towers</h3>
+                <ul>
+                    <li><strong>Náhled karty věže</strong> napravo od Color - přesně jako v obchodě ve hře (obrázek věže v její barvě, Price / Sell / DPS, na najetí všech 6 statů, číslo věže). Mění se hned při psaní a řídí se volbou Graphics: Low / High.</li>
+                    <li><strong>Karta věže</strong> - Color nahoře vedle Name, staty ve 2 řádcích (Price / Damage / Fire Rate, pod tím Speed / Sell Price / Range) a náhled napravo přes oba řádky, takže je karta zhruba stejně vysoká jako náhled.</li>
                 </ul>
                 <h3>Waves</h3>
                 <ul>
@@ -516,26 +607,25 @@
                         </div>
                         <div class="input-group">
                             <label for="difficultyInput">Difficulty <i class="info-icon" data-tooltip="map-settings.difficulty">i</i></label>
-                            <!-- dev: select instead of a free text field (a map with another value gets it added, see the select script) -->
-                            <select id="difficultyInput" data-dev-keep-unknown="1"
-                                    onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
-                                <option value="⭐">⭐</option>
-                                <option value="⭐⭐">⭐⭐</option>
-                                <option value="⭐⭐⭐">⭐⭐⭐</option>
-                                <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
-                                <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
-                            </select>
+                            <!-- dev: autocomplete - offers the stars (data-options), any other text can be typed in too
+                                 (script at the bottom; the input's own onchange saves it like before) -->
+                            <div class="dev-combo" data-options="⭐|⭐⭐|⭐⭐⭐|⭐⭐⭐⭐|⭐⭐⭐⭐⭐">
+                                <input type="text" id="difficultyInput" class="dev-combo-input" autocomplete="off" placeholder="Pick or type…"
+                                       role="combobox" aria-autocomplete="list" aria-expanded="false"
+                                       onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                                <ul class="dev-sel-list" role="listbox"></ul>
+                            </div>
                         </div>
                     </div>
 
                     <div class="input-row input-row-basic-stats">
                         <div class="input-group mt-4">
-                            <label for="startingCoinsInput">🪙 Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
+                            <label for="startingCoinsInput" class="dev-ico-label"><i class="dev-ico is-emoji" aria-hidden="true">🪙</i>Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
                             <input type="text" inputmode="numeric" class="input-thousands" id="startingCoinsInput" value="0" data-json-stepper="starting_coins"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', window.app.numberFormat.parseThousands(this.value))">
                         </div>
                         <div class="input-group mt-4">
-                            <label for="startingLifesInput">❤️ Starting Lifes<i class="info-icon" data-tooltip="map-settings.starting-lifes">i</i></label>
+                            <label for="startingLifesInput" class="dev-ico-label"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#devHeart)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg></i>Starting Lifes<i class="info-icon" data-tooltip="map-settings.starting-lifes">i</i></label>
                             <input type="text" inputmode="numeric" class="input-thousands" id="startingLifesInput" value="1" data-json-stepper="starting_lifes"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', window.app.numberFormat.parseThousands(this.value))">
                         </div>
@@ -549,7 +639,9 @@
                                 <span class="dev-switch" aria-hidden="true"><span>Off</span><span>On</span></span>
                             </label>
 
-                            <label>
+                            <!-- dev: slides shut while Extra Life is Off (CSS .dev-collapse) -->
+                            <div class="dev-collapse"><div>
+                            <label class="dev-price-label">
                                 Price Progression 🪙
                                 <i class="info-icon" data-tooltip="map-settings.extra-lifes-prices">i</i>
                             </label>
@@ -559,6 +651,7 @@
                                        onkeypress="if(event.key==='Enter'){event.preventDefault();window.app.jsonFunctions.addNewExtraLifePrice();}">
                                 <button id="add-extra-life-price-button" type="button" class="btn btn-green" onclick="window.app.jsonFunctions.addNewExtraLifePrice()">+ Add Price</button>
                             </div>
+                            </div></div>
                         </div>
                     </div>
                 </div>
@@ -669,6 +762,8 @@
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
             <linearGradient id="devGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+            <!-- same red heart as Lives in the game's top bar (index.html) -->
+            <linearGradient id="devHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
         </defs>
         <symbol id="devIcoMap" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></symbol>
         <symbol id="devIcoScroll" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M5.5 5h13v14h-13z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M8.5 9h7M8.5 12h7M8.5 15h4.5"/><rect x="3" y="2.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><rect x="3" y="17.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><path fill="none" stroke="#ffe7a3" stroke-width=".7" stroke-linecap="round" opacity=".7" d="M5 3.8h14M5 18.8h14"/></symbol>
@@ -866,6 +961,187 @@
             new MutationObserver(copy).observe(tileKey, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
             copy();
         });
+    </script>
+    <!-- dev only: autocomplete for .dev-combo (Difficulty). The list offers data-options; typing filters
+         it (nothing matches = the list hides and the typed text is kept as a custom value). Picking an
+         option writes it into the input and fires 'change', so the input's onchange saves it as before. -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.dev-combo').forEach(combo => {
+                const input = combo.querySelector('.dev-combo-input');
+                const list = combo.querySelector('.dev-sel-list');
+                const options = combo.dataset.options.split('|');
+                let active = -1;
+
+                const shown = () => [...list.children];
+                const setOpen = open => {
+                    combo.classList.toggle('is-open', open);
+                    list.classList.toggle('is-open', open);
+                    input.setAttribute('aria-expanded', open);
+                };
+                const render = filter => {
+                    const q = (filter || '').trim();
+                    // empty or exactly one of the options -> offer all of them
+                    const items = (!q || options.includes(q)) ? options : options.filter(o => o.includes(q));
+                    list.innerHTML = '';
+                    items.forEach(o => {
+                        const li = document.createElement('li');
+                        li.className = 'dev-combo-option';
+                        li.role = 'option';
+                        li.textContent = o;
+                        li.classList.toggle('is-selected', o === input.value);
+                        list.appendChild(li);
+                    });
+                    active = items.indexOf(input.value);
+                    markActive();
+                    setOpen(items.length > 0);
+                };
+                const markActive = () => shown().forEach((li, i) => li.classList.toggle('is-active', i === active));
+                const pick = value => {
+                    setOpen(false);
+                    if (input.value === value) return;
+                    input.value = value;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                };
+
+                input.addEventListener('focus', () => render(''));
+                input.addEventListener('click', () => { if (!list.classList.contains('is-open')) render(''); });
+                input.addEventListener('input', () => render(input.value));
+                input.addEventListener('keydown', e => {
+                    const items = shown();
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (!list.classList.contains('is-open')) { render(''); return; }
+                        active = Math.max(0, Math.min(items.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)));
+                        markActive();
+                        items[active]?.scrollIntoView({ block: 'nearest' });
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (list.classList.contains('is-open') && items[active]) pick(items[active].textContent);
+                        else { setOpen(false); input.blur(); } // custom text -> blur fires the native 'change'
+                    } else if (e.key === 'Escape') {
+                        setOpen(false);
+                    }
+                });
+                // mousedown (not click) - fires before the input's blur closes the list
+                list.addEventListener('mousedown', e => {
+                    const li = e.target.closest('.dev-combo-option');
+                    if (!li) return;
+                    e.preventDefault();
+                    pick(li.textContent);
+                });
+                input.addEventListener('blur', () => setOpen(false));
+            });
+        });
+    </script>
+    <!-- dev only: Tower editor - a live preview of each tower's shop card, built the same way as
+         Game.createTowerShop() (real Tower pre-render, same crop, same markup + css/bars.css).
+         The editor re-renders the tower list now and then, so a MutationObserver re-adds the
+         previews; typing in a field updates its own card right away. -->
+    <script type="module">
+        import Tower from './js/game/Tower.js';
+        import { buildCardFx, groupNum } from './js/game/CardFx.js';
+
+        const TILE = 80;
+        // just enough of a map for Tower's constructor (only the pre-rendered image is used)
+        const stubMap = { tileSize: TILE, tileToWorld: () => ({ x: 0, y: 0 }) };
+        const num = v => Number(String(v ?? '').replace(/[\s\u00A0]/g, '').replace(',', '.')) || 0;
+
+        function towerImage(color) {
+            const t = new Tower(null, stubMap, 0, 0, { color });
+            // follow the editor's own Graphics: Low / High select
+            const quality = document.getElementById('editorGraphicsSelect')?.value || 'low';
+            const src = quality === 'high' ? t._preRenderTowerHigh(TILE) : t._preRenderTowerLow(TILE);
+            // same 45% crop as the game's shop card
+            const c = document.createElement('canvas');
+            c.width = c.height = 120;
+            const cropSize = src.width * 0.45;
+            c.getContext('2d').drawImage(src, src.width / 2.5 - cropSize / 2, src.height / 2 - cropSize / 1.2, cropSize, cropSize, 0, 0, 120, 120);
+            return c.toDataURL();
+        }
+
+        function cardHtml(type, index) {
+            const dps = type.fireRate > 0 ? type.damage * 1000 / type.fireRate : 0;
+            const range = type.range / TILE;
+            const speed = type.speed * 144 / TILE;
+            const fmt = n => groupNum(n >= 100 ? Math.round(n) : Number(n.toFixed(1)));
+            const price = groupNum(type.price);
+            const name = String(type.name || '').replace(/[<>&"]/g, ch => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[ch]);
+            return `
+                <div class="concept-card-index">${index}</div>
+                <div class="concept-tower-img"><img src="${towerImage(type.color)}" alt="" /></div>
+                <div class="concept-tower-side">
+                  <div class="concept-card-name${name.length > 14 ? ' concept-name-long' : ''}">${name}</div>
+                  <div class="concept-tower-values">
+                    <div class="concept-tower-base">
+                      <div class="concept-tower-row price"><span>🪙 Price</span><b>${price}</b></div>
+                      <div class="concept-tower-row"><span>💰 Sell</span><b>${groupNum(type.sellPrice)}</b></div>
+                      <div class="concept-tower-row"><span>💥 DPS</span><b class="concept-num">${fmt(dps)}</b></div>
+                    </div>
+                    <div class="concept-tower-stats">
+                      <div class="concept-tower-stat price"><span><i>🪙</i>Price</span><b>${price}</b></div>
+                      <div class="concept-tower-stat"><span><i>💥</i>DPS</span><b>${fmt(dps)}</b></div>
+                      <div class="concept-tower-stat"><span><i>⚔️</i>Damage</span><b>${fmt(type.damage)}</b></div>
+                      <div class="concept-tower-stat"><span><i>🎯</i>Range</span><b>${range.toFixed(1)} <small>tiles</small></b></div>
+                      <div class="concept-tower-stat"><span><i>⏱️</i>Fire rate</span><b>${type.fireRate} <small>ms</small></b></div>
+                      <div class="concept-tower-stat"><span><i>🗲</i>Speed</span><b>${speed.toFixed(1)} <small>tiles/s</small></b></div>
+                    </div>
+                  </div>
+                </div>`;
+        }
+
+        // reads the card's own fields, so the preview follows typing before the editor saves it
+        function readTower(card) {
+            const v = key => card.querySelector(`[data-key="${key}"]`)?.value;
+            return {
+                name: v('name'), color: v('color') || '#f0c674',
+                price: num(v('price')), damage: num(v('damage')), fireRate: num(v('fireRate')),
+                range: num(v('range')), speed: num(v('speed')), sellPrice: num(v('sellPrice'))
+            };
+        }
+
+        function update(card) {
+            const wrap = card.querySelector('.dev-tower-preview');
+            if (!wrap) return;
+            const type = readTower(card);
+            const index = [...document.querySelectorAll('#towerEditorContent .tower-card')].indexOf(card) + 1;
+            const key = JSON.stringify(type) + index + (document.getElementById('editorGraphicsSelect')?.value || '');
+            if (wrap.dataset.key === key) return; // nothing changed - keep the card (and its hover state)
+            wrap.dataset.key = key;
+            const item = document.createElement('div');
+            item.className = 'concept-card concept-tower';
+            item.style.setProperty('--accent', type.color);
+            item.innerHTML = cardHtml(type, index);
+            buildCardFx(item, 'concept-tower', index * 97 + 11);
+            wrap.querySelector('.concept-tower')?.remove();
+            wrap.appendChild(item);
+        }
+
+        function addPreviews() {
+            document.querySelectorAll('#towerEditorContent .tower-card').forEach(card => {
+                const body = card.querySelector('.card-body');
+                // Color goes up next to Name (moved, not copied - the editor's listeners stay on it)
+                const color = body?.querySelector('.card-body-tower-color');
+                const nameLabel = card.querySelector('.card-header [data-key="name"]')?.closest('label');
+                if (color && nameLabel) nameLabel.after(color);
+                if (body && !body.querySelector('.dev-tower-preview')) {
+                    body.insertAdjacentHTML('beforeend', '<div class="dev-tower-preview"><span class="label-text">Preview</span></div>');
+                }
+                update(card);
+            });
+        }
+
+        const content = document.getElementById('towerEditorContent');
+        // the preview's own DOM changes are ignored (only cards being added / replaced matter)
+        new MutationObserver(records => {
+            if (records.some(r => [...r.addedNodes].some(n => n.nodeType === 1 && (n.matches('.tower-card') || n.querySelector?.('.tower-card'))))) addPreviews();
+        }).observe(content, { childList: true, subtree: true });
+        content.addEventListener('input', e => { const card = e.target.closest('.tower-card'); if (card) update(card); });
+        content.addEventListener('change', e => { const card = e.target.closest('.tower-card'); if (card) update(card); });
+        // steppers (- / +) change the value without an input event
+        content.addEventListener('click', e => { const card = e.target.closest('.tower-card'); if (card) setTimeout(() => update(card), 0); });
+        document.getElementById('editorGraphicsSelect')?.addEventListener('change', addPreviews);
+        addPreviews();
     </script>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
