@@ -21,10 +21,10 @@
     <link rel="stylesheet" href="css/bars.css" />
     <!-- dev only: graphic updates of the new editor (only this file - the shared css/level_editor/* stays untouched) -->
     <style>
-        /* --- "DEV" button (top right, left of the fixed Map Preview panel: right 30 + 264 wide + 12 gap)
+        /* --- "DEV" button (top right corner - Map Preview moved to the left)
                + popup listing what this dev editor changes compared to level_editor.html --- */
         .dev-btn{
-            position:fixed; top:20px; right:306px; z-index:20000;
+            position:fixed; top:20px; right:30px; z-index:20000;
             padding:8px 16px; border-radius:8px;
             border:1px solid rgba(240,198,116,.55);
             background:linear-gradient(180deg, #4a3b28, #2f2619);
@@ -96,6 +96,46 @@
         /* position + z-index: the Map Style / Graphics lists drop over the canvas, which sits at
            z-index 1000 (editor.css #mapCanvas) - stays under the fixed side panels (1002) */
         .map-top-bar{ margin-bottom:12px; position:relative; z-index:1001; }
+
+        /* --- Map: Width / Height with −/+ (same box as JsonStepper.css, just not full width) --- */
+        .dev-size-stepper{ width:auto; margin-top:0; }
+        .dev-size-stepper input.input-small{
+            width:46px; margin:0; padding:6px 8px; border:0; border-radius:0;
+            background:transparent; color:#f0f0f0; text-align:center;
+            -moz-appearance:textfield;
+        }
+        .dev-size-stepper input.input-small:focus{ outline:none; }
+        .dev-size-stepper input::-webkit-outer-spin-button,
+        .dev-size-stepper input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+
+        /* --- Map: no top margin on the key containers (editor.css .editor-key-container) --- */
+        #tileDrawingPanel .editor-key-container{ margin-top:0; }
+
+        /* --- Map: Search tile + Filters on one row --- */
+        #tileKey .tile-editor-header{ flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px 18px; }
+        #tileKey .tile-key-filters{ padding:0; }
+
+        /* --- Waves: Enemy Types List scrolls sideways in one row, like Extra Life's Price Progression --- */
+        #enemyTypesTagsContainer{
+            flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; align-items:center;
+            min-height:0; padding:6px 10px; box-sizing:border-box; max-width:100%;
+        }
+        #enemyTypesTagsContainer .enemy-tag{ flex-shrink:0; }
+        #enemyTypesTagsContainer::-webkit-scrollbar{ height:8px; }
+        #enemyTypesTagsContainer::-webkit-scrollbar-track{ background:transparent; }
+        #enemyTypesTagsContainer::-webkit-scrollbar-thumb{ background-color:rgb(240,198,116); border-radius:4px; border:1px solid transparent; }
+
+        /* --- Map Settings: some air around the Price Progression row --- */
+        #extraLifePricesTagsContainer{ margin-top:10px; margin-bottom:10px; }
+
+        /* --- Map Preview in the top LEFT corner (editor.css has it top right), handle on its right side --- */
+        .map-preview-panel{ left:30px; right:auto; }
+        .map-preview-panel.is-collapsed{ transform:translateX(calc(-100% - 30px)); }
+        .map-preview-panel .panel-toggle-tab{
+            left:auto; right:-31px;
+            border-left:none; border-right:1px solid #333;
+            border-radius:0 8px 8px 0;
+        }
 
         /* --- Map: Brush Settings on top, tile picker under it over the whole row.
                min-width:0 everywhere on the way down, otherwise the wide tile row (it scrolls
@@ -434,7 +474,11 @@
                 </ul>
                 <h3>Mapa</h3>
                 <ul>
+                    <li><strong>Map Preview</strong> přesunutý do levého horního rohu (místo pravého), schovává se doleva.</li>
                     <li><strong>Horní lišta</strong> - jen Width / Height / Resize Map, zarovnané na střed, a větší mezera mezi lištou a mapou.</li>
+                    <li><strong>Width / Height</strong> mají tlačítka − / + (min 3) - mapu pořád změní až Resize Map.</li>
+                    <li><strong>Bez horního marginu</strong> u boxů Brush a dlaždic (.editor-key-container).</li>
+                    <li><strong>Vyhledávání a Filters</strong> na jednom řádku.</li>
                     <li><strong>Map Style a Graphics</strong> přesunuté do Menu nad tlačítko Map (s nadpisy, kratší názvy možností).</li>
                     <li><strong>Řádek Brush nad dlaždicemi</strong> - vybraná dlaždice, „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
                     <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem. Slovo „Selected:“ odstraněno.</li>
@@ -451,6 +495,7 @@
                 <ul>
                     <li><strong>Title</strong> - zlatá ikonka mapy místo emoji, nadpis i text na střed.</li>
                     <li><strong>Description</strong> - zlatá ikonka svitku místo emoji, nadpis na střed, text vlevo.</li>
+                    <li><strong>Řádek cen v Price Progression</strong> má nad i pod sebou mezeru 10 px.</li>
                     <li><strong>Difficulty</strong> - našeptávač: nabídne ⭐ až ⭐⭐⭐⭐⭐, ale dá se vepsat i vlastní hodnota.</li>
                     <li><strong>Starting Coins / Starting Lifes</strong> - ikonky v rámečku jako u Title (🪙 a červené srdce jako v horní liště hry), nadpisy na střed.</li>
                     <li><strong>Price Progression</strong> - větší mezera nad nadpisem, stejná jako nad Starting Lifes.</li>
@@ -470,6 +515,7 @@
                 </ul>
                 <h3>Waves</h3>
                 <ul>
+                    <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression.</li>
                     <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
                 </ul>
                 <h3>Selecty</h3>
@@ -489,6 +535,19 @@
             popup.addEventListener('click', e => { if (e.target === popup) setOpen(false); });
             document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
         })();
+
+        // Width / Height −/+ : only changes the number (min 3) like typing it - "Resize Map" still applies it
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('[data-dev-step]');
+            if (!btn) return;
+            const input = document.getElementById(btn.dataset.devTarget);
+            if (!input) return;
+            const min = parseInt(input.min, 10) || 0;
+            const current = parseInt(input.value, 10);
+            input.value = Math.max(min, (isNaN(current) ? min : current) + parseInt(btn.dataset.devStep, 10));
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
     </script>
     <!-- Loading screen: shown right away (plain HTML/CSS), hidden by js/level_editor/main.js
          once the map, tiles and all editor panels are ready -->
@@ -579,9 +638,22 @@
                 <div class="map-top-bar">
                     <div class="map-top-bar-left">
                         <label for="mapWidth">Width</label>
-                        <input type="number" id="mapWidth" min="3" value="11" class="input-small">
+                        <!-- dev: −/+ in the same box as the number (JsonStepper look, own small script) -->
+                        <div class="json-stepper-wrap dev-size-stepper">
+                            <input type="number" id="mapWidth" min="3" value="11" class="input-small">
+                            <div class="json-stepper-btn-group">
+                                <button type="button" class="json-stepper-btn" data-dev-step="-1" data-dev-target="mapWidth" title="-1">−</button>
+                                <button type="button" class="json-stepper-btn" data-dev-step="1" data-dev-target="mapWidth" title="+1">+</button>
+                            </div>
+                        </div>
                         <label for="mapHeight">Height</label>
-                        <input type="number" id="mapHeight" min="3" value="3" class="input-small">
+                        <div class="json-stepper-wrap dev-size-stepper">
+                            <input type="number" id="mapHeight" min="3" value="3" class="input-small">
+                            <div class="json-stepper-btn-group">
+                                <button type="button" class="json-stepper-btn" data-dev-step="-1" data-dev-target="mapHeight" title="-1">−</button>
+                                <button type="button" class="json-stepper-btn" data-dev-step="1" data-dev-target="mapHeight" title="+1">+</button>
+                            </div>
+                        </div>
                         <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
                         <i class="info-icon" data-tooltip="map-editor.map-dimensions">i</i>
                     </div>
