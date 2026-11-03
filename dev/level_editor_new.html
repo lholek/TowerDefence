@@ -77,6 +77,21 @@
         }
         .dev-changes li strong{ color:#f0c674; }
 
+        /* --- Map: Width / Height / Resize Map centred (Map Style + Graphics moved to the Menu) --- */
+        .map-top-bar{ justify-content:center; }
+
+        /* --- Menu: Map Style + Graphics above the Map button --- */
+        .dev-menu-selects{
+            display:flex; flex-direction:column; gap:4px;
+            padding:8px; margin-bottom:4px; border-radius:8px;
+            background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.15);
+        }
+        .dev-menu-label{ color:#f0c674; font-weight:700; font-size:.8rem; text-align:center; }
+        .dev-menu-label:not(:first-child){ margin-top:4px; }
+        .dev-menu-selects .dev-sel{ display:block; width:100%; }
+        .dev-menu-selects .dev-sel-trigger{ min-width:0; text-align:center; }
+        .dev-menu-selects .dev-sel-option{ text-align:center; }
+
         /* --- Map: a bit more space between the top bar and the map --- */
         /* position + z-index: the Map Style / Graphics lists drop over the canvas, which sits at
            z-index 1000 (editor.css #mapCanvas) - stays under the fixed side panels (1002) */
@@ -360,7 +375,7 @@
         .input-group:has(#extraLifeCheckbox:not(:checked)) .dev-switch-row{ margin-bottom:0; }
 
         /* --- Towers: Color up next to Name, the stats in 2 rows (Price / Damage / Fire Rate, then
-               Speed / Sell Price / Range) and the preview of the card exactly as in the game
+               Sell Price / Range / Speed) and the preview of the card exactly as in the game
                (css/bars.css .concept-tower) on the right over both rows - so the card is about
                as tall as the preview --- */
         #towerEditorContent .tower-card .card-body{
@@ -369,8 +384,27 @@
                would sit lower than them otherwise */
             align-items:start;
         }
-        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="range"]){ order:1; }
-        #towerEditorContent .tower-card .card-body > .dev-tower-preview{ order:2; grid-column:4; grid-row:1 / span 2; align-self:center; }
+        /* the editor renders Price, Damage, Fire Rate, Range, Speed, Sell Price - order: puts them in place */
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="price"]){ order:1; }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="damage"]){ order:2; }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="fireRate"]){ order:3; }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="sellPrice"]){ order:4; }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="range"]){ order:5; }
+        #towerEditorContent .tower-card .card-body > .editor-row:has([data-key="speed"]){ order:6; }
+        #towerEditorContent .tower-card .card-body > .dev-tower-preview{ order:7; grid-column:4; grid-row:1 / span 2; align-self:center; }
+        /* DPS badge in the tower card header - not needed (the preview card shows the DPS) */
+        #towerEditorContent .badge-dps{ display:none; }
+        /* the Color "i" sits after the colour swatch (moved there by the preview script) */
+        #towerEditorContent .card-header .card-body-tower-color .info-icon{ margin-left:0; }
+
+        /* Drag (9 dots) / Copy / Delete in the card headers - all the same size */
+        .header-actions > .btn-drag,
+        .header-actions > .btn-copy,
+        .header-actions > .btn-delete{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:38px; height:30px; padding:0 !important; box-sizing:border-box;
+        }
+
         /* Color in the header: label + swatch in one line */
         #towerEditorContent .card-header .card-body-tower-color{
             display:flex; flex-direction:row; align-items:center; gap:8px; margin:0;
@@ -397,8 +431,8 @@
                 </ul>
                 <h3>Mapa</h3>
                 <ul>
-                    <li><strong>Horní lišta</strong> - větší mezera mezi lištou (Width / Height / Map Style / Graphics) a mapou.</li>
-                    <li><strong>Seznamy Map Style a Graphics</strong> se otevírají přes mapu (dřív by se schovaly pod canvas).</li>
+                    <li><strong>Horní lišta</strong> - jen Width / Height / Resize Map, zarovnané na střed, a větší mezera mezi lištou a mapou.</li>
+                    <li><strong>Map Style a Graphics</strong> přesunuté do Menu nad tlačítko Map (s nadpisy, kratší názvy možností).</li>
                     <li><strong>Řádek Brush nad dlaždicemi</strong> - vybraná dlaždice, „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
                     <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem. Slovo „Selected:“ odstraněno.</li>
                     <li><strong>X / Y</strong> v zarámovaném boxu - zlatá písmena, čísla v tmavých políčkách.</li>
@@ -423,7 +457,12 @@
                 <h3>Towers</h3>
                 <ul>
                     <li><strong>Náhled karty věže</strong> napravo od Color - přesně jako v obchodě ve hře (obrázek věže v její barvě, Price / Sell / DPS, na najetí všech 6 statů, číslo věže). Mění se hned při psaní a řídí se volbou Graphics: Low / High.</li>
-                    <li><strong>Karta věže</strong> - Color nahoře vedle Name, staty ve 2 řádcích (Price / Damage / Fire Rate, pod tím Speed / Sell Price / Range) a náhled napravo přes oba řádky, takže je karta zhruba stejně vysoká jako náhled.</li>
+                    <li><strong>DPS v hlavičce</strong> odstraněné (je v náhledu), „i“ u Color je až za výběrem barvy.</li>
+                    <li><strong>Karta věže</strong> - Color nahoře vedle Name, staty ve 2 řádcích (Price / Damage / Fire Rate, pod tím Sell Price / Range / Speed) a náhled napravo přes oba řádky, takže je karta zhruba stejně vysoká jako náhled.</li>
+                </ul>
+                <h3>Karty (Towers, Abilities…)</h3>
+                <ul>
+                    <li><strong>Tlačítka v hlavičce karty</strong> - přesun (9 teček), Copy a Delete mají stejnou velikost.</li>
                 </ul>
                 <h3>Waves</h3>
                 <ul>
@@ -497,6 +536,21 @@
         <div class="editor-tabs" id="editorMenuPanel">
             <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu">☰</button>
             <h3 class="panel-title">Menu</h3>
+            <!-- dev: Map Style + Graphics moved here from the map's top bar (same ids - main.js finds them) -->
+            <div class="dev-menu-selects">
+                <label class="dev-menu-label" for="backgroundSelect">Map Style</label>
+                <select id="backgroundSelect" class="background-select">
+                    <option value="day">Day Sky</option>
+                    <option value="midnight">Midnight Sky</option>
+                    <option value="galactic">Galactic Sky</option>
+                    <option value="stormy">Stormy Sky</option>
+                </select>
+                <label class="dev-menu-label" for="editorGraphicsSelect">Graphics</label>
+                <select id="editorGraphicsSelect" class="background-select">
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
             <button class="btn active-tab" data-target="mapEditorPanel hr-map">Map</button>
             <button class="btn active-tab" data-target="basicInfoEditorPanel hr-settings">Map Settings</button>
             <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
@@ -526,18 +580,6 @@
                         <input type="number" id="mapHeight" min="3" value="3" class="input-small">
                         <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
                         <i class="info-icon" data-tooltip="map-editor.map-dimensions">i</i>
-                    </div>
-                    <div class="map-top-bar-right">
-                        <select id="backgroundSelect" class="background-select">
-                            <option value="day">Map Style: Day Sky</option>
-                            <option value="midnight">Map Style: Midnight Sky</option>
-                            <option value="galactic">Map Style: Galactic Sky</option>
-                            <option value="stormy">Map Style: Stormy Sky</option>
-                        </select>
-                        <select id="editorGraphicsSelect" class="background-select">
-                            <option value="low">Graphics: Low</option>
-                            <option value="high">Graphics: High</option>
-                        </select>
                     </div>
                 </div>
 
@@ -1124,6 +1166,10 @@
                 const color = body?.querySelector('.card-body-tower-color');
                 const nameLabel = card.querySelector('.card-header [data-key="name"]')?.closest('label');
                 if (color && nameLabel) nameLabel.after(color);
+                // its "i" after the colour swatch
+                const colorInfo = color?.querySelector('.label-text .info-icon');
+                const swatch = color?.querySelector('[data-key="color"]');
+                if (colorInfo && swatch) swatch.after(colorInfo);
                 if (body && !body.querySelector('.dev-tower-preview')) {
                     body.insertAdjacentHTML('beforeend', '<div class="dev-tower-preview"><span class="label-text">Preview</span></div>');
                 }
