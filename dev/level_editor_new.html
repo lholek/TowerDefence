@@ -621,6 +621,60 @@
         }
         .json-textarea:focus{ outline:none; border-color:#f0c674; }
         .json-textarea::selection{ background:rgba(240,198,116,.35); }
+
+        /* ================================================================
+           Confirm popup (Load Map, Overwrite / Delete Save Slot, ...) in the game's popup style
+           (css/popups.css + Settings / Version History): darker backdrop, card like Settings,
+           gold heading with a gold icon, × in the corner, pops in. json_functions.js still just
+           toggles .d-none - the pop-in is a CSS animation that restarts whenever it shows.
+           ================================================================ */
+        #customConfirmPopup{ background:rgba(0,0,0,.85); z-index:20002; }
+        #customConfirmPopup:not(.d-none){ animation:devPopupFade .35s ease-out; }
+        #customConfirmPopup:not(.d-none) > .return-content{ animation:devPopupPop .35s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes devPopupFade{ from{ opacity:0; } to{ opacity:1; } }
+        @keyframes devPopupPop{ from{ opacity:0; transform:scale(.85); } to{ opacity:1; transform:scale(1); } }
+        #customConfirmPopup > .return-content{
+            position:relative; box-sizing:border-box;
+            width:440px; max-width:calc(100vw - 40px);
+            margin:0; padding:22px 28px 24px;
+            border:0; border-radius:12px;
+            background:#3e3223; color:#fff;
+            box-shadow:0 12px 30px rgba(0,0,0,.55);
+        }
+        .dev-confirm-close{
+            position:absolute; top:12px; right:18px; padding:0;
+            background:none; border:0; color:#888; font-size:28px; line-height:1; cursor:pointer;
+        }
+        .dev-confirm-close:hover{ color:#fff; }
+        .dev-confirm-head{ display:flex; align-items:center; justify-content:center; gap:10px; margin:2px 0 12px; }
+        .dev-confirm-head .dev-h-ico{ width:30px; height:30px; }
+        #customConfirmPopup #popupTitle{
+            margin:0; color:#f0c674; font:700 1.6rem 'Cinzel', Georgia, serif;
+            text-shadow:0 0 15px rgba(240,198,116,.3);
+        }
+        /* the message in a panel like the Settings groups */
+        #customConfirmPopup #popupMessage{
+            margin:0 0 20px; padding:12px 14px;
+            border-radius:8px; background:rgba(0,0,0,.18);
+            border:1px solid rgba(240,198,116,.15);
+            color:#e4dccb; line-height:1.45;
+        }
+        #customConfirmPopup .return-buttons{ justify-content:center; gap:14px; }
+        #customConfirmPopup .return-buttons .btn{ flex:0 1 150px; padding:10px 18px; }
+        /* confirm button: gold for Load, the game's "Sure?" red for Overwrite / Delete
+           (editor.css .btn-delete is a flat #ff4444 without the .btn bevel) */
+        #customConfirmPopup .btn.dev-confirm-gold{
+            background-color:#f0c674 !important; color:#3b2a14;
+            border:2px solid #b8860b !important; text-shadow:0 1px 0 rgba(255,255,255,.35);
+            box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -10px 14px rgba(0,0,0,.22), 0 5px 0 #b8860b, 0 11px 16px rgba(0,0,0,.4) !important;
+        }
+        #customConfirmPopup .btn.dev-confirm-gold:hover{ background-color:#ffd78c !important; }
+        #customConfirmPopup .btn.btn-delete{
+            background-color:#b32d2d !important; color:#fff;
+            border:2px solid #7a1f1f !important;
+            box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -10px 14px rgba(0,0,0,.22), 0 5px 0 #7a1f1f, 0 11px 16px rgba(0,0,0,.4) !important;
+        }
+        #customConfirmPopup .btn.btn-delete:hover{ background-color:#c93a3a !important; }
     </style>
 </head>
 <body class="editor-body editor-loading">
@@ -640,6 +694,7 @@
                     <li><strong>Save Slots jako karty</strong> - číslo slotu v tmavém socketu, název mapy zlatě, prázdný slot se zlatým „+“ a tlumeným textem. Panel širší (300 px - víc místa pro název), větší ikony Save / Delete, číslo slotu v jedné řadě s názvem.</li>
                     <li><strong>Loading screen</strong> ve stylu hry - nadpis písmem Cinzel, zlatý progress bar s odleskem jako progress levelu.</li>
                     <li><strong>Final JSON</strong> - tmavý panel s monospace písmem, zlatým okrajem při psaní a zlatým scrollbarem.</li>
+                    <li><strong>Potvrzovací popup</strong> (Load Map, Overwrite / Delete Save Slot) ve stylu popupů hry - karta jako Settings, zlatý nadpis se zlatou ikonou (mapa / disketa / ✖), zpráva v panelu, × v rohu, zavření ESC nebo klikem mimo, plynulé zobrazení. Potvrzovací tlačítko podle akce: zlaté „Load“, červené „Overwrite“ / „Delete“ (dřív všude „Yes, remove“).</li>
                 </ul>
                 <h3>Mapa</h3>
                 <ul>
@@ -1043,8 +1098,13 @@
         </div>        
     </div>
     <div id="customConfirmPopup" class="modal-overlay d-none">
-        <div class="return-content box">
-            <h3 id="popupTitle">Delete Tower</h3>
+        <div class="return-content box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+            <!-- dev: × / ESC / click outside = Cancel, gold icon + button label follow the title (script below) -->
+            <button type="button" class="dev-confirm-close" title="Close">&times;</button>
+            <div class="dev-confirm-head">
+                <svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use id="devConfirmIco" href="#devIcoScroll"/></svg>
+                <h3 id="popupTitle">Delete Tower</h3>
+            </div>
             <p id="popupMessage">Are you sure you want to delete this entity?</p>
             <div class="return-buttons">
                 <button id="confirmActionButton" class="btn btn-delete">Yes, remove</button>
@@ -1052,6 +1112,41 @@
             </div>
         </div>
     </div>
+    <script>
+        // dev only: the confirm popup like the game's popups - × / ESC / click on the backdrop cancel it
+        // (= a click on Cancel, so json_functions.js resolves its promise as usual), and each kind of
+        // question gets its own icon + confirm button (it said "Yes, remove" even for "Load Map")
+        (() => {
+            const popup = document.getElementById('customConfirmPopup');
+            const title = document.getElementById('popupTitle');
+            const ico = document.getElementById('devConfirmIco');
+            const ok = document.getElementById('confirmActionButton');
+            const cancel = () => document.getElementById('cancelActionButton').click();
+            const isOpen = () => !popup.classList.contains('d-none');
+
+            popup.querySelector('.dev-confirm-close').addEventListener('click', cancel);
+            popup.addEventListener('click', e => { if (e.target === popup) cancel(); });
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && isOpen()) { e.preventDefault(); e.stopPropagation(); cancel(); }
+            }, true);
+
+            // [title pattern, icon, confirm label, gold (safe) or red (destructive)]
+            const KINDS = [
+                [/^load/i, 'devIcoMap', 'Load', true],
+                [/overwrite/i, 'devIcoDisk', 'Overwrite', false],
+                [/delete|remove/i, 'devIcoX', 'Delete', false]
+            ];
+            const style = () => {
+                const [, icon, label, safe] = KINDS.find(([re]) => re.test(title.textContent)) || [null, 'devIcoScroll', 'Yes', false];
+                ico.setAttribute('href', '#' + icon);
+                ok.textContent = label;
+                ok.classList.toggle('dev-confirm-gold', safe);
+                ok.classList.toggle('btn-delete', !safe);
+            };
+            new MutationObserver(style).observe(title, { childList: true, characterData: true, subtree: true });
+            style();
+        })();
+    </script>
     <!-- dev only: gold icons (same symbols as the game's Version History map / scroll icons in index.html) -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
