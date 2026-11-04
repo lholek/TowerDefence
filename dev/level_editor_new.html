@@ -153,6 +153,20 @@
             pointer-events:auto;
             box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 0 12px rgba(240,198,116,.55), 0 3px 8px rgba(0,0,0,.6);
         }
+        /* --- Waves: hovering a Skin option shows the enemy as the game draws it (Random = both) --- */
+        .dev-skin-pop{
+            position:fixed; z-index:3000; display:none; pointer-events:none;
+            gap:14px; align-items:flex-end; padding:10px 14px 8px;
+            background:linear-gradient(180deg, #3a2f22, #241c13);
+            border:2px solid #f0c674; border-radius:10px;
+            box-shadow:0 6px 18px rgba(0,0,0,.6), 0 0 10px rgba(240,198,116,.25);
+        }
+        .dev-skin-pop.is-open{ display:flex; animation:devSkinPop .14s ease-out; }
+        .dev-skin-pop figure{ margin:0; display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .dev-skin-pop img{ height:72px; width:auto; filter:drop-shadow(0 3px 4px rgba(0,0,0,.6)); }
+        .dev-skin-pop figcaption{ color:#f0c674; font-size:.72rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
+        @keyframes devSkinPop{ from{ opacity:0; transform:scale(.94); } to{ opacity:1; transform:none; } }
+        body.ui-fx-low .dev-skin-pop.is-open{ animation:none; }
         /* the "i" tooltips (TooltipController, inline z-index:1000) above the tile strip */
         #dynamic-tooltip{ z-index:2000 !important; }
         /* gold line between the selected tile (left) and the rest */
@@ -800,6 +814,7 @@
                     <li><strong>Shake Effects / Custom Damage</strong> - Delete stejně vysoké jako políčka a v jedné řadě s nimi.</li>
                     <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression. Popis typů je uvnitř jeho hnědého rámu hned pod přidáním typu.</li>
                     <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
+                    <li><strong>Waves - náhled skinu</strong> - při najetí myší na možnost ve výběru Skin se vedle ukáže nepřítel, jak ho kreslí hra (Enemy.js): Random = Golem a Oko vedle sebe, Golem / Fiery Eye = jen ten jeden. Kvalita podle Menu → Graphics (Low / High).</li>
                 </ul>
                 <h3>Selecty</h3>
                 <ul>
@@ -1737,6 +1752,101 @@
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
     <script type="module" src="js/level_editor/TooltipController.js"></script>
+    <!-- dev: Waves - hovering an option of a Skin select shows the enemy next to it, drawn by the
+         game's own Enemy.js art (cropped to the figure): Random = Golem + Eye side by side,
+         Golem / Fiery Eye = just that one. The wave cards themselves stay as they are. -->
+    <script type="module">
+        import Enemy from './js/game/Enemy.js';
+        const SKINS = ['GOLEM', 'EYE'];
+        const NAMES = { GOLEM: 'Golem', EYE: 'Fiery Eye' };
+        const cache = new Map();
+
+        const quality = () => {
+            try { return (JSON.parse(localStorage.getItem('graphicsSettings')) || {}).enemies || 'low'; }
+            catch { return 'low'; }
+        };
+        // the enemy's body canvas as the game draws it, trimmed to its visible pixels
+        const art = (type) => {
+            const q = quality();
+            const key = type + '_' + q;
+            if (cache.has(key)) return cache.get(key);
+            let url = '';
+            try {
+                const fake = Object.create(Enemy.prototype);
+                Object.assign(fake, { type, quality: q, size: 30 });
+                const src = fake._preRenderEnemy(30);
+                const { width: w, height: h } = src;
+                const px = src.getContext('2d').getImageData(0, 0, w, h).data;
+                let x0 = w, y0 = h, x1 = -1, y1 = -1;
+                for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+                    if (px[(y * w + x) * 4 + 3] > 8) {
+                        if (x < x0) x0 = x; if (x > x1) x1 = x;
+                        if (y < y0) y0 = y; if (y > y1) y1 = y;
+                    }
+                }
+                if (x1 >= x0) {
+                    const out = document.createElement('canvas');
+                    out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
+                    out.getContext('2d').drawImage(src, -x0, -y0);
+                    url = out.toDataURL('image/png');
+                }
+            } catch (e) { console.warn('dev skin preview:', e); }
+            cache.set(key, url);
+            return url;
+        };
+
+        // one floating box, shown next to the hovered option of an open Skin list
+        const pop = document.createElement('div');
+        pop.className = 'dev-skin-pop';
+        document.body.appendChild(pop);
+        let shownFor = null;
+
+        const hide = () => { pop.classList.remove('is-open'); shownFor = null; };
+        const show = (li, sel) => {
+            const value = sel.options[+li.dataset.index]?.value ?? '';
+            const types = SKINS.includes(value) ? [value] : SKINS;
+            // re-read the quality every time: Menu > Graphics (Low / High) changes it
+            const state = types.join('+') + '|' + quality();
+            if (pop.dataset.state !== state) {
+                pop.dataset.state = state;
+                pop.replaceChildren(...types.map(t => {
+                    const fig = document.createElement('figure');
+                    const img = document.createElement('img');
+                    img.src = art(t); img.alt = NAMES[t]; img.draggable = false;
+                    const cap = document.createElement('figcaption');
+                    cap.textContent = NAMES[t];
+                    fig.append(img, cap);
+                    return fig;
+                }));
+            }
+            pop.classList.add('is-open');
+            shownFor = li;
+            // to the right of the list, centred on the option; to the left if there's no room
+            const list = li.closest('.dev-sel-list').getBoundingClientRect();
+            const r = li.getBoundingClientRect();
+            const pw = pop.offsetWidth, ph = pop.offsetHeight;
+            let left = list.right + 10;
+            if (left + pw > innerWidth - 8) left = Math.max(8, list.left - pw - 10);
+            const top = Math.min(Math.max(8, r.top + r.height / 2 - ph / 2), innerHeight - ph - 8);
+            pop.style.left = left + 'px';
+            pop.style.top = top + 'px';
+        };
+
+        document.addEventListener('mouseover', (e) => {
+            const li = e.target.closest?.('.dev-sel-option');
+            const sel = li?.closest('.dev-sel')?.querySelector(':scope > select[data-key="skin"]');
+            if (!li || !sel) { if (shownFor) hide(); return; }
+            if (li !== shownFor) show(li, sel);
+        });
+        // list closed (pick, click outside, Esc) or scrolled away -> no box left hanging
+        document.addEventListener('click', () => requestAnimationFrame(() => {
+            if (shownFor && !shownFor.closest('.dev-sel-list.is-open')) hide();
+        }));
+        document.addEventListener('keydown', () => requestAnimationFrame(() => {
+            if (shownFor && !shownFor.isConnected || shownFor && !shownFor.closest('.dev-sel-list.is-open')) hide();
+        }));
+        addEventListener('scroll', () => { if (shownFor) hide(); }, true);
+    </script>
     <!-- dev: the map can be panned a bit lower, by the tile strip's height, so its bottom rows
          don't stay hidden under the strip (only in this editor, the game is untouched).
          editor_map.js clamps the camera to the canvas; its camera object (exposed as
