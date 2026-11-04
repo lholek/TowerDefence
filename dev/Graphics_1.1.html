@@ -2038,6 +2038,11 @@
     <iframe class="mock-frame" data-template="tplPopupTitles" data-autoheight title="Popup headings mockup"></iframe>
   </div>
 
+  <div class="bar-section">
+    <h2 class="section-label">Game end — Victory / Defeat table, old vs new (game: js/game/Game.js showGameEnd, css/ui.css)</h2>
+    <iframe class="mock-frame" data-template="tplGameEnd" data-autoheight title="Game end mockup"></iframe>
+  </div>
+
   <style>
     .mock-frame{
       display:block;
@@ -6217,6 +6222,314 @@ fetch('../versions.json', { cache: 'no-cache' })
   <div class="pt-card"><button class="popup-close-x">&times;</button><h2 class="cl-primary popup-title"><svg class="popup-title-ico" aria-hidden="true"><use href="#vhIcoGear"/></svg>Settings</h2><div class="pt-fake"></div></div>
   <div class="pt-card"><button class="popup-close-x">&times;</button><h2 class="cl-primary popup-title"><svg class="popup-title-ico" aria-hidden="true"><use href="#hdIcoScroll"/></svg>Version History</h2><div class="pt-fake"></div></div>
 </div>
+  </template>
+
+  <template id="tplGameEnd">
+<meta charset="UTF-8" />
+<title>Game end - Victory / Defeat</title>
+<!-- The end-of-game table (Game.js showGameEnd -> #gameEndOverlay .overlay-content.final-status).
+     A) exactly the game's current markup + css/ui.css. B) the same table with gold icons instead
+     of the emoji for Total Damage / Kills / Towers Built / Towers Sold / Abilities Used / Time
+     Elapsed (same symbols as the game: Towers tab, Abilities tab flame, Settings skull, Version
+     History hourglass + sword), and a gradient VICTORY / DEFEAT title like the editor's headings,
+     in a brighter green / a clearer red. Static numbers. -->
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/helpers.css" />
+<link rel="stylesheet" href="../css/ui.css" />
+<link rel="stylesheet" href="../css/cursor.css" />
+<style>
+  html, body{ margin:0; padding:0; background:#1E1E1E; color:#eee; font-family: Arial, sans-serif; }
+  body{ padding:30px 34px 40px; }
+  h1{ margin:0 0 6px; color:#f0c674; font-family: Georgia, 'Times New Roman', serif; }
+  .page-note{ margin:0 0 26px; color:#bbb; }
+  .section-label{ margin:0 0 12px; color:#f0c674; font-size:18px; font-family: Georgia, 'Times New Roman', serif; }
+  .ge-row{ display:grid; grid-template-columns:repeat(2, 580px); gap:24px 30px; margin-bottom:38px; align-items:start; }
+  /* the real overlay is position:fixed full screen - here just its card, side by side.
+     580px wide so no stat row wraps (label + 8-digit damage in one line) */
+  .ge-row .overlay-content{ box-sizing:border-box; width:580px; padding:32px 34px; }
+  .ge-row .final-status-grid > div{ white-space:nowrap; }
+
+  /* ---------- B) new ---------- */
+  /* icon socket in front of each stat label - the same frame as the game's Settings icons
+     (css/settings.css .settings-ico): small dark well, thin gold rim, inner shadow */
+  .ge-socket{
+    flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; margin-right:9px; box-sizing:border-box;
+    border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+    font-style:normal;
+  }
+  /* the rows that keep an emoji (coins / lives) get the same socket, so all labels line up */
+  .ge-socket.is-emoji{ font-size:15px; line-height:1; }
+  .ge-ico{ width:19px; height:19px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.7)); }
+  /* socket + label + value in one line, the value pushed to the right edge */
+  .ge-gold .final-status-grid > div{ display:flex; align-items:center; }
+  .ge-gold .final-status-grid > div > span{ margin-left:auto; float:none; }
+  .ge-gold .final-status-time{ justify-content:center; }
+  .ge-gold .final-status-time b{ margin-left:6px; }
+
+  /* VICTORY / DEFEAT - gradient lettering with a soft glow like the editor's headings
+     (css/level_editor/editor.css .editor-panel > h2), green / red instead of gold */
+  .ge-title{
+    font:900 3.1rem/1.1 'Cinzel', Georgia, serif;
+    letter-spacing:4px; text-transform:uppercase;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+  /* VICTORY - a triumphant one: the letters jump up one by one with a little pop, a light
+     shine runs across the word every few seconds, gold glints twinkle around it, and the
+     glow keeps breathing. One span per letter (built in the script), like DEFEAT. */
+  .ge-victory{
+    position:relative;
+    background-image:none;
+    filter:drop-shadow(0 0 1px #052a10) drop-shadow(0 0 9px rgba(90,230,115,.6)) drop-shadow(0 3px 2px rgba(0,30,10,.95));
+    animation:geVictoryPulse 2.5s ease-in-out 1.2s infinite;
+  }
+  /* the game's victoryPulse animates `filter` (brightness) - it would drop the glow above,
+     so the same pulse with the glow kept in every frame */
+  @keyframes geVictoryPulse{
+    0%, 100%{ transform:scale(1); filter:drop-shadow(0 0 1px #052a10) drop-shadow(0 0 9px rgba(90,230,115,.6)) drop-shadow(0 3px 2px rgba(0,30,10,.95)) brightness(100%); }
+    50%{ transform:scale(1.03); filter:drop-shadow(0 0 1px #052a10) drop-shadow(0 0 14px rgba(90,230,115,.75)) drop-shadow(0 3px 2px rgba(0,30,10,.95)) brightness(125%); }
+  }
+  .ge-victory > .ge-l{
+    display:inline-block;
+    /* shine layer (a white streak, parked off to the left) over the green gradient */
+    background-image:
+      linear-gradient(105deg, transparent 38%, rgba(255,255,240,.95) 50%, transparent 62%),
+      linear-gradient(180deg, #f7ffe6 0%, #b8ff86 26%, #45d35a 60%, #127a37 100%);
+    background-size:300% 100%, 100% 100%;
+    background-position:100% 0, 0 0;
+    background-repeat:no-repeat;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    animation:
+      geLetterRise .7s cubic-bezier(.2,.9,.3,1.4) calc(var(--i) * .08s) both,
+      geShine 3.6s ease-in-out calc(1.1s + var(--i) * .07s) infinite;
+  }
+  @keyframes geLetterRise{
+    0%  { transform:translateY(28px) scale(.5); opacity:0; }
+    60% { transform:translateY(-8px) scale(1.15); opacity:1; }
+    100%{ transform:translateY(0) scale(1); opacity:1; }
+  }
+  /* the streak crosses each letter in turn (staggered delay), then waits for the next round */
+  @keyframes geShine{
+    0%      { background-position:100% 0, 0 0; }
+    28%, 100%{ background-position:0 0, 0 0; }
+  }
+  /* gold four-point glints around the word (same shape as the Gold Rush card glints) */
+  .ge-spark{
+    position:absolute; width:16px; height:16px; pointer-events:none;
+    transform:scale(0); opacity:0;
+    animation:geSpark 2.4s ease-in-out var(--d) infinite;
+  }
+  .ge-spark::before, .ge-spark::after{
+    content:""; position:absolute; left:50%; top:50%;
+    width:100%; height:2px; margin:-1px 0 0 -50%; border-radius:2px;
+    background:linear-gradient(90deg, transparent, #fff7d0, transparent);
+  }
+  .ge-spark::after{ transform:rotate(90deg); }
+  @keyframes geSpark{
+    0%, 55%, 100%{ transform:scale(0) rotate(0deg); opacity:0; }
+    72%          { transform:scale(1) rotate(45deg); opacity:1; }
+    88%          { transform:scale(.4) rotate(90deg); opacity:.6; }
+  }
+
+  /* DEFEAT - a sad one: the letters fall in one by one and land a little crooked, like
+     something toppling over, then the whole word keeps slowly sinking and dimming (a sigh).
+     Each letter is its own span (built in the script), so each carries the gradient itself. */
+  .ge-defeat{
+    filter:drop-shadow(0 0 1px #2a0503) drop-shadow(0 0 9px rgba(255,60,45,.5)) drop-shadow(0 3px 2px rgba(40,0,0,.95));
+    animation:geDefeatSigh 5s ease-in-out 1.8s infinite;
+  }
+  .ge-defeat > span{
+    display:inline-block;
+    background-image:linear-gradient(180deg, #ffe6dc 0%, #ff8f74 26%, #e5372b 60%, #6e0b08 100%);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    transform:translateY(var(--y)) rotate(var(--r));
+    animation:geLetterFall 1.1s cubic-bezier(.45,.05,.55,1) calc(var(--i) * .11s) both;
+  }
+  @keyframes geLetterFall{
+    0%  { transform:translateY(-34px) rotate(0deg); opacity:0; }
+    55% { opacity:1; }
+    /* hits the floor, a tiny bounce, then stays where it fell */
+    78% { transform:translateY(calc(var(--y) + 4px)) rotate(var(--r)); }
+    100%{ transform:translateY(var(--y)) rotate(var(--r)); opacity:1; }
+  }
+  @keyframes geDefeatSigh{
+    0%, 100%{ transform:translateY(0); opacity:1; }
+    50%     { transform:translateY(5px); opacity:.72; }
+  }
+
+  /* stat labels in the game's gold (#f0c674, like the headings / cl-primary), numbers stay white */
+  .ge-gold .final-status-grid > div{ color:#f0c674; }
+  .ge-gold .final-status-time b{ color:#fff; font-weight:normal; }
+  /* "You finished <map>" + difficulty / waves under the title */
+  .ge-finish{ margin:2px 0 4px; color:#e4dccb; font-size:1.05rem; }
+  .ge-map{ color:#f0c674; font-family:'Cinzel', Georgia, serif; text-shadow:0 0 10px rgba(240,198,116,.3), 0 1px 2px rgba(0,0,0,.7); }
+  .ge-sub{ margin:0 0 6px; color:#c9b48a; font-size:.9rem; }
+  /* counting numbers keep their width steady (digits all the same width) */
+  .ge-gold [data-count]{ font-variant-numeric:tabular-nums; }
+  /* Final Coins / Final Lives values have no .stats-detail (that one sets white itself) */
+  .ge-gold .final-status-grid > div > span{ color:#fff; }
+  /* card border + a faint glow in the same colour */
+  .final-status.ge-is-victory{ border-color:#3fbf4f !important; box-shadow:0 0 20px rgba(0,0,0,.5), 0 0 18px rgba(63,191,79,.25); }
+  .final-status.ge-is-defeat{ border-color:#e0352a !important; box-shadow:0 0 20px rgba(0,0,0,.5), 0 0 18px rgba(224,53,42,.25); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="geGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+    <linearGradient id="geFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient>
+    <linearGradient id="geRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
+  </defs>
+  <!-- Total Damage: two gold swords crossed (the Version History sword, turned +-45deg) -->
+  <symbol id="geIcoSwords" viewBox="0 0 24 24">
+    <g transform="rotate(-42 12 12) translate(1.2 .6) scale(.9)"><path fill="url(#geGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 1.5l2 2.5v10.5h-4V4z"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M6 14.5h12l-1 2H7z"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".7" d="M11 16.5h2V20h-2z"/><circle cx="12" cy="21" r="1.6" fill="url(#geGold)" stroke="#4a2c0c" stroke-width=".7"/></g>
+    <g transform="rotate(42 12 12) translate(1.2 .6) scale(.9)"><path fill="url(#geGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M12 1.5l2 2.5v10.5h-4V4z"/><path fill="none" stroke="#7a4a12" stroke-width=".9" d="M12 4v10"/><path fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M6 14.5h12l-1 2H7z"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".7" d="M11 16.5h2V20h-2z"/><circle cx="12" cy="21" r="1.6" fill="url(#geGold)" stroke="#4a2c0c" stroke-width=".7"/></g>
+  </symbol>
+  <!-- Kills: the Settings "Enemies" skull in gold -->
+  <symbol id="geIcoSkull" viewBox="0 0 24 24"><path fill="url(#geGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></symbol>
+  <!-- Towers Built: the Towers tab tower -->
+  <symbol id="geIcoTower" viewBox="0 0 24 24"><path fill="url(#geGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></symbol>
+  <!-- Towers Sold: the same tower, struck through -->
+  <symbol id="geIcoTowerSold" viewBox="0 0 24 24"><path fill="url(#geGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/><path fill="url(#geRed)" stroke="#4a0d08" stroke-width=".8" stroke-linejoin="round" d="M3.2 19.4 19.4 3.2l1.4 1.4L4.6 20.8z"/></symbol>
+  <!-- Abilities Used: the Abilities tab flame -->
+  <symbol id="geIcoFire" viewBox="0 0 24 24"><path fill="url(#geFire)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></symbol>
+  <!-- Time Elapsed: the Version History / top bar hourglass -->
+  <symbol id="geIcoClock" viewBox="0 0 24 24"><path fill="url(#geGold)" stroke="#4a2c0c" stroke-width=".8" d="M6 2h12v2h-1v2.5c0 2-1.4 3.6-3.3 5.5 1.9 1.9 3.3 3.5 3.3 5.5V20h1v2H6v-2h1v-2.5c0-2 1.4-3.6 3.3-5.5C8.4 10.1 7 8.5 7 6.5V4H6z"/><path fill="#7a4a12" d="M9 6.2h6c0 1-.9 2.2-3 4.1-2.1-1.9-3-3.1-3-4.1zM12 15.4c1.6 1.3 2.6 2.4 2.9 3.6H9.1c.3-1.2 1.3-2.3 2.9-3.6z"/></symbol>
+</svg>
+
+<h1>Game end - Victory / Defeat</h1>
+<p class="page-note">The table shown when the last wave is cleared (Victory) or the lives run out (Defeat). Static numbers. Hover a card (old Defeat, new Victory / Defeat) to replay its animation.</p>
+
+<h2 class="section-label">A) Current (Game.js + css/ui.css)</h2>
+<div class="ge-row" id="geOld"></div>
+
+<h2 class="section-label">B) New - gold icons + gold labels, map name, numbers counting up, brighter green / clearer red, sad falling DEFEAT</h2>
+<div class="ge-row" id="geNew"></div>
+
+<script>
+  // same numbers in both variants (formatted like the game: fr-FR -> spaces)
+  const fmt = n => Math.round(n || 0).toLocaleString('fr-FR');
+  const RUNS = {
+    V: { waves: 20, coins: 1840, lives: 3, dmg: 18764320, earned: 48210, kills: 1312, spent: 46370,
+         built: 37, sold: 6, abilities: 24, lost: 2, time: '27:41' },
+    D: { waves: 13, coins: 265, lives: 0, dmg: 4120870, earned: 9480, kills: 486, spent: 9215,
+         built: 19, sold: 3, abilities: 9, lost: 5, time: '12:08' }
+  };
+  // the map that was played (B shows it under the title) - games/012_adventureMap6.json
+  const MAP = { name: "Adventure Map VI (Crossroads of Realms)", difficulty: '⭐⭐⭐⭐⭐', waves: 20 };
+  const toSec = t => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
+  const mmss = sec => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+  // every icon sits in a small dark socket with a thin gold rim (same look as the Settings icons)
+  const geIco = id => `<i class="ge-socket"><svg class="ge-ico" aria-hidden="true"><use href="#${id}"/></svg></i>`;
+  const geEmoji = e => `<i class="ge-socket is-emoji">${e}</i>`;
+
+  // A) exactly Game.js's markup
+  function oldCard(status) {
+    const r = RUNS[status], win = status === 'V';
+    return `
+      <div class="overlay-content final-status${win ? '' : ' ge-replay'}" style="border-color: ${win ? '#1e7d32' : '#b51414'}">
+        <h2 class="${win ? 'victory-text' : 'defeat-text'}">${win ? 'VICTORY !' : 'DEFEAT !'}</h2>
+        <p>You survived ${r.waves} waves!</p>
+        <div class="stats-grid final-status-grid">
+          <div>🪙 Final Coins <span>${fmt(r.coins)}</span></div>
+          <div>❤️ Final Lives <span>${fmt(r.lives)}</span></div>
+          <div style="color: #ef4444;">⚔️ Total Damage <span class="stats-detail">${fmt(r.dmg)}</span></div>
+          <div style="color: #eab308;">🪙 Coins Earned <span class="stats-detail">${fmt(r.earned)}</span></div>
+          <div style="color: #fca5a5;">☠️ Kills <span class="stats-detail">${fmt(r.kills)}</span></div>
+          <div style="color: #fbbf24;">💰 Coins Spent <span class="stats-detail">${fmt(r.spent)}</span></div>
+          <div style="color: #60a5fa;">🔨 Towers Built <span class="stats-detail">${fmt(r.built)}</span></div>
+          <div style="color: #94a3b8;">⚖️ Towers Sold <span class="stats-detail">${fmt(r.sold)}</span></div>
+          <div style="color: #a855f7;">📜 Abilities Used <span class="stats-detail">${fmt(r.abilities)}</span></div>
+          <div style="color: #f87171;">💔 Life lost <span class="stats-detail">${fmt(r.lost)}</span></div>
+          <div class="final-status-time">⏱️ Time Elapsed: ${r.time}</div>
+        </div>
+        <div class="final-status-button-grid">
+          <button class="btn btn-primary">Restart</button>
+          <button class="btn btn-primary">Main Menu</button>
+        </div>
+      </div>`;
+  }
+
+  // DEFEAT as one span per letter - each falls with its own delay and lands a bit crooked
+  // (fixed values, so it lands the same way every time)
+  const FALL = [[-4, 2], [3, 0], [-2, 3], [6, 1], [-5, 4], [2, 2], [0, 0], [9, 6]]; // [rotate deg, drop px]
+  const defeatLetters = () => [...'Defeat !'].map((ch, i) =>
+    `<span style="--i:${i};--r:${FALL[i][0]}deg;--y:${FALL[i][1]}px">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+
+  // VICTORY: one span per letter (they jump up in turn) + a few glints around the word
+  const SPARKS = [['18%', '-4px', '1.4s'], ['27%', '62%', '2.1s'], ['72%', '-8px', '1.8s'], ['80%', '58%', '2.6s'], ['50%', '-14px', '3s']];
+  const victoryLetters = () => [...'Victory !'].map((ch, i) =>
+      `<span class="ge-l" style="--i:${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('')
+    + SPARKS.map(([left, top, d]) => `<span class="ge-spark" style="left:${left};top:${top};--d:${d}"></span>`).join('');
+
+  // B) same table - gold icons for the 6 stats, gold labels, gradient title, matching border
+  function newCard(status) {
+    const r = RUNS[status], win = status === 'V';
+    return `
+      <div class="overlay-content final-status ge-gold ge-replay ${win ? 'ge-is-victory' : 'ge-is-defeat'}">
+        <h2 class="ge-title ${win ? 'ge-victory' : 'ge-defeat'}" aria-label="${win ? 'Victory !' : 'Defeat !'}">${win ? victoryLetters() : defeatLetters()}</h2>
+        <p class="ge-finish">${win ? 'You finished' : 'You fell in'} <b class="ge-map">${MAP.name}</b></p>
+        <p class="ge-sub">${MAP.difficulty} · ${win ? `All ${MAP.waves} waves cleared` : `You survived ${r.waves} of ${MAP.waves} waves`}</p>
+        <div class="stats-grid final-status-grid">
+          <div>${geEmoji("🪙")}Final Coins <span data-count="${r.coins}">0</span></div>
+          <div>${geEmoji("❤️")}Final Lives <span data-count="${r.lives}">0</span></div>
+          <div>${geIco('geIcoSwords')}Total Damage <span class="stats-detail" data-count="${r.dmg}">0</span></div>
+          <div>${geEmoji("🪙")}Coins Earned <span class="stats-detail" data-count="${r.earned}">0</span></div>
+          <div>${geIco('geIcoSkull')}Kills <span class="stats-detail" data-count="${r.kills}">0</span></div>
+          <div>${geEmoji("💰")}Coins Spent <span class="stats-detail" data-count="${r.spent}">0</span></div>
+          <div>${geIco('geIcoTower')}Towers Built <span class="stats-detail" data-count="${r.built}">0</span></div>
+          <div>${geIco('geIcoTowerSold')}Towers Sold <span class="stats-detail" data-count="${r.sold}">0</span></div>
+          <div>${geIco('geIcoFire')}Abilities Used <span class="stats-detail" data-count="${r.abilities}">0</span></div>
+          <div>${geEmoji("💔")}Life lost <span class="stats-detail" data-count="${r.lost}">0</span></div>
+          <div class="final-status-time">${geIco('geIcoClock')}Time Elapsed: <b data-count="${toSec(r.time)}" data-format="time">00:00</b></div>
+        </div>
+        <div class="final-status-button-grid">
+          <button class="btn btn-primary">Restart</button>
+          <button class="btn btn-primary">Main Menu</button>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('geOld').innerHTML = oldCard('V') + oldCard('D');
+  document.getElementById('geNew').innerHTML = newCard('V') + newCard('D');
+
+  // B) the numbers count up from 0 - row after row (60 ms apart), ~0.8 s each, slowing down
+  // at the end (ease-out), so the big damage number "rolls" in and the small ones just tick up
+  function countUp(card) {
+    card.querySelectorAll('[data-count]').forEach((el, i) => {
+      const target = Number(el.dataset.count);
+      const show = v => { el.textContent = el.dataset.format === 'time' ? mmss(v) : fmt(v); };
+      const start = performance.now() + 250 + i * 60; // after the title has started
+      const DUR = 800;
+      cancelAnimationFrame(el._raf);
+      show(0);
+      const step = now => {
+        const t = Math.min(1, Math.max(0, (now - start) / DUR));
+        show(Math.round(target * (1 - Math.pow(1 - t, 3))));
+        if (t < 1) el._raf = requestAnimationFrame(step);
+      };
+      el._raf = requestAnimationFrame(step);
+    });
+  }
+  document.querySelectorAll('#geNew .final-status').forEach(countUp);
+
+  // the animations only run once (like in the game) - hovering a card replays them
+  // (old Defeat: the shake; new: the letters + the count-up)
+  document.querySelectorAll('.ge-replay').forEach(card => card.addEventListener('mouseenter', () => {
+    const title = card.querySelector('.ge-title, .defeat-text');
+    const parts = [title, ...title.children];
+    parts.forEach(el => { el.style.animation = 'none'; });
+    void title.offsetWidth;
+    parts.forEach(el => { el.style.animation = ''; });
+    if (card.closest('#geNew')) countUp(card);
+  }));
+</script>
   </template>
 
   <script>
