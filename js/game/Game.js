@@ -522,21 +522,30 @@ export default class Game {
         return value.toLocaleString('fr-FR'); 
     };
 
-    // 1. Declare variables OUTSIDE the if/else so they are accessible later
-    let mainText = "";
-    let titleClass = "";
-    let color = "";
-    let subText = `You survived ${this.currentLevelIndex} waves!`;
+    // 1. Victory / Defeat look (css/ui.css .end-*, mockup: dev/Graphics_1.1.html "Game end")
+    const win = status === 'V';
+    // map name / difficulty come from the JSON (also user uploads) -> escaped
+    const esc = (str) => String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+    const mapName = esc(this.levelData?.name || 'Unknown Map');
+    const difficulty = esc(this.levelData?.description?.[0]?.difficulty || '');
+    const totalWaves = this.levelData?.levels?.length || 0;
+    const wavesText = win ? `All ${totalWaves} waves cleared` : `You survived ${this.currentLevelIndex} of ${totalWaves} waves`;
 
-    if (status === 'V') {
-        mainText = "VICTORY !";
-        titleClass= "victory-text";
-        color = "#1e7d32";
-    } else {
-        mainText = "DEFEAT !";
-        titleClass= "defeat-text";
-        color = "#b51414";
-    }
+    // Title: one span per letter. Victory - they jump up in turn (+ a few glints around);
+    // Defeat - they fall in and land a bit crooked ([rotate deg, drop px] fixed, same every time).
+    const letters = (word, extra) => [...word].map((ch, i) =>
+        `<span class="end-l" style="--i:${i};${extra ? extra(i) : ''}">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+    const FALL = [[-4, 2], [3, 0], [-2, 3], [6, 1], [-5, 4], [2, 2], [0, 0], [9, 6]];
+    const SPARKS = [['18%', '-4px', '1.4s'], ['27%', '62%', '2.1s'], ['72%', '-8px', '1.8s'], ['80%', '58%', '2.6s'], ['50%', '-14px', '3s']];
+    const titleHtml = win
+        ? letters('Victory !') + SPARKS.map(([left, top, d]) => `<span class="end-spark" style="left:${left};top:${top};--d:${d}"></span>`).join('')
+        : letters('Defeat !', i => `--r:${FALL[i][0]}deg;--y:${FALL[i][1]}px`);
+
+    // gold icon / emoji in a small socket in front of each stat label
+    const ico = (id) => `<i class="end-socket"><svg class="end-ico" aria-hidden="true"><use href="#${id}"/></svg></i>`;
+    const emoji = (e) => `<i class="end-socket is-emoji">${e}</i>`;
+    // values start at 0 and count up (see countUp below)
+    const val = (n, cls = 'stats-detail') => `<span class="${cls}" data-count="${Math.round(n || 0)}">0</span>`;
 
     // 2. Find or create an overlay element
     let overlay = document.getElementById('gameEndOverlay');
@@ -547,38 +556,35 @@ export default class Game {
         document.body.appendChild(overlay);
     }
 
-    // 2.5 Show total time in stats
+    // 2.5 Show total time in stats (mm:ss, counts up like the other numbers)
     const totalSeconds = Math.floor(this.elapsedTime / 1000);
-    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-    const s = (totalSeconds % 60).toString().padStart(2, '0');
-    const timeString = `${m}:${s}`;
+    const toTime = (sec) => `${Math.floor(sec / 60).toString().padStart(2, '0')}:${(sec % 60).toString().padStart(2, '0')}`;
 
     if (this.stats.lifeLost < 0) this.stats.lifeLost = 0; // Ensure no negative life lost due to overkill
 
-    // 3. Set content (Notice we use the variables defined above)
+    // 3. Set content
     overlay.innerHTML = `
-        <div class="overlay-content final-status" style="border-color: ${color}">
-            <h2 class="${titleClass}">${mainText}</h2>
-            <p>${subText}</p>
+        <div class="overlay-content final-status end-card ${win ? 'end-is-victory' : 'end-is-defeat'}">
+            <h2 class="end-title ${win ? 'end-victory' : 'end-defeat'}" aria-label="${win ? 'Victory !' : 'Defeat !'}">${titleHtml}</h2>
+            <p class="end-finish">${win ? 'You protected the Trees of Life in' : 'You failed to protect the Trees of Life in'} <b class="end-map">${mapName}</b></p>
+            <p class="end-sub">${difficulty ? `${difficulty} · ` : ''}${wavesText}</p>
             <div class="stats-grid final-status-grid">
-              <div>🪙 Final Coins <span>${fmt(this.playerCoins)}</span></div>
-              <div>❤️ Final Lives <span>${fmt(this.playerLifes)}</span></div>
+              <div>${emoji('🪙')}Final Coins ${val(this.playerCoins, '')}</div>
+              <div>${emoji('❤️')}Final Lives ${val(this.playerLifes, '')}</div>
 
-              <div style="color: #ef4444;">⚔️ Total Damage <span class="stats-detail">${fmt(this.stats.damageDealt)}</span></div>
-              <div style="color: #eab308;">🪙 Coins Earned <span class="stats-detail">${fmt(this.stats.goldEarned)}</span></div>
+              <div>${ico('endIcoSwords')}Total Damage ${val(this.stats.damageDealt)}</div>
+              <div>${emoji('🪙')}Coins Earned ${val(this.stats.goldEarned)}</div>
 
-              <div style="color: #fca5a5;">☠️ Kills <span class="stats-detail">${fmt(this.stats.enemiesKilled)}</span></div>
-              <div style="color: #fbbf24;">💰 Coins Spent <span class="stats-detail">${fmt(this.stats.goldSpent)}</span></div>
+              <div>${ico('endIcoSkull')}Kills ${val(this.stats.enemiesKilled)}</div>
+              <div>${emoji('💰')}Coins Spent ${val(this.stats.goldSpent)}</div>
 
-              <div style="color: #60a5fa;">🔨 Towers Built <span class="stats-detail">${fmt(this.stats.towersBuilt)}</span></div>
-              <div style="color: #94a3b8;">⚖️ Towers Sold <span class="stats-detail">${fmt(this.stats.towersSold)}</span></div>
+              <div>${ico('vhIcoTowers')}Towers Built ${val(this.stats.towersBuilt)}</div>
+              <div>${ico('endIcoTowerSold')}Towers Sold ${val(this.stats.towersSold)}</div>
 
-              <div style="color: #a855f7;">📜 Abilities Used <span class="stats-detail">${fmt(this.stats.abilitiesUsed)}</span></div>
-              <div style="color: #f87171;">💔 Life lost <span class="stats-detail">${fmt(this.stats.lifeLost)}</span></div>
-              
-              <div class="final-status-time">
-                  ⏱️ Time Elapsed: ${timeString}
-              </div>
+              <div>${ico('vhIcoAbilities')}Abilities Used ${val(this.stats.abilitiesUsed)}</div>
+              <div>${emoji('💔')}Life lost ${val(this.stats.lifeLost)}</div>
+
+              <div class="final-status-time">${ico('vhIcoClock')}Time Elapsed: <b data-count="${totalSeconds}" data-format="time">00:00</b></div>
             </div>
                 <div class="final-status-button-grid">
                     <button id="btnRestartFromEnd" class="btn btn-primary">Restart</button>
@@ -588,6 +594,21 @@ export default class Game {
     `;
 
     overlay.classList.remove('d-none');
+
+    // 3.5 The numbers count up from 0 - row after row (60 ms apart), ~0.8 s each, slowing down
+    // at the end, so the big damage number "rolls" in and the small ones just tick up
+    overlay.querySelectorAll('[data-count]').forEach((el, i) => {
+        const target = Number(el.dataset.count);
+        const show = (v) => { el.textContent = el.dataset.format === 'time' ? toTime(v) : fmt(v); };
+        const start = performance.now() + 250 + i * 60; // after the title has started
+        const DURATION = 800;
+        const step = (now) => {
+            const t = Math.min(1, Math.max(0, (now - start) / DURATION));
+            show(Math.round(target * (1 - Math.pow(1 - t, 3))));
+            if (t < 1 && el.isConnected) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    });
 
     // 4. Button Logic
     // Main Menu

@@ -2039,7 +2039,7 @@
   </div>
 
   <div class="bar-section">
-    <h2 class="section-label">Game end — Victory / Defeat table, old vs new (game: js/game/Game.js showGameEnd, css/ui.css)</h2>
+    <h2 class="section-label">Game end — Victory / Defeat table, old vs new (new is now in the game: js/game/Game.js showFinalScoreOverlay, css/ui.css)</h2>
     <iframe class="mock-frame" data-template="tplGameEnd" data-autoheight title="Game end mockup"></iframe>
   </div>
 
@@ -6367,7 +6367,7 @@ fetch('../versions.json', { cache: 'no-cache' })
   /* stat labels in the game's gold (#f0c674, like the headings / cl-primary), numbers stay white */
   .ge-gold .final-status-grid > div{ color:#f0c674; }
   .ge-gold .final-status-time b{ color:#fff; font-weight:normal; }
-  /* "You finished <map>" + difficulty / waves under the title */
+  /* "You protected / failed to protect the Trees of Life in <map>" + difficulty / waves under the title */
   .ge-finish{ margin:2px 0 4px; color:#e4dccb; font-size:1.05rem; }
   .ge-map{ color:#f0c674; font-family:'Cinzel', Georgia, serif; text-shadow:0 0 10px rgba(240,198,116,.3), 0 1px 2px rgba(0,0,0,.7); }
   .ge-sub{ margin:0 0 6px; color:#c9b48a; font-size:.9rem; }
@@ -6409,7 +6409,7 @@ fetch('../versions.json', { cache: 'no-cache' })
 <h2 class="section-label">A) Current (Game.js + css/ui.css)</h2>
 <div class="ge-row" id="geOld"></div>
 
-<h2 class="section-label">B) New - gold icons + gold labels, map name, numbers counting up, brighter green / clearer red, sad falling DEFEAT</h2>
+<h2 class="section-label">B) New (now in the game: Game.js showFinalScoreOverlay, css/ui.css .end-*) - gold icons + gold labels, map name, numbers counting up, brighter green / clearer red, sad falling DEFEAT</h2>
 <div class="ge-row" id="geNew"></div>
 
 <script>
@@ -6474,7 +6474,7 @@ fetch('../versions.json', { cache: 'no-cache' })
     return `
       <div class="overlay-content final-status ge-gold ge-replay ${win ? 'ge-is-victory' : 'ge-is-defeat'}">
         <h2 class="ge-title ${win ? 'ge-victory' : 'ge-defeat'}" aria-label="${win ? 'Victory !' : 'Defeat !'}">${win ? victoryLetters() : defeatLetters()}</h2>
-        <p class="ge-finish">${win ? 'You finished' : 'You fell in'} <b class="ge-map">${MAP.name}</b></p>
+        <p class="ge-finish">${win ? 'You protected the Trees of Life in' : 'You failed to protect the Trees of Life in'} <b class="ge-map">${MAP.name}</b></p>
         <p class="ge-sub">${MAP.difficulty} · ${win ? `All ${MAP.waves} waves cleared` : `You survived ${r.waves} of ${MAP.waves} waves`}</p>
         <div class="stats-grid final-status-grid">
           <div>${geEmoji("🪙")}Final Coins <span data-count="${r.coins}">0</span></div>
