@@ -759,6 +759,7 @@
                     <li><strong>X / Y</strong> v zarámovaném boxu - zlatá písmena, čísla v tmavých políčkách.</li>
                     <li><strong>Výběr dlaždic přímo v mapě</strong> - lišta dlaždic leží v canvasu u jeho spodního okraje na poloprůhledném tmavém pozadí rgba(0,0,0,.3) (popisky se stínem, aby byly čitelné, názvy skupin Terrains / Paths / Map Objects zlatě), posouvá se do strany kolečkem / touchpadem bez viditelného scrollbaru, prázdná místa propouštějí myš do mapy.</li>
                     <li><strong>Vyhledávání a Filters</strong> (Terrains / Paths / Map Objects) hned pod mapou, mimo canvas. Tooltipy z „i“ jsou nad lištou dlaždic.</li>
+                    <li><strong>Posun mapy níž</strong> - mapu jde posunout o výšku lišty dlaždic níž, aby spodní řádky nezůstaly schované pod lištou (jen v editoru, hra beze změny).</li>
                     <li><strong>„Drawing is disabled for Start and End“</strong> už není text pod mapou, je v tooltipu „i“ u vyhledávání dlaždic.</li>
                 </ul>
                 <h3>Tlačítka v Menu</h3>
@@ -1736,5 +1737,53 @@
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
     <script type="module" src="js/level_editor/TooltipController.js"></script>
+    <!-- dev: the map can be panned a bit lower, by the tile strip's height, so its bottom rows
+         don't stay hidden under the strip (only in this editor, the game is untouched).
+         editor_map.js clamps the camera to the canvas; its camera object (exposed as
+         window._editorMapDebug.camera) gets a y setter that applies the same clamp with the
+         strip's height added, and ignores the shared clamp re-assigning its own (narrower) result. -->
+    <script type="module">
+        import { currentLevelData } from './js/level_editor/level_data.js';
+        const TILE = 60; // editor_map.js TILE_SIZE
+        const canvas = document.getElementById('mapCanvas');
+        const dock = document.getElementById('devTileDock');
+
+        const hook = (cam) => {
+            if (!cam || cam.__devExtraPan) return;
+            Object.defineProperty(cam, '__devExtraPan', { value: true });
+            let y = cam.y;
+            const bounds = () => {
+                const rows = currentLevelData?.maps?.[0]?.layout?.length || 0;
+                const H = canvas.height;
+                const rect = canvas.getBoundingClientRect();
+                const extra = dock && rect.height ? dock.offsetHeight * (H / rect.height) : 0;
+                return { H, mapH: rows * TILE * cam.zoom, extra, ok: rows > 0 && H > 0 };
+            };
+            const shared = (s, b) => b.mapH <= b.H ? (b.H - b.mapH) / 2 : Math.min(0, Math.max(b.H - b.mapH, s));
+            const ours = (s, b) => {
+                const room = b.H - b.extra;
+                return b.mapH <= room ? (room - b.mapH) / 2 : Math.min(0, Math.max(room - b.mapH, s));
+            };
+            Object.defineProperty(cam, 'y', {
+                configurable: true, enumerable: true,
+                get: () => y,
+                set: (v) => {
+                    const b = bounds();
+                    if (!b.ok) { y = v; return; }
+                    // the shared clampCamera() writing back its own result for our value -> keep ours
+                    if (Math.abs(v - shared(y, b)) < 0.01) { y = ours(y, b); return; }
+                    y = ours(v, b);
+                }
+            });
+            cam.y = y;
+            window.app?.mapEditor?.renderMap?.();
+        };
+
+        const wait = () => {
+            const cam = window._editorMapDebug?.camera;
+            if (cam) hook(cam); else requestAnimationFrame(wait);
+        };
+        wait();
+    </script>
 </body>
 </html>
