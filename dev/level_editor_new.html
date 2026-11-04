@@ -112,8 +112,60 @@
         #tileDrawingPanel .editor-key-container{ margin-top:0; }
 
         /* --- Map: Search tile + Filters on one row --- */
-        #tileKey .tile-editor-header{ flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px 18px; }
-        #tileKey .tile-key-filters{ padding:0; }
+        #tileKey .tile-editor-header,
+        .dev-tile-header-slot .tile-editor-header{ flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px 18px; }
+        #tileKey .tile-key-filters,
+        .dev-tile-header-slot .tile-key-filters{ padding:0; }
+        /* search + filters right under the map (moved out of #tileKey after every render, see script) */
+        .dev-tile-header-slot{ margin:10px 0 4px; }
+        .dev-tile-header-slot .tile-editor-header{ margin:0; }
+
+        /* --- Map: the tile picker lies INSIDE the map, along its bottom edge, on a transparent
+               background; the selected tile (a copy) stands at its right end. #tileKey itself sits
+               in the dock (editor_map.js only ever looks it up by id), its header is moved out. --- */
+        .dev-tile-dock{
+            position:absolute; left:0; right:0; bottom:0;
+            z-index:1001; /* over the canvas (editor.css #mapCanvas z-index:1000) */
+            display:flex; align-items:flex-end; gap:10px;
+            padding:6px 10px 8px; box-sizing:border-box;
+            background:rgba(0, 0, 0, 0.3);
+            pointer-events:none; /* the empty parts let the mouse through to the map */
+        }
+        .dev-tile-dock > #tileKey{
+            flex:1 1 auto; min-width:0; width:auto; max-width:none;
+            margin:0; padding:0; background:transparent; display:block;
+        }
+        .dev-tile-dock .tile-slider-wrapper{ width:100%; max-width:100%; min-width:0; margin:0; overflow:hidden; }
+        .dev-tile-dock .tile-grid-main{
+            background:transparent; margin:0; padding:2px 2px 4px; min-width:0; max-width:100%; box-sizing:border-box;
+            pointer-events:auto; /* tiles, wheel scroll, scrollbar */
+        }
+        /* readable over any map / sky */
+        .dev-tile-dock .tile-group-label,
+        .dev-tile-dock .tile-label{ text-shadow:0 1px 2px #000, 0 0 6px rgba(0,0,0,.9); }
+        .dev-tile-dock .tile-selector-btn{ box-shadow:0 2px 6px rgba(0,0,0,.55); }
+        .dev-current-wrap{
+            order:-2; flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-start;
+            padding:2px 0 4px;
+        }
+        #tileDrawingPanel .tile-object-count{ margin-top:6px; }
+        .dev-current-wrap > .current-tile-display{
+            pointer-events:auto;
+            box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 0 12px rgba(240,198,116,.55), 0 3px 8px rgba(0,0,0,.6);
+        }
+        /* the "i" tooltips (TooltipController, inline z-index:1000) above the tile strip */
+        #dynamic-tooltip{ z-index:2000 !important; }
+        /* gold line between the selected tile (left) and the rest */
+        .dev-tile-dock::before{
+            content:''; order:-1; flex:0 0 2px; align-self:stretch;
+            margin:4px 0; border-radius:1px;
+            background:#f0c674;
+        }
+        /* group names (Terrains / Paths / Map Objects) in our gold */
+        .dev-tile-dock .tile-group-label{ color:#f0c674; opacity:1; }
+        /* no scrollbar - the strip still scrolls (wheel, touchpad) */
+        .dev-tile-dock .tile-grid-main{ scrollbar-width:none; -ms-overflow-style:none; }
+        .dev-tile-dock .tile-grid-main::-webkit-scrollbar{ display:none; width:0; height:0; }
 
         /* --- Waves: Enemy Types List scrolls sideways in one row, like Extra Life's Price Progression --- */
         #enemyTypesTagsContainer{
@@ -149,14 +201,10 @@
         #tileDrawingPanel .tile-slider-wrapper{ max-width:100%; width:100%; min-width:0; overflow:hidden; }
         #tileDrawingPanel .tile-grid-main{ min-width:0; max-width:100%; box-sizing:border-box; }
         .tileDrawingTiles{ text-align:center; }
-        /* tiles first, search + filters under them (editor_map.js renders the header first) */
-        #tileKey{ display:flex; flex-direction:column; }
-        #tileKey .tile-slider-wrapper{ order:-1; margin-bottom:10px; }
-        #tileKey .tile-grid-main{ margin-top:0; }
 
         /* --- Map: "Selected" tile as the same 70px square as the tiles in the picker
                (map.css .tile-item / .tile-selector-btn), gold border = the chosen one --- */
-        #tileDrawingPanel .current-tile-display{
+        .dev-current-wrap > .current-tile-display{
             flex:0 0 auto;
             display:flex; align-items:center; justify-content:center;
             width:70px; min-width:70px; height:70px; box-sizing:border-box;
@@ -181,12 +229,12 @@
             width:50px; padding:4px; border-radius:4px; border:1px solid #ccc;
         }
 
-        /* "Selected:" + tile + X / Y moved from the tile header into the Brush row - the editor
-           re-renders that header on every hover, so the originals stay there hidden and the
-           Brush row shows mirrors of them (script at the bottom) */
-        #tileKey .tile-editor-header-row > strong:first-child,
-        #tileKey #currentTileDisplay,
-        #tileKey #tileCoordinates{ display:none; }
+        /* "Selected:" + tile + X / Y moved out of the tile header - the editor re-renders that header
+           on every hover, so the originals stay in it hidden and mirrors show them: the selected tile
+           at the right end of the tile dock, X / Y in the Brush row (script at the bottom) */
+        .tile-editor-header-row > strong:first-child,
+        .tile-editor-header #currentTileDisplay,
+        .tile-editor-header #tileCoordinates{ display:none; }
 
         /* X / Y of the hovered tile - framed like the Settings panels, gold dark sockets for the numbers */
         .dev-coords{
@@ -308,6 +356,8 @@
 
         /* Shake Effects / Custom Damage cards - spacing between them and the Enemy Types List card */
         .dev-wave-card{ margin-top:16px; }
+        /* Enemy Types List: the description sits inside the card, under the add-a-type row */
+        .dev-types-note{ margin:10px 0 0; font-size:14px; color:#c9b48a; text-align:center; }
         .dev-wave-card h3{ margin-top:0; }
         /* the card is the frame now - the rows inside lose their own (wave.css .effect-row) */
         .dev-wave-card .effect-row{ border:0; background:transparent; padding:4px 0; }
@@ -704,11 +754,12 @@
                     <li><strong>Bez horního marginu</strong> u boxů Brush a dlaždic (.editor-key-container).</li>
                     <li><strong>Vyhledávání a Filters</strong> na jednom řádku.</li>
                     <li><strong>Map Style a Graphics</strong> přesunuté do Menu nad tlačítko Map (s nadpisy, kratší názvy možností).</li>
-                    <li><strong>Řádek Brush nad dlaždicemi</strong> - vybraná dlaždice, „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
-                    <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem. Slovo „Selected:“ odstraněno.</li>
+                    <li><strong>Řádek Brush</strong> - „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
+                    <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem a září, úplně vlevo v liště dlaždic, od ostatních oddělená zlatou čárou, nad ní nadpis „Selected“ ve stylu Terrains / Paths / Map Objects. Slovo „Selected:“ odstraněno.</li>
                     <li><strong>X / Y</strong> v zarámovaném boxu - zlatá písmena, čísla v tmavých políčkách.</li>
-                    <li><strong>Výběr dlaždic</strong> přes celou šířku karty, už nepřetéká z divu (posouvá se do strany uvnitř).</li>
-                    <li><strong>Dlaždice nahoře</strong>, vyhledávání a filtry (Terrains / Paths / Map Objects) pod nimi.</li>
+                    <li><strong>Výběr dlaždic přímo v mapě</strong> - lišta dlaždic leží v canvasu u jeho spodního okraje na poloprůhledném tmavém pozadí rgba(0,0,0,.3) (popisky se stínem, aby byly čitelné, názvy skupin Terrains / Paths / Map Objects zlatě), posouvá se do strany kolečkem / touchpadem bez viditelného scrollbaru, prázdná místa propouštějí myš do mapy.</li>
+                    <li><strong>Vyhledávání a Filters</strong> (Terrains / Paths / Map Objects) hned pod mapou, mimo canvas. Tooltipy z „i“ jsou nad lištou dlaždic.</li>
+                    <li><strong>„Drawing is disabled for Start and End“</strong> už není text pod mapou, je v tooltipu „i“ u vyhledávání dlaždic.</li>
                 </ul>
                 <h3>Tlačítka v Menu</h3>
                 <ul>
@@ -746,7 +797,7 @@
                 <ul>
                     <li><strong>Skupiny nepřátel</strong> - přesun / Copy / Delete v jedné řadě, stejně velké a na středu (Copy předtím uskakovalo).</li>
                     <li><strong>Shake Effects / Custom Damage</strong> - Delete stejně vysoké jako políčka a v jedné řadě s nimi.</li>
-                    <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression.</li>
+                    <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression. Popis typů je uvnitř jeho hnědého rámu hned pod přidáním typu.</li>
                     <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
                 </ul>
                 <h3>Selecty</h3>
@@ -893,12 +944,24 @@
                 <div id="mapCanvasContainer" class="map-canvas-container">
                     <canvas id="mapCanvas"></canvas>
                     <div id="cloudsLayer" class="cloudsLayer"></div>
+                    <!-- dev: the tile picker inside the map along its bottom edge + the selected tile
+                         (a mirror of the editor's #currentTileDisplay, see the script at the bottom) on the right -->
+                    <div id="devTileDock" class="dev-tile-dock">
+                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
+                        <div class="dev-current-wrap">
+                            <div class="tile-group-label">Selected</div>
+                            <span id="devCurrentTile" class="current-tile-display" title="Selected tile"></span>
+                        </div>
+                    </div>
                 </div>
                 <div id="tileDrawingPanel" class="tileDrawingPanel">
+                    <div class="tileDrawingTiles">
+                        <!-- dev: Search tile + Filters, moved here out of #tileKey after every render -->
+                        <div id="devTileHeaderSlot" class="dev-tile-header-slot"></div>
+                        <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
+                    </div>
                     <div class="tileDrawingBrushItems">
                         <div class="control-group brush-key-container editor-key-container mt-0">
-                            <!-- mirror of the editor's #currentTileDisplay (see the script at the bottom) -->
-                            <span id="devCurrentTile" class="current-tile-display" title="Selected tile"></span>
                             <div class="brush-settings-head">
                                 <strong>Brush</strong>
                                 <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" title="Brush size"
@@ -921,11 +984,6 @@
                                 <span class="dev-coord"><b>Y</b><span id="devCoordY">-</span></span>
                             </div>
                         </div>
-                    </div>
-                    <div class="tileDrawingTiles">
-                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
-                        <div class="w-100 tile-drawing-descripton"><small>(Drawing is disabled for Start and End)</small></div>
-                        <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
                     </div>
                 </div>
                 </div>
@@ -1029,9 +1087,10 @@
                             <input type="text" id="newEnemyTypeInput" placeholder="New enemy type (e.g. super-tank)" class="input-medium" />
                             <button id="add-enemy-type-button" class="btn btn-green">+ Add New enemy Type</button>
                         </div>
+                        <!-- dev: the description inside the brown card, right under adding a type -->
+                        <p class="enemyTypesEditorDescription dev-types-note">Manage the enemy types available for selection in the Wave Editor, Enemy Shake Effects and Custom Damage sections. Enemies can have different effects depending on their type.</p>
                     </div>
 
-                    <p class="enemyTypesEditorDescription">Manage the enemy types available for selection in the Wave Editor, Enemy Shake Effects and Custom Damage sections. Enemies can have different effects depending on their type.</p>
                     <!-- dev: same brown card as the Enemy Types List above -->
                     <div class="enemy-types-list-card dev-wave-card">
                         <h3>Enemy Shake Effects</h3>
@@ -1362,7 +1421,42 @@
                 coordX.textContent = m ? m[1].trim() || '-' : '-';
                 coordY.textContent = m ? m[2].trim() || '-' : '-';
             };
-            new MutationObserver(copy).observe(tileKey, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+            // the tile picker (#tileKey) lies in the map now - its header (Search tile + Filters) goes
+            // right under the map. Every render of #tileKey brings a fresh header, which replaces
+            // the old one in the slot (before the browser paints, so nothing flickers)
+            const slot = document.getElementById('devTileHeaderSlot');
+            // "(Drawing is disabled for Start and End)" lives in the tile legend's "i" tooltip
+            // (shared JSON text + the note) instead of a text line under the map
+            const LEGEND_NOTE = 'Drawing is disabled for Start and End.';
+            let legendText = null;
+            fetch('js/level_editor/dataEditorDescription.json')
+                .then(r => r.json())
+                .then(d => { legendText = (d?.['map-editor']?.['tile-legend']?.description || '') + '<br><br>' + LEGEND_NOTE; moveHeader(); })
+                .catch(() => { legendText = LEGEND_NOTE; moveHeader(); });
+            const moveHeader = () => {
+                const header = tileKey.querySelector(':scope > .tile-editor-header');
+                if (header && slot) slot.replaceChildren(header);
+                const ico = slot?.querySelector('.info-icon[data-tooltip="map-editor.tile-legend"]');
+                if (ico && legendText !== null) {
+                    ico.removeAttribute('data-tooltip');
+                    ico.setAttribute('data-tooltip-text', legendText);
+                }
+            };
+            new MutationObserver(moveHeader).observe(tileKey, { childList: true });
+            moveHeader();
+
+            // the dock is inside #mapCanvasContainer, which pans (mousedown) and zooms (wheel) the map -
+            // a click on a tile / the wheel over the tile row must not reach it. Only the tiles and the
+            // selected tile catch the mouse (CSS pointer-events), the rest of the dock lets it through.
+            // (mouseup is let through on purpose, so a map drag released over the row still ends.)
+            const dock = document.getElementById('devTileDock');
+            ['mousedown', 'wheel', 'dblclick'].forEach(type =>
+                dock?.addEventListener(type, e => e.stopPropagation()));
+
+            const watch = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] };
+            const mirror = new MutationObserver(copy);
+            mirror.observe(tileKey, watch);
+            if (slot) mirror.observe(slot, watch); // the hidden originals travel there with the header
             copy();
         });
     </script>
