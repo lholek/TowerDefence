@@ -25,7 +25,7 @@ X[Log-1..2]      - cant build towers, doesnt block arrows or tower vision
 X[Well]          - cant build towers, blocks tower vision, doesnt block arrows
 X[Bush]          - cant build towers, doesnt block arrows
 W[Rock-1..4]     - cant build towers, blocks arrows
-X[Dirt]          - can build towers, doesnt block arrows
+X[Dirt]          - cant build towers, doesnt block arrows (Farm Land)
 X[Hay]           - cant build towers, doesnt block arrows
 X[CutTree]       - cant build towers, doesnt block arrows
 SNW[CutTree]     - cant build towers, doesnt block arrows
@@ -4230,8 +4230,7 @@ function _drawBush(ctx, x, y, quality) {
 _drawDirt / _drawDirtLow
 Tiles: X[Dirt]
 Graphics: High / Low quality
-Plain tilled brown soil. Can build towers, doesn't block arrows — just a ground reskin
-(unlike Ice/Lava/Holy/Burned Ground, which are all special non-buildable surfaces).
+Plain tilled brown soil (Farm Land). Can't build towers, doesn't block arrows.
 Also used as the base layer under X[Hay] (see _drawHayField below).
 */
 function _drawDirt(ctx, x, y) {

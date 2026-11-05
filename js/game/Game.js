@@ -1065,9 +1065,10 @@ export default class Game {
       const center = this.map.tileToWorld(col, row);
 
       if (isPlacingTower && !isPlacingAbility) {
-          // TOWER MODE: Green on Grass, Snow, and Sand
-          const isBuildableTerrain = (status === 'X' || status === 'SNW' || status === 'SND');
-          if (isBuildableTerrain && !hasTower) {
+          // TOWER MODE: same rule as placing (Map.isBuildableTile) - Grass, Snow and Sand -
+          // so the preview and the click can never disagree again (Farm Land was red here
+          // but could still be built on)
+          if (this.map.isBuildableTile(col, row) && !hasTower) {
               color = 'rgba(0,0,0,0)'; // GREEN
           }
 

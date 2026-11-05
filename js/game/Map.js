@@ -680,6 +680,7 @@ export default class Map {
         'SNW[SPIKE-1]', 'SNW[SPIKE-2]', 'SNW[SPIKE-3]', 'SNW[SPIKE-4]',
         'W[Rock-1]', 'W[Rock-2]', 'W[Rock-3]', 'W[Rock-4]',
         'X[Tree]', 'SNW[Tree]', 'X[Log-1]', 'X[Log-2]', 'X[Well]', 'X[Bush]', 'X[Hay]',
+        'X[Dirt]', // Farm Land
         'X[CutTree]', 'SNW[CutTree]',
       ];
 

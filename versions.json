@@ -142,7 +142,8 @@
         {
           "<b>Bugs</b>": [
             "Fixed bug - on Low graphics the Trees of Life sometimes had green leaves instead of golden ones",
-            "Fixed bug - after a map was updated, the browser could keep loading its old cached version (e.g. old starting coins) - maps are now always checked for changes when loaded"
+            "Fixed bug - after a map was updated, the browser could keep loading its old cached version (e.g. old starting coins) - maps are now always checked for changes when loaded",
+            "Fixed bug - towers could be built on Farm Land even though the placement preview showed it in red"
           ]
         },
         "FINAL TODO: Editor - Integrate the dev version of the editor into the main game",
