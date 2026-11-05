@@ -437,6 +437,24 @@
         /* --- Whole editor: side frames ~20% thinner (editor.css: container 30px, panel 1rem,
                Map Settings box 15px, map card 12px) --- */
         .editor-container{ padding-left:24px; padding-right:24px; }
+
+        /* --- Sections: no big frame around everything and no <hr> lines between the parts -
+               the title, every panel (Map, Map Settings, Towers, Waves, Abilities) and Final JSON
+               are each their own rounded box, same colour / corners as the old frame.
+               (The <hr>s stay in the HTML - the Menu buttons show / hide them with their panel.) --- */
+        /* .box (editor.css) also draws a 1px #333 border - that was the line joining the boxes */
+        .editor-container.box{ background:transparent; padding:0 !important; box-shadow:none; border:0; }
+        .editor-panels-container > hr{ display:none !important; }
+        .dev-section,
+        .editor-panels-container > .editor-panel{
+            background:var(--main-bg-color);
+            border-radius:12px;
+            padding:18px 20px;
+            box-shadow:0 8px 20px rgba(0,0,0,.35);
+        }
+        .dev-section-head{ padding-top:14px; padding-bottom:14px; }
+        .editor-panels-container > .editor-panel,
+        .editor-panels-container + .dev-section{ margin-top:16px; }
         .editor-panel{ padding-left:.8rem; padding-right:.8rem; }
         .editor-description{ padding-left:12px; padding-right:12px; }
         .map-editor-card{ padding-left:10px; padding-right:10px; }
@@ -550,6 +568,8 @@
         .btn-delete[data-dev-ico]{ display:inline-flex; align-items:center; justify-content:center; }
         .btn-copy[data-dev-ico] svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
         .btn-delete[data-dev-ico] .dev-btn-ico{ width:14px; height:14px; }
+        /* enemy groups in the wave columns: a little space around each card */
+        .enemy-card{ margin:0.5rem; }
         /* enemy groups in the wave columns: drag / copy / delete in one line, all the same size
            (inline, the icon buttons sat on a different baseline than the 9-dots drag button) */
         .enemy-card .card-controls{ display:flex; align-items:center; justify-content:center; gap:4px; }
@@ -624,7 +644,7 @@
         }
 
         /* ================================================================
-           Ability cards: animated background of their type, the same as the game's ability cards
+           Ability cards: background of their type (animations stopped), the same as the game's ability cards
            (css/bars.css .concept-lava-floor / -towers-fury / -gold-rush / -ice-storm + js/game/CardFx.js)
            - a .dev-ab-bg layer behind the card's content, added by the script at the bottom
            ================================================================ */
@@ -636,7 +656,13 @@
         }
         /* a touch more shade than the small game cards - the editor's fields sit on it */
         .ability-card > .dev-ab-bg::after{ background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.5)); }
-        .ability-card.dev-ab > :not(.dev-ab-bg){ position:relative; z-index:1; }
+        /* a plain dark div laid over the whole (stopped) background, under the fields -
+           so the background stays in the back (change the alpha here to make it lighter / darker) */
+        .ability-card.dev-ab > .dev-ab-veil{
+            position:absolute; inset:0; z-index:0; pointer-events:none;
+            border-radius:inherit; background:rgba(0,0,0,.55);
+        }
+        .ability-card.dev-ab > :not(.dev-ab-bg):not(.dev-ab-veil){ position:relative; z-index:1; }
         /* the game's pieces are made for a 260 x 132 card (their moves are in px), so the big editor
            card is covered by a grid of 260 x 132 tiles, each with its own pieces - no per-tile clipping,
            so they drift over the tile edges and the whole card is one scene */
@@ -644,6 +670,14 @@
         .dev-ab-tile > .concept-fx{ overflow:visible; }
         /* Ice Storm's white-out flash is per card in the game - per tile it would blink in squares */
         .dev-ab-tile > .concept-fx::after{ display:none; }
+        /* stopped - only the background picture, no movement (paused, not removed: every piece
+           stays where its delay put it, so the card keeps the scattered look of the game card) */
+        .ability-card > .dev-ab-bg,
+        .ability-card > .dev-ab-bg *,
+        .ability-card > .dev-ab-bg *::before,
+        .ability-card > .dev-ab-bg *::after,
+        .ability-card > .dev-ab-bg::before,
+        .ability-card > .dev-ab-bg::after{ animation-play-state:paused !important; }
 
         /* ================================================================
            Loading screen like the game: Cinzel title, gold level-progress bar (bars.css .ntu-progress)
@@ -887,8 +921,11 @@
         <p class="save-slots-info">Save slots store your map edits locally in this browser only. It's always recommended to export the JSON as a backup — clearing browser data will erase these slots.</p>
     </div>
     <div class="editor-container box">
+        <!-- dev: every part of the editor is its own rounded box (no <hr> lines between them) -->
+        <div class="dev-section dev-section-head">
         <h1 class="title cl-primary text-center editor-main-title">The CZSrna's Tower Defence – Map Editor</h1>
         <h2 class="subtitle editor-main-subtitle"></h2>
+        </div>
         <div class="map-preview-panel" id="mapPreviewPanel">
             <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg></button>
             <h3 class="panel-title">Map Preview</h3>
@@ -1154,6 +1191,7 @@
             </div>
             <hr id="hr-ability">
         </div>
+        <div class="dev-section">
         <h2 class="text-center d-block final-json"><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoList"/></svg>Final JSON</h2>
         <div class="text-center">Paste your map JSON here, or export the generated JSON using copy, save, or download.</div>
         <textarea id="jsonEditor" class="json-textarea mt-1"></textarea>
@@ -1170,7 +1208,8 @@
                 <button onclick="window.app.jsonFunctions.exportLevelData()" class="btn btn-save btn-green">Export Map</button>
             </div>
 
-        </div>        
+        </div>
+        </div>
     </div>
     <div id="customConfirmPopup" class="modal-overlay d-none">
         <div class="return-content box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
@@ -1712,6 +1751,11 @@
             bg.dataset.seed = index * 131 + 7;
             card.classList.add('dev-ab');
             card.prepend(bg);
+            // the dark veil over the background (CSS .dev-ab-veil)
+            const veil = document.createElement('div');
+            veil.className = 'dev-ab-veil';
+            veil.setAttribute('aria-hidden', 'true');
+            bg.after(veil);
             resizer.observe(bg); // fills it with tiles once it has a size (hidden panel = 0 x 0)
         }
 
@@ -1743,7 +1787,7 @@
         const content = document.getElementById('abilityEditorContent');
         const decorateAll = () => content.querySelectorAll('.ability-card').forEach((c, i) => decorate(c, i));
         new MutationObserver(records => {
-            if (records.some(r => [...r.addedNodes].some(n => n.nodeType === 1 && !n.matches('.dev-ab-bg, .dev-ab-tile')))) decorateAll();
+            if (records.some(r => [...r.addedNodes].some(n => n.nodeType === 1 && !n.matches('.dev-ab-bg, .dev-ab-tile, .dev-ab-veil')))) decorateAll();
         }).observe(content, { childList: true, subtree: true });
         decorateAll();
     </script>
