@@ -194,12 +194,51 @@
         /* --- Map Settings: some air around the Price Progression row --- */
         #extraLifePricesTagsContainer{ margin-top:10px; margin-bottom:10px; }
 
+        /* --- Menu, Save Slots, Map Preview: gold 2px frame that runs round the handle tab too.
+               The tab overlaps the panel by its 2px border and has the panel's background,
+               so it covers that bit of the panel's frame - one outline with the tab bulging out. --- */
+        .editor-tabs, .save-slots, .map-preview-panel{
+            border:2px solid #f0c674;
+            box-shadow:0 4px 14px rgba(0,0,0,.45);
+        }
+        .editor-tabs .panel-toggle-tab,
+        .save-slots .panel-toggle-tab,
+        .map-preview-panel .panel-toggle-tab{ border:2px solid #f0c674; }
+        .editor-tabs .panel-toggle-tab{ left:-30px; border-right:none; }
+        .save-slots .panel-toggle-tab{ right:-30px; border-left:none; }
+        .panel-toggle-tab:hover{ background-color:var(--main-bg-color); color:#ffd88c; }
+        .panel-toggle-tab:hover .dev-btn-ico{ filter:drop-shadow(0 0 4px rgba(240,198,116,.8)); }
+
+        /* --- Path errors right above the Menu, hanging there until fixed; stays in view when
+               the Menu is slid away (cancels the panel's own slide). The editor's step-by-step
+               status messages (main.js setStatus) are not shown at all. --- */
+        .editor-tabs > #statusMessage{ display:none !important; }
+        .editor-tabs > .dev-path-errors{
+            position:absolute; left:-2px; right:-2px; bottom:calc(100% + 10px);
+            margin:0; padding:8px 12px 9px; box-sizing:border-box;
+            background:#f8d7da; color:#721c24;
+            border:2px solid #b02a37; border-radius:8px;
+            font-size:.82rem; line-height:1.35; text-align:left;
+            box-shadow:0 4px 12px rgba(0,0,0,.45);
+            max-height:40vh; overflow-y:auto;
+            transition:transform .3s ease;
+            animation:devErrIn .2s ease-out;
+        }
+        .editor-tabs > .dev-path-errors[hidden]{ display:none; }
+        .editor-tabs.is-collapsed > .dev-path-errors{ transform:translateX(calc(-100% - 30px)); }
+        .dev-path-errors strong{ display:block; margin-bottom:4px; font-size:.85rem; }
+        .dev-path-errors ul{ margin:0; padding-left:16px; }
+        .dev-path-errors li + li{ margin-top:2px; }
+        .dev-path-errors code{ font-family:inherit; font-weight:700; }
+        @keyframes devErrIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+        body.ui-fx-low .dev-path-errors{ animation:none; }
+
         /* --- Map Preview in the top LEFT corner (editor.css has it top right), handle on its right side --- */
         .map-preview-panel{ left:30px; right:auto; }
         .map-preview-panel.is-collapsed{ transform:translateX(calc(-100% - 30px)); }
         .map-preview-panel .panel-toggle-tab{
-            left:auto; right:-31px;
-            border-left:none; border-right:1px solid #333;
+            left:auto; right:-30px;
+            border-left:none; border-right:2px solid #f0c674;
             border-radius:0 8px 8px 0;
         }
 
@@ -787,6 +826,10 @@
                 <h3>Celkově</h3>
                 <ul>
                     <li><strong>Boční okraje</strong> celého editoru o ~20 % menší (rámeček editoru, panely, box Map Settings, karta mapy).</li>
+                    <li><strong>Menu, Save Slots, Map Preview</strong> mají zlatý rámeček 2 px, který obíhá i vystupující ouško (jeden obrys).</li>
+                    <li><strong>Hlídač cest</strong> místo tlačítka Validate Map Paths - průběžně kontroluje mapu (chybí Start / End, Start bez cesty k žádnému End) a cesty skupin nepřátel ve vlnách (špatný tvar jako „S1E“, neexistující Start / End jako „S1E6“ bez E6, žádná cesta mezi nimi). Chyby visí nad Menu, dokud se neopraví (i když je Menu zasunuté). Běžné zprávy editoru krok po kroku se už neukazují.</li>
+                    <li><strong>Format &amp; Copy JSON</strong> vlevo pod Final JSON (místo Validate Map Paths), Export Map vpravo. Po kliknutí ukáže na 2 s „Copied!“ jako Share Map.</li>
+                    <li><strong>Share Map</strong> - „Copied!“ se po 2 s vždy vrátí na „Share Map“, i po rychlém dvojkliku (dřív tam zůstalo).</li>
                     <li><strong>Zlaté ikony místo emoji</strong> - ouška panelů (disketa, mapa, menu), Save / Delete u Save Slots (zlatá disketa, červený ✖) a Copy / Delete na všech kartách (zlaté listy, světlý ✖ místo „X“).</li>
                     <li><strong>Nadpisy sekcí se zlatou ikonou</strong> jako v Settings / Version History - Map (mapa), Map Settings (ozubené kolo), Tower Editor (věž), Wave Editor (lebka), Ability Editor (plamen), Final JSON (svitek).</li>
                     <li><strong>Save Slots jako karty</strong> - číslo slotu v tmavém socketu, název mapy zlatě, prázdný slot se zlatým „+“ a tlumeným textem. Panel širší (300 px - víc místa pro název), větší ikony Save / Delete, číslo slotu v jedné řadě s názvem.</li>
@@ -932,6 +975,10 @@
             <div id="mapPreviewMinimap" class="map-preview-minimap"></div>
         </div>
         <div class="editor-tabs" id="editorMenuPanel">
+            <!-- dev: the editor's own step-by-step messages (main.js setStatus) stay hidden;
+                 above the Menu only the path watcher's errors hang until they're fixed -->
+            <div id="statusMessage" class="status-message text-center d-none"></div>
+            <div id="devPathErrors" class="dev-path-errors" role="alert" hidden></div>
             <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMenu"/></svg></button>
             <h3 class="panel-title">Menu</h3>
             <!-- dev: Map Style + Graphics moved here from the map's top bar (same ids - main.js finds them) -->
@@ -1197,14 +1244,12 @@
         <textarea id="jsonEditor" class="json-textarea mt-1"></textarea>
 
         <div class="controls">
+            <!-- dev: no "Validate Map Paths" - the path watcher (script at the bottom) checks all the time -->
             <div class="button-group">
-                <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate btn-green">Validate Map Paths</button>
+                <button id="devCopyJsonBtn" onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
             </div>
-            
-            <div id="statusMessage" class="status-message text-center d-none"></div>
-            
+
             <div class="status-and-nav">
-                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
                 <button onclick="window.app.jsonFunctions.exportLevelData()" class="btn btn-save btn-green">Export Map</button>
             </div>
 
@@ -1796,6 +1841,129 @@
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
     <script type="module" src="js/level_editor/TooltipController.js"></script>
+    <!-- dev: "Copied!" on Share Map and Format & Copy JSON for 2 s. main.js's own Share handler
+         takes the button's current text as the original, so a 2nd click within 2 s left
+         "Copied!" there for good - it's stopped here (capture) and done again: the real label is
+         kept once and every click just restarts the 2 s. -->
+    <script>
+        (() => {
+            const flash = (btn, text = 'Copied!', ms = 2000) => {
+                if (!btn) return;
+                if (btn.dataset.devLabel === undefined) btn.dataset.devLabel = btn.textContent;
+                clearTimeout(btn._devFlash);
+                btn.textContent = text;
+                btn.classList.add('dev-copied');
+                btn._devFlash = setTimeout(() => {
+                    btn.textContent = btn.dataset.devLabel;
+                    btn.classList.remove('dev-copied');
+                }, ms);
+            };
+            document.addEventListener('click', async (e) => {
+                const share = e.target.closest?.('#shareMapBtn');
+                if (share) {
+                    e.stopImmediatePropagation(); // main.js's listener never runs
+                    flash(share);
+                    try { await window.app?.jsonFunctions?.generateShareLink(); } catch (err) { console.warn(err); }
+                    return;
+                }
+                const copy = e.target.closest?.('#devCopyJsonBtn');
+                if (copy) flash(copy); // its onclick still does the formatting + copying
+            }, true);
+        })();
+    </script>
+    <!-- dev: path watcher - instead of the "Validate Map Paths" button. Checks the map and the
+         waves continuously and only shows something (above the Menu) when there's an error,
+         which then stays until it's fixed:
+         - the map has no Start / no End, or a Start has no road to any End
+         - an enemy group's path isn't S#E# (e.g. "S1E"), names a Start/End the map doesn't
+           have (e.g. "S1E6" with no E6), or there's no road between the two.
+         Same rules as the game (Map.js generatePaths / findPathBFS, Game.js: empty path = S1E1). -->
+    <script type="module">
+        import { currentLevelData } from './js/level_editor/level_data.js';
+        const box = document.getElementById('devPathErrors');
+        const WALK = /^(O|O\[SNW\]|O\[SND\])$|^[SE]\d+$/;
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        const reach = (layout, from) => {
+            const rows = layout.length, cols = layout[0].length;
+            const seen = Array.from({ length: rows }, () => Array(cols).fill(false));
+            const q = [from]; seen[from.r][from.c] = true;
+            for (let i = 0; i < q.length; i++) {
+                const { r, c } = q[i];
+                for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+                    const nr = r + dr, nc = c + dc;
+                    if (nr < 0 || nc < 0 || nr >= rows || nc >= cols || seen[nr][nc]) continue;
+                    if (!WALK.test(String(layout[nr][nc] ?? ''))) continue;
+                    seen[nr][nc] = true; q.push({ r: nr, c: nc });
+                }
+            }
+            return seen;
+        };
+
+        const check = () => {
+            const map = currentLevelData?.maps?.[0];
+            const layout = map?.layout;
+            if (!Array.isArray(layout) || !layout.length || !Array.isArray(layout[0]) || !layout[0].length) return [];
+            const starts = {}, ends = {};
+            layout.forEach((row, r) => row.forEach((t, c) => {
+                const tok = String(t ?? '');
+                if (/^S\d+/i.test(tok)) starts[tok] = { r, c };
+                if (/^E\d+/i.test(tok)) ends[tok] = { r, c };
+            }));
+            const errors = [];
+            const sKeys = Object.keys(starts), eKeys = Object.keys(ends);
+            if (!sKeys.length) errors.push('The map has no Start (S1, S2…).');
+            if (!eKeys.length) errors.push('The map has no End (E1, E2…).');
+
+            // road from every Start to the Ends it can reach
+            const reachable = {};
+            sKeys.forEach(s => {
+                const seen = reach(layout, starts[s]);
+                reachable[s] = new Set(eKeys.filter(e => seen[ends[e].r][ends[e].c]));
+                if (eKeys.length && !reachable[s].size) errors.push(`<code>${esc(s)}</code> has no road to any End.`);
+            });
+            if (sKeys.length) eKeys.forEach(e => {
+                if (!sKeys.some(s => reachable[s].has(e))) errors.push(`No Start has a road to <code>${esc(e)}</code>.`);
+            });
+
+            // the enemy groups' paths
+            (map.levels || []).forEach((lvl, wi) => (lvl?.enemies || []).forEach((en, gi) => {
+                const raw = String(en?.path ?? '').trim();
+                const path = raw || 'S1E1';
+                const where = `Wave ${wi + 1}, group ${gi + 1}:`;
+                const m = /^(S\d+)(E\d+)$/.exec(path);
+                if (!m) { errors.push(`${where} path <code>${esc(path)}</code> isn't valid (use S#E#, e.g. S1E1).`); return; }
+                const [, s, e] = m;
+                const missing = [s in starts ? null : s, e in ends ? null : e].filter(Boolean);
+                if (missing.length) {
+                    errors.push(`${where} path <code>${esc(path)}</code> - ${missing.map(x => `<code>${esc(x)}</code>`).join(' and ')} ${missing.length > 1 ? "aren't" : "isn't"} on the map${raw ? '' : ' (empty path = S1E1)'}.`);
+                } else if (!reachable[s]?.has(e)) {
+                    errors.push(`${where} path <code>${esc(path)}</code> - no road from ${esc(s)} to ${esc(e)}.`);
+                }
+            }));
+            return errors;
+        };
+
+        let lastSig = null, lastHtml = null;
+        const run = () => {
+            const map = currentLevelData?.maps?.[0];
+            if (!map) return;
+            const sig = JSON.stringify(map.layout) + '|' + JSON.stringify((map.levels || []).map(l => (l?.enemies || []).map(e => e?.path ?? '')));
+            if (sig === lastSig) return;
+            lastSig = sig;
+            let errors = [];
+            try { errors = check(); } catch (e) { console.warn('dev path watcher:', e); }
+            const html = errors.length
+                ? `<strong>⚠ Path ${errors.length === 1 ? 'error' : `errors (${errors.length})`}</strong><ul>${errors.map(x => `<li>${x}</li>`).join('')}</ul>`
+                : '';
+            if (html === lastHtml) return;
+            lastHtml = html;
+            box.innerHTML = html;
+            box.hidden = !errors.length;
+        };
+        setInterval(run, 400);
+        run();
+    </script>
     <!-- dev: Waves - hovering an option of a Skin select shows the enemy next to it, drawn by the
          game's own Enemy.js art (cropped to the figure): Random = Golem + Eye side by side,
          Golem / Fiery Eye = just that one. The wave cards themselves stay as they are. -->
