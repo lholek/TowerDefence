@@ -624,11 +624,17 @@
             box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 12px rgba(0,0,0,.3);
         }
         .dev-waves .wave-card .wave-stats{ margin:0 0 6px; }
+        /* Performance (measured on a 25-wave / 267-group map, collapsing a wave): with every
+           group card laid out, ~25 horizontal scrollers cost ~140 ms a frame. Group cards out of
+           view get content-visibility:hidden (IntersectionObserver in the waves script) - then the
+           scrollers are cheap (~20-25 ms a frame). The scrollbar is always there: switching it on
+           only under the mouse (:hover) made the row blink after every change, because the editor
+           rebuilds the row and the browser re-checks :hover on the new one a moment later. */
         .dev-waves .wave-collapse-inner{
             display:flex; flex-wrap:nowrap; align-items:stretch; gap:10px;
             overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;
-            padding:2px 2px 10px;
-            scroll-snap-type:x proximity;
+            padding:2px 2px 4px;
+            /* (no scroll-snap: it fought the wheel scrolling below) */
             scrollbar-width:thin; scrollbar-color:#f0c674 transparent;
         }
         .dev-waves .wave-collapse-inner::-webkit-scrollbar{ height:8px; }
@@ -636,38 +642,65 @@
         .dev-waves .wave-collapse-inner::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
         .dev-waves .waves-body,
         .dev-waves .enemies-container{ display:contents; }
-        .dev-waves .wave-collapse-inner{ counter-reset:devgrp; }
 
         /* compact enemy group card */
         .dev-waves .enemy-card{
             flex:0 0 200px; width:200px; float:none; margin:0; padding:8px 8px 7px; box-sizing:border-box;
             background:#3a2f22; border:1px solid rgba(240,198,116,.22); border-radius:8px;
-            counter-increment:devgrp; scroll-snap-align:start;
+            contain-intrinsic-size:auto 200px auto 612px; /* used while .dev-cv-off (see below) */
             display:flex; flex-direction:column; /* all 9 fields under each other */
         }
-        .dev-waves .enemy-card > .card-controls{ grid-column:1 / -1; justify-content:flex-end; gap:3px; margin-bottom:2px; }
+        /* group cards out of view (IntersectionObserver in the waves script) aren't laid out / painted.
+           Not content-visibility:auto - that skips brand-new cards for their first frame, and the
+           editor rebuilds every card on each change, so every change blinked. */
+        .dev-waves .enemy-card.dev-cv-off{ content-visibility:hidden; }
+        .dev-waves .enemy-card > .card-controls{ order:-2; justify-content:flex-end; gap:3px; margin-bottom:2px; }
         .dev-waves .enemy-card > .card-controls::before{
-            content:'Group ' counter(devgrp); margin-right:auto;
-            color:#f0c674; font-weight:700; font-size:.8rem; letter-spacing:.03em; text-transform:uppercase;
+            /* number from the waves script (content-visibility scopes CSS counters to each card) */
+            content:'Group ' attr(data-dev-num); margin-right:auto;
+            color:#f0c674; font-weight:700; font-size:.9rem; letter-spacing:.02em;
         }
         .dev-waves .enemy-card > .card-controls > .btn{ width:28px; height:24px; }
         .dev-waves .enemy-card > .card-controls > .btn svg{ width:14px; height:14px; }
+        /* the enemy itself above Type, drawn by the game (Enemy.js) - the images come as CSS
+           variables from the skin script; Random = Golem + Eye, otherwise just the chosen one.
+           Pure CSS (:has + :checked), so the editor's re-renders cost nothing extra. */
+        .dev-waves .enemy-card::before{
+            content:''; order:-1; display:block; height:62px; margin:2px 0 2px;
+            background:
+                var(--dev-skin-golem, none) calc(50% - 30px) 100% / auto 60px no-repeat,
+                var(--dev-skin-eye, none) calc(50% + 28px) 100% / auto 60px no-repeat;
+            filter:drop-shadow(0 3px 3px rgba(0,0,0,.55));
+        }
+        .dev-waves .enemy-card:has(select[data-key="skin"] option[value="GOLEM"]:checked)::before{
+            background:var(--dev-skin-golem, none) 50% 100% / auto 60px no-repeat;
+        }
+        .dev-waves .enemy-card:has(select[data-key="skin"] option[value="EYE"]:checked)::before{
+            background:var(--dev-skin-eye, none) 50% 100% / auto 60px no-repeat;
+        }
         .dev-waves .enemy-card > .card-body-inner{ display:flex; flex-direction:column; }
         .dev-waves .enemy-card label.editor-row{ margin:4px 0 0 !important; min-width:0; display:flex; flex-direction:column; }
-        .dev-waves .enemy-card .label-text{ font-size:.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dev-waves .enemy-card .label-text{ font-size:.83rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .dev-waves .enemy-card .label-text .info-icon{ transform:scale(.85); }
         .dev-waves .enemy-card input,
         .dev-waves .enemy-card select{ padding:4px 6px; font-size:.82rem; min-width:0; width:100%; box-sizing:border-box; }
-        .dev-waves .enemy-card .json-stepper-wrap{ margin-top:2px; }
-        .dev-waves .enemy-card .json-stepper-wrap input{ padding:4px 6px; }
+        /* every field the same height: steppers, the two selects and Path */
+        .dev-waves .enemy-card .json-stepper-wrap,
+        .dev-waves .enemy-card .dev-sel,
+        .dev-waves .enemy-card .path-input-container{ margin-top:3px; }
+        .dev-waves .enemy-card .json-stepper-wrap,
+        .dev-waves .enemy-card .dev-sel-trigger,
+        .dev-waves .enemy-card .path-input-container > input{ height:32px; box-sizing:border-box; }
+        .dev-waves .enemy-card .json-stepper-wrap input{ padding:4px 6px; height:100%; margin:0; }
         .dev-waves .enemy-card .dev-sel{ display:block; width:100%; min-width:0; max-width:100%; }
         .dev-waves .enemy-card .dev-sel-trigger{
-            width:100%; min-width:0; max-width:100%; box-sizing:border-box;
-            padding-top:4px; padding-bottom:4px; font-size:.82rem; min-height:0;
+            display:flex; align-items:center; margin:0;
+            width:100%; min-width:0; max-width:100%;
+            padding-top:0; padding-bottom:0; font-size:.82rem; min-height:0;
             overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
         }
         .dev-waves .enemy-card .path-input-container{ min-width:0; }
-        .dev-waves .enemy-card .path-input-container input{ margin-top:2px; }
+        .dev-waves .enemy-card .path-input-container > input{ margin:0; }
         /* the drop line while dragging a group sits in the gap between the cards */
         .dev-waves .enemy-card.reorder-before::after{ left:-7px; }
         .dev-waves .enemy-card.reorder-after::after{ right:-7px; }
@@ -682,7 +715,7 @@
             box-shadow:none !important; font-weight:700; letter-spacing:.02em; text-shadow:none;
             transition:background-color .15s, border-color .15s, color .15s;
         }
-        .dev-waves .wave-collapse-inner > .btn-add{ flex:0 0 160px; width:160px; min-height:120px; white-space:normal; scroll-snap-align:start; }
+        .dev-waves .wave-collapse-inner > .btn-add{ flex:0 0 200px; width:200px; min-height:120px; white-space:normal; } /* as wide as a group card */
         .dev-waves .dev-add-slot{ width:100%; min-height:56px; }
         .dev-waves .wave-collapse-inner > .btn-add:hover,
         .dev-waves .dev-add-slot:hover{
@@ -912,91 +945,87 @@
 </head>
 <body class="editor-body editor-loading">
     <!-- dev only: "DEV" button (top right) + popup with what changed compared to level_editor.html -->
-    <button type="button" id="devBtn" class="dev-btn" title="Změny oproti klasickému editoru">DEV</button>
+    <button type="button" id="devBtn" class="dev-btn" title="Changes vs. the classic editor">DEV</button>
     <div id="devPopup" class="dev-overlay" role="dialog" aria-modal="true" aria-labelledby="devPopupTitle">
         <div class="dev-card">
-            <button type="button" class="dev-close" title="Zavřít">&times;</button>
-            <h2 id="devPopupTitle">Změny oproti klasickému editoru</h2>
-            <p class="dev-note">Vše jen v dev/level_editor_new.html - sdílené css/level_editor/* a js/level_editor/* zůstávají beze změny</p>
+            <button type="button" class="dev-close" title="Close">&times;</button>
+            <h2 id="devPopupTitle">Changes vs. the classic editor</h2>
+            <p class="dev-note">Written for the Version History. Everything lives only in dev/level_editor_new.html - the shared css/level_editor/* and js/level_editor/* files are unchanged.</p>
             <div class="dev-changes">
-                <h3>Celkově</h3>
+                <h3>General</h3>
                 <ul>
-                    <li><strong>Výkon</strong> - animace, které nejsou vidět, se zastaví (pozadí ability karet, jiskry ve Towers, obloha v mapě mimo obrazovku, schovaný loading screen). Dřív stránka i v klidu pořád překreslovala a sekala se. Ikony, obrázky věží a pozadí abilit se při změnách už nekreslí znovu.</li>
-                    <li><strong>Boční okraje</strong> celého editoru o ~20 % menší (rámeček editoru, panely, box Map Settings, karta mapy).</li>
-                    <li><strong>Menu, Save Slots, Map Preview</strong> mají jemný zlatý rámeček 1 px a hlubší stín. Rámeček obíhá i vystupující ouško (jeden obrys).</li>
-                    <li><strong>Hlídač cest</strong> místo tlačítka Validate Map Paths - průběžně kontroluje mapu (chybí Start / End, Start bez cesty k žádnému End) a cesty skupin nepřátel ve vlnách (špatný tvar jako „S1E“, neexistující Start / End jako „S1E6“ bez E6, žádná cesta mezi nimi). Chyby visí nad Menu, dokud se neopraví (i když je Menu zasunuté). Běžné zprávy editoru krok po kroku se už neukazují.</li>
-                    <li><strong>Format &amp; Copy JSON</strong> vlevo pod Final JSON (místo Validate Map Paths), Export Map vpravo. Po kliknutí ukáže na 2 s „Copied!“ jako Share Map.</li>
-                    <li><strong>Share Map</strong> - „Copied!“ se po 2 s vždy vrátí na „Share Map“, i po rychlém dvojkliku (dřív tam zůstalo).</li>
-                    <li><strong>Zlaté ikony místo emoji</strong> - ouška panelů (disketa, mapa, menu), Save / Delete u Save Slots (zlatá disketa, červený ✖) a Copy / Delete na všech kartách (zlaté listy, světlý ✖ místo „X“).</li>
-                    <li><strong>Nadpisy sekcí se zlatou ikonou</strong> jako v Settings / Version History - Map (mapa), Map Settings (ozubené kolo), Tower Editor (věž), Wave Editor (lebka), Ability Editor (plamen), Final JSON (svitek).</li>
-                    <li><strong>Save Slots jako karty</strong> - číslo slotu v tmavém socketu, název mapy zlatě, prázdný slot se zlatým „+“ a tlumeným textem. Panel širší (300 px - víc místa pro název), větší ikony Save / Delete, číslo slotu v jedné řadě s názvem.</li>
-                    <li><strong>Loading screen</strong> ve stylu hry - nadpis písmem Cinzel, zlatý progress bar s odleskem jako progress levelu.</li>
-                    <li><strong>Final JSON</strong> - tmavý panel s monospace písmem, zlatým okrajem při psaní a zlatým scrollbarem.</li>
-                    <li><strong>Potvrzovací popup</strong> (Load Map, Overwrite / Delete Save Slot) ve stylu popupů hry - karta jako Settings, zlatý nadpis se zlatou ikonou (mapa / disketa / ✖), zpráva v panelu, × v rohu, zavření ESC nebo klikem mimo, plynulé zobrazení. Potvrzovací tlačítko podle akce: zlaté „Load“, červené „Overwrite“ / „Delete“ (dřív všude „Yes, remove“).</li>
+                    <li>Smoother editor - animations that are off screen now stop, so the page no longer redraws all the time and lags, even on big maps</li>
+                    <li>Collapsing and expanding waves is smooth again on big maps</li>
+                    <li>Slimmer side margins around the whole editor (~20 % less)</li>
+                    <li>Gold icons instead of emoji - panel tabs, Save Slot buttons and the Copy / Delete buttons on all cards</li>
+                    <li>Section headings with gold icons, like Settings and Version History in the game (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON)</li>
+                    <li>Menu, Save Slots and Map Preview panels have a thin gold frame that runs around their tab too, plus a deeper shadow</li>
+                    <li>Loading screen in the game's style - Cinzel title and a gold progress bar like the level progress</li>
+                    <li>Confirm popups (Load Map, Overwrite / Delete Save Slot) now look like the game's popups - gold title with an icon, × in the corner, close with Esc or a click outside; the confirm button says what it does ("Load", "Overwrite", "Delete")</li>
+                    <li>All selects look like the Background select in Settings, with a keyboard-friendly list; the ability select shows the ability icons</li>
                 </ul>
-                <h3>Mapa</h3>
+                <h3>Path checking</h3>
                 <ul>
-                    <li><strong>Map Preview</strong> přesunutý do levého horního rohu (místo pravého), schovává se doleva.</li>
-                    <li><strong>Horní lišta</strong> - jen Width / Height / Resize Map, zarovnané na střed, a větší mezera mezi lištou a mapou.</li>
-                    <li><strong>Width / Height</strong> mají tlačítka − / + (min 3) - mapu pořád změní až Resize Map.</li>
-                    <li><strong>Bez horního marginu</strong> u boxů Brush a dlaždic (.editor-key-container).</li>
-                    <li><strong>Vyhledávání a Filters</strong> na jednom řádku.</li>
-                    <li><strong>Map Style a Graphics</strong> přesunuté do Menu nad tlačítko Map (s nadpisy, kratší názvy možností).</li>
-                    <li><strong>Řádek Brush</strong> - „Brush“ + velikost štětce, tvary Square / Diamond / Circle a souřadnice X / Y v jednom řádku. Nadpis jen „Brush“ místo „Brush Settings“.</li>
-                    <li><strong>Vybraná dlaždice</strong> jako čtverec 70 px ve stejném stylu jako dlaždice ve výběru, se zlatým rámečkem a září, úplně vlevo v liště dlaždic, od ostatních oddělená zlatou čárou, nad ní nadpis „Selected“ ve stylu Terrains / Paths / Map Objects. Slovo „Selected:“ odstraněno.</li>
-                    <li><strong>X / Y</strong> v zarámovaném boxu - zlatá písmena, čísla v tmavých políčkách.</li>
-                    <li><strong>Výběr dlaždic přímo v mapě</strong> - lišta dlaždic leží v canvasu u jeho spodního okraje na poloprůhledném tmavém pozadí rgba(0,0,0,.3) (popisky se stínem, aby byly čitelné, názvy skupin Terrains / Paths / Map Objects zlatě), posouvá se do strany kolečkem / touchpadem bez viditelného scrollbaru, prázdná místa propouštějí myš do mapy.</li>
-                    <li><strong>Vyhledávání a Filters</strong> (Terrains / Paths / Map Objects) hned pod mapou, mimo canvas. Tooltipy z „i“ jsou nad lištou dlaždic.</li>
-                    <li><strong>Posun mapy níž</strong> - mapu jde posunout o výšku lišty dlaždic níž, aby spodní řádky nezůstaly schované pod lištou (jen v editoru, hra beze změny).</li>
-                    <li><strong>„Drawing is disabled for Start and End“</strong> už není text pod mapou, je v tooltipu „i“ u vyhledávání dlaždic.</li>
+                    <li>New live path checker instead of the "Validate Map Paths" button - checks the map (missing Start / End, a Start with no road to any End) and every enemy group's path (wrong format like "S1E", a Start / End that isn't on the map like "S1E6", no road between them)</li>
+                    <li>Path errors stay above the Menu until they're fixed; the editor's step-by-step status messages are gone</li>
+                    <li>Cross paths like S3E2 are valid, the same as in the game</li>
                 </ul>
-                <h3>Tlačítka v Menu</h3>
+                <h3>Final JSON</h3>
                 <ul>
-                    <li><strong>Test Map, Share Map, Help</strong> ve stylu Main Menu (zaoblení, 3D hrana, zlatá záře a zvednutí při najetí) - barvy zachované.</li>
-                    <li><strong>Aktivní záložky</strong> (Map, Map Settings, Towers, Waves, Abilities) zlaté ve stylu Main Menu - přepínání panelů funguje stejně.</li>
+                    <li>Dark panel with a monospace font, gold border while typing and a gold scrollbar</li>
+                    <li>"Format &amp; Copy JSON" moved to the left and shows "Copied!" for 2 s, "Export Map" stays on the right</li>
+                    <li>Fixed: "Share Map" could stay stuck on "Copied!" after a quick double click</li>
+                </ul>
+                <h3>Save Slots</h3>
+                <ul>
+                    <li>Slots look like cards - slot number in a dark socket, map name in gold, empty slots with a gold "+"</li>
+                    <li>Wider panel with more room for the map name and bigger Save / Delete icons</li>
+                </ul>
+                <h3>Map</h3>
+                <ul>
+                    <li>The tile picker now lies inside the map along its bottom edge, on a see-through dark strip; the selected tile is on the left, split off by a gold line and labelled "Selected"</li>
+                    <li>The map can be panned a bit lower, so its bottom rows never stay hidden under the tile strip</li>
+                    <li>A loaded or pasted map always opens centered</li>
+                    <li>Tile search and filters (Terrains / Paths / Map Objects) are in one row right below the map; group names are gold</li>
+                    <li>New Brush row - brush size, Square / Diamond / Circle and the X / Y position of the cursor in one line</li>
+                    <li>Width / Height got − / + buttons</li>
+                    <li>Map Style and Graphics moved into the Menu</li>
+                    <li>Map Preview moved to the top-left corner</li>
+                    <li>"Drawing is disabled for Start and End" moved into the tile search's "i" tooltip</li>
+                </ul>
+                <h3>Menu</h3>
+                <ul>
+                    <li>Test Map, Share Map and Help buttons in the Main Menu style (rounded, 3D edge, gold glow on hover)</li>
+                    <li>The active tab (Map, Map Settings, Towers, Waves, Abilities) is gold, like in the Main Menu</li>
                 </ul>
                 <h3>Map Settings</h3>
                 <ul>
-                    <li><strong>Title</strong> - zlatá ikonka mapy místo emoji, nadpis i text na střed.</li>
-                    <li><strong>Description</strong> - zlatá ikonka svitku místo emoji, nadpis na střed, text vlevo.</li>
-                    <li><strong>Řádek cen v Price Progression</strong> má nad i pod sebou mezeru 10 px.</li>
-                    <li><strong>Difficulty</strong> - našeptávač: nabídne ⭐ až ⭐⭐⭐⭐⭐, ale dá se vepsat i vlastní hodnota.</li>
-                    <li><strong>Starting Coins / Starting Lifes</strong> - ikonky v rámečku jako u Title (🪙 a červené srdce jako v horní liště hry), nadpisy na střed.</li>
-                    <li><strong>Price Progression</strong> - větší mezera nad nadpisem, stejná jako nad Starting Lifes.</li>
-                    <li><strong>Extra Life Off</strong> - Price Progression (ceny + přidání ceny) se plynule zasune a schová, při On se zase vysune.</li>
-                    <li><strong>Extra Life</strong> - přepínač Off / On jako Show FPS v Settings místo checkboxu, klik kamkoli na řádek ho přepne.</li>
+                    <li>Gold icons and centered headings for Title, Description, Starting Coins and Starting Lifes</li>
+                    <li>Difficulty suggests ⭐ to ⭐⭐⭐⭐⭐, but you can still type your own value</li>
+                    <li>Extra Life is an Off / On switch like Show FPS in Settings; when Off, Price Progression slides away</li>
+                    <li>More space around the Price Progression row</li>
                 </ul>
                 <h3>Towers</h3>
                 <ul>
-                    <li><strong>Náhled karty věže</strong> napravo od Color - přesně jako v obchodě ve hře (obrázek věže v její barvě, Price / Sell / DPS, na najetí všech 6 statů, číslo věže). Mění se hned při psaní a řídí se volbou Graphics: Low / High.</li>
-                    <li><strong>DPS v hlavičce</strong> odstraněné (je v náhledu), „i“ u Color je až za výběrem barvy.</li>
-                    <li><strong>Karta věže</strong> - Color nahoře vedle Name, staty ve 2 řádcích (Price / Damage / Fire Rate, pod tím Sell Price / Range / Speed) a náhled napravo přes oba řádky, takže je karta zhruba stejně vysoká jako náhled.</li>
-                </ul>
-                <h3>Karty (Towers, Abilities…)</h3>
-                <ul>
-                    <li><strong>Tlačítka v hlavičce karty</strong> - přesun (9 teček), Copy a Delete mají stejnou velikost a jsou v jedné výšce.</li>
-                    <li><strong>Copy</strong> - zlatá ikonka dvou listů místo 📋.</li>
+                    <li>Live preview of the tower's shop card next to its fields - exactly like the shop in the game, updates while you type and follows Graphics Low / High</li>
+                    <li>Compact tower card - Color next to Name, stats in two rows; DPS moved from the header into the preview</li>
+                    <li>Drag, Copy and Delete buttons in card headers are the same size and in one line</li>
                 </ul>
                 <h3>Abilities</h3>
                 <ul>
-                    <li><strong>Karty schopností</strong> mají animované pozadí podle typu - láva, vítr se šípy, padající mince, sněhová bouře - stejně jako karty schopností ve hře, přes celou kartu (poskládané z dlaždic velikosti herní karty).</li>
-                    <li><strong>Gold Rush</strong> - checkbox Round Up na středu pod svým nadpisem.</li>
+                    <li>Ability cards have the background of their type over the whole card - lava, wind with arrows, falling coins, snow storm - like the ability cards in the game</li>
+                    <li>Gold Rush - the Round Up checkbox is centered</li>
                 </ul>
                 <h3>Waves</h3>
                 <ul>
-                    <li><strong>Skupiny nepřátel</strong> - přesun / Copy / Delete v jedné řadě, stejně velké a na středu (Copy předtím uskakovalo).</li>
-                    <li><strong>Shake Effects / Custom Damage</strong> - Delete stejně vysoké jako políčka a v jedné řadě s nimi.</li>
-                    <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression. Popis typů je uvnitř jeho hnědého rámu hned pod přidáním typu.</li>
-                    <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
-                    <li><strong>Vlny</strong> zůstávají pod sebou, mají jemný zlatý rámeček. Skupiny nepřátel ve vlně jsou v jedné řadě vedle sebe, která se posouvá do strany (zlatý scrollbar); řada si drží pozici i po každé změně.</li>
-                    <li><strong>Kompaktní skupiny nepřátel</strong> (karta 200 px) s nadpisem „Group N“, všech 9 polí pod sebou (Type, Skin, Count, Health, Speed, Path, Interval, First Delay, Coin Reward).</li>
-                    <li><strong>Čárkovaná pole</strong> „+ Add Enemy Group“ jako poslední karta v řadě skupin (po přidání / kopii skupiny se řada posune k nové kartě) a „+ Add New Wave“ pod vlnami.</li>
-                    <li><strong>Waves - náhled skinu</strong> - při najetí myší na možnost ve výběru Skin se vedle ukáže nepřítel, jak ho kreslí hra (Enemy.js): Random = Golem a Oko vedle sebe, Golem / Fiery Eye = jen ten jeden. Kvalita podle Menu → Graphics (Low / High).</li>
-                </ul>
-                <h3>Selecty</h3>
-                <ul>
-                    <li><strong>Všechny selecty</strong> v editoru (Map Style, Graphics, schopnosti i ty ve vlnách / Shake Effects / Custom Damage) vypadají jako Background v Settings - vlastní seznam se zvýrazněním, ovládání i šipkami.</li>
-                    <li><strong>Výběr schopnosti</strong> s ikonkami 🌋 Lava Floor, 🏹 Towers Fury, ⛏️ Gold Rush, ❄️ Ice Storm.</li>
+                    <li>Enemy groups of a wave sit side by side in one row that scrolls sideways; the mouse wheel over the row scrolls only the row, and the row keeps its position after every change</li>
+                    <li>Compact group cards - "Group N" title, all 9 fields under each other, all fields the same height</li>
+                    <li>A picture of the enemy above Type, drawn by the game itself - Golem, Fiery Eye, or both for Random (follows Graphics Low / High)</li>
+                    <li>Hovering a Skin option shows that enemy next to the list</li>
+                    <li>Dashed "+ Add Enemy Group" card at the end of each row; the row scrolls to a new or copied group</li>
+                    <li>Waves have a thin gold frame</li>
+                    <li>Enemy Types List in one sideways-scrolling row, its description inside the card</li>
+                    <li>Enemy Shake Effects and Custom Enemy Damage each in their own brown card; their Delete buttons line up with the fields</li>
                 </ul>
             </div>
         </div>
@@ -1307,11 +1336,11 @@
                 </div>
 
                 <!-- dev: waves under each other, each wave's enemy groups in one row that scrolls
-                     sideways (CSS .dev-waves), dashed "+ Add New Wave" slot under the waves -->
+                     sideways (CSS .dev-waves) -->
                 <div class="dev-waves" id="devWaves">
                     <div id="waves-editor-container" class="repeater-container">
                     </div>
-                    <button id="add-wave-button" class="btn btn-add btn-green dev-add-slot dev-add-wave">+ Add New Wave</button>
+                    <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
                 </div>
             </div>
             <div id="waveEditorPanel" class="editor-panel d-none"> 
@@ -2041,6 +2070,43 @@
             // only the list's own children = a re-render (not every input / icon change inside)
             new MutationObserver(queue).observe(list, { childList: true });
 
+            // "Group N" in each card's header (CSS attr(), see .card-controls::before) - set right
+            // when cards appear (a re-render, or a collapsed wave being expanded), before paint
+            const number = () => list.querySelectorAll('.enemy-card > .card-controls:not([data-dev-num])').forEach(c => {
+                c.dataset.devNum = +c.parentElement.dataset.enemyIndex + 1;
+            });
+            new MutationObserver(number).observe(list, { childList: true, subtree: true });
+            number();
+
+            // cards out of view (scrolled out of their row, or the wave off screen) get .dev-cv-off
+            // = content-visibility:hidden (not laid out / painted - keeps collapsing waves smooth).
+            // New cards start rendered (no class), so a re-render never shows empty cards.
+            const cv = new IntersectionObserver(entries => entries.forEach(e => {
+                if (!e.target.isConnected) { cv.unobserve(e.target); return; }
+                e.target.classList.toggle('dev-cv-off', !e.isIntersecting);
+            }), { rootMargin: '200px', scrollMargin: '0px 400px' }); // scrollMargin: also a bit beyond the row's edges
+            const watchCards = () => list.querySelectorAll('.enemy-card:not([data-dev-cv])').forEach(c => {
+                c.dataset.devCv = '1';
+                cv.observe(c);
+            });
+            new MutationObserver(watchCards).observe(list, { childList: true, subtree: true });
+            watchCards();
+
+            // the mouse wheel over a group row that has more groups than fit scrolls ONLY that row
+            // sideways - also at its ends (the page doesn't start moving up / down under the mouse).
+            // A row that fits doesn't catch the wheel. Sideways touchpad swipes, Ctrl+wheel
+            // (zoom) and open dropdown lists keep their own behaviour.
+            root.addEventListener('wheel', e => {
+                if (e.ctrlKey) return;
+                const row = e.target.closest?.('.wave-collapse-inner');
+                if (!row || e.target.closest('.custom-path-dropdown, .dev-sel-list')) return;
+                const max = row.scrollWidth - row.clientWidth;
+                if (max <= 0) return;
+                e.preventDefault();
+                const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                row.scrollLeft += e.deltaMode === 1 ? d * 40 : e.deltaMode === 2 ? d * row.clientWidth : d;
+            }, { passive: false });
+
             root.addEventListener('click', e => {
                 const add = e.target.closest?.('.wave-collapse-inner > .btn-add');
                 if (add) { pending = { wave: add.closest('.wave-card').dataset.waveIndex, card: 'last' }; return; }
@@ -2218,6 +2284,17 @@
             return url;
         };
 
+        // the pictures above Type in every enemy group (CSS .enemy-card::before) read these
+        const keepDecoded = []; // held, so the cards rebuilt on every change reuse the decoded picture
+        const setVars = () => SKINS.forEach(t => {
+            const url = art(t);
+            if (url) { const img = new Image(); img.src = url; img.decode?.().catch(() => {}); keepDecoded.push(img); }
+            document.documentElement.style.setProperty(`--dev-skin-${t === 'GOLEM' ? 'golem' : 'eye'}`, url ? `url("${url}")` : 'none');
+        });
+        setVars();
+        // Menu > Graphics: main.js saves the new quality in its own change handler - read it after
+        document.getElementById('editorGraphicsSelect')?.addEventListener('change', () => setTimeout(setVars, 0));
+
         // one floating box, shown next to the hovered option of an open Skin list
         const pop = document.createElement('div');
         pop.className = 'dev-skin-pop';
@@ -2312,9 +2389,47 @@
             window.app?.mapEditor?.renderMap?.();
         };
 
+        // --- a loaded / pasted map always starts centered (classic: it kept the old camera,
+        //     so a big map opened at its top-left corner). Centered in the part of the canvas
+        //     above the tile strip. Triggers: the editor's start, a different map showing up
+        //     (name or size changed - e.g. pasted JSON, Resize Map), and explicitly a paste
+        //     into Final JSON or loading a Save Slot (even the same map again). Undo / Redo of
+        //     normal edits keeps the camera where it is.
+        const center = () => {
+            const cam = window._editorMapDebug?.camera;
+            const layout = currentLevelData?.maps?.[0]?.layout;
+            if (!cam || !layout?.length || !layout[0]?.length) return;
+            window.app?.mapEditor?.renderMap?.(); // canvas size up to date first
+            const W = canvas.width, H = canvas.height;
+            const rect = canvas.getBoundingClientRect();
+            const extra = dock && rect.height ? dock.offsetHeight * (H / rect.height) : 0;
+            cam.x = (W - layout[0].length * TILE * cam.zoom) / 2;
+            cam.y = (H - extra - layout.length * TILE * cam.zoom) / 2;
+            window.app?.mapEditor?.renderMap?.();
+        };
+        const sig = () => {
+            const m = currentLevelData?.maps?.[0];
+            return m?.layout?.length ? `${m.name}|${m.layout.length}x${m.layout[0]?.length}` : '';
+        };
+        let lastSig = '', lastData = null, forceUntil = 0;
+        const force = () => { forceUntil = performance.now() + 10000; };
+        document.getElementById('jsonEditor')?.addEventListener('paste', force);
+        document.addEventListener('click', e => { if (e.target.closest?.('.btn-save-slot')) force(); }, true);
+        const watch = () => {
+            const s = sig();
+            const forced = forceUntil > performance.now() && currentLevelData !== lastData;
+            if (s && (s !== lastSig || forced)) {
+                forceUntil = forced ? 0 : forceUntil;
+                requestAnimationFrame(center);
+            }
+            lastSig = s;
+            lastData = currentLevelData;
+        };
+
         const wait = () => {
             const cam = window._editorMapDebug?.camera;
-            if (cam) hook(cam); else requestAnimationFrame(wait);
+            if (cam) { hook(cam); lastData = currentLevelData; watch(); setInterval(watch, 250); }
+            else requestAnimationFrame(wait);
         };
         wait();
     </script>
