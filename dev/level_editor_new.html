@@ -194,16 +194,17 @@
         /* --- Map Settings: some air around the Price Progression row --- */
         #extraLifePricesTagsContainer{ margin-top:10px; margin-bottom:10px; }
 
-        /* --- Menu, Save Slots, Map Preview: gold 2px frame that runs round the handle tab too.
-               The tab overlaps the panel by its 2px border and has the panel's background,
+        /* --- Menu, Save Slots, Map Preview: soft gold 1px frame + deep shadow, the frame runs round the handle tab too.
+               The tab overlaps the panel by its 1px border and has the panel's background,
                so it covers that bit of the panel's frame - one outline with the tab bulging out. --- */
         .editor-tabs, .save-slots, .map-preview-panel{
-            border:2px solid #f0c674;
-            box-shadow:0 4px 14px rgba(0,0,0,.45);
+            --dev-frame:rgba(240,198,116,.42);
+            border:1px solid var(--dev-frame);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.4);
         }
         .editor-tabs .panel-toggle-tab,
         .save-slots .panel-toggle-tab,
-        .map-preview-panel .panel-toggle-tab{ border:2px solid #f0c674; }
+        .map-preview-panel .panel-toggle-tab{ border:1px solid var(--dev-frame); }
         .editor-tabs .panel-toggle-tab{ left:-30px; border-right:none; }
         .save-slots .panel-toggle-tab{ right:-30px; border-left:none; }
         .panel-toggle-tab:hover{ background-color:var(--main-bg-color); color:#ffd88c; }
@@ -214,7 +215,7 @@
                status messages (main.js setStatus) are not shown at all. --- */
         .editor-tabs > #statusMessage{ display:none !important; }
         .editor-tabs > .dev-path-errors{
-            position:absolute; left:-2px; right:-2px; bottom:calc(100% + 10px);
+            position:absolute; left:-1px; right:-1px; bottom:calc(100% + 10px);
             margin:0; padding:8px 12px 9px; box-sizing:border-box;
             background:#f8d7da; color:#721c24;
             border:2px solid #b02a37; border-radius:8px;
@@ -238,7 +239,7 @@
         .map-preview-panel.is-collapsed{ transform:translateX(calc(-100% - 30px)); }
         .map-preview-panel .panel-toggle-tab{
             left:auto; right:-30px;
-            border-left:none; border-right:2px solid #f0c674;
+            border-left:none; border-right:1px solid var(--dev-frame);
             border-radius:0 8px 8px 0;
         }
 
@@ -609,6 +610,88 @@
         .btn-delete[data-dev-ico] .dev-btn-ico{ width:14px; height:14px; }
         /* enemy groups in the wave columns: a little space around each card */
         .enemy-card{ margin:0.5rem; }
+
+        /* ================================================================
+           Waves stay under each other; inside a wave its enemy groups sit in ONE row that
+           scrolls sideways (compact cards), the last item of the row is a dashed
+           "+ Add Enemy Group" slot. .wave-collapse-inner (already overflow:hidden for the
+           collapse animation) is the scroller, .waves-body / .enemies-container are
+           display:contents, so the group cards and the Add button are its flex items.
+           ================================================================ */
+        .dev-waves .wave-card{
+            margin-bottom:14px; border-radius:10px;
+            border:1px solid rgba(240,198,116,.4);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 12px rgba(0,0,0,.3);
+        }
+        .dev-waves .wave-card .wave-stats{ margin:0 0 6px; }
+        .dev-waves .wave-collapse-inner{
+            display:flex; flex-wrap:nowrap; align-items:stretch; gap:10px;
+            overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;
+            padding:2px 2px 10px;
+            scroll-snap-type:x proximity;
+            scrollbar-width:thin; scrollbar-color:#f0c674 transparent;
+        }
+        .dev-waves .wave-collapse-inner::-webkit-scrollbar{ height:8px; }
+        .dev-waves .wave-collapse-inner::-webkit-scrollbar-track{ background:transparent; }
+        .dev-waves .wave-collapse-inner::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
+        .dev-waves .waves-body,
+        .dev-waves .enemies-container{ display:contents; }
+        .dev-waves .wave-collapse-inner{ counter-reset:devgrp; }
+
+        /* compact enemy group card */
+        .dev-waves .enemy-card{
+            flex:0 0 200px; width:200px; float:none; margin:0; padding:8px 8px 7px; box-sizing:border-box;
+            background:#3a2f22; border:1px solid rgba(240,198,116,.22); border-radius:8px;
+            counter-increment:devgrp; scroll-snap-align:start;
+            display:flex; flex-direction:column; /* all 9 fields under each other */
+        }
+        .dev-waves .enemy-card > .card-controls{ grid-column:1 / -1; justify-content:flex-end; gap:3px; margin-bottom:2px; }
+        .dev-waves .enemy-card > .card-controls::before{
+            content:'Group ' counter(devgrp); margin-right:auto;
+            color:#f0c674; font-weight:700; font-size:.8rem; letter-spacing:.03em; text-transform:uppercase;
+        }
+        .dev-waves .enemy-card > .card-controls > .btn{ width:28px; height:24px; }
+        .dev-waves .enemy-card > .card-controls > .btn svg{ width:14px; height:14px; }
+        .dev-waves .enemy-card > .card-body-inner{ display:flex; flex-direction:column; }
+        .dev-waves .enemy-card label.editor-row{ margin:4px 0 0 !important; min-width:0; display:flex; flex-direction:column; }
+        .dev-waves .enemy-card .label-text{ font-size:.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dev-waves .enemy-card .label-text .info-icon{ transform:scale(.85); }
+        .dev-waves .enemy-card input,
+        .dev-waves .enemy-card select{ padding:4px 6px; font-size:.82rem; min-width:0; width:100%; box-sizing:border-box; }
+        .dev-waves .enemy-card .json-stepper-wrap{ margin-top:2px; }
+        .dev-waves .enemy-card .json-stepper-wrap input{ padding:4px 6px; }
+        .dev-waves .enemy-card .dev-sel{ display:block; width:100%; min-width:0; max-width:100%; }
+        .dev-waves .enemy-card .dev-sel-trigger{
+            width:100%; min-width:0; max-width:100%; box-sizing:border-box;
+            padding-top:4px; padding-bottom:4px; font-size:.82rem; min-height:0;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+        }
+        .dev-waves .enemy-card .path-input-container{ min-width:0; }
+        .dev-waves .enemy-card .path-input-container input{ margin-top:2px; }
+        /* the drop line while dragging a group sits in the gap between the cards */
+        .dev-waves .enemy-card.reorder-before::after{ left:-7px; }
+        .dev-waves .enemy-card.reorder-after::after{ right:-7px; }
+
+        /* dashed "+ Add …" slots: Add Enemy Group = last card of the row, Add New Wave = under the waves */
+        .dev-waves .wave-collapse-inner > .btn-add,
+        .dev-waves .dev-add-slot{
+            display:flex; align-items:center; justify-content:center; text-align:center;
+            max-height:none; margin:0; box-sizing:border-box;
+            background:transparent !important; color:#f0c674 !important;
+            border:2px dashed rgba(240,198,116,.55) !important; border-radius:8px;
+            box-shadow:none !important; font-weight:700; letter-spacing:.02em; text-shadow:none;
+            transition:background-color .15s, border-color .15s, color .15s;
+        }
+        .dev-waves .wave-collapse-inner > .btn-add{ flex:0 0 160px; width:160px; min-height:120px; white-space:normal; scroll-snap-align:start; }
+        .dev-waves .dev-add-slot{ width:100%; min-height:56px; }
+        .dev-waves .wave-collapse-inner > .btn-add:hover,
+        .dev-waves .dev-add-slot:hover{
+            background:rgba(240,198,116,.08) !important; border-color:#f0c674 !important; color:#ffd88c !important;
+            transform:none;
+        }
+        .dev-waves .wave-collapse-inner > .btn-add::before, .dev-waves .wave-collapse-inner > .btn-add::after,
+        .dev-waves .dev-add-slot::before, .dev-waves .dev-add-slot::after{ display:none; } /* .btn shading / sheen */
+
         /* enemy groups in the wave columns: drag / copy / delete in one line, all the same size
            (inline, the icon buttons sat on a different baseline than the 9-dots drag button) */
         .enemy-card .card-controls{ display:flex; align-items:center; justify-content:center; gap:4px; }
@@ -706,6 +789,19 @@
            card is covered by a grid of 260 x 132 tiles, each with its own pieces - no per-tile clipping,
            so they drift over the tile edges and the whole card is one scene */
         .dev-ab-tile{ position:absolute; width:260px; height:132px; pointer-events:none; }
+        /* off screen (IntersectionObserver in the ability script): no tiles = no animations running.
+           Measured on a big map: these animations kept the page busy ~40 % of the time even while
+           you were scrolled down in the waves - that was the lag. */
+        .dev-ab-bg.dev-ab-off > .dev-ab-tile{ display:none; }
+        /* Any running animation makes the browser redraw every frame, and on a big map one frame
+           of this page costs ~150 ms (measured) - so nothing may animate where it can't be seen:
+           the hidden loading screen's dots, and (paused by the "off screen" script at the bottom)
+           the map's sky drift and the tower cards' sparks while they're scrolled away. */
+        .editor-loader.is-done *,
+        .editor-loader.is-done *::before,
+        .editor-loader.is-done *::after{ animation:none !important; }
+        .dev-paused, .dev-paused::before, .dev-paused::after,
+        .dev-paused *, .dev-paused *::before, .dev-paused *::after{ animation-play-state:paused !important; }
         .dev-ab-tile > .concept-fx{ overflow:visible; }
         /* Ice Storm's white-out flash is per card in the game - per tile it would blink in squares */
         .dev-ab-tile > .concept-fx::after{ display:none; }
@@ -825,8 +921,9 @@
             <div class="dev-changes">
                 <h3>Celkově</h3>
                 <ul>
+                    <li><strong>Výkon</strong> - animace, které nejsou vidět, se zastaví (pozadí ability karet, jiskry ve Towers, obloha v mapě mimo obrazovku, schovaný loading screen). Dřív stránka i v klidu pořád překreslovala a sekala se. Ikony, obrázky věží a pozadí abilit se při změnách už nekreslí znovu.</li>
                     <li><strong>Boční okraje</strong> celého editoru o ~20 % menší (rámeček editoru, panely, box Map Settings, karta mapy).</li>
-                    <li><strong>Menu, Save Slots, Map Preview</strong> mají zlatý rámeček 2 px, který obíhá i vystupující ouško (jeden obrys).</li>
+                    <li><strong>Menu, Save Slots, Map Preview</strong> mají jemný zlatý rámeček 1 px a hlubší stín. Rámeček obíhá i vystupující ouško (jeden obrys).</li>
                     <li><strong>Hlídač cest</strong> místo tlačítka Validate Map Paths - průběžně kontroluje mapu (chybí Start / End, Start bez cesty k žádnému End) a cesty skupin nepřátel ve vlnách (špatný tvar jako „S1E“, neexistující Start / End jako „S1E6“ bez E6, žádná cesta mezi nimi). Chyby visí nad Menu, dokud se neopraví (i když je Menu zasunuté). Běžné zprávy editoru krok po kroku se už neukazují.</li>
                     <li><strong>Format &amp; Copy JSON</strong> vlevo pod Final JSON (místo Validate Map Paths), Export Map vpravo. Po kliknutí ukáže na 2 s „Copied!“ jako Share Map.</li>
                     <li><strong>Share Map</strong> - „Copied!“ se po 2 s vždy vrátí na „Share Map“, i po rychlém dvojkliku (dřív tam zůstalo).</li>
@@ -891,6 +988,9 @@
                     <li><strong>Shake Effects / Custom Damage</strong> - Delete stejně vysoké jako políčka a v jedné řadě s nimi.</li>
                     <li><strong>Enemy Types List</strong> v jednom řádku, posouvá se do strany jako Price Progression. Popis typů je uvnitř jeho hnědého rámu hned pod přidáním typu.</li>
                     <li><strong>Enemy Shake Effects a Custom Enemy Damage</strong> mají každý svůj hnědý rám jako Enemy Types List, jednotlivé řádky uvnitř už vlastní rámeček nemají.</li>
+                    <li><strong>Vlny</strong> zůstávají pod sebou, mají jemný zlatý rámeček. Skupiny nepřátel ve vlně jsou v jedné řadě vedle sebe, která se posouvá do strany (zlatý scrollbar); řada si drží pozici i po každé změně.</li>
+                    <li><strong>Kompaktní skupiny nepřátel</strong> (karta 200 px) s nadpisem „Group N“, všech 9 polí pod sebou (Type, Skin, Count, Health, Speed, Path, Interval, First Delay, Coin Reward).</li>
+                    <li><strong>Čárkovaná pole</strong> „+ Add Enemy Group“ jako poslední karta v řadě skupin (po přidání / kopii skupiny se řada posune k nové kartě) a „+ Add New Wave“ pod vlnami.</li>
                     <li><strong>Waves - náhled skinu</strong> - při najetí myší na možnost ve výběru Skin se vedle ukáže nepřítel, jak ho kreslí hra (Enemy.js): Random = Golem a Oko vedle sebe, Golem / Fiery Eye = jen ten jeden. Kvalita podle Menu → Graphics (Low / High).</li>
                 </ul>
                 <h3>Selecty</h3>
@@ -1206,9 +1306,13 @@
                     </div>
                 </div>
 
-                <div id="waves-editor-container" class="repeater-container">
+                <!-- dev: waves under each other, each wave's enemy groups in one row that scrolls
+                     sideways (CSS .dev-waves), dashed "+ Add New Wave" slot under the waves -->
+                <div class="dev-waves" id="devWaves">
+                    <div id="waves-editor-container" class="repeater-container">
+                    </div>
+                    <button id="add-wave-button" class="btn btn-add btn-green dev-add-slot dev-add-wave">+ Add New Wave</button>
                 </div>
-                <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
             </div>
             <div id="waveEditorPanel" class="editor-panel d-none"> 
                 <h3>Wave Editor</h3>
@@ -1487,12 +1591,16 @@
             // selects in the static HTML now, and any the editor renders later (waves, effects, damage...)
             const scan = root => {
                 if (root.matches?.('select')) enhance(root);
-                root.querySelectorAll?.('select').forEach(enhance);
+                if (root.getElementsByTagName) [...root.getElementsByTagName('select')].forEach(enhance); // (enhance moves the select)
             };
             document.addEventListener('DOMContentLoaded', () => {
                 scan(document.body);
                 new MutationObserver(records => {
-                    records.forEach(r => r.addedNodes.forEach(n => { if (n.nodeType === 1) scan(n); }));
+                    // thousands of small nodes per re-render (stepper buttons, icons...) - only elements
+                    // that are a select or have children can hold one
+                    for (const r of records) for (const n of r.addedNodes) {
+                        if (n.nodeType === 1 && (n.tagName === 'SELECT' || n.firstElementChild)) scan(n);
+                    }
                     // the open list's select was re-rendered away
                     if (openWrap && !openWrap.isConnected) openWrap = null;
                 }).observe(document.body, { childList: true, subtree: true });
@@ -1645,10 +1753,17 @@
         const stubMap = { tileSize: TILE, tileToWorld: () => ({ x: 0, y: 0 }) };
         const num = v => Number(String(v ?? '').replace(/[\s\u00A0]/g, '').replace(',', '.')) || 0;
 
+        // every edit anywhere re-renders the tower cards too - draw each color / quality once
+        const imgCache = new Map();
         function towerImage(color) {
-            const t = new Tower(null, stubMap, 0, 0, { color });
             // follow the editor's own Graphics: Low / High select
             const quality = document.getElementById('editorGraphicsSelect')?.value || 'low';
+            const key = color + '|' + quality;
+            if (!imgCache.has(key)) imgCache.set(key, drawTower(color, quality));
+            return imgCache.get(key);
+        }
+        function drawTower(color, quality) {
+            const t = new Tower(null, stubMap, 0, 0, { color });
             const src = quality === 'high' ? t._preRenderTowerHigh(TILE) : t._preRenderTowerLow(TILE);
             // same 45% crop as the game's shop card
             const c = document.createElement('canvas');
@@ -1753,11 +1868,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             const COPY = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="2.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><rect x="3.5" y="6.5" width="12" height="15" rx="2" fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".9"/><path d="M6.5 11.5h6M6.5 14.5h6M6.5 17.5h4" stroke="#7a4a12" stroke-width="1.2" stroke-linecap="round"/></svg>';
             const DELETE = '<svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoXLight"/></svg>';
+            // parsed once, cloned per button (hundreds of buttons on every wave re-render)
+            const tpl = html => { const t = document.createElement('template'); t.innerHTML = html; return t.content; };
+            const COPY_NODE = tpl(COPY), DELETE_NODE = tpl(DELETE);
             const swapIn = root => {
                 root.querySelectorAll('.btn-copy:not([data-dev-ico]), .btn-delete:not([data-dev-ico])').forEach(b => {
                     const text = b.textContent.trim();
-                    if (b.classList.contains('btn-copy') && text === '📋') b.innerHTML = COPY;
-                    else if (b.classList.contains('btn-delete') && text === 'X') { b.innerHTML = DELETE; b.title ||= 'Delete'; }
+                    if (b.classList.contains('btn-copy') && text === '📋') b.replaceChildren(COPY_NODE.cloneNode(true));
+                    else if (b.classList.contains('btn-delete') && text === 'X') { b.replaceChildren(DELETE_NODE.cloneNode(true)); b.title ||= 'Delete'; }
                     else return; // e.g. "Yes, remove" in the confirm popup keeps its text
                     b.dataset.devIco = '1';
                 });
@@ -1765,7 +1883,10 @@
             new MutationObserver(records => {
                 // a re-render adds many cards to one container - look at each container once
                 const roots = new Set();
-                records.forEach(r => { if ([...r.addedNodes].some(n => n.nodeType === 1)) roots.add(r.target); });
+                for (const r of records) {
+                    if (roots.has(r.target) || r.target.dataset?.devIco) continue; // an icon we just put in
+                    for (const n of r.addedNodes) if (n.nodeType === 1) { roots.add(r.target); break; }
+                }
                 roots.forEach(swapIn);
             }).observe(document.body, { childList: true, subtree: true });
             swapIn(document.body);
@@ -1802,31 +1923,46 @@
             veil.setAttribute('aria-hidden', 'true');
             bg.after(veil);
             resizer.observe(bg); // fills it with tiles once it has a size (hidden panel = 0 x 0)
+            onScreen.observe(bg); // animations only run while the card is in view
         }
 
         // one 260 x 132 tile of the game card's pieces per grid cell - rebuilt only when the grid changes
-        function tile(bg) {
-            const cols = Math.ceil(bg.clientWidth / 260);
-            const rows = Math.ceil(bg.clientHeight / 132);
+        function tile(bg, w = bg.clientWidth, h = bg.clientHeight) {
+            const cols = Math.ceil(w / 260);
+            const rows = Math.ceil(h / 132);
             const grid = `${cols}x${rows}`;
             if (!cols || !rows || bg.dataset.grid === grid) return;
             bg.dataset.grid = grid;
             bg.querySelectorAll(':scope > .dev-ab-tile').forEach(t => t.remove());
-            const seed = +bg.dataset.seed;
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    const t = document.createElement('div');
-                    t.className = 'dev-ab-tile';
-                    t.style.left = c * 260 + 'px';
-                    t.style.top = r * 132 + 'px';
-                    buildCardFx(t, bg.dataset.theme, seed + (r * cols + c) * 37);
-                    bg.appendChild(t);
+            // every edit anywhere re-renders the ability cards too - build each (theme, seed, grid)
+            // set of tiles once and clone it afterwards
+            const key = `${bg.dataset.theme}|${bg.dataset.seed}|${grid}`;
+            let set = tileCache.get(key);
+            if (!set) {
+                set = document.createDocumentFragment();
+                const seed = +bg.dataset.seed;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const t = document.createElement('div');
+                        t.className = 'dev-ab-tile';
+                        t.style.left = c * 260 + 'px';
+                        t.style.top = r * 132 + 'px';
+                        buildCardFx(t, bg.dataset.theme, seed + (r * cols + c) * 37);
+                        set.appendChild(t);
+                    }
                 }
+                tileCache.set(key, set);
             }
+            bg.appendChild(set.cloneNode(true));
         }
+        const tileCache = new Map();
+        const onScreen = new IntersectionObserver(entries => entries.forEach(e => {
+            if (!e.target.isConnected) { onScreen.unobserve(e.target); return; }
+            e.target.classList.toggle('dev-ab-off', !e.isIntersecting);
+        }), { rootMargin: '150px 0px' });
         const resizer = new ResizeObserver(entries => entries.forEach(e => {
             if (!e.target.isConnected) resizer.unobserve(e.target); // card re-rendered away
-            else tile(e.target);
+            else tile(e.target, e.contentRect.width, e.contentRect.height); // no forced layout
         }));
 
         const content = document.getElementById('abilityEditorContent');
@@ -1841,6 +1977,81 @@
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
     <script type="module" src="js/level_editor/TooltipController.js"></script>
+    <!-- dev: off screen = paused. The map (sky drift) and the Tower editor (the tower cards' sparks)
+         get .dev-paused while they're scrolled out of view (or their panel is hidden). -->
+    <script>
+        (() => {
+            const io = new IntersectionObserver(entries => entries.forEach(e =>
+                e.target.classList.toggle('dev-paused', !e.isIntersecting)), { rootMargin: '100px 0px' });
+            ['mapCanvasContainer', 'towerEditorContent'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) io.observe(el);
+            });
+        })();
+    </script>
+    <!-- dev: Waves - each wave's enemy groups are one row that scrolls sideways (.wave-collapse-inner).
+         editor_wave.js rebuilds every wave card on every change, which would throw each row back
+         to its start: the rows' scroll positions are remembered (per wave) and put back right
+         after a rebuild, before the page is painted. "+ Add Enemy Group" / a group's Copy then
+         scroll that row to the new card. -->
+    <script>
+        (() => {
+            const root = document.getElementById('devWaves');
+            const list = document.getElementById('waves-editor-container');
+            if (!root || !list) return;
+            const ROW = '.wave-card .wave-collapse-inner';
+            const saved = new Map(); // wave index -> scrollLeft
+            let pending = null;      // { wave, card: index | 'last' } to bring into view after the rebuild
+
+            root.addEventListener('scroll', e => {
+                const row = e.target;
+                if (!(row instanceof Element) || !row.matches(ROW)) return;
+                saved.set(row.closest('.wave-card').dataset.waveIndex, row.scrollLeft);
+            }, true);
+
+            const restore = () => {
+                list.querySelectorAll(ROW).forEach(row => {
+                    const left = saved.get(row.closest('.wave-card').dataset.waveIndex);
+                    if (left) row.scrollLeft = left;
+                });
+                if (!pending) return;
+                const { wave, card } = pending;
+                pending = null;
+                requestAnimationFrame(() => {
+                    const row = list.querySelector(`.wave-card[data-wave-index="${wave}"] .wave-collapse-inner`);
+                    if (!row) return;
+                    const target = card === 'last'
+                        ? row.querySelector(':scope > .btn-add')
+                        : row.querySelector(`.enemy-card[data-enemy-index="${card}"]`);
+                    if (!target) return;
+                    const tr = target.getBoundingClientRect(), rr = row.getBoundingClientRect();
+                    if (tr.left < rr.left || tr.right > rr.right) {
+                        row.scrollTo({ left: row.scrollLeft + (tr.right - rr.right) + 12, behavior: 'smooth' });
+                    }
+                });
+            };
+            // once per frame, after all the other observers changed the fresh cards (setting
+            // scrollLeft forces a layout - doing it mid-render made the browser lay out twice)
+            let queued = false;
+            const queue = () => {
+                if (queued || (!saved.size && !pending)) return;
+                queued = true;
+                requestAnimationFrame(() => { queued = false; restore(); });
+            };
+            // only the list's own children = a re-render (not every input / icon change inside)
+            new MutationObserver(queue).observe(list, { childList: true });
+
+            root.addEventListener('click', e => {
+                const add = e.target.closest?.('.wave-collapse-inner > .btn-add');
+                if (add) { pending = { wave: add.closest('.wave-card').dataset.waveIndex, card: 'last' }; return; }
+                const copy = e.target.closest?.('.enemy-card .btn-copy');
+                if (copy) {
+                    const c = copy.closest('.enemy-card');
+                    pending = { wave: c.dataset.waveIndex, card: +c.dataset.enemyIndex + 1 };
+                }
+            }, true);
+        })();
+    </script>
     <!-- dev: "Copied!" on Share Map and Format & Copy JSON for 2 s. main.js's own Share handler
          takes the button's current text as the original, so a 2nd click within 2 s left
          "Copied!" there for good - it's stopped here (capture) and done again: the real label is
