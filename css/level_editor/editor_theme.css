@@ -1,0 +1,920 @@
+/* Level editor - look & layout on top of the other css/level_editor/* files
+   (sections, panels, cards, selects, inputs, waves, map dock, ...) */
+
+/* --- Map: Width / Height / Resize Map centred (Map Style + Graphics moved to the Menu) --- */
+.map-top-bar{ justify-content:center; }
+
+/* --- Menu: Map Style + Graphics above the Map button --- */
+.dev-menu-selects{
+    display:flex; flex-direction:column; gap:4px;
+    padding:8px; margin-bottom:4px; border-radius:8px;
+    background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.15);
+}
+.dev-menu-label{ color:#f0c674; font-weight:700; font-size:.8rem; text-align:center; }
+.dev-menu-label:not(:first-child){ margin-top:4px; }
+.dev-menu-selects .dev-sel{ display:block; width:100%; }
+.dev-menu-selects .dev-sel-trigger{ min-width:0; text-align:center; }
+.dev-menu-selects .dev-sel-option{ text-align:center; }
+
+/* --- Map: a bit more space between the top bar and the map --- */
+/* position + z-index: the Map Style / Graphics lists drop over the canvas, which sits at
+   z-index 1000 (editor.css #mapCanvas) - stays under the fixed side panels (1002) */
+.map-top-bar{ margin-bottom:12px; position:relative; z-index:1001; }
+
+/* --- Map: Width / Height with −/+ (same box as JsonStepper.css, just not full width) --- */
+.dev-size-stepper{ width:auto; margin-top:0; }
+.dev-size-stepper input.input-small{
+    width:46px; margin:0; padding:6px 8px; border:0; border-radius:0;
+    background:transparent; color:#f0f0f0; text-align:center;
+    -moz-appearance:textfield;
+}
+.dev-size-stepper input.input-small:focus{ outline:none; }
+.dev-size-stepper input::-webkit-outer-spin-button,
+.dev-size-stepper input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+
+/* --- Map: no top margin on the key containers (editor.css .editor-key-container) --- */
+#tileDrawingPanel .editor-key-container{ margin-top:0; }
+
+/* --- Map: Search tile + Filters on one row --- */
+#tileKey .tile-editor-header,
+.dev-tile-header-slot .tile-editor-header{ flex-direction:row; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px 18px; }
+#tileKey .tile-key-filters,
+.dev-tile-header-slot .tile-key-filters{ padding:0; }
+/* search + filters right under the map (moved out of #tileKey after every render, see script) */
+.dev-tile-header-slot{ margin:10px 0 4px; }
+.dev-tile-header-slot .tile-editor-header{ margin:0; }
+
+/* --- Map: the tile picker lies INSIDE the map, along its bottom edge, on a transparent
+       background; the selected tile (a copy) stands at its right end. #tileKey itself sits
+       in the dock (editor_map.js only ever looks it up by id), its header is moved out. --- */
+.dev-tile-dock{
+    position:absolute; left:0; right:0; bottom:0;
+    z-index:1001; /* over the canvas (editor.css #mapCanvas z-index:1000) */
+    display:flex; align-items:flex-end; gap:10px;
+    padding:6px 10px 8px; box-sizing:border-box;
+    background:rgba(0, 0, 0, 0.3);
+    pointer-events:none; /* the empty parts let the mouse through to the map */
+}
+.dev-tile-dock > #tileKey{
+    flex:1 1 auto; min-width:0; width:auto; max-width:none;
+    margin:0; padding:0; background:transparent; display:block;
+}
+.dev-tile-dock .tile-slider-wrapper{ width:100%; max-width:100%; min-width:0; margin:0; overflow:hidden; }
+.dev-tile-dock .tile-grid-main{
+    background:transparent; margin:0; padding:2px 2px 4px; min-width:0; max-width:100%; box-sizing:border-box;
+    pointer-events:auto; /* tiles, wheel scroll, scrollbar */
+}
+/* readable over any map / sky */
+.dev-tile-dock .tile-group-label,
+.dev-tile-dock .tile-label{ text-shadow:0 1px 2px #000, 0 0 6px rgba(0,0,0,.9); }
+.dev-tile-dock .tile-selector-btn{ box-shadow:0 2px 6px rgba(0,0,0,.55); }
+.dev-current-wrap{
+    order:-2; flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-start;
+    padding:2px 0 4px;
+}
+#tileDrawingPanel .tile-object-count{ margin-top:6px; }
+.dev-current-wrap > .current-tile-display{
+    pointer-events:auto;
+    box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 0 12px rgba(240,198,116,.55), 0 3px 8px rgba(0,0,0,.6);
+}
+/* --- Waves: hovering a Skin option shows the enemy as the game draws it (Random = both) --- */
+.dev-skin-pop{
+    position:fixed; z-index:3000; display:none; pointer-events:none;
+    gap:14px; align-items:flex-end; padding:10px 14px 8px;
+    background:linear-gradient(180deg, #3a2f22, #241c13);
+    border:2px solid #f0c674; border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.6), 0 0 10px rgba(240,198,116,.25);
+}
+.dev-skin-pop.is-open{ display:flex; animation:devSkinPop .14s ease-out; }
+.dev-skin-pop figure{ margin:0; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.dev-skin-pop img{ height:72px; width:auto; /* (height set per enemy by the script, keeps the game ratio) */ filter:drop-shadow(0 3px 4px rgba(0,0,0,.6)); }
+.dev-skin-pop figcaption{ color:#f0c674; font-size:.72rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
+@keyframes devSkinPop{ from{ opacity:0; transform:scale(.94); } to{ opacity:1; transform:none; } }
+body.ui-fx-low .dev-skin-pop.is-open{ animation:none; }
+/* the "i" tooltips (TooltipController, inline z-index:1000) above the tile strip */
+#dynamic-tooltip{ z-index:2000 !important; }
+/* gold line between the selected tile (left) and the rest */
+.dev-tile-dock::before{
+    content:''; order:-1; flex:0 0 2px; align-self:stretch;
+    margin:4px 0; border-radius:1px;
+    background:#f0c674;
+}
+/* group names (Terrains / Paths / Map Objects) in our gold */
+.dev-tile-dock .tile-group-label{ color:#f0c674; opacity:1; }
+/* no scrollbar - the strip still scrolls (wheel, touchpad) */
+.dev-tile-dock .tile-grid-main{ scrollbar-width:none; -ms-overflow-style:none; }
+.dev-tile-dock .tile-grid-main::-webkit-scrollbar{ display:none; width:0; height:0; }
+
+/* --- Waves: Enemy Types List scrolls sideways in one row, like Extra Life's Price Progression --- */
+#enemyTypesTagsContainer{
+    flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; align-items:center;
+    min-height:0; padding:6px 10px; box-sizing:border-box; max-width:100%;
+}
+#enemyTypesTagsContainer .enemy-tag{ flex-shrink:0; }
+#enemyTypesTagsContainer::-webkit-scrollbar{ height:8px; }
+#enemyTypesTagsContainer::-webkit-scrollbar-track{ background:transparent; }
+#enemyTypesTagsContainer::-webkit-scrollbar-thumb{ background-color:rgb(240,198,116); border-radius:4px; border:1px solid transparent; }
+
+/* --- Map Settings: some air around the Price Progression row --- */
+#extraLifePricesTagsContainer{ margin-top:10px; margin-bottom:10px; }
+
+/* --- Menu, Save Slots, Map Preview: soft gold 1px frame + deep shadow, the frame runs round the handle tab too.
+       The tab overlaps the panel by its 1px border and has the panel's background,
+       so it covers that bit of the panel's frame - one outline with the tab bulging out. --- */
+.editor-tabs, .save-slots, .map-preview-panel{
+    --dev-frame:rgba(240,198,116,.42);
+    border:1px solid var(--dev-frame);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.4);
+}
+.editor-tabs .panel-toggle-tab,
+.save-slots .panel-toggle-tab,
+.map-preview-panel .panel-toggle-tab{ border:1px solid var(--dev-frame); }
+.editor-tabs .panel-toggle-tab{ left:-30px; border-right:none; }
+.save-slots .panel-toggle-tab{ right:-30px; border-left:none; }
+.panel-toggle-tab:hover{ background-color:var(--main-bg-color); color:#ffd88c; }
+.panel-toggle-tab:hover .dev-btn-ico{ filter:drop-shadow(0 0 4px rgba(240,198,116,.8)); }
+
+/* --- Path errors right above the Menu, hanging there until fixed; stays in view when
+       the Menu is slid away (cancels the panel's own slide). The editor's step-by-step
+       status messages (main.js setStatus) are not shown at all. --- */
+.editor-tabs > #statusMessage{ display:none !important; }
+.editor-tabs > .dev-path-errors{
+    position:absolute; left:-1px; right:-1px; bottom:calc(100% + 10px);
+    margin:0; padding:8px 12px 9px; box-sizing:border-box;
+    background:#f8d7da; color:#721c24;
+    border:2px solid #b02a37; border-radius:8px;
+    font-size:.82rem; line-height:1.35; text-align:left;
+    box-shadow:0 4px 12px rgba(0,0,0,.45);
+    max-height:40vh; overflow-y:auto;
+    transition:transform .3s ease;
+    animation:devErrIn .2s ease-out;
+}
+.editor-tabs > .dev-path-errors[hidden]{ display:none; }
+.editor-tabs.is-collapsed > .dev-path-errors{ transform:translateX(calc(-100% - 30px)); }
+.dev-path-errors strong{ display:block; margin-bottom:4px; font-size:.85rem; }
+.dev-path-errors ul{ margin:0; padding-left:16px; }
+.dev-path-errors li + li{ margin-top:2px; }
+.dev-path-errors code{ font-family:inherit; font-weight:700; }
+@keyframes devErrIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+body.ui-fx-low .dev-path-errors{ animation:none; }
+
+/* --- Map Preview in the top LEFT corner (editor.css has it top right), handle on its right side --- */
+.map-preview-panel{ left:30px; right:auto; }
+.map-preview-panel.is-collapsed{ transform:translateX(calc(-100% - 30px)); }
+.map-preview-panel .panel-toggle-tab{
+    left:auto; right:-30px;
+    border-left:none; border-right:1px solid var(--dev-frame);
+    border-radius:0 8px 8px 0;
+}
+
+/* --- Map: Brush Settings on top, tile picker under it over the whole row.
+       min-width:0 everywhere on the way down, otherwise the wide tile row (it scrolls
+       sideways inside .tile-grid-main) stretches the boxes and overflows the card. --- */
+#tileDrawingPanel{ flex-direction:column; align-items:stretch; }
+#tileDrawingPanel > div,
+#tileDrawingPanel > div:first-child,
+#tileDrawingPanel > div:last-child{ flex:0 0 auto; width:100%; min-width:0; }
+#tileDrawingPanel .tile-key-container{ max-width:100%; width:100%; min-width:0; box-sizing:border-box; }
+/* (not on .tile-key-container - the tile search suggestions drop out of it) */
+#tileDrawingPanel .tile-slider-wrapper{ max-width:100%; width:100%; min-width:0; overflow:hidden; }
+#tileDrawingPanel .tile-grid-main{ min-width:0; max-width:100%; box-sizing:border-box; }
+.tileDrawingTiles{ text-align:center; }
+
+/* --- Map: "Selected" tile as the same 70px square as the tiles in the picker
+       (map.css .tile-item / .tile-selector-btn), gold border = the chosen one --- */
+.dev-current-wrap > .current-tile-display{
+    flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+    width:70px; min-width:70px; height:70px; box-sizing:border-box;
+    padding:2px; border:2px solid #f0c674; border-radius:4px;
+    font-weight:bold; font-size:.72rem; line-height:1.15;
+    white-space:normal; text-align:center; overflow:hidden;
+    background-size:cover; background-position:center;
+}
+
+/* --- Map: Brush Settings in one row - title + size, then the shapes --- */
+#tileDrawingPanel .tileDrawingBrushItems{ margin-top:0; }
+#tileDrawingPanel .brush-key-container{
+    display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px 18px;
+    box-sizing:border-box;
+}
+#tileDrawingPanel .brush-key-container .brush-options{ margin:0; }
+.brush-button-row{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
+.brush-settings-head{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.brush-settings-head .brushSizeInput{
+    width:50px; padding:4px; border-radius:4px; border:1px solid #ccc;
+}
+
+/* "Selected:" + tile + X / Y moved out of the tile header - the editor re-renders that header
+   on every hover, so the originals stay in it hidden and mirrors show them: the selected tile
+   at the right end of the tile dock, X / Y in the Brush row (script at the bottom) */
+.tile-editor-header-row > strong:first-child,
+.tile-editor-header #currentTileDisplay,
+.tile-editor-header #tileCoordinates{ display:none; }
+
+/* X / Y of the hovered tile - framed like the Settings panels, gold dark sockets for the numbers */
+.dev-coords{
+    display:flex; align-items:center; gap:6px;
+    padding:5px 8px; border-radius:8px;
+    background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.45);
+}
+.dev-coord{ display:inline-flex; align-items:center; gap:5px; }
+.dev-coord b{ color:#f0c674; font:700 14px 'Cinzel', Georgia, serif; }
+.dev-coord span{
+    display:inline-block; min-width:34px; padding:3px 6px; box-sizing:border-box;
+    border-radius:5px; text-align:center;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.25);
+    color:#ffe7a3; font:700 14px Arial, sans-serif; font-variant-numeric:tabular-nums;
+}
+
+/* --- Menu buttons: same .btn look as Main Menu (radius, bevel, drop, glow), own colours kept --- */
+.editor-tabs .btn-test-map,
+.editor-tabs .btn-blue,
+.editor-tabs .btn-help,
+.editor-tabs .active-tab{
+    --dev-btn-edge:#5c2e0e;
+    border:2px solid var(--dev-btn-edge) !important;
+    border-radius:10px;
+    padding:10px 20px;
+    transform:none;
+    box-shadow:
+        inset 0 2px 1px rgba(255,255,255,.3),
+        inset 0 -10px 14px rgba(0,0,0,.22),
+        0 5px 0 var(--dev-btn-edge),
+        0 11px 16px rgba(0,0,0,.4) !important;
+}
+.editor-tabs .btn-test-map:hover,
+.editor-tabs .btn-blue:hover,
+.editor-tabs .btn-help:hover,
+.editor-tabs .active-tab:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        inset 0 2px 1px rgba(255,255,255,.35),
+        inset 0 -10px 14px rgba(0,0,0,.2),
+        0 5px 0 var(--dev-btn-edge),
+        0 0 16px rgba(243,229,171,.4) !important;
+}
+.editor-tabs .btn-test-map:active,
+.editor-tabs .btn-blue:active,
+.editor-tabs .btn-help:active,
+.editor-tabs .active-tab:active{
+    transform:translateY(5px);
+    box-shadow:inset 0 3px 8px rgba(0,0,0,.5), 0 1px 0 var(--dev-btn-edge) !important;
+}
+.editor-tabs .btn-test-map{ --dev-btn-edge:#1e3d1a; }
+.editor-tabs .btn-blue{ --dev-btn-edge:#1a334d; }
+.editor-tabs .btn-help{ --dev-btn-edge:#9c978d; text-shadow:none; }
+.editor-tabs .btn-help:active{ background-color:#d1ccc0; }
+.editor-tabs .active-tab{ --dev-btn-edge:#b8860b; text-shadow:0 1px 0 rgba(255,255,255,.35); }
+
+/* --- Gold icons (same socket + gold silhouette as the Settings icons in the game) --- */
+.dev-ico{
+    flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; margin-right:8px; border-radius:6px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6), 0 1px 0 rgba(255,231,163,.08);
+    vertical-align:middle;
+}
+.dev-ico svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+#basicInfoEditorPanel .dev-ico-label{ display:flex; align-items:center; }
+/* Title + Description headings centered; Title text centered too, Description text stays left */
+#basicInfoEditorPanel .dev-ico-label.is-centered{ justify-content:center; }
+#mapNameInput{ text-align:center; }
+
+/* --- Extra Life: Off / On switch like Show FPS in Settings (css/ui.css .segmented-control).
+       The real checkbox stays (json_functions.js reads/sets .checked), just hidden -
+       a click anywhere on the row flips it through the <label>. --- */
+.dev-switch-row{
+    display:flex !important; align-items:center; justify-content:space-between; gap:12px;
+    margin:0 0 12px; padding:8px 10px; border-radius:6px;
+    background:rgba(0,0,0,.18); border:1px solid rgba(240,198,116,.15);
+    cursor:pointer; transition:background-color .15s ease;
+}
+.dev-switch-row:hover{ background-color:rgba(240,198,116,.07); }
+.dev-switch-row .dev-switch-text{ display:flex; align-items:center; gap:4px; }
+.dev-switch-input{ position:absolute; opacity:0; width:0; height:0; pointer-events:none; }
+.dev-switch{
+    display:flex; position:relative; flex:0 0 auto;
+    background:#967456; color:#fff; font-weight:700;
+    border-radius:6px; padding:2px;
+}
+.dev-switch::before{
+    content:""; position:absolute; box-sizing:border-box;
+    top:2px; left:2px; bottom:2px; width:calc(50% - 2px);
+    background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+    border:1px solid #5c2e0e; border-radius:4px;
+    box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -6px 8px rgba(0,0,0,.25), inset 0 0 0 1px rgba(0,0,0,.15);
+    transition:transform .25s ease;
+}
+.dev-switch span{
+    position:relative; z-index:1; padding:5px 15px; border-radius:4px;
+    font-size:.9rem; font-weight:700; opacity:.6; transition:color .2s, opacity .2s;
+}
+.dev-switch span:first-child,
+.dev-switch-input:checked + .dev-switch span:last-child{ color:#f3e5ab; opacity:1; }
+.dev-switch-input:checked + .dev-switch span:first-child{ color:#fff; opacity:.6; }
+.dev-switch-input:checked + .dev-switch::before{ transform:translateX(100%); }
+.dev-switch-input:focus-visible + .dev-switch{ outline:2px solid #f0c674; outline-offset:2px; }
+
+/* --- Selects: same look as the Background picker in the game's Settings
+       (tan #967456, rounded, white arrow -> gold on hover, custom option list).
+       The real <select> stays underneath as the source of truth (see the script at the bottom). --- */
+.dev-sel{ position:relative; display:inline-block; vertical-align:middle; max-width:100%; }
+.dev-sel.is-block,
+.dev-sel:has(> .input-enemy-effect-type),
+.dev-sel:has(> .enemy-custom-damage-row){ display:block; width:100%; }
+.dev-sel:has(> .input-enemy-type){ display:block; width:100%; max-width:181px; margin-top:3px; }
+.dev-sel[data-for="ability-type-selector"]{ width:250px; }
+
+/* Shake Effects / Custom Damage cards - spacing between them and the Enemy Types List card */
+.dev-wave-card{ margin-top:16px; }
+/* Enemy Types List: the description sits inside the card, under the add-a-type row */
+.dev-types-note{ margin:10px 0 0; font-size:14px; color:#c9b48a; text-align:center; }
+.dev-wave-card h3{ margin-top:0; }
+/* the card is the frame now - the rows inside lose their own (wave.css .effect-row) */
+.dev-wave-card .effect-row{ border:0; background:transparent; padding:4px 0; }
+/* Delete in line with the fields: rows sit on the bottom (the labels are above the fields),
+   fields and the button all 36px tall, button as wide as the card header buttons */
+.dev-wave-card .effect-row{ align-items:flex-end; }
+.dev-wave-card .effect-row .json-stepper-wrap,
+.dev-wave-card .effect-row .dev-sel-trigger{ height:36px; box-sizing:border-box; }
+.dev-wave-card .effect-row .json-stepper-wrap input{ height:100%; }
+.dev-wave-card .effect-row > .btn-delete{
+    flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:36px; margin:0; padding:0 !important; box-sizing:border-box;
+}
+
+/* Gold Rush: the Round Up checkbox centred under its label */
+.ability-card label.editor-row:has(> .roundUpCheckbox){ width:fit-content; }
+.ability-card label.editor-row > .roundUpCheckbox{ align-self:center; }
+.dev-sel > select.dev-sel-native{
+    position:absolute; inset:0; width:100%; height:100%; margin:0;
+    opacity:0; pointer-events:none;
+}
+.dev-sel-trigger{
+    display:block; width:100%; box-sizing:border-box; min-width:150px;
+    padding:6px 32px 6px 12px; margin:0;
+    border:2px solid transparent; border-radius:6px;
+    background-color:#967456; color:#fff;
+    background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23fff" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+    background-repeat:no-repeat; background-position:right 12px top 50%; background-size:12px auto;
+    font:700 .9rem Arial, sans-serif; text-align:left;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    cursor:pointer; transition:border-color .2s;
+}
+.dev-sel-trigger:hover,
+.dev-sel-trigger:focus-visible,
+.dev-sel-trigger.is-open{
+    outline:none; border-color:#f0c674;
+    background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23f0c674" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+}
+.dev-sel-list{
+    position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:60;
+    display:none; margin:0; padding:4px; list-style:none;
+    min-width:100%; max-height:240px; overflow-y:auto; box-sizing:border-box;
+    background-color:#967456; border-radius:8px;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);
+}
+.dev-sel-list.is-open{ display:block; }
+.dev-sel-list::-webkit-scrollbar{ width:6px; }
+.dev-sel-list::-webkit-scrollbar-track{ background:transparent; }
+.dev-sel-list::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
+.dev-sel-option{
+    padding:6px 10px; border-radius:6px; color:#fff;
+    font:700 .85rem Arial, sans-serif; text-align:left;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;
+}
+.dev-sel-option:hover,
+.dev-sel-option.is-selected{
+    background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+    box-shadow:inset 0 0 0 1px #5c2e0e, inset 0 2px 1px rgba(255,255,255,.3), inset 0 -4px 6px rgba(0,0,0,.25);
+    color:#f3e5ab;
+}
+.dev-sel-option.is-active{ outline:1px solid #f0c674; outline-offset:-2px; }
+
+/* --- Whole editor: side frames ~20% thinner (editor.css: container 30px, panel 1rem,
+       Map Settings box 15px, map card 12px) --- */
+.editor-container{ padding-left:24px; padding-right:24px; }
+
+/* --- Sections: no big frame around everything and no <hr> lines between the parts -
+       the title, every panel (Map, Map Settings, Towers, Waves, Abilities) and Final JSON
+       are each their own rounded box, same colour / corners as the old frame.
+       (The <hr>s stay in the HTML - the Menu buttons show / hide them with their panel.) --- */
+/* .box (editor.css) also draws a 1px #333 border - that was the line joining the boxes */
+.editor-container.box{ background:transparent; padding:0 !important; box-shadow:none; border:0; }
+.editor-panels-container > hr{ display:none !important; }
+/* sections: instead of the flat --main-bg-color a warm brown that darkens and fades
+   towards the bottom, a gold line along the top edge and a soft outline */
+.dev-section,
+.editor-panels-container > .editor-panel{
+    background:
+        linear-gradient(180deg, rgba(240,198,116,.07), transparent 140px),
+        linear-gradient(180deg, rgba(70,56,38,.95) 0%, rgba(48,39,28,.88) 260px, rgba(34,28,20,.8) 100%);
+    border:1px solid rgba(240,198,116,.12);
+    border-top-color:rgba(240,198,116,.5);
+    border-radius:12px;
+    padding:18px 20px;
+    box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 10px 26px rgba(0,0,0,.45);
+}
+.dev-section-head{ padding-top:14px; padding-bottom:14px; }
+.editor-panels-container > .editor-panel,
+.editor-panels-container + .dev-section{ margin-top:16px; }
+.editor-panel{ padding-left:.8rem; padding-right:.8rem; }
+.editor-description{ padding-left:12px; padding-right:12px; }
+.map-editor-card{ padding-left:10px; padding-right:10px; }
+/* Map and Map Settings: no own dark box any more - they sit right on the section's gradient */
+.map-editor-card, .map-top-bar, #tileDrawingPanel, .editor-description{ background:transparent; }
+/* Search tile... looks like every other input of the editor (brown field) */
+.tile-search-input{
+    background:#967456; border:1px solid #555; color:#f0f0f0;
+    padding:6px 10px; font-size:13px;
+}
+.tile-search-input::placeholder{ color:#f0f0f0; opacity:.85; }
+.tile-search-input:focus{ background:#967456; border-color:#f0c674; box-shadow:0 0 0 1px rgba(240,198,116,.45); }
+/* tower cards: a framed dark card with a soft gold edge and a lighter top, like the
+   game's cards, instead of the flat #2e261d box */
+#towerEditorContent .tower-card{
+    background:linear-gradient(180deg, #43362a 0%, #2f261c 55%, #261f17 100%);
+    border:1px solid rgba(240,198,116,.3);
+    border-radius:10px;
+    box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 6px 16px rgba(0,0,0,.4);
+}
+
+/* --- Map Settings: Price Progression gets the same gap above it as Starting Lifes (mt-4) --- */
+.dev-price-label{ margin-top:1.5rem; }
+/* Starting Coins / Lifes headings with the framed icon, centred like the other headings */
+#basicInfoEditorPanel .input-row-basic-stats .dev-ico-label{ justify-content:center; }
+.dev-ico.is-emoji{ font-style:normal; font-size:15px; line-height:1; }
+
+/* --- Difficulty: autocomplete - a text field that offers the stars, but takes any text too.
+       Same tan look as the selects (.dev-sel-trigger), list = .dev-sel-list --- */
+.dev-combo{ position:relative; display:block; width:100%; margin-top:3px; }
+.dev-combo-input{
+    display:block; width:100%; box-sizing:border-box; margin:0 !important;
+    padding:6px 32px 6px 32px !important;
+    border:2px solid transparent !important; border-radius:6px;
+    background-color:#967456 !important; color:#fff;
+    background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23fff" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+    background-repeat:no-repeat; background-position:right 12px top 50%; background-size:12px auto;
+    font:700 .9rem Arial, sans-serif; text-align:center;
+    transition:border-color .2s;
+}
+.dev-combo-input::placeholder{ color:rgba(255,255,255,.55); font-weight:400; }
+.dev-combo-input:hover,
+.dev-combo-input:focus,
+.dev-combo.is-open .dev-combo-input{
+    outline:none; border-color:#f0c674 !important;
+    background-image:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="292.4" height="292.4"><path fill="%23f0c674" d="M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z"/></svg>');
+}
+.dev-combo .dev-sel-list{ text-align:center; }
+.dev-combo-option{
+    padding:6px 10px; border-radius:6px; color:#fff;
+    font:700 .85rem Arial, sans-serif; text-align:center;
+    white-space:nowrap; cursor:pointer;
+}
+.dev-combo-option:hover,
+.dev-combo-option.is-selected{
+    background:linear-gradient(180deg, #a86a3a 0%, #8B4513 45%, #6b350e 100%);
+    box-shadow:inset 0 0 0 1px #5c2e0e, inset 0 2px 1px rgba(255,255,255,.3), inset 0 -4px 6px rgba(0,0,0,.25);
+    color:#f3e5ab;
+}
+.dev-combo-option.is-active{ outline:1px solid #f0c674; outline-offset:-2px; }
+
+/* --- Extra Life: Off -> the Price Progression part slides shut, On -> open.
+       Pure CSS on the real checkbox, so a loaded map / undo sets it right too. --- */
+.dev-collapse{
+    display:grid; grid-template-rows:1fr; opacity:1;
+    transition:grid-template-rows .35s ease, opacity .25s ease;
+}
+.dev-collapse > div{ min-height:0; overflow:hidden; }
+.input-group:has(#extraLifeCheckbox:not(:checked)) .dev-collapse{ grid-template-rows:0fr; opacity:0; }
+/* the switch row's own gap below isn't needed when there's nothing under it */
+.input-group:has(#extraLifeCheckbox:not(:checked)) .dev-switch-row{ margin-bottom:0; }
+
+/* --- Towers: Color up next to Name, the stats in 2 rows (Price / Damage / Fire Rate, then
+       Sell Price / Range / Speed) and the preview of the card exactly as in the game
+       (css/bars.css .concept-tower) on the right over both rows - so the card is about
+       as tall as the preview --- */
+#towerEditorContent .tower-card .card-body{
+    grid-template-columns:repeat(3, minmax(0, 1fr)) 268px;
+    /* top, not centre - Speed / Range have the "(x tiles)" line under them, Sell Price
+       would sit lower than them otherwise */
+    align-items:start;
+}
+/* the editor renders Price, Damage, Fire Rate, Range, Speed, Sell Price - order: puts them in place */
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="price"]){ order:1; }
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="damage"]){ order:2; }
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="fireRate"]){ order:3; }
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="sellPrice"]){ order:4; }
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="range"]){ order:5; }
+#towerEditorContent .tower-card .card-body > .editor-row:has([data-key="speed"]){ order:6; }
+#towerEditorContent .tower-card .card-body > .dev-tower-preview{ order:7; grid-column:4; grid-row:1 / span 2; align-self:center; }
+/* DPS badge in the tower card header - not needed (the preview card shows the DPS) */
+#towerEditorContent .badge-dps{ display:none; }
+/* the Color "i" sits after the colour swatch (moved there by the preview script) */
+#towerEditorContent .card-header .card-body-tower-color .info-icon{ margin-left:0; }
+
+/* Drag (9 dots) / Copy / Delete in the card headers - all the same size, and in one line
+   (inline they sat on the text baseline, the drag button has no text -> 3px higher) */
+.header-actions{ display:flex; align-items:center; gap:4px; }
+.header-actions > .btn-copy svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+.header-actions > .btn-drag,
+.header-actions > .btn-copy,
+.header-actions > .btn-delete{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:30px; padding:0 !important; box-sizing:border-box;
+}
+
+/* Color in the header: label + swatch in one line */
+#towerEditorContent .card-header .card-body-tower-color{
+    display:flex; flex-direction:row; align-items:center; gap:8px; margin:0;
+}
+#towerEditorContent .card-header .card-body-tower-color input{ margin:0; }
+.dev-tower-preview{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+.dev-tower-preview .label-text{ font-size:.9rem; color:#ccc; }
+/* same size as in the game's shop (bars.css: 260 x 132) */
+.dev-tower-preview .concept-tower{ width:260px; flex:0 0 auto; cursor:default; }
+
+/* ================================================================
+   Gold icons instead of emoji (💾 ❌ 🗺️ ☰ in the panels, 📋 / X on the cards)
+   - symbols in the dev sprite (#devIco*), same look as the game's icons
+   ================================================================ */
+.dev-btn-ico{
+    width:16px; height:16px; flex:0 0 auto; pointer-events:none;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.6));
+}
+.panel-toggle-tab .dev-btn-ico{ width:18px; height:18px; }
+/* Copy / Delete on every card (header-actions on towers / abilities / waves, card-controls on enemy groups) */
+.btn-copy[data-dev-ico],
+.btn-delete[data-dev-ico]{ display:inline-flex; align-items:center; justify-content:center; }
+.btn-copy[data-dev-ico] svg{ width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+.btn-delete[data-dev-ico] .dev-btn-ico{ width:14px; height:14px; }
+/* enemy groups in the wave columns: a little space around each card */
+.enemy-card{ margin:0.5rem; }
+
+/* ================================================================
+   Waves stay under each other; inside a wave its enemy groups sit in ONE row that
+   scrolls sideways (compact cards), the last item of the row is a dashed
+   "+ Add Enemy Group" slot. .wave-collapse-inner (already overflow:hidden for the
+   collapse animation) is the scroller, .waves-body / .enemies-container are
+   display:contents, so the group cards and the Add button are its flex items.
+   ================================================================ */
+/* waves + Enemy Types List / Enemy Shake Effects / Custom Enemy Damage: lighter at the top,
+   darker at the bottom (like the tower cards, the light part reaching ~10 % further down)
+   with a light gold frame */
+.dev-waves .wave-card,
+.enemy-types-list-card{
+    background:linear-gradient(180deg, #43362a 0%, #2f261c 65%, #261f17 100%);
+    border:1px solid rgba(240,198,116,.3);
+    box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 6px 16px rgba(0,0,0,.4);
+}
+.dev-waves .wave-card{ margin-bottom:14px; border-radius:10px; }
+.dev-waves .wave-card .wave-stats{ margin:0 0 6px; }
+/* Performance (measured on a 25-wave / 267-group map, collapsing a wave): with every
+   group card laid out, ~25 horizontal scrollers cost ~140 ms a frame. Group cards out of
+   view get content-visibility:hidden (IntersectionObserver in the waves script) - then the
+   scrollers are cheap (~20-25 ms a frame). The scrollbar is always there: switching it on
+   only under the mouse (:hover) made the row blink after every change, because the editor
+   rebuilds the row and the browser re-checks :hover on the new one a moment later. */
+.dev-waves .wave-collapse-inner{
+    display:flex; flex-wrap:nowrap; align-items:stretch; gap:10px;
+    overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain;
+    padding:2px 2px 4px;
+    /* (no scroll-snap: it fought the wheel scrolling below) */
+    scrollbar-width:thin; scrollbar-color:#f0c674 transparent;
+}
+.dev-waves .wave-collapse-inner::-webkit-scrollbar{ height:8px; }
+.dev-waves .wave-collapse-inner::-webkit-scrollbar-track{ background:transparent; }
+.dev-waves .wave-collapse-inner::-webkit-scrollbar-thumb{ background:#f0c674; border-radius:4px; }
+.dev-waves .waves-body,
+.dev-waves .enemies-container{ display:contents; }
+
+/* compact enemy group card */
+.dev-waves .enemy-card{
+    flex:0 0 200px; width:200px; float:none; margin:0; padding:8px 8px 7px; box-sizing:border-box;
+    background:#3a2f22; border:1px solid rgba(240,198,116,.22); border-radius:8px;
+    contain-intrinsic-size:auto 200px auto 612px; /* used while .dev-cv-off (see below) */
+    display:flex; flex-direction:column; /* all 9 fields under each other */
+}
+/* group cards out of view (IntersectionObserver in the waves script) aren't laid out / painted.
+   Not content-visibility:auto - that skips brand-new cards for their first frame, and the
+   editor rebuilds every card on each change, so every change blinked. */
+.dev-waves .enemy-card.dev-cv-off{ content-visibility:hidden; }
+.dev-waves .enemy-card > .card-controls{ order:-2; justify-content:flex-end; gap:3px; margin-bottom:2px; }
+.dev-waves .enemy-card > .card-controls::before{
+    /* number from the waves script (content-visibility scopes CSS counters to each card) */
+    content:'Group ' attr(data-dev-num); margin-right:auto;
+    color:#f0c674; font-weight:700; font-size:.9rem; letter-spacing:.02em;
+}
+.dev-waves .enemy-card > .card-controls > .btn{ width:28px; height:24px; }
+.dev-waves .enemy-card > .card-controls > .btn svg{ width:14px; height:14px; }
+/* the enemy itself above Type, drawn by the game (Enemy.js) - the images come as CSS
+   variables from the skin script; Random = Golem + Eye, otherwise just the chosen one.
+   Pure CSS (:has + :checked), so the editor's re-renders cost nothing extra. */
+.dev-waves .enemy-card::before{
+    content:''; order:-1; display:block; height:62px; margin:2px 0 2px;
+    background:
+        var(--dev-skin-golem, none) calc(50% - 30px) 100% / auto var(--dev-skin-golem-h, 60px) no-repeat,
+        var(--dev-skin-eye, none) calc(50% + 28px) 100% / auto var(--dev-skin-eye-h, 60px) no-repeat;
+    filter:drop-shadow(0 3px 3px rgba(0,0,0,.55));
+}
+.dev-waves .enemy-card:has(select[data-key="skin"] option[value="GOLEM"]:checked)::before{
+    background:var(--dev-skin-golem, none) 50% 100% / auto var(--dev-skin-golem-h, 60px) no-repeat;
+}
+.dev-waves .enemy-card:has(select[data-key="skin"] option[value="EYE"]:checked)::before{
+    background:var(--dev-skin-eye, none) 50% 100% / auto var(--dev-skin-eye-h, 60px) no-repeat;
+}
+.dev-waves .enemy-card > .card-body-inner{ display:flex; flex-direction:column; }
+.dev-waves .enemy-card label.editor-row{ margin:4px 0 0 !important; min-width:0; display:flex; flex-direction:column; }
+.dev-waves .enemy-card .label-text{ font-size:.83rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dev-waves .enemy-card .label-text .info-icon{ transform:scale(.85); }
+.dev-waves .enemy-card input,
+.dev-waves .enemy-card select{ padding:4px 6px; font-size:.82rem; min-width:0; width:100%; box-sizing:border-box; }
+/* every field the same height: steppers, the two selects and Path */
+.dev-waves .enemy-card .json-stepper-wrap,
+.dev-waves .enemy-card .dev-sel,
+.dev-waves .enemy-card .path-input-container{ margin-top:3px; }
+.dev-waves .enemy-card .json-stepper-wrap,
+.dev-waves .enemy-card .dev-sel-trigger,
+.dev-waves .enemy-card .path-input-container > input{ height:32px; box-sizing:border-box; }
+.dev-waves .enemy-card .json-stepper-wrap input{ padding:4px 6px; height:100%; margin:0; }
+.dev-waves .enemy-card .dev-sel{ display:block; width:100%; min-width:0; max-width:100%; }
+.dev-waves .enemy-card .dev-sel-trigger{
+    display:flex; align-items:center; margin:0;
+    width:100%; min-width:0; max-width:100%;
+    padding-top:0; padding-bottom:0; font-size:.82rem; min-height:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.dev-waves .enemy-card .path-input-container{ min-width:0; }
+.dev-waves .enemy-card .path-input-container > input{ margin:0; }
+/* the drop line while dragging a group sits in the gap between the cards */
+.dev-waves .enemy-card.reorder-before::after{ left:-7px; }
+.dev-waves .enemy-card.reorder-after::after{ right:-7px; }
+
+/* dashed "+ Add …" slots: Add Enemy Group = last card of the row, Add New Wave = under the waves */
+.dev-waves .wave-collapse-inner > .btn-add,
+.dev-waves .dev-add-slot{
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    max-height:none; margin:0; box-sizing:border-box;
+    background:transparent !important; color:#f0c674 !important;
+    border:2px dashed rgba(240,198,116,.55) !important; border-radius:8px;
+    box-shadow:none !important; font-weight:700; letter-spacing:.02em; text-shadow:none;
+    transition:background-color .15s, border-color .15s, color .15s;
+}
+.dev-waves .wave-collapse-inner > .btn-add{ flex:0 0 200px; width:200px; min-height:120px; white-space:normal; } /* as wide as a group card */
+.dev-waves .dev-add-slot{ width:100%; min-height:56px; }
+.dev-waves .wave-collapse-inner > .btn-add:hover,
+.dev-waves .dev-add-slot:hover{
+    background:rgba(240,198,116,.08) !important; border-color:#f0c674 !important; color:#ffd88c !important;
+    transform:none;
+}
+.dev-waves .wave-collapse-inner > .btn-add::before, .dev-waves .wave-collapse-inner > .btn-add::after,
+.dev-waves .dev-add-slot::before, .dev-waves .dev-add-slot::after{ display:none; } /* .btn shading / sheen */
+
+/* enemy groups in the wave columns: drag / copy / delete in one line, all the same size
+   (inline, the icon buttons sat on a different baseline than the 9-dots drag button) */
+.enemy-card .card-controls{ display:flex; align-items:center; justify-content:center; gap:4px; }
+.enemy-card .card-controls > .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:30px; margin:0; padding:0 !important; box-sizing:border-box;
+}
+
+/* ================================================================
+   Section headings with a gold icon (like Settings / Version History in the game)
+   ================================================================ */
+.editor-panel > h2{ display:inline-flex; align-items:center; gap:12px; }
+h2.final-json.d-block{ display:flex !important; align-items:center; justify-content:center; gap:12px; }
+.dev-h-ico{ width:34px; height:34px; flex:0 0 auto; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
+
+/* ================================================================
+   Save Slots as cards: number socket, map name in gold, empty slot = gold "+" and dim
+   italic text; small Save / Delete buttons with gold disk / red ✖
+   ================================================================ */
+/* a bit wider than editor.css (220px) - more room for the map name */
+.save-slots{ counter-reset:devslot; max-width:300px; width:300px; box-sizing:border-box; }
+.save-slot-row{
+    counter-increment:devslot;
+    align-items:center; gap:4px; padding:4px;
+    border-radius:8px; background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    transition:border-color .15s ease, background-color .15s ease;
+}
+.save-slot-row:hover{ border-color:rgba(240,198,116,.4); background-color:rgba(240,198,116,.06); }
+.save-slot-row .btn-save-slot{
+    display:block; padding:5px 6px; text-align:left;
+    background-color:transparent; border:0; box-shadow:none;
+    color:#f0c674; font:700 .78rem 'Cinzel', Georgia, serif; text-transform:none;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
+.save-slot-row .btn-save-slot:hover{ background-color:transparent; box-shadow:none; transform:none; color:#ffe7a3; }
+.save-slot-row .btn-save-slot:active{ transform:none; box-shadow:none; }
+/* the .btn shading layer becomes the slot number socket */
+.save-slot-row .btn-save-slot::before{
+    content:counter(devslot);
+    position:static; inset:auto;
+    display:inline-block; vertical-align:middle;
+    width:20px; height:20px; margin-right:8px; box-sizing:border-box;
+    border-radius:5px; text-align:center; line-height:18px;
+    background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+    border:1px solid rgba(240,198,116,.35);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+    color:#f0c674; font:700 11px Arial, sans-serif; font-style:normal;
+}
+.save-slot-row .btn-save-slot.is-empty{ opacity:1; color:rgba(240,198,116,.5); font-style:italic; font-weight:400; }
+.save-slot-row .btn-save-slot.is-empty::before{
+    content:'';
+    border-style:dashed;
+    background:url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23f0c674" stroke="%234a2c0c" stroke-width=".6" d="M10.6 4h2.8v6.6H20v2.8h-6.6V20h-2.8v-6.6H4v-2.8h6.6z"/></svg>') center / 11px no-repeat,
+               linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22));
+}
+.save-slot-row .btn-save-slot-save,
+.save-slot-row .btn-save-slot-delete{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:32px; padding:0; border-width:2px !important;
+}
+.save-slot-row .dev-btn-ico{ width:20px; height:20px; }
+/* line box exactly as tall as the number socket + socket at its top -> number and name on one
+   line (vertical-align:middle put the socket off, it centres on the font's x-height) */
+.save-slot-row .btn-save-slot{ font-size:.82rem; line-height:20px; }
+/* number in the middle of its socket - flex centring (the `font` shorthand above resets
+   line-height to normal, so line-height:18px never applied and the number sat high) */
+.save-slot-row .btn-save-slot::before{
+    vertical-align:top;
+    display:inline-flex; align-items:center; justify-content:center;
+    line-height:1;
+}
+
+/* ================================================================
+   Ability cards: background of their type (animations stopped), the same as the game's ability cards
+   (css/bars.css .concept-lava-floor / -towers-fury / -gold-rush / -ice-storm + js/game/CardFx.js)
+   - a .dev-ab-bg layer behind the card's content, added by the script at the bottom
+   ================================================================ */
+.ability-card.dev-ab{ position:relative; isolation:isolate; }
+.ability-card > .dev-ab-bg{
+    position:absolute; inset:0; z-index:0;
+    width:auto; height:auto; border:0; border-radius:inherit;
+    box-shadow:none; transform:none !important; pointer-events:none;
+}
+/* a touch more shade than the small game cards - the editor's fields sit on it */
+.ability-card > .dev-ab-bg::after{ background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.5)); }
+/* a plain dark div laid over the whole (stopped) background, under the fields -
+   so the background stays in the back (change the alpha here to make it lighter / darker) */
+.ability-card.dev-ab > .dev-ab-veil{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    border-radius:inherit; background:rgba(0,0,0,.35);
+}
+.ability-card.dev-ab > :not(.dev-ab-bg):not(.dev-ab-veil){ position:relative; z-index:1; }
+/* the game's pieces are made for a 260 x 132 card (their moves are in px), so the big editor
+   card is covered by a grid of 260 x 132 tiles, each with its own pieces - no per-tile clipping,
+   so they drift over the tile edges and the whole card is one scene */
+.dev-ab-tile{ position:absolute; width:260px; height:132px; pointer-events:none; }
+/* off screen (IntersectionObserver in the ability script): no tiles = no animations running.
+   Measured on a big map: these animations kept the page busy ~40 % of the time even while
+   you were scrolled down in the waves - that was the lag. */
+.dev-ab-bg.dev-ab-off > .dev-ab-tile{ display:none; }
+/* Any running animation makes the browser redraw every frame, and on a big map one frame
+   of this page costs ~150 ms (measured) - so nothing may animate where it can't be seen:
+   the hidden loading screen's dots, and (paused by the "off screen" script at the bottom)
+   the map's sky drift and the tower cards' sparks while they're scrolled away. */
+.editor-loader.is-done *,
+.editor-loader.is-done *::before,
+.editor-loader.is-done *::after{ animation:none !important; }
+.dev-paused, .dev-paused::before, .dev-paused::after,
+.dev-paused *, .dev-paused *::before, .dev-paused *::after{ animation-play-state:paused !important; }
+.dev-ab-tile > .concept-fx{ overflow:visible; }
+/* Ice Storm's white-out flash is per card in the game - per tile it would blink in squares */
+.dev-ab-tile > .concept-fx::after{ display:none; }
+/* stopped - only the background picture, no movement (paused, not removed: every piece
+   stays where its delay put it, so the card keeps the scattered look of the game card) */
+.ability-card > .dev-ab-bg,
+.ability-card > .dev-ab-bg *,
+.ability-card > .dev-ab-bg *::before,
+.ability-card > .dev-ab-bg *::after,
+.ability-card > .dev-ab-bg::before,
+.ability-card > .dev-ab-bg::after{ animation-play-state:paused !important; }
+
+/* ================================================================
+   Loading screen like the game: Cinzel title, gold level-progress bar (bars.css .ntu-progress)
+   ================================================================ */
+.editor-loader-box{ background:#3e3223; }
+.editor-loader-title{
+    font-family:'Cinzel', Georgia, serif; letter-spacing:.5px;
+    text-shadow:0 0 15px rgba(240,198,116,.3), 0 2px 2px rgba(0,0,0,.6);
+}
+.editor-loader-bar{
+    height:16px; border-radius:8px;
+    background:linear-gradient(#120c06, #241a0f);
+    border:1px solid #6b4a1e;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.35);
+}
+.editor-loader-fill{
+    position:relative; overflow:hidden; border-radius:8px;
+    background:linear-gradient(90deg, #7a4c10, #c99332 55%, #f0c674 85%, #ffe7a3);
+    box-shadow:inset 0 1px 0 rgba(255,245,210,.55), 0 0 10px rgba(240,198,116,.35);
+}
+.editor-loader-fill::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(90deg, transparent 0 40%, rgba(255,250,225,.45) 50%, transparent 60% 100%);
+    animation:devLoaderShimmer 2.6s ease-in-out infinite;
+}
+@keyframes devLoaderShimmer{ from{ transform:translateX(-100%); } to{ transform:translateX(100%); } }
+.editor-loader-step{ color:#c9b48a; letter-spacing:.3px; }
+
+/* ================================================================
+   Final JSON: brown field like the other inputs, monospace, gold scrollbar (editor.css already has it) like Version History
+   ================================================================ */
+.json-textarea{
+    box-sizing:border-box; padding:12px 14px;
+    background:#967456;
+    color:#f0f0f0; line-height:1.45; caret-color:#f0c674;
+    border:1px solid #555; border-radius:8px;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.25);
+    transition:border-color .2s ease;
+}
+.json-textarea:focus{ outline:none; border-color:#f0c674; }
+.json-textarea::selection{ background:rgba(240,198,116,.35); }
+
+/* ================================================================
+   Confirm popup (Load Map, Overwrite / Delete Save Slot, ...) in the game's popup style
+   (css/popups.css + Settings / Version History): darker backdrop, card like Settings,
+   gold heading with a gold icon, × in the corner, pops in. json_functions.js still just
+   toggles .d-none - the pop-in is a CSS animation that restarts whenever it shows.
+   ================================================================ */
+#customConfirmPopup{ background:rgba(0,0,0,.85); z-index:20002; }
+#customConfirmPopup:not(.d-none){ animation:devPopupFade .35s ease-out; }
+#customConfirmPopup:not(.d-none) > .return-content{ animation:devPopupPop .35s cubic-bezier(.34,1.56,.64,1); }
+@keyframes devPopupFade{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes devPopupPop{ from{ opacity:0; transform:scale(.85); } to{ opacity:1; transform:scale(1); } }
+#customConfirmPopup > .return-content{
+    position:relative; box-sizing:border-box;
+    width:440px; max-width:calc(100vw - 40px);
+    margin:0; padding:22px 28px 24px;
+    border:0; border-radius:12px;
+    background:#3e3223; color:#fff;
+    box-shadow:0 12px 30px rgba(0,0,0,.55);
+}
+.dev-confirm-close{
+    position:absolute; top:12px; right:18px; padding:0;
+    background:none; border:0; color:#888; font-size:28px; line-height:1; cursor:pointer;
+}
+.dev-confirm-close:hover{ color:#fff; }
+.dev-confirm-head{ display:flex; align-items:center; justify-content:center; gap:10px; margin:2px 0 12px; }
+.dev-confirm-head .dev-h-ico{ width:30px; height:30px; }
+#customConfirmPopup #popupTitle{
+    margin:0; color:#f0c674; font:700 1.6rem 'Cinzel', Georgia, serif;
+    text-shadow:0 0 15px rgba(240,198,116,.3);
+}
+/* the message in a panel like the Settings groups */
+#customConfirmPopup #popupMessage{
+    margin:0 0 20px; padding:12px 14px;
+    border-radius:8px; background:rgba(0,0,0,.18);
+    border:1px solid rgba(240,198,116,.15);
+    color:#e4dccb; line-height:1.45;
+}
+#customConfirmPopup .return-buttons{ justify-content:center; gap:14px; }
+#customConfirmPopup .return-buttons .btn{ flex:0 1 150px; padding:10px 18px; }
+/* confirm button: gold for Load, the game's "Sure?" red for Overwrite / Delete
+   (editor.css .btn-delete is a flat #ff4444 without the .btn bevel) */
+#customConfirmPopup .btn.dev-confirm-gold{
+    background-color:#f0c674 !important; color:#3b2a14;
+    border:2px solid #b8860b !important; text-shadow:0 1px 0 rgba(255,255,255,.35);
+    box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -10px 14px rgba(0,0,0,.22), 0 5px 0 #b8860b, 0 11px 16px rgba(0,0,0,.4) !important;
+}
+#customConfirmPopup .btn.dev-confirm-gold:hover{ background-color:#ffd78c !important; }
+#customConfirmPopup .btn.btn-delete{
+    background-color:#b32d2d !important; color:#fff;
+    border:2px solid #7a1f1f !important;
+    box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -10px 14px rgba(0,0,0,.22), 0 5px 0 #7a1f1f, 0 11px 16px rgba(0,0,0,.4) !important;
+}
+#customConfirmPopup .btn.btn-delete:hover{ background-color:#c93a3a !important; }
+
+/* ================================================================
+/* ================================================================
+   Hover / editing on every field: a gold edge, a soft gold glow around it and a faint light
+   veil inside (inset shadow - sits over the field's own colour, under the text), the same
+   while it's being edited (typing, or its list is open). Brown inputs, text areas, the custom
+   selects, Difficulty and the whole - / + stepper as one. Fields you can't edit (disabled /
+   read-only, e.g. Map Tile Size, Class ID) and checkboxes / sliders / color pickers stay as they are.
+   ================================================================ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+textarea, .dev-sel-trigger, .json-stepper-wrap{
+    transition:border-color .18s ease, box-shadow .18s ease;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(:disabled):not(:read-only):not(.json-stepper-wrap input):hover,
+textarea:not(:disabled):not(:read-only):hover,
+.dev-sel-trigger:hover,
+.json-stepper-wrap:not(:has(input:disabled, input:read-only)):hover,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(:disabled):not(:read-only):not(.json-stepper-wrap input):focus,
+textarea:not(:disabled):not(:read-only):focus,
+.dev-sel-trigger.is-open,
+.json-stepper-wrap:not(:has(input:disabled, input:read-only)):focus-within{
+    outline:none;
+    border-color:#f0c674 !important;
+    box-shadow:inset 0 0 0 999px rgba(255,236,190,.09), 0 0 0 1px rgba(240,198,116,.55), 0 0 10px rgba(240,198,116,.35) !important;
+}

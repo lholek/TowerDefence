@@ -19,21 +19,115 @@
         },
         {
           "<b>Editor</b>": [
-          "Added Gold Rush ability to the editor",
-          "Added Ice Storm ability to the editor",
-          "Towers, abilities and enemy groups can be reordered by drag & drop - grab the gold ⠿ button next to Copy, a gold line shows where it will land",
-          "Waves can be moved up / down with the new gold ▲ / ▼ buttons next to Copy",
-          "Waves can be collapsed to just their header row with the new − / + button - easier to browse and reorder long wave lists",
-          "Copying a wave now puts the copy right below the original instead of at the end",
-          "The wave header now shows the wave's total enemy count, coins and enemy health - Enemies (⭐ Count: … | Coins: 🪙 … | ❤️ Health: …)",
-          "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill), the section headings (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON) got the same fiery style",
-          "The enemy group's Path field now gets a red border when the path doesn't exist on the map (e.g. a half-typed 'S1E')",
-          "Painting the map is now much faster - tiles appear right away while you draw, with no waiting after releasing the mouse",
-          "The map now uses the same backgrounds as the game - Day Sky, Midnight Sky, Galactic Sky and Stormy Sky (the old Sea style is gone)",
-          "New loading screen - 'Editor is loading' with a progress bar, the map, tiles and all panels are prepared first, so the editor no longer stutters right after opening",
-          "Loading or resizing a map is instant - no more lag while painting right after it",
-          "Switching Graphics Low / High back and forth is instant - each setting is drawn only once",
-          "Painting on big maps is smoother - the Final JSON box is only updated once you scroll to it"
+            {
+              "<b>General</b>": [
+                "The editor's title and version badge now look the same as in the main menu (fiery title, brown version pill), the section headings (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON) got the same fiery style",
+                "Section headings with gold icons, like Settings and Version History in the game (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON)",
+                "New loading screen in the game's style - \"Editor is loading\" with a Cinzel title and a gold progress bar like the level progress; the map, tiles and all panels are prepared first, so the editor no longer stutters right after opening",
+                "Towers, abilities and enemy groups can be reordered by drag & drop - grab the gold ⠿ button next to Copy, a gold line shows where it will land",
+                "Slimmer side margins around the whole editor (~20 % less)",
+                "Editor sections (Map, Map Settings, Towers, Waves, Abilities, Final JSON) have a warm brown gradient that darkens towards the bottom and a gold line along the top edge, instead of a flat brown box",
+                "Gold icons instead of emoji - panel tabs, Save Slot buttons and the Copy / Delete buttons on all cards",
+                "Menu, Save Slots and Map Preview panels have a thin gold frame that runs around their tab too, plus a deeper shadow",
+                "Confirm popups (Load Map, Overwrite / Delete Save Slot) now look like the game's popups - gold title with an icon, × in the corner, close with Esc or a click outside; the confirm button says what it does (\"Load\", \"Overwrite\", \"Delete\")",
+                "All selects look like the Background select in Settings, with a keyboard-friendly list; the ability select shows the ability icons",
+                "Every field gets a gold edge and a soft gold glow on hover and while you're editing it (inputs, selects, the − / + steppers, text areas)"
+              ]
+            },
+            {
+              "<b>Performance</b>": [
+                "Painting the map is now much faster - tiles appear right away while you draw, with no waiting after releasing the mouse",
+                "Loading or resizing a map is instant - no more lag while painting right after it",
+                "Switching Graphics Low / High back and forth is instant - each setting is drawn only once",
+                "Painting on big maps is smoother - the Final JSON box is only updated once you scroll to it",
+                "Smoother editor - animations that are off screen now stop, so the page no longer redraws all the time and lags, even on big maps",
+                "Collapsing and expanding waves is smooth again on big maps"
+              ]
+            },
+            {
+              "<b>Path checking</b>": [
+                "The enemy group's Path field now gets a red border when the path doesn't exist on the map (e.g. a half-typed 'S1E')",
+                "New live path checker instead of the \"Validate Map Paths\" button - checks the map (missing Start / End, a Start with no road to any End) and every enemy group's path (wrong format like \"S1E\", a Start / End that isn't on the map like \"S1E6\", no road between them)",
+                "Path errors stay above the Menu until they're fixed; the editor's step-by-step status messages are gone",
+                "Cross paths like S3E2 are valid, the same as in the game"
+              ]
+            },
+            {
+              "<b>Map</b>": [
+                "The map now uses the same backgrounds as the game - Day Sky, Midnight Sky, Galactic Sky and Stormy Sky (the old Sea style is gone)",
+                "The tile picker now lies inside the map along its bottom edge, on a see-through dark strip; the selected tile is on the left, split off by a gold line and labelled \"Selected\"",
+                "The map can be panned a bit lower, so its bottom rows never stay hidden under the tile strip",
+                "A loaded or pasted map always opens centered",
+                "Tile search and filters (Terrains / Paths / Map Objects) are in one row right below the map; group names are gold",
+                "New Brush row - brush size, Square / Diamond / Circle and the X / Y position of the cursor in one line",
+                "Width / Height got − / + buttons",
+                "Map Style and Graphics moved into the Menu",
+                "The editor has its own graphics setting, separate from the game's Settings - changing one never changes the other",
+                "The editor starts on High graphics; Graphics Low / High always switches every object together (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities and map objects - map objects used to stay on High) and the editor remembers your choice",
+                "Map Preview moved to the top-left corner",
+                "\"Drawing is disabled for Start and End\" moved into the tile search's \"i\" tooltip",
+                "The Map and Map Settings parts sit right on the section background (no extra dark boxes); the tile search field is brown like every other input"
+              ]
+            },
+            {
+              "<b>Map Settings</b>": [
+                "Gold icons and centered headings for Title, Description, Starting Coins and Starting Lifes",
+                "Difficulty suggests ⭐ to ⭐⭐⭐⭐⭐, but you can still type your own value",
+                "Extra Life is an Off / On switch like Show FPS in Settings; when Off, Price Progression slides away",
+                "More space around the Price Progression row"
+              ]
+            },
+            {
+              "<b>Towers</b>": [
+                "Live preview of the tower's shop card next to its fields - exactly like the shop in the game, updates while you type and follows Graphics Low / High",
+                "Compact tower card - Color next to Name, stats in two rows; DPS moved from the header into the preview",
+                "Tower cards have a framed look with a soft gold edge and a lighter top, like the cards in the game",
+                "Drag, Copy and Delete buttons in card headers are the same size and in one line"
+              ]
+            },
+            {
+              "<b>Abilities</b>": [
+                "Added Gold Rush ability to the editor",
+                "Added Ice Storm ability to the editor",
+                "Ability cards have the background of their type over the whole card - lava, wind with arrows, falling coins, snow storm - like the ability cards in the game",
+                "Gold Rush - the Round Up checkbox is centered"
+              ]
+            },
+            {
+              "<b>Waves</b>": [
+                "Waves can be moved up / down with the new gold ▲ / ▼ buttons next to Copy",
+                "Waves can be collapsed to just their header row with the new − / + button - easier to browse and reorder long wave lists",
+                "Copying a wave now puts the copy right below the original instead of at the end",
+                "The wave header now shows the wave's total enemy count, coins and enemy health - Enemies (⭐ Count: … | Coins: 🪙 … | ❤️ Health: …)",
+                "Enemy groups of a wave sit side by side in one row that scrolls sideways; the mouse wheel over the row scrolls only the row, and the row keeps its position after every change",
+                "Compact group cards - \"Group N\" title, all 9 fields under each other, all fields the same height",
+                "A picture of the enemy above Type, drawn by the game itself - Golem, Fiery Eye, or both for Random (follows Graphics Low / High)",
+                "Hovering a Skin option shows that enemy next to the list",
+                "Dashed \"+ Add Enemy Group\" card at the end of each row; the row scrolls to a new or copied group",
+                "Waves are lighter at the top and darker at the bottom with a thin gold frame, like the tower cards",
+                "Enemy Types List in one sideways-scrolling row, its description inside the card",
+                "Enemy Types List, Enemy Shake Effects and Custom Enemy Damage each in their own card - lighter at the top, darker at the bottom, with a light gold frame; the Delete buttons line up with the fields"
+              ]
+            },
+            {
+              "<b>Save Slots</b>": [
+                "Slots look like cards - slot number in a dark socket, map name in gold, empty slots with a gold \"+\"",
+                "Wider panel with more room for the map name and bigger Save / Delete icons"
+              ]
+            },
+            {
+              "<b>Menu</b>": [
+                "Test Map, Share Map and Help buttons in the Main Menu style (rounded, 3D edge, gold glow on hover)",
+                "The active tab (Map, Map Settings, Towers, Waves, Abilities) is gold, like in the Main Menu"
+              ]
+            },
+            {
+              "<b>Final JSON</b>": [
+                "Brown text area like the other inputs, monospace font, gold border while typing and a gold scrollbar",
+                "\"Format & Copy JSON\" moved to the left and shows \"Copied!\" for 2 s, \"Export Map\" stays on the right",
+                "Fixed: \"Share Map\" could stay stuck on \"Copied!\" after a quick double click"
+              ]
+            }
           ]
         },
         {

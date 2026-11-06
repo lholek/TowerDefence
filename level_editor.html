@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
+    <!-- the editor's own graphics setting - must run before every other script -->
+    <script src="js/level_editor/editor_ui/graphics_settings.js"></script>
     <link rel="icon" type="image/x-icon" href="assets/images/tower_defence.ico">
     <link rel="stylesheet" href="css/level_editor/editor.css" /> 
     <link rel="stylesheet" href="css/level_editor/basic_data.css" /> 
@@ -15,8 +17,12 @@
     <link rel="stylesheet" href="css/level_editor/map.css" />
     <link rel="stylesheet" href="css/backgrounds.css" />
     <link rel="stylesheet" href="css/level_editor/JsonStepper.css" />
+    <!-- the game's tower card (Tower preview in the Tower editor) -->
+    <link rel="stylesheet" href="css/bars.css" />
+    <link rel="stylesheet" href="css/level_editor/editor_theme.css" />
 </head>
 <body class="editor-body editor-loading">
+    <script src="js/level_editor/editor_ui/map_size_steppers.js"></script>
     <!-- Loading screen: shown right away (plain HTML/CSS), hidden by js/level_editor/main.js
          once the map, tiles and all editor panels are ready -->
     <div id="editorLoader" class="editor-loader" role="status" aria-live="polite">
@@ -27,46 +33,68 @@
         </div>
     </div>
     <div class="save-slots" id="saveSlotsPanel">
-        <button id="saveSlotsToggle" class="panel-toggle-tab" title="Show/Hide Save Slots">💾</button>
+        <button id="saveSlotsToggle" class="panel-toggle-tab" title="Show/Hide Save Slots"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
         <h3 class="panel-title">Save Slots</h3>
         <div class="save-slot-row">
             <button id="loadSlotBtn1" class="btn btn-save-slot is-empty">Empty Slot 1</button>
-            <button id="saveSlotBtn1" class="btn btn-save-slot-save" title="Save current map to Slot 1">💾</button>
-            <button id="deleteSlotBtn1" class="btn btn-save-slot-delete" title="Delete Slot 1">❌</button>
+            <button id="saveSlotBtn1" class="btn btn-save-slot-save" title="Save current map to Slot 1"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn1" class="btn btn-save-slot-delete" title="Delete Slot 1"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn2" class="btn btn-save-slot is-empty">Empty Slot 2</button>
-            <button id="saveSlotBtn2" class="btn btn-save-slot-save" title="Save current map to Slot 2">💾</button>
-            <button id="deleteSlotBtn2" class="btn btn-save-slot-delete" title="Delete Slot 2">❌</button>
+            <button id="saveSlotBtn2" class="btn btn-save-slot-save" title="Save current map to Slot 2"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn2" class="btn btn-save-slot-delete" title="Delete Slot 2"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn3" class="btn btn-save-slot is-empty">Empty Slot 3</button>
-            <button id="saveSlotBtn3" class="btn btn-save-slot-save" title="Save current map to Slot 3">💾</button>
-            <button id="deleteSlotBtn3" class="btn btn-save-slot-delete" title="Delete Slot 3">❌</button>
+            <button id="saveSlotBtn3" class="btn btn-save-slot-save" title="Save current map to Slot 3"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn3" class="btn btn-save-slot-delete" title="Delete Slot 3"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn4" class="btn btn-save-slot is-empty">Empty Slot 4</button>
-            <button id="saveSlotBtn4" class="btn btn-save-slot-save" title="Save current map to Slot 4">💾</button>
-            <button id="deleteSlotBtn4" class="btn btn-save-slot-delete" title="Delete Slot 4">❌</button>
+            <button id="saveSlotBtn4" class="btn btn-save-slot-save" title="Save current map to Slot 4"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn4" class="btn btn-save-slot-delete" title="Delete Slot 4"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <div class="save-slot-row">
             <button id="loadSlotBtn5" class="btn btn-save-slot is-empty">Empty Slot 5</button>
-            <button id="saveSlotBtn5" class="btn btn-save-slot-save" title="Save current map to Slot 5">💾</button>
-            <button id="deleteSlotBtn5" class="btn btn-save-slot-delete" title="Delete Slot 5">❌</button>
+            <button id="saveSlotBtn5" class="btn btn-save-slot-save" title="Save current map to Slot 5"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoDisk"/></svg></button>
+            <button id="deleteSlotBtn5" class="btn btn-save-slot-delete" title="Delete Slot 5"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoX"/></svg></button>
         </div>
         <p class="save-slots-info">Save slots store your map edits locally in this browser only. It's always recommended to export the JSON as a backup — clearing browser data will erase these slots.</p>
     </div>
     <div class="editor-container box">
+        <!-- every part of the editor is its own rounded box (no <hr> lines between them) -->
+        <div class="dev-section dev-section-head">
         <h1 class="title cl-primary text-center editor-main-title">The CZSrna's Tower Defence – Map Editor</h1>
         <h2 class="subtitle editor-main-subtitle"></h2>
+        </div>
         <div class="map-preview-panel" id="mapPreviewPanel">
-            <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview">🗺️</button>
+            <button id="mapPreviewToggle" class="panel-toggle-tab" title="Show/Hide Map Preview"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg></button>
             <h3 class="panel-title">Map Preview</h3>
             <div id="mapPreviewMinimap" class="map-preview-minimap"></div>
         </div>
         <div class="editor-tabs" id="editorMenuPanel">
-            <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu">☰</button>
+            <!-- the editor's own step-by-step messages (main.js setStatus) stay hidden;
+                 above the Menu only the path watcher's errors hang until they're fixed -->
+            <div id="statusMessage" class="status-message text-center d-none"></div>
+            <div id="devPathErrors" class="dev-path-errors" role="alert" hidden></div>
+            <button id="editorMenuToggle" class="panel-toggle-tab" title="Show/Hide Menu"><svg class="dev-btn-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMenu"/></svg></button>
             <h3 class="panel-title">Menu</h3>
+            <!-- Map Style + Graphics moved here from the map's top bar (same ids - main.js finds them) -->
+            <div class="dev-menu-selects">
+                <label class="dev-menu-label" for="backgroundSelect">Map Style</label>
+                <select id="backgroundSelect" class="background-select">
+                    <option value="day">Day Sky</option>
+                    <option value="midnight">Midnight Sky</option>
+                    <option value="galactic">Galactic Sky</option>
+                    <option value="stormy">Stormy Sky</option>
+                </select>
+                <label class="dev-menu-label" for="editorGraphicsSelect">Graphics</label>
+                <select id="editorGraphicsSelect" class="background-select">
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
             <button class="btn active-tab" data-target="mapEditorPanel hr-map">Map</button>
             <button class="btn active-tab" data-target="basicInfoEditorPanel hr-settings">Map Settings</button>
             <button class="btn active-tab" data-target="towerEditorPanel hr-tower">Towers</button>
@@ -86,47 +114,61 @@
 
         <div class="editor-panels-container">
             <div id="mapEditorPanel" class="editor-panel map-layout-wrapper">
-                <h2>Map</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg>Map</h2>
                 <div class="map-editor-card">
                 <div class="map-top-bar">
                     <div class="map-top-bar-left">
                         <label for="mapWidth">Width</label>
-                        <input type="number" id="mapWidth" min="3" value="11" class="input-small">
+                        <!-- −/+ in the same box as the number (JsonStepper look, own small script) -->
+                        <div class="json-stepper-wrap dev-size-stepper">
+                            <input type="number" id="mapWidth" min="3" value="11" class="input-small">
+                            <div class="json-stepper-btn-group">
+                                <button type="button" class="json-stepper-btn" data-dev-step="-1" data-dev-target="mapWidth" title="-1">−</button>
+                                <button type="button" class="json-stepper-btn" data-dev-step="1" data-dev-target="mapWidth" title="+1">+</button>
+                            </div>
+                        </div>
                         <label for="mapHeight">Height</label>
-                        <input type="number" id="mapHeight" min="3" value="3" class="input-small">
+                        <div class="json-stepper-wrap dev-size-stepper">
+                            <input type="number" id="mapHeight" min="3" value="3" class="input-small">
+                            <div class="json-stepper-btn-group">
+                                <button type="button" class="json-stepper-btn" data-dev-step="-1" data-dev-target="mapHeight" title="-1">−</button>
+                                <button type="button" class="json-stepper-btn" data-dev-step="1" data-dev-target="mapHeight" title="+1">+</button>
+                            </div>
+                        </div>
                         <button onclick="window.app.mapEditor.resizeMap()" class="btn btn-resize">Resize Map</button>
                         <i class="info-icon" data-tooltip="map-editor.map-dimensions">i</i>
-                    </div>
-                    <div class="map-top-bar-right">
-                        <select id="backgroundSelect" class="background-select">
-                            <option value="day">Map Style: Day Sky</option>
-                            <option value="midnight">Map Style: Midnight Sky</option>
-                            <option value="galactic">Map Style: Galactic Sky</option>
-                            <option value="stormy">Map Style: Stormy Sky</option>
-                        </select>
-                        <select id="editorGraphicsSelect" class="background-select">
-                            <option value="low">Graphics: Low</option>
-                            <option value="high">Graphics: High</option>
-                        </select>
                     </div>
                 </div>
 
                 <div id="mapCanvasContainer" class="map-canvas-container">
                     <canvas id="mapCanvas"></canvas>
                     <div id="cloudsLayer" class="cloudsLayer"></div>
+                    <!-- the tile picker inside the map along its bottom edge + the selected tile
+                         (a mirror of the editor's #currentTileDisplay, see the script at the bottom) on the right -->
+                    <div id="devTileDock" class="dev-tile-dock">
+                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
+                        <div class="dev-current-wrap">
+                            <div class="tile-group-label">Selected</div>
+                            <span id="devCurrentTile" class="current-tile-display" title="Selected tile"></span>
+                        </div>
+                    </div>
                 </div>
                 <div id="tileDrawingPanel" class="tileDrawingPanel">
-                    <div>
-                        <div id="tileKey" class="tile-key-container editor-key-container"></div>
-                        <div class="w-100 tile-drawing-descripton"><small>(Drawing is disabled for Start and End)</small></div>
+                    <div class="tileDrawingTiles">
+                        <!-- Search tile + Filters, moved here out of #tileKey after every render -->
+                        <div id="devTileHeaderSlot" class="dev-tile-header-slot"></div>
                         <div class="w-100 tile-object-count"><small>Current objects visible: <span id="tileObjectCount" class="tile-object-count-number">0</span> from <span id="tileObjectTotal" class="tile-object-count-number">0</span></small></div>
                     </div>
                     <div class="tileDrawingBrushItems">
                         <div class="control-group brush-key-container editor-key-container mt-0">
-                            <strong>Brush Settings</strong>
-                            <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
+                            <div class="brush-settings-head">
+                                <strong>Brush</strong>
+                                <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" title="Brush size"
+                                oninput="window.app.mapEditor.setBrushSize(this.value)">
+                                <i class="info-icon" data-tooltip="map-editor.brush-settings">i</i>
+                            </div>
                             <div class="brush-toolbar brush-options">
-                                <div class="brush-button-row" style="display:flex; gap:6px; flex-wrap:wrap; flex-direction: column;">
+                                <div class="brush-button-row">
                                     <button id="btn-brush-square" class="tile-filter-btn tile-filter-active"
                                     onclick="window.app.mapEditor.setBrushShape('square')">■ Square</button>
                                     <button id="btn-brush-diamond" class="tile-filter-btn"
@@ -134,35 +176,31 @@
                                     <button id="btn-brush-circle" class="tile-filter-btn"
                                     onclick="window.app.mapEditor.setBrushShape('circle')">● Circle</button>
                                 </div>
-                                <div class="brush-size-control" style="display: inline-flex; align-items: center; margin-top: 10px; width: 100%; justify-content: center;">
-                                    <div>
-                                        <input type="number" id="brushSizeInput" class="brushSizeInput" value="1" min="1" max="20" 
-                                        oninput="window.app.mapEditor.setBrushSize(this.value)" 
-                                        style="width: 50px; padding: 4px; border-radius: 4px; border: 1px solid #ccc;">
-                                    </div>
-
-                                </div>
                             </div>
-                        </div>    
+                            <!-- mirror of the editor's #tileCoordinates (hovered tile) -->
+                            <div class="dev-coords" title="Hovered tile">
+                                <span class="dev-coord"><b>X</b><span id="devCoordX">-</span></span>
+                                <span class="dev-coord"><b>Y</b><span id="devCoordY">-</span></span>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
                 </div>
             </div>
             <hr id="hr-map">
             <div id="basicInfoEditorPanel" class="editor-panel">
-                <h2>Map Settings</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoGear"/></svg>Map Settings</h2>
                 <div class="editor-description">
                     <div class="input-row">
                         <div class="input-group mt-4">
-                            <label for="mapNameInput">🗺️ Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
+                            <label for="mapNameInput" class="dev-ico-label is-centered"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoMap"/></svg></i>Title<i class="info-icon" data-tooltip="map-settings.map-title">i</i></label>
                             <input type="text" id="mapNameInput" value="EDIT TITLE"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('name', this.value)">
                         </div>
                     </div>
 
                     <div class="input-group mt-4">
-                        <label for="descriptionTextInput">📋 Description<i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
+                        <label for="descriptionTextInput" class="dev-ico-label is-centered"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoScroll"/></svg></i>Description<i class="info-icon" data-tooltip="map-settings.description-text">i</i></label>
                         <textarea id="descriptionTextInput" rows="3"
                                   onchange="window.app.jsonFunctions.updateDescription('descriptionText', this.value)">Edit description</textarea>
                     </div>
@@ -175,19 +213,25 @@
                         </div>
                         <div class="input-group">
                             <label for="difficultyInput">Difficulty <i class="info-icon" data-tooltip="map-settings.difficulty">i</i></label>
-                            <input type="text" id="difficultyInput" class="text-center" value="⭐"
-                                   onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                            <!-- autocomplete - offers the stars (data-options), any other text can be typed in too
+                                 (script at the bottom; the input's own onchange saves it like before) -->
+                            <div class="dev-combo" data-options="⭐|⭐⭐|⭐⭐⭐|⭐⭐⭐⭐|⭐⭐⭐⭐⭐">
+                                <input type="text" id="difficultyInput" class="dev-combo-input" autocomplete="off" placeholder="Pick or type…"
+                                       role="combobox" aria-autocomplete="list" aria-expanded="false"
+                                       onchange="window.app.jsonFunctions.updateDescription('difficulty', this.value)">
+                                <ul class="dev-sel-list" role="listbox"></ul>
+                            </div>
                         </div>
                     </div>
 
                     <div class="input-row input-row-basic-stats">
                         <div class="input-group mt-4">
-                            <label for="startingCoinsInput">🪙 Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
+                            <label for="startingCoinsInput" class="dev-ico-label"><i class="dev-ico is-emoji" aria-hidden="true">🪙</i>Starting Coins<i class="info-icon" data-tooltip="map-settings.starting-coins">i</i></label>
                             <input type="text" inputmode="numeric" class="input-thousands" id="startingCoinsInput" value="0" data-json-stepper="starting_coins"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingCoins', window.app.numberFormat.parseThousands(this.value))">
                         </div>
                         <div class="input-group mt-4">
-                            <label for="startingLifesInput">❤️ Starting Lifes<i class="info-icon" data-tooltip="map-settings.starting-lifes">i</i></label>
+                            <label for="startingLifesInput" class="dev-ico-label"><i class="dev-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#devHeart)" stroke="#4a0d08" stroke-width=".8" d="M12 21s-7.5-4.6-9.5-9.2C1 8.2 3.2 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.6 0 5.8 3.7 4.3 7.3C19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".45" d="M6.6 7.2c-1.3.3-2.2 1.6-2 3 .5-1.2 1.3-2 2.6-2.4z"/></svg></i>Starting Lifes<i class="info-icon" data-tooltip="map-settings.starting-lifes">i</i></label>
                             <input type="text" inputmode="numeric" class="input-thousands" id="startingLifesInput" value="1" data-json-stepper="starting_lifes"
                                    onchange="window.app.jsonFunctions.updateBasicInfo('startingLifes', window.app.numberFormat.parseThousands(this.value))">
                         </div>
@@ -195,12 +239,15 @@
 
                     <div class="input-row mt-4">
                         <div class="input-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="extraLifeCheckbox" class="extraLifeCheckbox" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
-                                Enable(❤️ Extra Life ) Button<i class="info-icon" data-tooltip="map-settings.extra-lifes">i</i>
+                            <label class="checkbox-label dev-switch-row">
+                                <span class="dev-switch-text">Enable ❤️ Extra Life Button<i class="info-icon" data-tooltip="map-settings.extra-lifes">i</i></span>
+                                <input type="checkbox" id="extraLifeCheckbox" class="extraLifeCheckbox dev-switch-input" onchange="window.app.jsonFunctions.updateExtraLife(this.checked)">
+                                <span class="dev-switch" aria-hidden="true"><span>Off</span><span>On</span></span>
                             </label>
 
-                            <label>
+                            <!-- slides shut while Extra Life is Off (CSS .dev-collapse) -->
+                            <div class="dev-collapse"><div>
+                            <label class="dev-price-label">
                                 Price Progression 🪙
                                 <i class="info-icon" data-tooltip="map-settings.extra-lifes-prices">i</i>
                             </label>
@@ -210,13 +257,14 @@
                                        onkeypress="if(event.key==='Enter'){event.preventDefault();window.app.jsonFunctions.addNewExtraLifePrice();}">
                                 <button id="add-extra-life-price-button" type="button" class="btn btn-green" onclick="window.app.jsonFunctions.addNewExtraLifePrice()">+ Add Price</button>
                             </div>
+                            </div></div>
                         </div>
                     </div>
                 </div>
             </div>
             <hr id="hr-settings">
             <div id="towerEditorPanel" class="editor-panel"> 
-                <h2>Tower Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoTower"/></svg>Tower Editor</h2>
 
                 <div class="tower-editor-layout"> 
                     <div id="towerEditorContent" class="repeater-container">
@@ -227,7 +275,7 @@
             </div>
             <hr id="hr-tower">
             <div id="waveEditorPanel" class="editor-panel d-none"> 
-                <h2>Wave Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoSkull"/></svg>Wave Editor</h2>
 
                 <div class="enemy-types-editor box-card repeater-header mb-4">
                     <div class="enemy-types-list-card">
@@ -238,24 +286,32 @@
                             <input type="text" id="newEnemyTypeInput" placeholder="New enemy type (e.g. super-tank)" class="input-medium" />
                             <button id="add-enemy-type-button" class="btn btn-green">+ Add New enemy Type</button>
                         </div>
+                        <!-- the description inside the brown card, right under adding a type -->
+                        <p class="enemyTypesEditorDescription dev-types-note">Manage the enemy types available for selection in the Wave Editor, Enemy Shake Effects and Custom Damage sections. Enemies can have different effects depending on their type.</p>
                     </div>
 
-                    <p class="enemyTypesEditorDescription">Manage the enemy types available for selection in the Wave Editor, Enemy Shake Effects and Custom Damage sections. Enemies can have different effects depending on their type.</p>
-                    <h3>Enemy Shake Effects</h3>
-                                    
-                    <div id="enemy-effects-repeater"></div>
-                                    
-                    <button class="btn btn-add btn-green mt-1" id="add-effect-btn">+ Add New Effect</button>
-                
-                    <h3>Custom Enemy Damage</h3>
-                    <div id="enemy-damage-repeater" class="repeater-container">
-                        </div>
-                    <button class="btn btn-add btn-green mt-1" id="add-damage-btn">+ Add Custom Damage</button>
+                    <!-- same brown card as the Enemy Types List above -->
+                    <div class="enemy-types-list-card dev-wave-card">
+                        <h3>Enemy Shake Effects</h3>
+                        <div id="enemy-effects-repeater"></div>
+                        <button class="btn btn-add btn-green mt-1" id="add-effect-btn">+ Add New Effect</button>
+                    </div>
+
+                    <div class="enemy-types-list-card dev-wave-card">
+                        <h3>Custom Enemy Damage</h3>
+                        <div id="enemy-damage-repeater" class="repeater-container">
+                            </div>
+                        <button class="btn btn-add btn-green mt-1" id="add-damage-btn">+ Add Custom Damage</button>
+                    </div>
                 </div>
 
-                <div id="waves-editor-container" class="repeater-container">
+                <!-- waves under each other, each wave's enemy groups in one row that scrolls
+                     sideways (CSS .dev-waves) -->
+                <div class="dev-waves" id="devWaves">
+                    <div id="waves-editor-container" class="repeater-container">
+                    </div>
+                    <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
                 </div>
-                <button id="add-wave-button" class="btn btn-add btn-green">+ Add New Wave</button>
             </div>
             <div id="waveEditorPanel" class="editor-panel d-none"> 
                 <h3>Wave Editor</h3>
@@ -265,7 +321,7 @@
             </div>
             <hr id="hr-wave">
             <div id="abilityEditorPanel" class="editor-panel">
-                <h2>Ability Editor</h2>
+                <h2><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoFire"/></svg>Ability Editor</h2>
                     
                 <div class="ability-editor-layout"> 
                     <div id="abilityEditorContent" class="repeater-container">
@@ -274,10 +330,10 @@
                     
                     <div class="ability-controls mt-4">
                         <select id="ability-type-selector" class="input-medium ability-type-selector">
-                            <option value="lava_floor">Lava Floor (Targeted)</option>
-                            <option value="towers_fury">Towers Fury (Global Buff)</option>
-                            <option value="gold_rush">Gold Rush (Global Buff)</option>
-                            <option value="ice_storm">Ice Storm (Targeted)</option>
+                            <option value="lava_floor">🌋 Lava Floor (Targeted)</option>
+                            <option value="towers_fury">🏹 Towers Fury (Global Buff)</option>
+                            <option value="gold_rush">⛏️ Gold Rush (Global Buff)</option>
+                            <option value="ice_storm">❄️ Ice Storm (Targeted)</option>
                         </select>
                         <button id="add-ability-button" class="btn cl-green">+ Add New Ability</button>
                     </div>
@@ -285,27 +341,32 @@
             </div>
             <hr id="hr-ability">
         </div>
-        <h2 class="text-center d-block final-json">Final JSON</h2>
+        <div class="dev-section">
+        <h2 class="text-center d-block final-json"><svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#devIcoList"/></svg>Final JSON</h2>
         <div class="text-center">Paste your map JSON here, or export the generated JSON using copy, save, or download.</div>
         <textarea id="jsonEditor" class="json-textarea mt-1"></textarea>
 
         <div class="controls">
+            <!-- no "Validate Map Paths" - the path watcher (script at the bottom) checks all the time -->
             <div class="button-group">
-                <button onclick="window.app.mapEditor.checkMapValidity()" class="btn btn-validate btn-green">Validate Map Paths</button>
+                <button id="devCopyJsonBtn" onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
             </div>
-            
-            <div id="statusMessage" class="status-message text-center d-none"></div>
-            
+
             <div class="status-and-nav">
-                <button onclick="window.app.jsonFunctions.copyFormattedJson()" class="btn btn-copy-json">Format & Copy JSON</button>
                 <button onclick="window.app.jsonFunctions.exportLevelData()" class="btn btn-save btn-green">Export Map</button>
             </div>
 
-        </div>        
+        </div>
+        </div>
     </div>
     <div id="customConfirmPopup" class="modal-overlay d-none">
-        <div class="return-content box">
-            <h3 id="popupTitle">Delete Tower</h3>
+        <div class="return-content box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+            <!-- × / ESC / click outside = Cancel, gold icon + button label follow the title (script below) -->
+            <button type="button" class="dev-confirm-close" title="Close">&times;</button>
+            <div class="dev-confirm-head">
+                <svg class="dev-h-ico" viewBox="0 0 24 24" aria-hidden="true"><use id="devConfirmIco" href="#devIcoScroll"/></svg>
+                <h3 id="popupTitle">Delete Tower</h3>
+            </div>
             <p id="popupMessage">Are you sure you want to delete this entity?</p>
             <div class="return-buttons">
                 <button id="confirmActionButton" class="btn btn-delete">Yes, remove</button>
@@ -313,10 +374,48 @@
             </div>
         </div>
     </div>
+    <script src="js/level_editor/editor_ui/confirm_popup.js"></script>
+    <!-- gold icons (same symbols as the game's Version History map / scroll icons in index.html) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <linearGradient id="devGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#c58a2e"/></linearGradient>
+            <!-- same red heart as Lives in the game's top bar (index.html) -->
+            <linearGradient id="devHeart" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset="1" stop-color="#b3261e"/></linearGradient>
+            <!-- fire of the game's Abilities tab (index.html #vhFire) -->
+            <linearGradient id="devFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".55" stop-color="#ff9a3c"/><stop offset="1" stop-color="#c2410c"/></linearGradient>
+        </defs>
+        <!-- section headings: same symbols as the game (Settings gear, Towers tab, Settings enemies skull,
+             Abilities tab flame, Version History list) -->
+        <symbol id="devIcoGear" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M10.14 4.53L10.3 1.84A10.3 10.3 0 0 1 13.7 1.84L13.86 4.53A7.7 7.7 0 0 1 15.97 5.4L17.98 3.61A10.3 10.3 0 0 1 20.39 6.02L18.6 8.03A7.7 7.7 0 0 1 19.47 10.14L22.16 10.3A10.3 10.3 0 0 1 22.16 13.7L19.47 13.86A7.7 7.7 0 0 1 18.6 15.97L20.39 17.98A10.3 10.3 0 0 1 17.98 20.39L15.97 18.6A7.7 7.7 0 0 1 13.86 19.47L13.7 22.16A10.3 10.3 0 0 1 10.3 22.16L10.14 19.47A7.7 7.7 0 0 1 8.03 18.6L6.02 20.39A10.3 10.3 0 0 1 3.61 17.98L5.4 15.97A7.7 7.7 0 0 1 4.53 13.86L1.84 13.7A10.3 10.3 0 0 1 1.84 10.3L4.53 10.14A7.7 7.7 0 0 1 5.4 8.03L3.61 6.02A10.3 10.3 0 0 1 6.02 3.61L8.03 5.4A7.7 7.7 0 0 1 10.14 4.53ZM12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0 -7z"/><circle cx="12" cy="12" r="2.2" fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6"/></symbol>
+        <symbol id="devIcoTower" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M5 2h3v2h2V2h4v2h2V2h3v5l-2 2v11h2v2H5v-2h2V9L5 7zM10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20zM11 11h2v3h-2z"/></symbol>
+        <symbol id="devIcoSkull" viewBox="0 0 24 24"><path fill="url(#devGold)" fill-rule="evenodd" stroke="#4a2c0c" stroke-width=".8" d="M12 2c-5 0-8.5 3.5-8.5 8 0 2.8 1.3 4.9 3.5 6.1V20c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3.9c2.2-1.2 3.5-3.3 3.5-6.1C20.5 5.5 17 2 12 2zM8.8 9.1a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zm6.4 0a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 1 0 0-4.2zM12 13.8l-1.2 2.3h2.4z"/><path fill="none" stroke="#4a2c0c" stroke-width="1.2" d="M10.5 18.6V22M13.5 18.6V22"/></symbol>
+        <symbol id="devIcoFire" viewBox="0 0 24 24"><path fill="url(#devFire)" stroke="#4a1c06" stroke-width=".8" d="M12.5 2c.6 3.4 4.8 5.6 4.8 10.4A5.3 5.3 0 0 1 12 18a5.3 5.3 0 0 1-5.3-5.3c0-2.2 1-3.8 2.2-4.9 0 2 .9 3.2 2 3.4-.8-3.2.2-6.4 1.6-9.2z"/><path fill="#ffe7a3" d="M19 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6zM5 16.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5zM12 19.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z"/></symbol>
+        <symbol id="devIcoList" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M6 3h11a3 3 0 0 1 3 3v1h-3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1h3V6a3 3 0 0 1 1-3z"/><path stroke="#4a2c0c" stroke-width="1.2" opacity=".75" d="M8 8h6M8 11h6M8 14h4"/></symbol>
+        <!-- panels / Save Slots / cards (instead of 💾 ☰ ❌ X) -->
+        <symbol id="devIcoDisk" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3.5 4.5a1 1 0 0 1 1-1h12.3l3.7 3.7v12.3a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path fill="#7a4a12" stroke="#4a2c0c" stroke-width=".6" d="M7 3.5h8.5v5.2H7z"/><path fill="url(#devGold)" d="M12.4 4.4h1.9v3.4h-1.9z"/><rect x="6.5" y="12.5" width="11" height="7.2" rx=".6" fill="#fff3d0" stroke="#4a2c0c" stroke-width=".6"/><path fill="none" stroke="#c58a2e" stroke-width=".9" stroke-linecap="round" d="M8.5 15h7M8.5 17.4h5"/></symbol>
+        <symbol id="devIcoMenu" viewBox="0 0 24 24"><g fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8"><rect x="3" y="4.5" width="18" height="3.4" rx="1.7"/><rect x="3" y="10.3" width="18" height="3.4" rx="1.7"/><rect x="3" y="16.1" width="18" height="3.4" rx="1.7"/></g></symbol>
+        <symbol id="devIcoX" viewBox="0 0 24 24"><path fill="url(#devHeart)" stroke="#4a0d08" stroke-width=".9" stroke-linejoin="round" d="M5.6 3.5 12 9.9l6.4-6.4 2.1 2.1-6.4 6.4 6.4 6.4-2.1 2.1-6.4-6.4-6.4 6.4-2.1-2.1 6.4-6.4-6.4-6.4z"/></symbol>
+        <!-- light ✖ for the red Delete buttons (red on red wouldn't show) -->
+        <symbol id="devIcoXLight" viewBox="0 0 24 24"><path fill="#fff3d0" stroke="#5c0f0a" stroke-width="1" stroke-linejoin="round" d="M5.6 3.5 12 9.9l6.4-6.4 2.1 2.1-6.4 6.4 6.4 6.4-2.1 2.1-6.4-6.4-6.4 6.4-2.1-2.1 6.4-6.4-6.4-6.4z"/></symbol>
+        <symbol id="devIcoMap" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" stroke-linejoin="round" d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21z"/><path stroke="#4a2c0c" stroke-width=".9" opacity=".6" d="M9 3v15.5M15 5.5V21"/></symbol>
+        <symbol id="devIcoScroll" viewBox="0 0 24 24"><path fill="url(#devGold)" stroke="#4a2c0c" stroke-width=".8" d="M5.5 5h13v14h-13z"/><path fill="none" stroke="#7a4a12" stroke-width="1.1" stroke-linecap="round" d="M8.5 9h7M8.5 12h7M8.5 15h4.5"/><rect x="3" y="2.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><rect x="3" y="17.5" width="18" height="4" rx="2" fill="#c58a2e" stroke="#4a2c0c" stroke-width=".8"/><path fill="none" stroke="#ffe7a3" stroke-width=".7" stroke-linecap="round" opacity=".7" d="M5 3.8h14M5 18.8h14"/></symbol>
+    </svg>
+    <script src="js/level_editor/editor_ui/custom_selects.js"></script>
+    <script src="js/level_editor/editor_ui/brush_row_sync.js"></script>
+    <script src="js/level_editor/editor_ui/combo_autocomplete.js"></script>
+    <script type="module" src="js/level_editor/editor_ui/tower_preview.js"></script>
+    <script src="js/level_editor/editor_ui/card_icons.js"></script>
+    <script type="module" src="js/level_editor/editor_ui/ability_card_fx.js"></script>
     <script type="module" src="js/level_editor/level_data.js"></script>
     <script type="module" src="js/level_editor/json_functions.js"></script>
     <script type="module" src="js/level_editor/main.js"></script>
     <script type="module" src="js/level_editor/UI.js"></script>
     <script type="module" src="js/level_editor/TooltipController.js"></script>
+    <script src="js/level_editor/editor_ui/offscreen_pause.js"></script>
+    <script src="js/level_editor/editor_ui/wave_rows.js"></script>
+    <script src="js/level_editor/editor_ui/copied_flash.js"></script>
+    <script type="module" src="js/level_editor/editor_ui/path_checker.js"></script>
+    <script type="module" src="js/level_editor/editor_ui/enemy_skin_preview.js"></script>
+    <script type="module" src="js/level_editor/editor_ui/map_camera.js"></script>
 </body>
 </html>

@@ -17,8 +17,10 @@ function setStatus(message, isError = false) {
     statusMessage.textContent = message;
     statusMessage.classList.remove('d-none', 'status-success', 'status-error');
     statusMessage.classList.add(isError ? 'status-error' : 'status-success');
-    
-    setTimeout(() => { statusMessage.classList.add('d-none'); }, 3000);
+
+    // a new message restarts the 3 s - an older timer must not hide it early
+    clearTimeout(setStatus.hideTimer);
+    setStatus.hideTimer = setTimeout(() => { statusMessage.classList.add('d-none'); }, 3000);
 }
 
 // Attach module functions to a global namespace for HTML access
@@ -139,23 +141,7 @@ async function initEditor() {
     });
     saveSlots.initSaveSlots();
 
-    /* Share button */
-    const shareBtn = document.getElementById('shareMapBtn');
-    if (shareBtn) {
-        shareBtn.addEventListener('click', async () => {
-            // Zavolá funkci z importovaného modulu jsonFunctions
-            await jsonFunctions.generateShareLink();
-            
-            // Malý bonus: vizuální změna tlačítka
-            const originalText = shareBtn.textContent;
-            shareBtn.textContent = "Copied!";
-            
-            setTimeout(() => {
-                shareBtn.textContent = originalText;
-            }, 2000);
-        });
-    }
-    /* Share button */
+    // Share Map button: js/level_editor/editor_ui/copied_flash.js (share link + "Copied!" for 2 s)
     /* Toggle Help Button */
     const helpBtn = document.getElementById('toggleHelp');
     
@@ -212,16 +198,19 @@ async function initEditor() {
     const editorGraphicsSelect = document.getElementById('editorGraphicsSelect');
     const editorBackgroundKey = 'editor_background';
 
+    // the editor's own setting (editor_ui/graphics_settings.js keeps it apart from the game's):
+    // High by default, one quality for every object
     const defaultGraphicsSettings = {
-        trees: 'low',
-        portals: 'low',
-        enemies: 'low',
-        towers: 'low',
-        water: 'low',
-        terrain: 'low',
-        roads: 'low',
-        mountains: 'low',
-        abilities: 'low'
+        trees: 'high',
+        portals: 'high',
+        enemies: 'high',
+        towers: 'high',
+        water: 'high',
+        terrain: 'high',
+        roads: 'high',
+        mountains: 'high',
+        abilities: 'high',
+        objects: 'high'
     };
 
     const loadGraphicsSettings = () => {
@@ -268,7 +257,7 @@ async function initEditor() {
     };
 
     if (editorGraphicsSelect) {
-        const savedQuality = loadGraphicsSettings().terrain || 'low';
+        const savedQuality = loadGraphicsSettings().terrain || 'high';
         editorGraphicsSelect.value = savedQuality;
         editorGraphicsSelect.addEventListener('change', (e) => {
             applyGraphicsSettings(e.target.value);
