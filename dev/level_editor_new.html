@@ -6,6 +6,33 @@
     <base href="../">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
+    <!-- dev: Graphics. The editor shares localStorage "graphicsSettings" with the game, where every
+         object (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities) can have
+         its own quality (+ 'objects' for map objects) - but Menu > Graphics only showed the terrain's value, so it could say "Low"
+         while half the objects were High. Before the editor starts, every object gets the ONE editor
+         quality: the last one picked in the editor ("dev_editor_graphics"), High by default. Picking
+         Low / High in the Menu then switches all of them together (main.js) and is remembered here. -->
+    <script>
+        (() => {
+            // 'objects' = map objects (trees, bushes, logs, wells, rocks, bones, cacti, palms, spikes, hay) -
+            // the game's Settings has it, the editor never set it, so they always stayed High
+            const KEYS = ['trees', 'portals', 'enemies', 'towers', 'water', 'terrain', 'roads', 'mountains', 'abilities', 'objects'];
+            let quality = 'high';
+            try { quality = localStorage.getItem('dev_editor_graphics') === 'low' ? 'low' : 'high'; } catch {}
+            try {
+                const saved = JSON.parse(localStorage.getItem('graphicsSettings') || 'null') || {};
+                if ('lava_floor' in saved) { saved.abilities ??= saved.lava_floor; delete saved.lava_floor; }
+                // (ui_effects is the game's own UI animations setting - not a map thing, left alone)
+                new Set([...KEYS, ...Object.keys(saved)]).forEach(k => { if (k !== 'ui_effects') saved[k] = quality; });
+                localStorage.setItem('graphicsSettings', JSON.stringify(saved));
+            } catch {}
+            document.addEventListener('change', e => {
+                if (e.target?.id === 'editorGraphicsSelect') {
+                    try { localStorage.setItem('dev_editor_graphics', e.target.value === 'low' ? 'low' : 'high'); } catch {}
+                }
+            });
+        })();
+    </script>
     <link rel="icon" type="image/x-icon" href="assets/images/tower_defence.ico">
     <link rel="stylesheet" href="css/level_editor/editor.css" /> 
     <link rel="stylesheet" href="css/level_editor/basic_data.css" /> 
@@ -163,7 +190,7 @@
         }
         .dev-skin-pop.is-open{ display:flex; animation:devSkinPop .14s ease-out; }
         .dev-skin-pop figure{ margin:0; display:flex; flex-direction:column; align-items:center; gap:4px; }
-        .dev-skin-pop img{ height:72px; width:auto; filter:drop-shadow(0 3px 4px rgba(0,0,0,.6)); }
+        .dev-skin-pop img{ height:72px; width:auto; /* (height set per enemy by the script, keeps the game ratio) */ filter:drop-shadow(0 3px 4px rgba(0,0,0,.6)); }
         .dev-skin-pop figcaption{ color:#f0c674; font-size:.72rem; font-weight:600; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
         @keyframes devSkinPop{ from{ opacity:0; transform:scale(.94); } to{ opacity:1; transform:none; } }
         body.ui-fx-low .dev-skin-pop.is-open{ animation:none; }
@@ -696,15 +723,15 @@
         .dev-waves .enemy-card::before{
             content:''; order:-1; display:block; height:62px; margin:2px 0 2px;
             background:
-                var(--dev-skin-golem, none) calc(50% - 30px) 100% / auto 60px no-repeat,
-                var(--dev-skin-eye, none) calc(50% + 28px) 100% / auto 60px no-repeat;
+                var(--dev-skin-golem, none) calc(50% - 30px) 100% / auto var(--dev-skin-golem-h, 60px) no-repeat,
+                var(--dev-skin-eye, none) calc(50% + 28px) 100% / auto var(--dev-skin-eye-h, 60px) no-repeat;
             filter:drop-shadow(0 3px 3px rgba(0,0,0,.55));
         }
         .dev-waves .enemy-card:has(select[data-key="skin"] option[value="GOLEM"]:checked)::before{
-            background:var(--dev-skin-golem, none) 50% 100% / auto 60px no-repeat;
+            background:var(--dev-skin-golem, none) 50% 100% / auto var(--dev-skin-golem-h, 60px) no-repeat;
         }
         .dev-waves .enemy-card:has(select[data-key="skin"] option[value="EYE"]:checked)::before{
-            background:var(--dev-skin-eye, none) 50% 100% / auto 60px no-repeat;
+            background:var(--dev-skin-eye, none) 50% 100% / auto var(--dev-skin-eye-h, 60px) no-repeat;
         }
         .dev-waves .enemy-card > .card-body-inner{ display:flex; flex-direction:column; }
         .dev-waves .enemy-card label.editor-row{ margin:4px 0 0 !important; min-width:0; display:flex; flex-direction:column; }
@@ -969,6 +996,31 @@
             box-shadow:inset 0 2px 1px rgba(255,255,255,.3), inset 0 -10px 14px rgba(0,0,0,.22), 0 5px 0 #7a1f1f, 0 11px 16px rgba(0,0,0,.4) !important;
         }
         #customConfirmPopup .btn.btn-delete:hover{ background-color:#c93a3a !important; }
+
+        /* ================================================================
+        /* ================================================================
+           Hover / editing on every field: a gold edge, a soft gold glow around it and a faint light
+           veil inside (inset shadow - sits over the field's own colour, under the text), the same
+           while it's being edited (typing, or its list is open). Brown inputs, text areas, the custom
+           selects, Difficulty and the whole - / + stepper as one. Fields you can't edit (disabled /
+           read-only, e.g. Map Tile Size, Class ID) and checkboxes / sliders / color pickers stay as they are.
+           ================================================================ */
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+        textarea, .dev-sel-trigger, .json-stepper-wrap{
+            transition:border-color .18s ease, box-shadow .18s ease;
+        }
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(:disabled):not(:read-only):not(.json-stepper-wrap input):hover,
+        textarea:not(:disabled):not(:read-only):hover,
+        .dev-sel-trigger:hover,
+        .json-stepper-wrap:not(:has(input:disabled, input:read-only)):hover,
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(:disabled):not(:read-only):not(.json-stepper-wrap input):focus,
+        textarea:not(:disabled):not(:read-only):focus,
+        .dev-sel-trigger.is-open,
+        .json-stepper-wrap:not(:has(input:disabled, input:read-only)):focus-within{
+            outline:none;
+            border-color:#f0c674 !important;
+            box-shadow:inset 0 0 0 999px rgba(255,236,190,.09), 0 0 0 1px rgba(240,198,116,.55), 0 0 10px rgba(240,198,116,.35) !important;
+        }
     </style>
 </head>
 <body class="editor-body editor-loading">
@@ -992,6 +1044,7 @@
                     <li>Loading screen in the game's style - Cinzel title and a gold progress bar like the level progress</li>
                     <li>Confirm popups (Load Map, Overwrite / Delete Save Slot) now look like the game's popups - gold title with an icon, × in the corner, close with Esc or a click outside; the confirm button says what it does ("Load", "Overwrite", "Delete")</li>
                     <li>All selects look like the Background select in Settings, with a keyboard-friendly list; the ability select shows the ability icons</li>
+                    <li>Every field gets a gold edge and a soft gold glow on hover and while you're editing it (inputs, selects, the − / + steppers, text areas)</li>
                 </ul>
                 <h3>Path checking</h3>
                 <ul>
@@ -1019,6 +1072,7 @@
                     <li>New Brush row - brush size, Square / Diamond / Circle and the X / Y position of the cursor in one line</li>
                     <li>Width / Height got − / + buttons</li>
                     <li>Map Style and Graphics moved into the Menu</li>
+                    <li>The editor starts on High graphics; Graphics Low / High always switches every object together (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities and map objects - map objects used to stay on High) and the editor remembers your choice</li>
                     <li>Map Preview moved to the top-left corner</li>
                     <li>"Drawing is disabled for Start and End" moved into the tile search's "i" tooltip</li>
                     <li>The Map and Map Settings parts sit right on the section background (no extra dark boxes); the tile search field is brown like every other input</li>
@@ -2280,6 +2334,7 @@
         const SKINS = ['GOLEM', 'EYE'];
         const NAMES = { GOLEM: 'Golem', EYE: 'Fiery Eye' };
         const cache = new Map();
+        const heights = new Map(); // cropped picture height per type_quality
 
         const quality = () => {
             try { return (JSON.parse(localStorage.getItem('graphicsSettings')) || {}).enemies || 'low'; }
@@ -2309,6 +2364,7 @@
                     out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
                     out.getContext('2d').drawImage(src, -x0, -y0);
                     url = out.toDataURL('image/png');
+                    heights.set(key, out.height);
                 }
             } catch (e) { console.warn('dev skin preview:', e); }
             cache.set(key, url);
@@ -2316,11 +2372,16 @@
         };
 
         // the pictures above Type in every enemy group (CSS .enemy-card::before) read these
+        // the eye was as tall as the golem (both stretched to one height) - too big; at its true
+        // game size it'd be tiny, so it gets two thirds of the golem's height
+        const scale = (t, full) => Math.round(t === 'EYE' ? full * 2 / 3 : full);
         const keepDecoded = []; // held, so the cards rebuilt on every change reuse the decoded picture
         const setVars = () => SKINS.forEach(t => {
             const url = art(t);
             if (url) { const img = new Image(); img.src = url; img.decode?.().catch(() => {}); keepDecoded.push(img); }
-            document.documentElement.style.setProperty(`--dev-skin-${t === 'GOLEM' ? 'golem' : 'eye'}`, url ? `url("${url}")` : 'none');
+            const name = t === 'GOLEM' ? 'golem' : 'eye';
+            document.documentElement.style.setProperty(`--dev-skin-${name}`, url ? `url("${url}")` : 'none');
+            document.documentElement.style.setProperty(`--dev-skin-${name}-h`, scale(t, 60) + 'px');
         });
         setVars();
         // Menu > Graphics: main.js saves the new quality in its own change handler - read it after
@@ -2344,6 +2405,7 @@
                     const fig = document.createElement('figure');
                     const img = document.createElement('img');
                     img.src = art(t); img.alt = NAMES[t]; img.draggable = false;
+                    img.style.height = scale(t, 72) + 'px';
                     const cap = document.createElement('figcaption');
                     cap.textContent = NAMES[t];
                     fig.append(img, cap);
