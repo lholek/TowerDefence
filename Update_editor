@@ -1,0 +1,22 @@
+Ok editor už je lepší ale chci zapracovat tyto body:
+Mapa:
+1) Když kliknu na nějaký item v novém prohlížeči zascrolluje to k němu ( stejně jako když ho vyberu v search tile
+2) Filtry zarovnej vpravo a vedle toho dej XY souřadnice a vedle toho Brush tedy:
+Search | XY | Brush
+Ten brush může být klidně pod sebou hlavě at to tam vejde
+
+Towers:
+1) Místo těch 9 u teček dam dej šipky nahoru a dolu jako u waves pro řazení
+
+
+Albilities:
+1) Místo těch 9 u teček dam dej šipky nahoru a dolu jako u waves pro řazení
+
+Overall:
+1) Zruš to zlaté ohraničení pro Map Preview, Save Slots a Menu
+2) na celkové ty sekce použíj:
+radial-gradient(120% 60% at 30% 0%, rgba(240, 198, 116, 0.10), transparent 70%),
+    var(--main-bg-color)
+místo té hnědé barvy
+3) Jednotivlé body jako Tower 1, Enemy Types List, Enemy Shake Effects taky vyplepši graficky, ať to více sedí do nové hry
+4) Když klinu na skytí nebo zobrazení třeba Map, nebo Map settings tak by měla být krátká animace fade in fade out třeba 0,4s
