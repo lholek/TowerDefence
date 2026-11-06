@@ -6,31 +6,33 @@
     <base href="../">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <!-- dev: Graphics. The editor shares localStorage "graphicsSettings" with the game, where every
-         object (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities) can have
-         its own quality (+ 'objects' for map objects) - but Menu > Graphics only showed the terrain's value, so it could say "Low"
-         while half the objects were High. Before the editor starts, every object gets the ONE editor
-         quality: the last one picked in the editor ("dev_editor_graphics"), High by default. Picking
-         Low / High in the Menu then switches all of them together (main.js) and is remembered here. -->
+    <!-- dev: Graphics - the editor has its OWN settings, separate from the game's.
+         Editor code and the game code it reuses (Map.js, Enemy.js, Tower.js, editor_map.js, main.js)
+         all read / write localStorage "graphicsSettings" - the game's per-object Settings. On this
+         page that key is redirected to "dev_editor_graphicsSettings", so the editor never changes
+         the game's settings and the game's never change the editor. In the editor everything has
+         ONE quality (Menu > Graphics switches all objects together, main.js), High by default,
+         and the editor remembers it. Runs before any other script of the page. -->
     <script>
         (() => {
-            // 'objects' = map objects (trees, bushes, logs, wells, rocks, bones, cacti, palms, spikes, hay) -
-            // the game's Settings has it, the editor never set it, so they always stayed High
+            const GAME_KEY = 'graphicsSettings', EDITOR_KEY = 'dev_editor_graphicsSettings';
+            const proto = Storage.prototype;
+            const real = { get: proto.getItem, set: proto.setItem, remove: proto.removeItem };
+            const map = (store, key) => (store === window.localStorage && key === GAME_KEY) ? EDITOR_KEY : key;
+            proto.getItem = function (key) { return real.get.call(this, map(this, key)); };
+            proto.setItem = function (key, value) { return real.set.call(this, map(this, key), value); };
+            proto.removeItem = function (key) { return real.remove.call(this, map(this, key)); };
+
+            // every object, 'objects' = map objects (trees, bushes, logs, wells, rocks, bones, cacti,
+            // palms, spikes, hay) - the editor never set that one before, so they always stayed High
             const KEYS = ['trees', 'portals', 'enemies', 'towers', 'water', 'terrain', 'roads', 'mountains', 'abilities', 'objects'];
-            let quality = 'high';
-            try { quality = localStorage.getItem('dev_editor_graphics') === 'low' ? 'low' : 'high'; } catch {}
             try {
-                const saved = JSON.parse(localStorage.getItem('graphicsSettings') || 'null') || {};
-                if ('lava_floor' in saved) { saved.abilities ??= saved.lava_floor; delete saved.lava_floor; }
-                // (ui_effects is the game's own UI animations setting - not a map thing, left alone)
-                new Set([...KEYS, ...Object.keys(saved)]).forEach(k => { if (k !== 'ui_effects') saved[k] = quality; });
-                localStorage.setItem('graphicsSettings', JSON.stringify(saved));
+                const saved = JSON.parse(localStorage.getItem(GAME_KEY) || 'null'); // = the editor's own
+                const quality = saved?.terrain === 'low' ? 'low' : 'high';           // High until Low is picked
+                const all = {};
+                KEYS.forEach(k => { all[k] = quality; });
+                localStorage.setItem(GAME_KEY, JSON.stringify(all));
             } catch {}
-            document.addEventListener('change', e => {
-                if (e.target?.id === 'editorGraphicsSelect') {
-                    try { localStorage.setItem('dev_editor_graphics', e.target.value === 'low' ? 'low' : 'high'); } catch {}
-                }
-            });
         })();
     </script>
     <link rel="icon" type="image/x-icon" href="assets/images/tower_defence.ico">
@@ -1072,6 +1074,7 @@
                     <li>New Brush row - brush size, Square / Diamond / Circle and the X / Y position of the cursor in one line</li>
                     <li>Width / Height got − / + buttons</li>
                     <li>Map Style and Graphics moved into the Menu</li>
+                    <li>The editor has its own graphics setting, separate from the game's Settings - changing one never changes the other</li>
                     <li>The editor starts on High graphics; Graphics Low / High always switches every object together (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities and map objects - map objects used to stay on High) and the editor remembers your choice</li>
                     <li>Map Preview moved to the top-left corner</li>
                     <li>"Drawing is disabled for Start and End" moved into the tile search's "i" tooltip</li>
