@@ -485,12 +485,18 @@
         /* .box (editor.css) also draws a 1px #333 border - that was the line joining the boxes */
         .editor-container.box{ background:transparent; padding:0 !important; box-shadow:none; border:0; }
         .editor-panels-container > hr{ display:none !important; }
+        /* sections: instead of the flat --main-bg-color a warm brown that darkens and fades
+           towards the bottom, a gold line along the top edge and a soft outline */
         .dev-section,
         .editor-panels-container > .editor-panel{
-            background:var(--main-bg-color);
+            background:
+                linear-gradient(180deg, rgba(240,198,116,.07), transparent 140px),
+                linear-gradient(180deg, rgba(70,56,38,.95) 0%, rgba(48,39,28,.88) 260px, rgba(34,28,20,.8) 100%);
+            border:1px solid rgba(240,198,116,.12);
+            border-top-color:rgba(240,198,116,.5);
             border-radius:12px;
             padding:18px 20px;
-            box-shadow:0 8px 20px rgba(0,0,0,.35);
+            box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 10px 26px rgba(0,0,0,.45);
         }
         .dev-section-head{ padding-top:14px; padding-bottom:14px; }
         .editor-panels-container > .editor-panel,
@@ -498,6 +504,23 @@
         .editor-panel{ padding-left:.8rem; padding-right:.8rem; }
         .editor-description{ padding-left:12px; padding-right:12px; }
         .map-editor-card{ padding-left:10px; padding-right:10px; }
+        /* Map and Map Settings: no own dark box any more - they sit right on the section's gradient */
+        .map-editor-card, .map-top-bar, #tileDrawingPanel, .editor-description{ background:transparent; }
+        /* Search tile... looks like every other input of the editor (brown field) */
+        .tile-search-input{
+            background:#967456; border:1px solid #555; color:#f0f0f0;
+            padding:6px 10px; font-size:13px;
+        }
+        .tile-search-input::placeholder{ color:#f0f0f0; opacity:.85; }
+        .tile-search-input:focus{ background:#967456; border-color:#f0c674; box-shadow:0 0 0 1px rgba(240,198,116,.45); }
+        /* tower cards: a framed dark card with a soft gold edge and a lighter top, like the
+           game's cards, instead of the flat #2e261d box */
+        #towerEditorContent .tower-card{
+            background:linear-gradient(180deg, #43362a 0%, #2f261c 55%, #261f17 100%);
+            border:1px solid rgba(240,198,116,.3);
+            border-radius:10px;
+            box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 6px 16px rgba(0,0,0,.4);
+        }
 
         /* --- Map Settings: Price Progression gets the same gap above it as Starting Lifes (mt-4) --- */
         .dev-price-label{ margin-top:1.5rem; }
@@ -618,11 +641,16 @@
            collapse animation) is the scroller, .waves-body / .enemies-container are
            display:contents, so the group cards and the Add button are its flex items.
            ================================================================ */
-        .dev-waves .wave-card{
-            margin-bottom:14px; border-radius:10px;
-            border:1px solid rgba(240,198,116,.4);
-            box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 12px rgba(0,0,0,.3);
+        /* waves + Enemy Types List / Enemy Shake Effects / Custom Enemy Damage: lighter at the top,
+           darker at the bottom (like the tower cards, the light part reaching ~10 % further down)
+           with a light gold frame */
+        .dev-waves .wave-card,
+        .enemy-types-list-card{
+            background:linear-gradient(180deg, #43362a 0%, #2f261c 65%, #261f17 100%);
+            border:1px solid rgba(240,198,116,.3);
+            box-shadow:inset 0 1px 0 rgba(255,225,160,.12), 0 6px 16px rgba(0,0,0,.4);
         }
+        .dev-waves .wave-card{ margin-bottom:14px; border-radius:10px; }
         .dev-waves .wave-card .wave-stats{ margin:0 0 6px; }
         /* Performance (measured on a 25-wave / 267-group map, collapsing a wave): with every
            group card laid out, ~25 horizontal scrollers cost ~140 ms a frame. Group cards out of
@@ -815,7 +843,7 @@
            so the background stays in the back (change the alpha here to make it lighter / darker) */
         .ability-card.dev-ab > .dev-ab-veil{
             position:absolute; inset:0; z-index:0; pointer-events:none;
-            border-radius:inherit; background:rgba(0,0,0,.55);
+            border-radius:inherit; background:rgba(0,0,0,.35);
         }
         .ability-card.dev-ab > :not(.dev-ab-bg):not(.dev-ab-veil){ position:relative; z-index:1; }
         /* the game's pieces are made for a 260 x 132 card (their moves are in px), so the big editor
@@ -875,14 +903,14 @@
         .editor-loader-step{ color:#c9b48a; letter-spacing:.3px; }
 
         /* ================================================================
-           Final JSON: dark panel, monospace, gold scrollbar (editor.css already has it) like Version History
+           Final JSON: brown field like the other inputs, monospace, gold scrollbar (editor.css already has it) like Version History
            ================================================================ */
         .json-textarea{
             box-sizing:border-box; padding:12px 14px;
-            background:linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.22)), #2e261d;
-            color:#e4dccb; line-height:1.45; caret-color:#f0c674;
-            border:1px solid rgba(240,198,116,.25); border-radius:8px;
-            box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+            background:#967456;
+            color:#f0f0f0; line-height:1.45; caret-color:#f0c674;
+            border:1px solid #555; border-radius:8px;
+            box-shadow:inset 0 2px 5px rgba(0,0,0,.25);
             transition:border-color .2s ease;
         }
         .json-textarea:focus{ outline:none; border-color:#f0c674; }
@@ -957,6 +985,7 @@
                     <li>Smoother editor - animations that are off screen now stop, so the page no longer redraws all the time and lags, even on big maps</li>
                     <li>Collapsing and expanding waves is smooth again on big maps</li>
                     <li>Slimmer side margins around the whole editor (~20 % less)</li>
+                    <li>Editor sections (Map, Map Settings, Towers, Waves, Abilities, Final JSON) have a warm brown gradient that darkens towards the bottom and a gold line along the top edge, instead of a flat brown box</li>
                     <li>Gold icons instead of emoji - panel tabs, Save Slot buttons and the Copy / Delete buttons on all cards</li>
                     <li>Section headings with gold icons, like Settings and Version History in the game (Map, Map Settings, Tower / Wave / Ability Editor, Final JSON)</li>
                     <li>Menu, Save Slots and Map Preview panels have a thin gold frame that runs around their tab too, plus a deeper shadow</li>
@@ -972,7 +1001,7 @@
                 </ul>
                 <h3>Final JSON</h3>
                 <ul>
-                    <li>Dark panel with a monospace font, gold border while typing and a gold scrollbar</li>
+                    <li>Brown text area like the other inputs, monospace font, gold border while typing and a gold scrollbar</li>
                     <li>"Format &amp; Copy JSON" moved to the left and shows "Copied!" for 2 s, "Export Map" stays on the right</li>
                     <li>Fixed: "Share Map" could stay stuck on "Copied!" after a quick double click</li>
                 </ul>
@@ -992,6 +1021,7 @@
                     <li>Map Style and Graphics moved into the Menu</li>
                     <li>Map Preview moved to the top-left corner</li>
                     <li>"Drawing is disabled for Start and End" moved into the tile search's "i" tooltip</li>
+                    <li>The Map and Map Settings parts sit right on the section background (no extra dark boxes); the tile search field is brown like every other input</li>
                 </ul>
                 <h3>Menu</h3>
                 <ul>
@@ -1009,6 +1039,7 @@
                 <ul>
                     <li>Live preview of the tower's shop card next to its fields - exactly like the shop in the game, updates while you type and follows Graphics Low / High</li>
                     <li>Compact tower card - Color next to Name, stats in two rows; DPS moved from the header into the preview</li>
+                    <li>Tower cards have a framed look with a soft gold edge and a lighter top, like the cards in the game</li>
                     <li>Drag, Copy and Delete buttons in card headers are the same size and in one line</li>
                 </ul>
                 <h3>Abilities</h3>
@@ -1023,9 +1054,9 @@
                     <li>A picture of the enemy above Type, drawn by the game itself - Golem, Fiery Eye, or both for Random (follows Graphics Low / High)</li>
                     <li>Hovering a Skin option shows that enemy next to the list</li>
                     <li>Dashed "+ Add Enemy Group" card at the end of each row; the row scrolls to a new or copied group</li>
-                    <li>Waves have a thin gold frame</li>
+                    <li>Waves are lighter at the top and darker at the bottom with a thin gold frame, like the tower cards</li>
                     <li>Enemy Types List in one sideways-scrolling row, its description inside the card</li>
-                    <li>Enemy Shake Effects and Custom Enemy Damage each in their own brown card; their Delete buttons line up with the fields</li>
+                    <li>Enemy Types List, Enemy Shake Effects and Custom Enemy Damage each in their own card - lighter at the top, darker at the bottom, with a light gold frame; the Delete buttons line up with the fields</li>
                 </ul>
             </div>
         </div>
