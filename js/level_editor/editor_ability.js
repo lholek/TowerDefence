@@ -2,6 +2,7 @@
 
 import { getCurrentMap } from './level_data.js'; // To access the abilities data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
+import { flashCopy } from './copy_flash.js';
 import { formatNumber, parseThousands } from './number_format.js';
 import { initJsonSteppers, RELEASE_EVENT } from './JsonStepper.js';
 import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
@@ -402,6 +403,7 @@ export const abilityEditor = (() => {
 
             // Log inside the scope where 'sourceAbility' is known
         }, `Copied ability at index ${index}`, `.ability-card[data-ability-index="${index + 1}"]`);
+        flashCopy(`.ability-card[data-ability-index="${index + 1}"]`);
     };
 
     const moveAbility = (from, to) => {

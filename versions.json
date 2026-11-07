@@ -83,7 +83,8 @@
                 "Live preview of the tower's shop card next to its fields - exactly like the shop in the game, updates while you type and follows Graphics Low / High",
                 "Compact tower card - Color next to Name, stats in two rows; DPS moved from the header into the preview",
                 "Tower cards have a framed look with a soft gold edge and a lighter top, like the cards in the game",
-                "Drag, Copy and Delete buttons in card headers are the same size and in one line"
+                "Drag, Copy and Delete buttons in card headers are the same size and in one line",
+                "Copying a tower puts the copy right after the original instead of at the end (tower IDs are re-numbered in card order) and it lights up with a gold frame for a second"
               ]
             },
             {
@@ -91,7 +92,8 @@
                 "Added Gold Rush ability to the editor",
                 "Added Ice Storm ability to the editor",
                 "Ability cards have the background of their type over the whole card - lava, wind with arrows, falling coins, snow storm - like the ability cards in the game",
-                "Gold Rush - the Round Up checkbox is centered"
+                "Gold Rush - the Round Up checkbox is centered",
+                "A copied ability lights up with a gold frame for a second (the copy goes right after the original)"
               ]
             },
             {
@@ -99,6 +101,7 @@
                 "Waves can be moved up / down with the new gold ▲ / ▼ buttons next to Copy",
                 "Waves can be collapsed to just their header row with the new − / + button - easier to browse and reorder long wave lists",
                 "Copying a wave now puts the copy right below the original instead of at the end",
+                "Copying an enemy group puts the copy right after the original instead of at the end of the row; a copied wave or group lights up with a gold frame for a second",
                 "The wave header now shows the wave's total enemy count, coins and enemy health - Enemies (⭐ Count: … | Coins: 🪙 … | ❤️ Health: …)",
                 "Enemy groups of a wave sit side by side in one row that scrolls sideways; the mouse wheel over the row scrolls only the row, and the row keeps its position after every change",
                 "Compact group cards - \"Group N\" title, all 9 fields under each other, all fields the same height",

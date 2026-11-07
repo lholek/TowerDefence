@@ -2,6 +2,7 @@
 
 import { currentLevelData } from './level_data.js'; // To access the tower data
 import { modifyJson as modifyJsonRaw } from './json_functions.js';
+import { flashCopy } from './copy_flash.js';
 import { formatNumber, parseThousands } from './number_format.js';
 import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
 import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
@@ -238,17 +239,28 @@ export const towerEditor = (() => {
         }, `New tower added with ID: ${newId}`, `.tower-card[data-tower-id="${newId}"]`);
     };
 
+    // The copy goes right after the original; the towers behind it move one place on and
+    // all IDs are re-numbered 001, 002, ... in card order (same as moveTower below)
     const copyTower = (towerId) => {
-        const originalTower = currentLevelData.maps[0].towerTypes[towerId];
-        const newId = getNextTowerId();
+        const ids = Object.keys(currentLevelData.maps[0].towerTypes);
+        const position = ids.indexOf(String(towerId)) + 1;
+        const newId = (position + 1).toString().padStart(3, '0');
 
         modifyJson((data) => {
+            const towerTypes = data.maps[0].towerTypes;
+            const towers = Object.values(towerTypes);
+            const originalTower = towerTypes[towerId];
             const towerCopy = JSON.parse(JSON.stringify(originalTower));
             towerCopy.name = `${originalTower.name} (Copy)`;
-            
-            data.maps[0].towerTypes[newId] = towerCopy;
+            towers.splice(position, 0, towerCopy);
+
+            data.maps[0].towerTypes = {};
+            towers.forEach((tower, index) => {
+                data.maps[0].towerTypes[(index + 1).toString().padStart(3, '0')] = tower;
+            });
             renderTowerRepeater(data.maps[0].towerTypes);
         }, `Tower ${towerId} copied to ${newId}`, `.tower-card[data-tower-id="${newId}"]`);
+        flashCopy(`.tower-card[data-tower-id="${newId}"]`);
     };
 
     const deleteTower = async (towerId) => {

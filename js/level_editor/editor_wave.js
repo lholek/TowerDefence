@@ -6,6 +6,7 @@ import { formatNumber, parseThousands } from './number_format.js';
 import { highlightPath, clearHighlight } from './editor_map_preview.js';
 import { initJsonSteppers, RELEASE_EVENT, isStepperHoldActive } from './JsonStepper.js';
 import { enableDragReorder, dragHandleHtml } from './drag_reorder.js';
+import { flashCopy } from './copy_flash.js';
 
 // Every modifyJson(...) call in this file edits waves/enemies, so tag it 'wave' for the
 // Undo/Redo history automatically. Pass a 4th arg (CSS selector for the specific
@@ -867,23 +868,26 @@ export const waveEditor = (() => {
             if (collapsedWaves.has(waveIndex)) collapsedWaves.add(newIndex);
             reIndexWaves(levels);
         }, `Wave ${waveIndex + 1} copied as Wave ${newIndex + 1}.`, `.wave-card[data-wave-index="${newIndex}"]`);
+        flashCopy(`.wave-card[data-wave-index="${newIndex}"]`);
     };
 
     /**
      * Copies a single enemy group within a specific wave
      */
     const copyEnemyGroup = (waveIndex, enemyIndex) => {
-        const newEnemyIndex = (getCurrentMap().levels[waveIndex]?.enemies || []).length;
+        // the copy goes right after the copied group; the groups behind it move one place on
+        const newEnemyIndex = enemyIndex + 1;
         modifyJson((data) => {
             const levels = data.maps[0].levels;
             const wave = levels[waveIndex];
             const groupToCopy = wave.enemies[enemyIndex];
 
             const newGroup = JSON.parse(JSON.stringify(groupToCopy));
-            wave.enemies.push(newGroup);
+            wave.enemies.splice(newEnemyIndex, 0, newGroup);
 
             renderWaveRepeater(levels);
         }, `Enemy group duplicated.`, `.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${newEnemyIndex}"]`);
+        flashCopy(`.enemy-card[data-wave-index="${waveIndex}"][data-enemy-index="${newEnemyIndex}"]`);
     };
 
     /**
