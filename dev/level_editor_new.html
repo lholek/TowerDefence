@@ -198,6 +198,8 @@
         body.ui-fx-low .dev-skin-pop.is-open{ animation:none; }
         /* the "i" tooltips (TooltipController, inline z-index:1000) above the tile strip */
         #dynamic-tooltip{ z-index:2000 !important; }
+        /* the tile legend: Can build towers / Can't build towers in our gold */
+        #dynamic-tooltip .dev-build{ color:#f0c674; font-weight:700; }
         /* gold line between the selected tile (left) and the rest */
         .dev-tile-dock::before{
             content:''; order:-1; flex:0 0 2px; align-self:stretch;
@@ -1078,6 +1080,8 @@
                     <li>The editor starts on High graphics; Graphics Low / High always switches every object together (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities and map objects - map objects used to stay on High) and the editor remembers your choice</li>
                     <li>Map Preview moved to the top-left corner</li>
                     <li>"Drawing is disabled for Start and End" moved into the tile search's "i" tooltip</li>
+                    <li>The tile picker shows every tile as it really looks on the map, drawn by the game itself and following Graphics Low / High, with its name underneath; the "Selected" tile too</li>
+                    <li>The tile legend ("i") shows "Can build towers" / "Can't build towers" in gold</li>
                     <li>The Map and Map Settings parts sit right on the section background (no extra dark boxes); the tile search field is brown like every other input</li>
                 </ul>
                 <h3>Menu</h3>
@@ -1756,7 +1760,8 @@
             let legendText = null;
             fetch('js/level_editor/dataEditorDescription.json')
                 .then(r => r.json())
-                .then(d => { legendText = (d?.['map-editor']?.['tile-legend']?.description || '') + '<br><br>' + LEGEND_NOTE; moveHeader(); })
+                // "Can build towers" / "Can't build towers" in gold, so it's clear at a glance where towers go
+                .then(d => { legendText = (d?.['map-editor']?.['tile-legend']?.description || '').replace(/\b(can't|can)\s+build\s+towers/gi, '<span class="dev-build">$&</span>') + '<br><br>' + LEGEND_NOTE; moveHeader(); })
                 .catch(() => { legendText = LEGEND_NOTE; moveHeader(); });
             const moveHeader = () => {
                 const header = tileKey.querySelector(':scope > .tile-editor-header');
@@ -2529,5 +2534,7 @@
         };
         wait();
     </script>
+    <!-- dev: the tile picker shows each tile drawn by the game (Low / High) instead of its name -->
+    <script type="module" src="js/level_editor/editor_ui/tile_icons.js"></script>
 </body>
 </html>

@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let legendText = null;
     fetch('js/level_editor/dataEditorDescription.json')
         .then(r => r.json())
-        .then(d => { legendText = (d?.['map-editor']?.['tile-legend']?.description || '') + '<br><br>' + LEGEND_NOTE; moveHeader(); })
+        // "Can build towers" / "Can't build towers" in gold, so it's clear at a glance where towers go
+        .then(d => { legendText = (d?.['map-editor']?.['tile-legend']?.description || '').replace(/\b(can't|can)\s+build\s+towers/gi, '<span class="dev-build">$&</span>') + '<br><br>' + LEGEND_NOTE; moveHeader(); })
         .catch(() => { legendText = LEGEND_NOTE; moveHeader(); });
     const moveHeader = () => {
         const header = tileKey.querySelector(':scope > .tile-editor-header');

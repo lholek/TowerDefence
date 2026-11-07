@@ -93,6 +93,8 @@
 body.ui-fx-low .dev-skin-pop.is-open{ animation:none; }
 /* the "i" tooltips (TooltipController, inline z-index:1000) above the tile strip */
 #dynamic-tooltip{ z-index:2000 !important; }
+/* the tile legend: Can build towers / Can't build towers in our gold */
+#dynamic-tooltip .dev-build{ color:#f0c674; font-weight:700; }
 /* gold line between the selected tile (left) and the rest */
 .dev-tile-dock::before{
     content:''; order:-1; flex:0 0 2px; align-self:stretch;

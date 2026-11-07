@@ -66,6 +66,7 @@
                 "The editor starts on High graphics; Graphics Low / High always switches every object together (trees, portals, enemies, towers, water, terrain, roads, mountains, abilities and map objects - map objects used to stay on High) and the editor remembers your choice",
                 "Map Preview moved to the top-left corner",
                 "\"Drawing is disabled for Start and End\" moved into the tile search's \"i\" tooltip",
+                "The tile picker shows every tile as it really looks on the map (following Graphics Low / High) with its name underneath, and the tile legend highlights \"Can build towers\" / \"Can't build towers\" in gold",
                 "The Map and Map Settings parts sit right on the section background (no extra dark boxes); the tile search field is brown like every other input"
               ]
             },
