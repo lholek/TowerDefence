@@ -241,7 +241,6 @@
             "Fixed bug - towers could be built on Farm Land even though the placement preview showed it in red"
           ]
         },
-        "FINAL TODO: Editor - Integrate the dev version of the editor into the main game",
         "FINAL TODO: Build new Adventure Map VII with new abilities"
       ]
     },
