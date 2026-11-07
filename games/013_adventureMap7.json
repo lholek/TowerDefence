@@ -6,16 +6,28 @@
       "startingLifes": 5,
       "extraLife": true,
       "extraLifePrices": [
-        10
+        50,
+        75,
+        100,
+        0,
+        150,
+        200,
+        250,
+        0,
+        500,
+        750,
+        1000,
+        0,
+        1000
       ],
       "description": [
         {
-          "descriptionText": "7th Adventure Map including 2 new abilites",
+          "descriptionText": "The Abyssal Veins have torn open where the Four Lands meet - green farmlands, golden sands, the frozen north and the sacred Holy Ground, bound together by great waters. The fiends will not stop at one realm... Two Elder Mages answer the call with brand new gifts: Aurelius' Gold Rush turns every fallen demon into extra gold, and Nivaris' Ice Storm freezes the road beneath their feet. Hold the crossing, Guardian, or the Four Lands fall as one.",
           "level count": 1,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x35",
-          "tower types": 1,
-          "abilites": ""
+          "tower types": 8,
+          "abilites": "Phonix inferno🌋, Titans Wrath🏹, Dragon's Hoard⛏️, Eternal Winter❄️"
         }
       ],
       "tileSize": 80,
@@ -56,17 +68,154 @@
               ["W","W[Rock-4]","W","W","W","W","W","W","W[Rock-1]","W[Rock-2]","W","W","W","W","W","W","W[Rock-4]","W","W","W","ICE","ICE","ICE","ICE","ICE","W","W","W","W","W","W","W","W","W[Rock-3]","W"],
               ["W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W","W"]
           ],
-      "abilities": [],
+      "abilities": [
+        {
+          "_comment": "cooldown - 30000",
+          "id": "lava_floor",
+          "configId": "lava_floor",
+          "name": "Phonix inferno",
+          "description": "Damage - 250dmg / 0.25s",
+          "description_text": "3 tile before and after selected tile",
+          "type": "targeted",
+          "selectionCount": 9,
+          "__comment": "250dmg / 0.25s ",
+          "damage": 250,
+          "damage_every": 250,
+          "___comment": "cooldown - includes effectDuration !!!",
+          "cooldown": 90000,
+          "effectDuration": 30000,
+          "color": "rgba(182, 85, 32, 0.6)",
+          "ui": {
+            "icon": "🌋"
+          }
+        },
+        {
+          "id": "towers_fury",
+          "configId": "towers_fury_1794058400055",
+          "name": "Titans Wrath",
+          "type": "global",
+          "cooldown": 90000,
+          "effectDuration": 30000,
+          "color": "rgba(255, 255, 255, 1)",
+          "ui": {
+            "icon": "🏹"
+          },
+          "modifiers": {
+            "damage_mul": 4,
+            "speed_mul": 4,
+            "fireRate_mul": 0.25
+          }
+        },
+        {
+          "id": "gold_rush",
+          "configId": "gold_rush_1794058402214",
+          "name": "Dragon's Hoard",
+          "type": "global",
+          "coin_bonus": 250,
+          "round_up": true,
+          "cooldown": 90000,
+          "effectDuration": 30000,
+          "color": "rgba(255, 205, 90, 0.6)",
+          "ui": {
+            "icon": "⛏️"
+          }
+        },
+        {
+          "id": "ice_storm",
+          "configId": "ice_storm_1794058404635",
+          "name": "Eternal Winter",
+          "type": "targeted",
+          "selectionCount": 9,
+          "enemy_slow": 75,
+          "enemy_vulnerability": 100,
+          "cooldown": 90000,
+          "effectDuration": 30000,
+          "color": "rgba(44, 131, 186, 0.6)",
+          "ui": {
+            "icon": "❄️"
+          }
+        }
+      ],
       "towerTypes": {
         "001": {
-          "name": "Basic Tower",
-          "price": 1,
-          "damage": 50,
+          "name": "Wolf Tower",
+          "price": 20,
+          "damage": 20,
+          "fireRate": 800,
+          "range": 500,
+          "color": "#808080",
+          "sellPrice": 15,
+          "speed": 3
+        },
+        "002": {
+          "name": "Bear Tower",
+          "price": 25,
+          "damage": 25,
+          "fireRate": 750,
+          "range": 600,
+          "color": "#8b5a2b",
+          "sellPrice": 20,
+          "speed": 4
+        },
+        "003": {
+          "name": "Basilisk Tower",
+          "price": 200,
+          "damage": 70,
+          "fireRate": 350,
+          "range": 750,
+          "color": "#378c44",
+          "sellPrice": 100,
+          "speed": 6
+        },
+        "004": {
+          "name": "Cerberus Tower",
+          "price": 250,
+          "damage": 150,
+          "fireRate": 500,
+          "range": 750,
+          "color": "#d66527",
+          "sellPrice": 150,
+          "speed": 5.5
+        },
+        "005": {
+          "name": "Phoenix Tower",
+          "price": 800,
+          "damage": 500,
           "fireRate": 400,
+          "range": 1000,
+          "color": "#cb2c1a",
+          "sellPrice": 300,
+          "speed": 6.5
+        },
+        "006": {
+          "name": "\tBehemoth Tower",
+          "price": 1500,
+          "damage": 1200,
+          "fireRate": 450,
+          "range": 1200,
+          "color": "#682dc8",
+          "sellPrice": 500,
+          "speed": 6
+        },
+        "007": {
+          "name": "Elder Dragon Tower",
+          "price": 4000,
+          "damage": 2500,
+          "fireRate": 300,
+          "range": 2000,
+          "color": "#272525",
+          "sellPrice": 750,
+          "speed": 9
+        },
+        "008": {
+          "name": "Ancient Titan Tower",
+          "price": 10000,
+          "damage": 5000,
+          "fireRate": 200,
           "range": 2500,
-          "color": "#468bb0",
-          "sellPrice": 1,
-          "speed": 2
+          "color": "#ffffff",
+          "sellPrice": 0,
+          "speed": 16
         }
       },
       "levels": [
