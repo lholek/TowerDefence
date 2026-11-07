@@ -23,7 +23,7 @@
       "description": [
         {
           "descriptionText": "The Abyssal Veins have torn open where the Four Lands meet - green farmlands, golden sands, the frozen north and the sacred Holy Ground, bound together by great waters. The fiends will not stop at one realm... Two Elder Mages answer the call with brand new gifts: Aurelius' Gold Rush turns every fallen demon into extra gold, and Nivaris' Ice Storm freezes the road beneath their feet. Hold the crossing, Guardian, or the Four Lands fall as one.",
-          "level count": 1,
+          "level count": 2,
           "difficulty": "⭐⭐⭐⭐⭐",
           "map_size": "35x35",
           "tower types": 8,
@@ -61,7 +61,7 @@
               ["W","W","W","X[Dirt]","X[Hay]","X[Hay]","X[Hay]","X[Dirt]","X[Dirt]","O","O","O","X","X","X","W[Rock-3]","W","ICE","ICE","ICE","SNW","O[SNW]","ICE","ICE","O[SNW]","O[SNW]","SNW[SPIKE-3]","SNW","O[SNW]","O[SNW]","SNW","M","W","W","W"],
               ["W","W","X[Tree]","X[Tree]","X[Hay]","X[Hay]","X[Hay]","X[Hay]","X[Dirt]","X[Dirt]","X[Hay]","O","O","O","X","X","W","W","ICE","SNW","SNW","O[SNW]","O[SNW]","SNW","SNW","O[SNW]","SNW","O[SNW]","O[SNW]","SNW","SNW","M","M","W","W"],
               ["W","W","X[Tree]","X","BRG","X","O","O","O","X[Dirt]","X[Well]","X","X","O","X","X","W","W","ICE","SNW","BRG","ICE","O[SNW]","O[SNW]","SNW","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW[Tree]","M","M","W","W"],
-              ["W","W","X","BRG","S2","BRG","O","X","O","O","O","X","X","O","X","X","W","W[Rock-4]","ICE","SNW","S4","BRG","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW[Tree]","SNW[Tree]","SNW[Tree]","M","W","W"],
+              ["W","W","X","BRG","S2","BRG","O","X","O","O","O","X","X","O","X","X","W","W[Rock-4]","ICE","SNW","S3","BRG","SNW","O[SNW]","SNW","SNW","SNW","SNW","SNW","SNW[Tree]","SNW[Tree]","SNW[Tree]","M","W","W"],
               ["W","W","X","BRG","O","X[Bush]","O","X","X","X","O","O","O","O","X","X[Tree]","W","W","ICE","BRG","O[SNW]","O[SNW]","SNW","O[SNW]","SNW","SNW[SPIKE-1]","SNW[SPIKE-4]","SNW[SPIKE-2]","SNW[Tree]","SNW[Tree]","SNW[Tree]","M","M","W","W"],
               ["W","W","X[Tree]","X[Tree]","O","O","O","X","X","X","X","X","X","X[Log-2]","X[Tree]","X[Tree]","W","W","ICE","SNW","SNW","O[SNW]","O[SNW]","O[SNW]","SNW","SNW","SNW","SNW[Tree]","SNW[Tree]","M","M","M","M","W","W"],
               ["W","W","W","X[Tree]","X[Log-2]","X","X","X","W","W","X[Log-1]","X","X","X[Tree]","X[Tree]","W","W","W","W","ICE","SNW","SNW","SNW","SNW","SNW","ICE","ICE","M","M","M","M","M","W","W","W"],
@@ -79,7 +79,7 @@
           "type": "targeted",
           "selectionCount": 9,
           "__comment": "250dmg / 0.25s ",
-          "damage": 250,
+          "damage": 800,
           "damage_every": 250,
           "___comment": "cooldown - includes effectDuration !!!",
           "cooldown": 90000,
@@ -127,7 +127,7 @@
           "type": "targeted",
           "selectionCount": 9,
           "enemy_slow": 75,
-          "enemy_vulnerability": 100,
+          "enemy_vulnerability": 200,
           "cooldown": 90000,
           "effectDuration": 30000,
           "color": "rgba(44, 131, 186, 0.6)",
@@ -224,18 +224,136 @@
           "enemies": [
             {
               "type": "basic",
-              "count": 5,
-              "health": 100,
-              "speed": 1,
+              "count": 4,
+              "health": 200,
+              "speed": 1.1,
+              "path": "S1E1",
+              "interval": 900,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 200,
+              "speed": 1.1,
+              "path": "S2E2",
+              "interval": 900,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "basic",
+              "count": 4,
+              "health": 200,
+              "speed": 1.1,
+              "path": "S3E3",
+              "interval": 900,
+              "coinReward": 4,
+              "firstDelay": 0
+            },
+            {
+              "type": "tanker",
+              "count": 3,
+              "health": 500,
+              "speed": 0.65,
               "path": "S1E1",
               "interval": 1000,
-              "coinReward": 1,
-              "firstDelay": 0
+              "firstDelay": 4000,
+              "coinReward": 5,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 3,
+              "health": 500,
+              "speed": 0.65,
+              "path": "S2E2",
+              "interval": 1000,
+              "firstDelay": 4000,
+              "coinReward": 5,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "tanker",
+              "count": 3,
+              "health": 500,
+              "speed": 0.65,
+              "path": "S3E3",
+              "interval": 1000,
+              "firstDelay": 4000,
+              "coinReward": 5,
+              "skin": "GOLEM"
+            },
+            {
+              "type": "snake",
+              "count": 7,
+              "health": 100,
+              "speed": 1,
+              "path": "S3E3",
+              "interval": 100,
+              "firstDelay": 10000,
+              "coinReward": 4,
+              "skin": "EYE"
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "enemies": [
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 500,
+              "speed": 1.2,
+              "path": "S1E1",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 5
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 500,
+              "speed": 1.2,
+              "path": "S2E2",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 5
+            },
+            {
+              "type": "basic",
+              "count": 5,
+              "health": 500,
+              "speed": 1.2,
+              "path": "S3E3",
+              "interval": 850,
+              "firstDelay": 0,
+              "coinReward": 5
             }
           ]
         }
       ],
-      "enemyEffects": []
+      "enemyEffects": [],
+      "enemyTypes": [
+        "regular",
+        "tanker",
+        "speeder",
+        "boss",
+        "healer",
+        "damager-2",
+        "snake"
+      ],
+      "enemyDamage": [
+        {
+          "type": "healer",
+          "damage": -1
+        },
+        {
+          "type": "damager-2",
+          "damage": 2
+        }
+      ]
     }
   ]
 }
